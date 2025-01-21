@@ -45,7 +45,5 @@ class CreateNewUser implements CreatesNewUsers
             'gender' => $input['gender'],
             'identity_number' => $input['identity_number'],
         ]);
-
-        dd($input);
     }
 }

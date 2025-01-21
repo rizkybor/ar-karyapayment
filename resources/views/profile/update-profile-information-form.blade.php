@@ -112,9 +112,21 @@
 
         <!-- Role -->
         <div class="col-span-6 sm:col-span-4">
+            <!-- Label -->
             <x-label for="role" value="{{ __('Role') }}" />
-            <x-input id="role" type="text" class="mt-1 block w-full" wire:model.live="state.role"
-                autocomplete="role" />
+
+            <!-- Dropdown Select -->
+            <select id="role" class="mt-1 block w-full form-select " wire:model.live="state.role">
+                <option value="">Pilih Role</option>
+                <option value="maker">Maker</option>
+                <option value="kadiv">Kadiv</option>
+                <option value="bendahara">Bendahara</option>
+                <option value="manager_anggaran">Manager Anggaran</option>
+                <option value="direktur_keuangan">Direktur Keuangan</option>
+                <option value="pajak">Pajak</option>
+            </select>
+
+            <!-- Error Message -->
             <x-input-error for="role" class="mt-2" />
         </div>
 
@@ -128,9 +140,28 @@
 
         <!-- Gender -->
         <div class="col-span-6 sm:col-span-4">
+            <!-- Label -->
             <x-label for="gender" value="{{ __('Gender') }}" />
-            <x-input id="gender" type="text" class="mt-1 block w-full" wire:model.live="state.gender"
-                autocomplete="gender" />
+
+            <!-- Radio Button Group -->
+            {{-- Pria --}}
+            <div class="mt-1 space-y-2">
+                <label class="inline-flex items-center">
+                    <input type="radio" id="gender_pria" value="pria"
+                        class="form-radio h-4 w-4 transition duration-150 ease-in-out"
+                        wire:model.live="state.gender" />
+                    <span class="ml-2">Pria</span>
+                </label>
+                {{-- Wanita --}}
+                <label class="inline-flex items-center">
+                    <input type="radio" id="gender_wanita" value="wanita"
+                        class="form-radio h-4 w-4 transition duration-150 ease-in-out"
+                        wire:model.live="state.gender" />
+                    <span class="ml-2">Wanita</span>
+                </label>
+            </div>
+
+            <!-- Error Message -->
             <x-input-error for="gender" class="mt-2" />
         </div>
 
