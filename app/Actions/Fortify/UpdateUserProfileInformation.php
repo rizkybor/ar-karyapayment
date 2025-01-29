@@ -51,6 +51,9 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'gender' => $input['gender'],
                 'identity_number' => $input['identity_number'],
             ])->save();
+
+            $role = $input['role']; // Mendapatkan role dari input
+            $user->syncRoles([$role]); // Menyinkronkan role baru untuk user
         }
     }
 
