@@ -12,119 +12,61 @@
                     class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                     <tr>
                         <th class="p-2 whitespace-nowrap">
-                            <div class="font-semibold text-left">Name</div>
+                            <div class="font-semibold text-center">No</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
-                            <div class="font-semibold text-left">Email</div>
+                            <div class="font-semibold text-left">No Kontrak</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
-                            <div class="font-semibold text-left">Spent</div>
+                            <div class="font-semibold text-left">Nama Pemberi Kerja</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
-                            <div class="font-semibold text-center">Country</div>
+                            <div class="font-semibold text-center">Total Nilai Kontrak</div>
                         </th>
+                        <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-center">Jangka Waktu</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-center">Status</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-center">Termin Invoice</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-center">Total</div>
+                        </th>
+
                     </tr>
                 </thead>
                 <!-- Table body -->
                 <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                     <tr>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                    <img class="rounded-full" src="{{ asset('images/user-36-05.jpg') }}" width="40"
-                                        height="40" alt="Alex Shatov" />
-                                </div>
-                                <div class="font-medium ">Alex Shatov</div>
-                            </div>
+                            <div class="text-center">1</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-left">alexshatov@gmail.com</div>
+                            <div class="text-left">KPU-999/999</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-left font-medium text-green-500">$2,890.66</div>
+                            <div class="text-left">###########</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-lg text-center">🇺🇸</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                    <img class="rounded-full" src="{{ asset('images/user-36-06.jpg') }}" width="40"
-                                        height="40" alt="Philip Harbach" />
-                                </div>
-                                <div class="font-medium ">Philip Harbach</div>
-                            </div>
+                            <div class="text-center">Rp. 999.999</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-left">philip.h@gmail.com</div>
+                            <div class="text-center">2 Bulan</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-left font-medium text-green-500">$2,767.04</div>
+                            <div class="text-center">###########</div>
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-lg text-center">🇩🇪</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                    <img class="rounded-full" src="{{ asset('images/user-36-07.jpg') }}" width="40"
-                                        height="40" alt="Mirko Fisuk" />
-                                </div>
-                                <div class="font-medium ">Mirko Fisuk</div>
-                            </div>
+                            <div class="text-center"><x-button href="">
+                                    Detail Termin
+                                </x-button></div>
+
                         </td>
                         <td class="p-2 whitespace-nowrap">
-                            <div class="text-left">mirkofisuk@gmail.com</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-left font-medium text-green-500">$1,220.66</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-lg text-center">🇫🇷</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                    <img class="rounded-full" src="{{ asset('images/user-36-08.jpg') }}" width="40"
-                                        height="40" alt="Burak Long" />
-                                </div>
-                                <div class="font-medium ">Burak Long</div>
-                            </div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-left">longburak@gmail.com</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-left font-medium text-green-500">$1,890.66</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-lg text-center">🇬🇧</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 shrink-0 mr-2 sm:mr-3">
-                                    <img class="rounded-full" src="{{ asset('images/user-36-09.jpg') }}" width="40"
-                                        height="40" alt="Alex Shatov" />
-                                </div>
-                                <div class="font-medium ">Alex Shatov</div>
-                            </div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-left">alexshatov@gmail.com</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-left font-medium text-green-500">$2,890.66</div>
-                        </td>
-                        <td class="p-2 whitespace-nowrap">
-                            <div class="text-lg text-center">🇺🇸</div>
+                            <div class="text-center">Rp. 999.999</div>
                         </td>
                     </tr>
                 </tbody>
