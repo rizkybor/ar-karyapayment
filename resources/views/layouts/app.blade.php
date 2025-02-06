@@ -41,6 +41,8 @@
         }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
     <!-- Page wrapper -->
     <div class="flex h-[100dvh] overflow-hidden">
 
