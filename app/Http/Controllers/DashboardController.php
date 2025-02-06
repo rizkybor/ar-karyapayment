@@ -16,6 +16,11 @@ class DashboardController extends Controller
         return view('pages/dashboard/dashboard', compact('dataFeed'));
     }
 
+    public function managementFee()
+    {
+        return view('pages/dashboard/management-fee');
+    }
+
     /**
      * Displays the analytics screen
      *
