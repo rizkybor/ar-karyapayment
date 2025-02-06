@@ -1,4 +1,5 @@
-<div class="flex flex-col col-span-full sm:col-span-8 xl:col-span-8 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+<div
+    class="flex flex-col col-span-full sm:col-span-6 md:col-span-6 lg:col-span-8 xl:col-span-8 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
     <div class="px-5 pt-5">
         <header class="flex justify-between items-start">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Tagihan Bulanan dan Tahunan</h2>
@@ -11,12 +12,10 @@
 </div>
 
 <script>
-    // Function to get the current theme
     function getCurrentTheme1() {
         return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     }
 
-    // Function to initialize the chart
     function initializeChart1(themeMode1) {
         const chartColors1 = themeMode1 === 'dark' ? ["#8470ff"] : ["#8470ff"];
         const backgroundColor1 = themeMode1 === 'dark' ? "#1F2937" : "#FFFFFF";
@@ -113,11 +112,9 @@
         chart1.render();
     }
 
-    // Initial chart rendering
     const currentTheme1 = getCurrentTheme1();
     initializeChart1(currentTheme1);
 
-    // Observe theme change
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.attributeName === "class") {
