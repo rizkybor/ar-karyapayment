@@ -14,10 +14,9 @@
 
             </div>
 
-            <x-button href="" class="float-right">
+            <x-button type="button" onclick="window.location='{{ route('createManagementFee') }}'">
                 + Data Baru
             </x-button>
-
 
 
         </div>
