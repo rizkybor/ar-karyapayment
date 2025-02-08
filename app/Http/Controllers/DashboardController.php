@@ -26,6 +26,11 @@ class DashboardController extends Controller
         return view('pages/dashboard/create-management-fee');
     }
 
+    public function detailManagementFee()
+    {
+        return view('pages/dashboard/detail-management-fee');
+    }
+
     /**
      * Displays the analytics screen
      *

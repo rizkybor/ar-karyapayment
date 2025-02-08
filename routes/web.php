@@ -27,6 +27,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/management-fee', [DashboardController::class, 'managementFee'])->name('managementFee');
     Route::get('/create-management-fee', [DashboardController::class, 'createManagementFee'])->name('createManagementFee');
+    Route::get('/detail-management-fee', [DashboardController::class, 'detailManagementFee'])->name('detailManagementFee');
 
 
     Route::fallback(function () {
