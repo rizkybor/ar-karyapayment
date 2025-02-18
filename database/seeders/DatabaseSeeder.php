@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DashboardTableSeeder::class,
+            UserSeeder::class,
+            PermissionSeeder::class,
         ]);
     }
 }

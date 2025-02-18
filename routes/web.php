@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
@@ -28,6 +29,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/management-fee', [DashboardController::class, 'managementFee'])->name('managementFee');
     Route::get('/create-management-fee', [DashboardController::class, 'createManagementFee'])->name('createManagementFee');
     Route::get('/detail-management-fee', [DashboardController::class, 'detailManagementFee'])->name('detailManagementFee');
+
+    Route::resource('/contracts', ContractsController::class);
 
 
     Route::fallback(function () {
