@@ -20,7 +20,7 @@ class ContractsController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages/settings/contracts/create');
     }
 
     /**
