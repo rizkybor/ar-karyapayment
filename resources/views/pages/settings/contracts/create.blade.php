@@ -53,17 +53,18 @@
                                 <div>
                                     <x-label for="start_date" value="{{ __('Start Date') }}" />
                                     <x-input id="start_date" type="date" name="start_date"
-                                        class="mt-1 block w-full min-h-[40px]" wire:model.live="state.start_date"
-                                        required autocomplete="start_date" />
+                                        class="mt-1 block w-full min-h-[40px]" required autocomplete="start_date"
+                                        oninput="setMinEndDate()" />
                                     <x-input-error for="start_date" class="mt-2" />
                                 </div>
+
                                 <div>
                                     <x-label for="end_date" value="{{ __('End Date') }}" />
                                     <x-input id="end_date" type="date" name="end_date"
-                                        class="mt-1 block w-full min-h-[40px]" wire:model.live="state.end_date" required
-                                        autocomplete="end_date" />
+                                        class="mt-1 block w-full min-h-[40px]" required autocomplete="end_date" />
                                     <x-input-error for="end_date" class="mt-2" />
                                 </div>
+
                             </div>
 
 
@@ -162,6 +163,11 @@
             if (input.value === "" || input.value === "Rp ") {
                 input.value = "Rp 0"; // Jika kosong, tetap tampilkan Rp
             }
+        }
+
+        function setMinEndDate() {
+            let startDate = document.getElementById("start_date").value;
+            document.getElementById("end_date").setAttribute("min", startDate);
         }
     </script>
 
