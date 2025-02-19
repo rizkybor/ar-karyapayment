@@ -22,9 +22,10 @@
                         <div class="grid grid-cols-1 gap-y-6">
                             <div>
                                 <x-label for="contract_number" value="{{ __('Nomer Kontrak') }}" />
-                                <x-input id="contract_number" type="number" name="contract_number"
+                                <x-input id="contract_number" type="text" name="contract_number"
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan nomer kontrak"
-                                    wire:model.live="state.contract_number" required autocomplete="contract_number" />
+                                    wire:model.live="state.contract_number" required autocomplete="contract_number"
+                                    maxlength="10" />
                                 <x-input-error for="contract_number" class="mt-2" />
                             </div>
 
@@ -37,12 +38,16 @@
                             </div>
 
                             <div>
-                                <x-label for="value" value="{{ __('Value') }}" />
-                                <x-input id="value" type="number" name="value"
-                                    class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan value"
-                                    wire:model.live="state.value" required autocomplete="value" />
+                                <x-label for="value" value="{{ __('Nilai Kontrak') }}" />
+                                <x-input id="value" type="text" name="formatted_value"
+                                    class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan Nilai Kontrak"
+                                    oninput="formatRupiah(this)" onblur="removeFormat(this)" required />
                                 <x-input-error for="value" class="mt-2" />
                             </div>
+
+                            <!-- Input Hidden untuk Database -->
+                            <input type="hidden" name="value" id="value_hidden">
+
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -142,4 +147,23 @@
             {{-- Tambah Data Baru End --}}
         </div>
     </div>
+    {{-- JavaScript untuk format Rupiah --}}
+    <script>
+        function formatRupiah(input) {
+            let value = input.value.replace(/\D/g, ""); // Hanya angka
+            let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp 50.000
+            input.value = "Rp " + formatted;
+
+            // Set nilai ke input hidden (tanpa format)
+            document.getElementById("value_hidden").value = value;
+        }
+
+        function removeFormat(input) {
+            if (input.value === "" || input.value === "Rp ") {
+                input.value = "Rp 0"; // Jika kosong, tetap tampilkan Rp
+            }
+        }
+    </script>
+
+
 </x-app-layout>
