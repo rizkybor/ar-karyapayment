@@ -70,8 +70,8 @@
                                 <select id="type" name="type" class="mt-1 block w-full form-select "
                                     wire:model.live="state.type">
                                     <option value="">Pilih Tipe Kontrak</option>
-                                    <option value="maker">Manfee</option>
-                                    <option value="kadiv">Non Manfee</option>
+                                    <option value="manfee">Manfee</option>
+                                    <option value="nonmanfee">Non Manfee</option>
                                 </select>
                             </div>
 

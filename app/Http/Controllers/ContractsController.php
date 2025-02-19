@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contracts;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ContractsController extends Controller
 {
@@ -12,7 +13,8 @@ class ContractsController extends Controller
      */
     public function index()
     {
-        return view('pages/settings/contracts/index');
+        $contracts = Contracts::all();
+        return view('pages/settings/contracts/index', compact('contracts'));
     }
 
     /**
@@ -43,6 +45,9 @@ class ContractsController extends Controller
         ]);
 
         $input = $request->all();
+
+        $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
+        $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
 
         $input['status'] = (int) $request->status;
 
@@ -88,8 +93,14 @@ class ContractsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Contracts $contracts)
+    public function destroy(Contracts $contract)
     {
-        //
+        if ($contract->path && file_exists(public_path('files/path/' . $contract->path))) {
+            unlink(public_path('files/path/' . $contract->path));
+        }
+
+        $contract->delete();
+
+        return redirect()->route('contracts.index')->with('success', 'Data berhasil dihapus!');
     }
 }

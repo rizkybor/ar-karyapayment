@@ -62,33 +62,50 @@
                             </thead>
                             <!-- Table body -->
                             <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                <tr>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">1</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">KPU-999/999</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">Jokowi</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">12 Januari 2025</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">16 Februari 2025</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">Manfee</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center gap-2">
-                                            <x-secondary-button href="">Edit</x-secondary-button>
-                                            <x-danger-button href="">Delete</x-danger-button>
-                                        </div>
-                                    </td>
+                                @php $i = 1; @endphp
+                                @foreach ($contracts as $contract)
+                                    <tr>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $i++ }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-left">{{ $contract->contract_number }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-left">{{ $contract->employee_name }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">
+                                                {{ \Carbon\Carbon::parse($contract->start_date)->translatedFormat('l, d F Y') }}
+                                            </div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">
+                                                {{ \Carbon\Carbon::parse($contract->end_date)->translatedFormat('l, d F Y') }}
+                                            </div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ ucfirst($contract->type) }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center flex justify-center gap-x-2">
+                                                <x-secondary-button
+                                                    href="{{ route('contracts.edit', $contract->id) }}">Edit</x-secondary-button>
 
-                                </tr>
+                                                <form
+                                                    action="{{ route('contracts.destroy', ['contract' => $contract->id]) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <x-delete-button type="submit">Delete</x-delete-button>
+                                                </form>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
                             </tbody>
                         </table>
 
