@@ -15,7 +15,8 @@
             {{-- Tambah Data Baru --}}
             <div class="mt-5 md:mt-0 md:col-span-2">
 
-                <form action="" class="max-w-3xl w-11/12 mx-auto p-6" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('contracts.store') }}" class="max-w-3xl w-11/12 mx-auto p-6" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
                         <div class="grid grid-cols-1 gap-y-6">
@@ -96,7 +97,7 @@
 
                             <div>
                                 <x-label for="address" value="{{ __('Alamat') }}" />
-                                <x-input-wide id="address" type="text" name=""
+                                <x-input-wide id="address" type="text" name="address"
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan alamat"
                                     wire:model.live="state.address" required autocomplete="address" />
                                 <x-input-error for="address" class="mt-2" />
@@ -118,8 +119,8 @@
                                 <select id="status" name="status" class="mt-1 block w-full form-select "
                                     wire:model.live="state.status">
                                     <option value="">Pilih Status</option>
-                                    <option value="true">True</option>
-                                    <option value="false">False</option>
+                                    <option value="1">True</option>
+                                    <option value="0">False</option>
                                 </select>
                             </div>
                         </div>

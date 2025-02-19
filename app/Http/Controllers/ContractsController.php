@@ -28,7 +28,37 @@ class ContractsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'contract_number' => 'required',
+            'employee_name' => 'required',
+            'value' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'type' => 'required',
+            'path' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'bill_type' => 'required',
+            'address' => 'required',
+            'work_unit' => 'required',
+            'status' => 'required|in:0,1',
+        ]);
+
+        $input = $request->all();
+
+        $input['status'] = (int) $request->status;
+
+        if ($request->hasFile('path')) {
+            $destinationPath = 'files/path/';
+            $path = $request->file('path');
+            $pathName = date('YmdHis') . '_' . uniqid() . '.' . $path->getClientOriginalExtension();
+            $path->move(public_path($destinationPath), $pathName);
+            $input['path'] = $pathName;
+        } else {
+            return redirect()->back()->with('error', 'Gambar wajib diunggah!');
+        }
+
+        Contracts::create($input);
+
+        return redirect()->route('contracts.index')->with('success', 'Data berhasil disimpan!');
     }
 
     /**
