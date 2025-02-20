@@ -91,8 +91,11 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex justify-center gap-x-2">
+                                                <a href="{{ route('contracts.show', $contract->id) }}">
+                                                    <x-secondary-button>Details</x-secondary-button>
+                                                </a>
                                                 <a href="{{ route('contracts.edit', $contract->id) }}">
-                                                    <x-secondary-button>Edit</x-secondary-button>
+                                                    <x-edit-button>Edit</x-edit-button>
                                                 </a>
 
 

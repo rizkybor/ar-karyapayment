@@ -75,9 +75,12 @@ class ContractsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Contracts $contracts)
+    public function show(Contracts $contract)
     {
-        //
+        $mstBillType = MasterBillType::all();
+        $mstType = MasterType::all();
+        $mstWorkUnit = MasterWorkUnit::all();
+        return view('pages/settings/contracts/show', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
     }
 
     /**
