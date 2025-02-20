@@ -47,7 +47,7 @@ class ContractsController extends Controller
             'bill_type' => 'required',
             'address' => 'required',
             'work_unit' => 'required',
-            'status' => 'required|in:0,1',
+            'status' => 'nullable|in:0,1',
         ]);
 
         $input = $request->all();
@@ -55,7 +55,7 @@ class ContractsController extends Controller
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
         $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
 
-        $input['status'] = (int) $request->status;
+        $input['status'] = isset($request->status) ? (int) $request->status : null;
 
         if ($request->hasFile('path')) {
             $destinationPath = 'files/path/';

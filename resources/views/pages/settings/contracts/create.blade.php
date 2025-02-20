@@ -132,7 +132,7 @@
                                 </select>
                             </div>
 
-                            <div>
+                            {{-- <div>
                                 <!-- Label -->
                                 <x-label for="status" value="{{ __('Status') }}" />
 
@@ -143,7 +143,7 @@
                                     <option value="1">True</option>
                                     <option value="0">False</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('bill_type', 50);
             $table->text('address');
             $table->string('work_unit', 255);
-            $table->boolean('status')->default(true);
+            $table->boolean('status')->nullable()->default(null);
             $table->timestamps();
         });
     }
