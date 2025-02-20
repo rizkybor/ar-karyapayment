@@ -24,4 +24,9 @@ class Contracts extends Model
         'work_unit',
         'status',
     ];
+
+    public function manfeeDocuments()
+    {
+        return $this->hasMany(ManfeeDocument::class, 'contract_id', 'id');
+    }
 }

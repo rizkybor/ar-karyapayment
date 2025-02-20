@@ -17,8 +17,6 @@
             <x-button type="button" onclick="window.location='{{ route('contracts.create') }}'">
                 + Data Baru
             </x-button>
-
-
         </div>
 
         <!-- Cards -->
