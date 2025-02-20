@@ -99,9 +99,12 @@
                                 <!-- Dropdown Select -->
                                 <select id="bill_type" name="bill_type" class="mt-1 block w-full form-select "
                                     wire:model.live="state.bill_type">
-                                    <option value="">Pilih Tipe Pembayaran</option>
-                                    <option value="gaji">Gaji</option>
-                                    <option value="sppd">Sppd</option>
+                                    <option value="">Pilih Tipe Kontrak</option>
+                                    @foreach ($mstBillType as $billType)
+                                        <option value="{{ $billType->bill_type }}">
+                                            {{ ucwords(str_replace('_', ' ', $billType->bill_type)) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 

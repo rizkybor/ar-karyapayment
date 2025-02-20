@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contracts;
+use App\Models\MasterBillType;
 use App\Models\MasterType;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -23,9 +24,11 @@ class ContractsController extends Controller
      */
     public function create()
     {
+        $mstBillType = MasterBillType::all();
         $mstType = MasterType::all();
-        return view('pages/settings/contracts/create', compact('mstType'));
+        return view('pages/settings/contracts/create', compact('mstType', 'mstBillType'));
     }
+
 
     /**
      * Store a newly created resource in storage.
