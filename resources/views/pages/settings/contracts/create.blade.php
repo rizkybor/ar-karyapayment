@@ -131,19 +131,6 @@
                                     @endforeach
                                 </select>
                             </div>
-
-                            {{-- <div>
-                                <!-- Label -->
-                                <x-label for="status" value="{{ __('Status') }}" />
-
-                                <!-- Dropdown Select -->
-                                <select id="status" name="status" class="mt-1 block w-full form-select "
-                                    wire:model.live="state.status">
-                                    <option value="">Pilih Status</option>
-                                    <option value="1">True</option>
-                                    <option value="0">False</option>
-                                </select>
-                            </div> --}}
                         </div>
                     </div>
 

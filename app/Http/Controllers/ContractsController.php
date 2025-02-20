@@ -83,17 +83,56 @@ class ContractsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Contracts $contracts)
+    public function edit(Contracts $contract)
     {
-        //
+        $mstBillType = MasterBillType::all();
+        $mstType = MasterType::all();
+        $mstWorkUnit = MasterWorkUnit::all();
+        return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contracts $contracts)
+    public function update(Request $request, Contracts $contract) // Ubah dari $contracts ke $contract
     {
-        //
+        $request->validate([
+            'contract_number' => 'required',
+            'employee_name' => 'required',
+            'value' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'type' => 'required',
+            'path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'bill_type' => 'required',
+            'address' => 'required',
+            'work_unit' => 'required',
+            'status' => 'nullable|in:0,1',
+        ]);
+
+        $input = $request->except('path'); // Ambil semua kecuali file gambar
+
+        $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
+        $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
+        $input['status'] = isset($request->status) ? (int) $request->status : null;
+
+        if ($request->hasFile('path')) {
+            // Hapus gambar lama jika ada
+            if ($contract->path && file_exists(public_path('files/path/' . $contract->path))) {
+                unlink(public_path('files/path/' . $contract->path));
+            }
+
+            // Simpan gambar baru
+            $destinationPath = 'files/path/';
+            $path = $request->file('path');
+            $pathName = date('YmdHis') . '_' . uniqid() . '.' . $path->getClientOriginalExtension();
+            $path->move(public_path($destinationPath), $pathName);
+            $input['path'] = $pathName;
+        }
+
+        $contract->update($input);
+
+        return redirect()->route('contracts.index')->with('success', 'Data berhasil diperbaharui!');
     }
 
     /**
