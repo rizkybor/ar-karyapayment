@@ -117,11 +117,19 @@
                             </div>
 
                             <div>
+                                <!-- Label -->
                                 <x-label for="work_unit" value="{{ __('Unit Kerja') }}" />
-                                <x-input id="work_unit" type="text" name="work_unit"
-                                    class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan unit kerja"
-                                    wire:model.live="state.work_unit" required autocomplete="work_unit" />
-                                <x-input-error for="work_unit" class="mt-2" />
+
+                                <!-- Dropdown Select -->
+                                <select id="work_unit" name="work_unit" class="mt-1 block w-full form-select "
+                                    wire:model.live="state.bill_type">
+                                    <option value="">Unit Kerja</option>
+                                    @foreach ($mstWorkUnit as $workUnit)
+                                        <option value="{{ $workUnit->work_unit }}">
+                                            {{ ucwords(str_replace('_', ' ', $workUnit->work_unit)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>
