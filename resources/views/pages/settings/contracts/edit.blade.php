@@ -39,15 +39,17 @@
 
                             <div>
                                 <x-label for="value" value="Nilai Kontrak" />
-                                <x-input id="value" value="{{ old('value', $contract->value) }}" type="text"
-                                    name="formatted_value" class="mt-1 block w-full min-h-[40px]"
-                                    placeholder="Masukkan Nilai Kontrak" oninput="formatRupiah(this)"
-                                    onblur="removeFormat(this)" required />
-                                <x-input-error for="value" class="mt-2" />
-                            </div>
+                                <x-input id="value" type="text" name="formatted_value"
+                                    class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan Nilai Kontrak"
+                                    value="Rp {{ number_format(old('value', $contract->value) ?? 0, 0, ',', '.') }}"
+                                    oninput="formatRupiah(this)" onblur="removeFormat(this)" required />
 
-                            <!-- Input Hidden untuk Database -->
-                            <input type="hidden" name="value" id="value_hidden" value="{{ $contract->value }}">
+                                <x-input-error for="value" class="mt-2" />
+
+                                <!-- Input hidden untuk menyimpan angka tanpa format -->
+                                <input type="hidden" id="value_hidden" name="value"
+                                    value="{{ old('value', $contract->value) ?? 0 }}">
+                            </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -141,10 +143,14 @@
     <script>
         function formatRupiah(input) {
             let value = input.value.replace(/\D/g, ""); // Hanya angka
-            let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp 50.000
+            if (value.length > 17) { // Maksimal 15 digit sebelum koma dan 2 desimal
+                value = value.substring(0, 17);
+            }
+
+            let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp
             input.value = "Rp " + formatted;
 
-            // Set nilai ke input hidden (tanpa format)
+            // Set nilai ke input hidden (tanpa format Rupiah)
             document.getElementById("value_hidden").value = value;
         }
 
