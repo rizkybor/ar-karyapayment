@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             DashboardTableSeeder::class,
             UserSeeder::class,
             PermissionSeeder::class,
+            MasterDataSeeder::class,
         ]);
     }
 }
