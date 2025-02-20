@@ -85,7 +85,9 @@
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ ucfirst($contract->type) }}</div>
+                                            <div class="text-center">
+                                                {{ ucwords(str_replace('_', ' ', $contract->type)) }}</div>
+
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex justify-center gap-x-2">

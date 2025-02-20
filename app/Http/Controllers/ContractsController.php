@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contracts;
+use App\Models\MasterType;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -22,7 +23,8 @@ class ContractsController extends Controller
      */
     public function create()
     {
-        return view('pages/settings/contracts/create');
+        $mstType = MasterType::all();
+        return view('pages/settings/contracts/create', compact('mstType'));
     }
 
     /**

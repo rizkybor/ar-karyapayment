@@ -51,7 +51,7 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <x-label for="start_date" value="{{ __('Start Date') }}" />
+                                    <x-label for="start_date" value="{{ __('Tanggal Mulai') }}" />
                                     <x-input id="start_date" type="date" name="start_date"
                                         class="mt-1 block w-full min-h-[40px]" required autocomplete="start_date"
                                         oninput="setMinEndDate()" />
@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div>
-                                    <x-label for="end_date" value="{{ __('End Date') }}" />
+                                    <x-label for="end_date" value="{{ __('Tanggal Selesai') }}" />
                                     <x-input id="end_date" type="date" name="end_date"
                                         class="mt-1 block w-full min-h-[40px]" required autocomplete="end_date" />
                                     <x-input-error for="end_date" class="mt-2" />
@@ -73,16 +73,20 @@
                                 <x-label for="type" value="{{ __('Tipe Kontrak') }}" />
 
                                 <!-- Dropdown Select -->
-                                <select id="type" name="type" class="mt-1 block w-full form-select "
+                                <select id="type" name="type" class="mt-1 block w-full form-select"
                                     wire:model.live="state.type">
                                     <option value="">Pilih Tipe Kontrak</option>
-                                    <option value="manfee">Manfee</option>
-                                    <option value="nonmanfee">Non Manfee</option>
+                                    @foreach ($mstType as $type)
+                                        <option value="{{ $type->type }}">
+                                            {{ ucwords(str_replace('_', ' ', $type->type)) }}
+                                        </option>
+                                    @endforeach
                                 </select>
+
                             </div>
 
                             <div>
-                                <x-label for="path" value="{{ __('Path') }}" />
+                                <x-label for="path" value="{{ __('Path Contract') }}" />
                                 <x-input id="path" type="file" name="path" class="mt-1 block w-full"
                                     wire:model.live="state.path" autocomplete="path" />
                                 <x-input-error for="path" class="mt-2" />
