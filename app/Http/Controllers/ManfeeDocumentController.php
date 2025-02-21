@@ -45,7 +45,44 @@ class ManfeeDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd("Request diterima:", $request->all());
+
+        // Validasi tanpa 'category' dan 'status' karena akan di-set otomatis
+        $request->validate([
+            'contract_id' => 'required',
+            'period' => 'required',
+            'letter_subject' => 'required',
+        ]);
+
+
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        // Ambil nomor terakhir dari database
+        $lastDocument = ManfeeDocument::latest()->first();
+        $nextNumber = $lastDocument ? intval(substr($lastDocument->letter_number, 4, 3)) + 10 : 100;
+
+        // Generate nomor dokumen
+        $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+
+
+        $input = $request->all();
+        $input['letter_number'] = $letterNumber;
+        $input['invoice_number'] = $invoiceNumber;
+        $input['receipt_number'] = $receiptNumber;
+        $input['category'] = 'management_fee';
+        $input['status'] = $input['status'] ?? 0;
+        $input['created_by'] = auth()->id();
+
+        try {
+            ManfeeDocument::create($input);
+
+            return redirect()->route('management-fee.index')->with('success', 'Data berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

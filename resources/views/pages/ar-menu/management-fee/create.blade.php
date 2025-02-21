@@ -1,28 +1,25 @@
 <x-app-layout>
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-        <form action="{{ route('management-fee.create') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <!-- Dashboard actions -->
-            <div class="sm:flex sm:justify-between sm:items-center mb-8">
-                <!-- Left: Title -->
-                <div class="mb-4 sm:mb-0">
-                    <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Tambah Data Baru</h1>
-                </div>
 
-                <!-- Right: Actions -->
-                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'"
-                        class="float-right">
-                        Batal
-                    </x-secondary-button>
-
-                    <x-secondary-button onclick="window.location='submit'" class="float-right">
-                        Simpan
-                    </x-secondary-button>
-                </div>
+        <!-- Dashboard actions -->
+        <div class="sm:flex sm:justify-between sm:items-center mb-8">
+            <!-- Left: Title -->
+            <div class="mb-4 sm:mb-0">
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Tambah Data Baru</h1>
             </div>
-            <!-- Dashboard actions end -->
 
+            <!-- Right: Actions -->
+            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'" class="float-right">
+                    Batal
+                </x-secondary-button>
+
+
+            </div>
+        </div>
+        <!-- Dashboard actions end -->
+        <form action="{{ route('management-fee.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             {{-- Tambah Data Baru --}}
             <div class="mt-5 md:mt-0 md:col-span-2">
                 <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
@@ -47,14 +44,14 @@
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.letter_number" required
-                                autocomplete="letter_number" disabled value="{{ $letterNumber }}" />
+                                autocomplete="letter_number" readonly value="{{ $letterNumber }}" />
                             <x-input-error for="letter_number" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="invoice_number" value="{{ __('No Invoice') }}" />
                             <x-input id="invoice_number" name="invoice_number" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.invoice_number" required
-                                autocomplete="invoice_number" disabled value="{{ $invoiceNumber }}" />
+                                autocomplete="invoice_number" readonly value="{{ $invoiceNumber }}" />
                             <x-input-error for="invoice_number" class="mt-2" />
                         </div>
                         <div>
@@ -68,7 +65,7 @@
                             <x-label for="receipt_number" value="{{ __('No Kwitansi') }}" />
                             <x-input id="receipt_number" name="receipt_number" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.receipt_number" required
-                                autocomplete="receipt_number" disabled value="{{ $receiptNumber }}" />
+                                autocomplete="receipt_number" readonly value="{{ $receiptNumber }}" />
                             <x-input-error for="receipt_number" class="mt-2" />
                         </div>
                         <div class="sm:row-span-2">
@@ -81,20 +78,23 @@
                             <x-label for="employee_name" value="{{ __('Nama Pemberi Kerja') }}" />
                             <x-input id="employee_name" name="employee_name" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.employee_name" required
-                                autocomplete="employee_name" disabled />
+                                autocomplete="employee_name" readonly />
                             <x-input-error for="employee_name" class="mt-2" />
                         </div>
                         <div class="sm:row-start-5">
                             <x-label for="type" value="{{ __('Type') }}" />
                             <x-input id="type" name="type" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.type" required
-                                autocomplete="type" disabled />
+                                autocomplete="type" readonly />
                             <x-input-error for="type" class="mt-2" />
                         </div>
                     </div>
                 </div>
             </div>
             {{-- Tambah Data Baru End --}}
+            <div class="form-group">
+                <x-button type="submit">Simpan</x-button>
+            </div>
         </form>
     </div>
     <script>
