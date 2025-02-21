@@ -7,21 +7,12 @@
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Tambah Data Baru</h1>
             </div>
-
-            <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'" class="float-right">
-                    Batal
-                </x-secondary-button>
-
-
-            </div>
         </div>
         <!-- Dashboard actions end -->
         <form action="{{ route('management-fee.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             {{-- Tambah Data Baru --}}
-            <div class="mt-5 md:mt-0 md:col-span-2">
+            <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
                 <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
@@ -93,7 +84,13 @@
             </div>
             {{-- Tambah Data Baru End --}}
             <div class="form-group">
-                <x-button type="submit">Simpan</x-button>
+                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                    <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'"
+                        class="float-right">
+                        Batal
+                    </x-secondary-button>
+                    <x-button type="submit">Simpan</x-button>
+                </div>
             </div>
         </form>
     </div>
