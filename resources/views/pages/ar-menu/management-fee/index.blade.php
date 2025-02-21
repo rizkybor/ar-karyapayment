@@ -78,7 +78,8 @@
                                             <div class="text-center">{{ $manfeeDoc->contract->employee_name }}</div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $manfeeDoc->contract->value }}</div>
+                                            <div class="text-center">Rp
+                                                {{ number_format($manfeeDoc->contract->value, 0, ',', '.') }}</div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">{{ $manfeeDoc->period }}</div>
