@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contracts;
 use App\Models\ManfeeDocument;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,23 @@ class ManfeeDocumentController extends Controller
      */
     public function create()
     {
-        return view('pages/ar-menu/management-fee/create');
+        // $contracts = Contracts::all();
+        $contracts = Contracts::where('type', 'management_fee')->get();
+
+        // Ambil bulan dan tahun dalam format Romawi
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        // Generate nomor terakhir + 10
+        $lastDocument = ManfeeDocument::latest()->first();
+        $nextNumber = $lastDocument ? intval(substr($lastDocument->letter_number, 4, 3)) + 10 : 100;
+
+        // Format nomor surat
+        $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+
+        return view('pages/ar-menu/management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
 
     /**
@@ -61,5 +78,11 @@ class ManfeeDocumentController extends Controller
     public function destroy(ManfeeDocument $manfeeDocument)
     {
         //
+    }
+
+    private function convertToRoman($month)
+    {
+        $romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+        return $romans[$month - 1];
     }
 }
