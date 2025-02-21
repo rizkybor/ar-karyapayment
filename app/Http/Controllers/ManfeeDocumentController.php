@@ -13,7 +13,8 @@ class ManfeeDocumentController extends Controller
      */
     public function index()
     {
-        return view('pages/ar-menu/management-fee/index');
+        $manfeeDocs = ManfeeDocument::with('contract')->get();
+        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs'));
     }
 
     /**
@@ -27,15 +28,15 @@ class ManfeeDocumentController extends Controller
             ->get();
 
 
-        // Ambil bulan dan tahun dalam format Romawi
+        // Format Romaqi
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil nomor terbesar dari database dan tambahkan 10
+        // Nomer Terbesar + 10
         $lastNumber = ManfeeDocument::max('letter_number');
         $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
 
-        // Format nomor dokumen
+        // Format Nama
         $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -50,7 +51,6 @@ class ManfeeDocumentController extends Controller
     {
         // dd("Request diterima:", $request->all());
 
-        // Validasi tanpa 'category' dan 'status' karena akan di-set otomatis
         $request->validate([
             'contract_id' => 'required|exists:contracts,id',
             'period' => 'required',
@@ -67,11 +67,10 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil nomor terbesar dari database dan tambahkan 10
+
         $lastNumber = ManfeeDocument::max('letter_number');
         $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
 
-        // Generate nomor dokumen
         $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);

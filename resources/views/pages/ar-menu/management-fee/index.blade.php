@@ -43,16 +43,13 @@
                                         <div class="font-semibold text-left">No Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-left">Nama Pemberi Kerja</div>
+                                        <div class="font-semibold text-center">Nama Pemberi Kerja</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Total Nilai Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Jangka Waktu</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Status</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Termin Invoice</div>
@@ -68,43 +65,42 @@
                             </thead>
                             <!-- Table body -->
                             <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                <tr>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">1</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">KPU-999/999</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">###########</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">Rp. 999.999</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">2 Bulan</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">###########</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center"><x-button href="">
-                                                Detail Termin
-                                            </x-button></div>
-
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">###########</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center gap-2">
-                                            <x-secondary-button href="">Edit</x-secondary-button>
-                                            <x-danger-button href="">Delete</x-danger-button>
-                                        </div>
-                                    </td>
-
-                                </tr>
+                                @php $i = 1; @endphp
+                                @foreach ($manfeeDocs as $manfeeDoc)
+                                    <tr>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $i++ }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-left">{{ $manfeeDoc->contract->contract_number }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $manfeeDoc->contract->employee_name }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $manfeeDoc->contract->value }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $manfeeDoc->period }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">
+                                                <x-button href="">Detail Termin</x-button>
+                                            </div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">-</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center gap-2">
+                                                <x-secondary-button href="">Edit</x-secondary-button>
+                                                <x-danger-button href="">Delete</x-danger-button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
+
                         </table>
 
                     </div>
