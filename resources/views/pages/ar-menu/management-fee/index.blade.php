@@ -93,11 +93,18 @@
                                             <div class="text-center">-</div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center gap-2">
+                                            <div class="text-center flex items-center justify-center gap-2">
                                                 <x-secondary-button href="">Edit</x-secondary-button>
-                                                <x-danger-button href="">Delete</x-danger-button>
+                                                <form action="{{ route('management-fee.destroy', $manfeeDoc->id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <x-delete-button type="submit">Delete</x-delete-button>
+                                                </form>
                                             </div>
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>

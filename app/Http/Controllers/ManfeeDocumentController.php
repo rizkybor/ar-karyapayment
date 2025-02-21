@@ -120,10 +120,15 @@ class ManfeeDocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ManfeeDocument $manfeeDocument)
+    public function destroy($id)
     {
-        //
+
+        $manfeeDocument = ManfeeDocument::find($id);
+        $manfeeDocument->delete();
+
+        return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
     }
+
 
     private function convertToRoman($month)
     {
