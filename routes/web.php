@@ -5,6 +5,7 @@ use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ManfeeDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,10 +27,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/management-fee', [DashboardController::class, 'managementFee'])->name('managementFee');
     Route::get('/create-management-fee', [DashboardController::class, 'createManagementFee'])->name('createManagementFee');
     Route::get('/detail-management-fee', [DashboardController::class, 'detailManagementFee'])->name('detailManagementFee');
 
+    Route::resource('/management-fee', ManfeeDocumentController::class);
     Route::resource('/contracts', ContractsController::class);
 
 

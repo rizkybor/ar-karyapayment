@@ -14,7 +14,7 @@
 
             </div>
 
-            <x-button type="button" onclick="window.location='{{ route('createManagementFee') }}'">
+            <x-button type="button" onclick="window.location='{{ route('management-fee.create') }}'">
                 + Data Baru
             </x-button>
 
