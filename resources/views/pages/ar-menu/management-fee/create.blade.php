@@ -14,7 +14,7 @@
                     Batal
                 </x-secondary-button>
 
-                <x-secondary-button onclick="window.location='{{ route('detailManagementFee') }}'" class="float-right">
+                <x-secondary-button onclick="window.location=''" class="float-right">
                     Simpan
                 </x-secondary-button>
             </div>
