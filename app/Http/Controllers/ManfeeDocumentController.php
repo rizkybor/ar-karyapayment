@@ -31,14 +31,14 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Generate nomor terakhir + 10
-        $lastDocument = ManfeeDocument::latest()->first();
-        $nextNumber = $lastDocument ? intval(substr($lastDocument->letter_number, 4, 3)) + 10 : 100;
+        // Ambil nomor terbesar dari database dan tambahkan 10
+        $lastNumber = ManfeeDocument::max('letter_number');
+        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
 
-        // Format nomor surat
+        // Format nomor dokumen
         $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
-        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
@@ -67,14 +67,14 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil nomor terakhir dari database
-        $lastDocument = ManfeeDocument::where('contract_id', $request->contract_id)->latest()->first();
-        $nextNumber = $lastDocument ? intval(substr($lastDocument->letter_number, 4, 3)) + 10 : 100;
+        // Ambil nomor terbesar dari database dan tambahkan 10
+        $lastNumber = ManfeeDocument::max('letter_number');
+        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
 
         // Generate nomor dokumen
         $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
-        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber / 10, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
 
         $input = $request->all();
