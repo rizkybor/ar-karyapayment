@@ -22,7 +22,10 @@ class ManfeeDocumentController extends Controller
     public function create()
     {
         // $contracts = Contracts::all();
-        $contracts = Contracts::where('type', 'management_fee')->get();
+        $contracts = Contracts::where('type', 'management_fee')
+            ->whereDoesntHave('manfeeDocuments')
+            ->get();
+
 
         // Ambil bulan dan tahun dalam format Romawi
         $monthRoman = $this->convertToRoman(date('n'));
@@ -49,17 +52,23 @@ class ManfeeDocumentController extends Controller
 
         // Validasi tanpa 'category' dan 'status' karena akan di-set otomatis
         $request->validate([
-            'contract_id' => 'required',
+            'contract_id' => 'required|exists:contracts,id',
             'period' => 'required',
             'letter_subject' => 'required',
         ]);
+
+        // Cek apakah contract_id sudah memiliki dokumen management_fee
+        $existingDocument = ManfeeDocument::where('contract_id', $request->contract_id)->first();
+        if ($existingDocument) {
+            return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
+        }
 
 
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
         // Ambil nomor terakhir dari database
-        $lastDocument = ManfeeDocument::latest()->first();
+        $lastDocument = ManfeeDocument::where('contract_id', $request->contract_id)->latest()->first();
         $nextNumber = $lastDocument ? intval(substr($lastDocument->letter_number, 4, 3)) + 10 : 100;
 
         // Generate nomor dokumen
