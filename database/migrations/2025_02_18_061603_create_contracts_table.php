@@ -20,7 +20,6 @@ return new class extends Migration
             $table->date('end_date');
             $table->string('type', 50);
             $table->string('path', 255);
-            $table->string('bill_type', 50);
             $table->text('address');
             $table->string('work_unit', 255);
             $table->boolean('status')->nullable()->default(null);

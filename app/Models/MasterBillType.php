@@ -13,6 +13,12 @@ class MasterBillType extends Model
     protected $table = 'mst_bill_type';
 
     protected $fillable = [
+        'contract_id',
         'bill_type',
     ];
+
+    public function contract()
+    {
+        return $this->belongsTo(Contracts::class);
+    }
 }

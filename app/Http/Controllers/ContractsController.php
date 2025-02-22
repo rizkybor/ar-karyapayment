@@ -36,6 +36,7 @@ class ContractsController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
             'contract_number' => 'required',
             'employee_name' => 'required',
@@ -44,7 +45,7 @@ class ContractsController extends Controller
             'end_date' => 'required',
             'type' => 'required',
             'path' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'bill_type' => 'required',
+            'bill_type' => 'required|array', // Pastikan bill_type adalah array
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
@@ -52,11 +53,13 @@ class ContractsController extends Controller
 
         $input = $request->all();
 
+        // Format Tanggal
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
         $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
 
         $input['status'] = isset($request->status) ? (int) $request->status : null;
 
+        // Upload File
         if ($request->hasFile('path')) {
             $destinationPath = 'files/path/';
             $path = $request->file('path');
@@ -67,7 +70,16 @@ class ContractsController extends Controller
             return redirect()->back()->with('error', 'Gambar wajib diunggah!');
         }
 
-        Contracts::create($input);
+        // Simpan data kontrak ke database
+        $contract = Contracts::create($input);
+
+        // Simpan data bill_type ke tabel mst_bill_type
+        foreach ($request->bill_type as $billType) {
+            MasterBillType::create([
+                'contract_id' => $contract->id, // Gunakan ID kontrak yang baru dibuat
+                'bill_type' => $billType,
+            ]);
+        }
 
         return redirect()->route('contracts.index')->with('success', 'Data berhasil disimpan!');
     }

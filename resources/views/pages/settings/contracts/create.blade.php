@@ -98,13 +98,9 @@
 
                                 {{-- Input Container --}}
                                 <div id="input-container" class="space-y-4">
-                                    {{-- Input Field Pertama --}}
                                     <div class="input-group flex items-center gap-2">
-                                        {{-- Input Field --}}
-                                        <x-input type="text" name="inputs[]" class="mt-1 block w-full"
+                                        <x-input type="text" name="bill_type[]" class="mt-1 block w-full"
                                             placeholder="Masukkan teks" />
-
-                                        {{-- Tombol Plus (+) --}}
                                         <button type="button"
                                             class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
                                             <!-- Plus Icon -->
@@ -114,8 +110,6 @@
                                                     d="M12 4v16m8-8H4" />
                                             </svg>
                                         </button>
-
-                                        {{-- Tombol Minus (-) --}}
                                         <button type="button"
                                             class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300"
                                             disabled>
@@ -206,7 +200,7 @@
             newInput.classList.add('input-group', 'flex', 'items-center', 'gap-2');
             newInput.innerHTML = `
         {{-- Input Field Baru --}}
-        <x-input type="text" name="inputs[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
+        <x-input type="text" name="bill_type[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
 
         {{-- Tombol Plus (+) --}}
         <button type="button" class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">

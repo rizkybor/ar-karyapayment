@@ -19,7 +19,6 @@ class Contracts extends Model
         'end_date',
         'type',
         'path',
-        'bill_type',
         'address',
         'work_unit',
         'status',
@@ -28,5 +27,10 @@ class Contracts extends Model
     public function manfeeDocuments()
     {
         return $this->hasMany(ManfeeDocument::class, 'contract_id', 'id');
+    }
+
+    public function billTypes()
+    {
+        return $this->hasMany(MasterBillType::class, 'contract_id');
     }
 }

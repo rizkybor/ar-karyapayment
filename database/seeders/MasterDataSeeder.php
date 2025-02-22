@@ -21,10 +21,10 @@ class MasterDataSeeder extends Seeder
             ['type' => 'non_management_fee'],
         ]);
 
-        MasterBillType::insert([
-            ['bill_type' => 'gaji'],
-            ['bill_type' => 'sppd'],
-        ]);
+        // MasterBillType::insert([
+        //     ['bill_type' => 'gaji'],
+        //     ['bill_type' => 'sppd'],
+        // ]);
 
         MasterWorkUnit::insert([
             ['work_unit' => 'keuangan'],

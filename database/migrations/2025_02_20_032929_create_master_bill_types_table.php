@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('mst_bill_type', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
             $table->string('bill_type', 50);
             $table->timestamps();
         });
