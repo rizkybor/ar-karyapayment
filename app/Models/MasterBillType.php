@@ -19,6 +19,6 @@ class MasterBillType extends Model
 
     public function contract()
     {
-        return $this->belongsTo(Contracts::class);
+        return $this->belongsTo(Contracts::class, 'contract_id', 'id');
     }
 }

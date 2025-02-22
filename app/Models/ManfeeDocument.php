@@ -25,8 +25,15 @@ class ManfeeDocument extends Model
         'created_by',
     ];
 
+    // Relasi ke Contracts
     public function contract()
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
+    }
+
+    // Akses billType melalui contract
+    public function billTypes()
+    {
+        return $this->contract->billType();
     }
 }

@@ -24,13 +24,15 @@ class Contracts extends Model
         'status',
     ];
 
+    // one to many
     public function manfeeDocuments()
     {
         return $this->hasMany(ManfeeDocument::class, 'contract_id', 'id');
     }
 
+    // one to one
     public function billTypes()
     {
-        return $this->hasMany(MasterBillType::class, 'contract_id');
+        return $this->hasMany(MasterBillType::class, 'contract_id', 'id');
     }
 }
