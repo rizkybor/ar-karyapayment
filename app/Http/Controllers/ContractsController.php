@@ -25,10 +25,9 @@ class ContractsController extends Controller
      */
     public function create()
     {
-        $mstBillType = MasterBillType::all();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
-        return view('pages/settings/contracts/create', compact('mstType', 'mstBillType', 'mstWorkUnit'));
+        return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit'));
     }
 
     /**
@@ -76,7 +75,7 @@ class ContractsController extends Controller
         // Simpan data bill_type ke tabel mst_bill_type
         foreach ($request->bill_type as $billType) {
             MasterBillType::create([
-                'contract_id' => $contract->id, // Gunakan ID kontrak yang baru dibuat
+                'contract_id' => $contract->id,
                 'bill_type' => $billType,
             ]);
         }
@@ -89,7 +88,7 @@ class ContractsController extends Controller
      */
     public function show(Contracts $contract)
     {
-        $mstBillType = MasterBillType::all();
+        $mstBillType = MasterBillType::where('contract_id', $contract->id)->get();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
         return view('pages/settings/contracts/show', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
@@ -100,7 +99,7 @@ class ContractsController extends Controller
      */
     public function edit(Contracts $contract)
     {
-        $mstBillType = MasterBillType::all();
+        $mstBillType = MasterBillType::where('contract_id', $contract->id)->get();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
         return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
@@ -146,6 +145,16 @@ class ContractsController extends Controller
         }
 
         $contract->update($input);
+
+        // Hapus data bill_type lama
+        MasterBillType::where('contract_id', $contract->id)->delete();
+
+        foreach ($request->bill_type as $billType) {
+            MasterBillType::create([
+                'contract_id' => $contract->id,
+                'bill_type' => $billType,
+            ]);
+        }
 
         return redirect()->route('contracts.index')->with('success', 'Data berhasil diperbaharui!');
     }

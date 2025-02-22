@@ -28,7 +28,8 @@
                         <div><strong>Path Contract:</strong> <a href="{{ asset($contract->path) }}" class="text-blue-500"
                                 target="_blank">Lihat Dokumen</a></div>
                         <div><strong>Tipe Pembayaran:</strong>
-                            {{ ucwords(str_replace('_', ' ', $contract->bill_type)) }}</div>
+                            {{ $mstBillType->pluck('bill_type')->implode(', ') }}
+                        </div>
                         <div><strong>Alamat:</strong> {{ $contract->address }}</div>
                         <div><strong>Unit Kerja:</strong> {{ ucwords(str_replace('_', ' ', $contract->work_unit)) }}
                         </div>

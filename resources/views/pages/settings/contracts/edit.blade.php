@@ -6,7 +6,7 @@
                 <div class="px-4 sm:px-0">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit Kontrak</h3>
                     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        Edit informasi kontrak baru, termasuk detail pihak terkait, durasi, dan persyaratan khusus.
+                        Edit informasi kontrak, termasuk detail pihak terkait, durasi, dan persyaratan khusus.
                     </p>
                 </div>
             </div>
@@ -14,7 +14,6 @@
 
             {{-- Edit Data Baru --}}
             <div class="mt-5 md:mt-0 md:col-span-2">
-
                 <form action="{{ route('contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data">
                     @method('PUT')
                     @csrf
@@ -25,7 +24,7 @@
                                 <x-input id="contract_number"
                                     value="{{ old('contract_number', $contract->contract_number) }}" type="text"
                                     name="contract_number" class="mt-1 block w-full min-h-[40px]"
-                                    placeholder="Masukkan nomor kontrak" required maxlength="10" />
+                                    placeholder="Masukkan nomer kontrak" required maxlength="10" />
                                 <x-input-error for="contract_number" class="mt-2" />
                             </div>
 
@@ -43,9 +42,7 @@
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan Nilai Kontrak"
                                     value="Rp {{ number_format(old('value', $contract->value) ?? 0, 0, ',', '.') }}"
                                     oninput="formatRupiah(this)" onblur="removeFormat(this)" required />
-
                                 <x-input-error for="value" class="mt-2" />
-
                                 <!-- Input hidden untuk menyimpan angka tanpa format -->
                                 <input type="hidden" id="value_hidden" name="value"
                                     value="{{ old('value', $contract->value) ?? 0 }}">
@@ -86,28 +83,45 @@
                                 <x-label for="path" value="Path Contract" />
                                 <x-input id="path" type="file" name="path" class="mt-1 block w-full" />
                                 <p class="text-sm text-gray-500">{{ $contract->path }}</p>
-                                <!-- Tampilkan path lama -->
                                 <x-input-error for="path" class="mt-2" />
                             </div>
 
                             <div>
                                 <x-label for="bill_type" value="Tipe Pembayaran" />
-                                <select id="bill_type" name="bill_type" class="mt-1 block w-full form-select">
-                                    <option value="">Pilih Tipe Pembayaran</option>
-                                    @foreach ($mstBillType as $billType)
-                                        <option value="{{ $billType->bill_type }}"
-                                            {{ old('bill_type', $contract->bill_type) == $billType->bill_type ? 'selected' : '' }}>
-                                            {{ ucwords(str_replace('_', ' ', $billType->bill_type)) }}
-                                        </option>
+                                {{-- Input Container --}}
+                                <div id="input-container" class="space-y-4">
+                                    @foreach ($mstBillType as $index => $billType)
+                                        <div class="input-group flex items-center gap-2">
+                                            <x-input type="text" name="bill_type[]" class="mt-1 block w-full"
+                                                value="{{ $billType->bill_type }}" placeholder="Masukkan teks" />
+                                            <button type="button"
+                                                class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                                <!-- Plus Icon -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </button>
+                                            <button type="button"
+                                                class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                                <!-- Minus Icon -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M20 12H4" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     @endforeach
-                                </select>
+                                </div>
                             </div>
 
                             <div>
                                 <x-label for="address" value="Alamat" />
-                                <x-input id="address" value="{{ old('address', $contract->address) }}" type="text"
-                                    name="address" class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan alamat"
-                                    required />
+                                <x-input id="address" value="{{ old('address', $contract->address) }}"
+                                    type="text" name="address" class="mt-1 block w-full min-h-[40px]"
+                                    placeholder="Masukkan alamat" required />
                                 <x-input-error for="address" class="mt-2" />
                             </div>
 
@@ -133,24 +147,20 @@
                         <x-button type="submit">Simpan</x-button>
                     </div>
                 </form>
-
-
             </div>
             {{-- Edit Data Baru End --}}
         </div>
     </div>
-    {{-- JavaScript untuk format Rupiah --}}
+
+    {{-- JavaScript untuk format Rupiah dan input dinamis --}}
     <script>
+        // Format Rupiah
         function formatRupiah(input) {
             let value = input.value.replace(/\D/g, ""); // Hanya angka
-            if (value.length > 17) { // Maksimal 15 digit sebelum koma dan 2 desimal
-                value = value.substring(0, 17);
-            }
-
             let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp
             input.value = "Rp " + formatted;
 
-            // Set nilai ke input hidden (tanpa format Rupiah)
+            // Set nilai ke input hidden (tanpa format)
             document.getElementById("value_hidden").value = value;
         }
 
@@ -160,11 +170,55 @@
             }
         }
 
+        // Format Tanggal
         function setMinEndDate() {
             let startDate = document.getElementById("start_date").value;
             document.getElementById("end_date").setAttribute("min", startDate);
         }
+
+        // Input Tipe Pembayaran
+        // Fungsi untuk menambahkan form baru
+        function addNewInput() {
+            const container = document.getElementById('input-container');
+            const newInput = document.createElement('div');
+            newInput.classList.add('input-group', 'flex', 'items-center', 'gap-2');
+            newInput.innerHTML = `
+        {{-- Input Field Baru --}}
+        <x-input type="text" name="bill_type[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
+
+        {{-- Tombol Plus (+) --}}
+        <button type="button" class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Plus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+
+        {{-- Tombol Minus (-) --}}
+        <button type="button" class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Minus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+        </button>
+    `;
+            container.appendChild(newInput);
+
+            // Tambahkan event listener untuk tombol plus di form baru
+            newInput.querySelector('.add-input').addEventListener('click', addNewInput);
+        }
+
+        // Tambahkan event listener untuk tombol plus di form pertama
+        document.querySelector('.add-input').addEventListener('click', addNewInput);
+
+        // Hapus Input
+        document.getElementById('input-container').addEventListener('click', function(e) {
+            if (e.target.closest('.remove-input')) {
+                const inputGroups = document.querySelectorAll('.input-group');
+                if (inputGroups.length > 1) { // Pastikan minimal ada 1 input field
+                    e.target.closest('.input-group').remove();
+                }
+            }
+        });
     </script>
-
-
 </x-app-layout>
