@@ -96,16 +96,38 @@
                                 <!-- Label -->
                                 <x-label for="bill_type" value="{{ __('Tipe Pembayaran') }}" />
 
-                                <!-- Dropdown Select -->
-                                <select id="bill_type" name="bill_type" class="mt-1 block w-full form-select "
-                                    wire:model.live="state.bill_type">
-                                    <option value="">Pilih Tipe Kontrak</option>
-                                    @foreach ($mstBillType as $billType)
-                                        <option value="{{ $billType->bill_type }}">
-                                            {{ ucwords(str_replace('_', ' ', $billType->bill_type)) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                {{-- Input Container --}}
+                                <div id="input-container" class="space-y-4">
+                                    {{-- Input Field Pertama --}}
+                                    <div class="input-group flex items-center gap-2">
+                                        {{-- Input Field --}}
+                                        <x-input type="text" name="inputs[]" class="mt-1 block w-full"
+                                            placeholder="Masukkan teks" />
+
+                                        {{-- Tombol Plus (+) --}}
+                                        <button type="button"
+                                            class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                            <!-- Plus Icon -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4" />
+                                            </svg>
+                                        </button>
+
+                                        {{-- Tombol Minus (-) --}}
+                                        <button type="button"
+                                            class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300"
+                                            disabled>
+                                            <!-- Minus Icon -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 12H4" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
@@ -152,6 +174,7 @@
     </div>
     {{-- JavaScript untuk format Rupiah --}}
     <script>
+        // # Format Rupiah
         function formatRupiah(input) {
             let value = input.value.replace(/\D/g, ""); // Hanya angka
             let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp 50.000
@@ -167,10 +190,58 @@
             }
         }
 
+
+        // # Format Tanggal Dibatasin
         function setMinEndDate() {
             let startDate = document.getElementById("start_date").value;
             document.getElementById("end_date").setAttribute("min", startDate);
         }
+
+        // # Input Tipe Pembayaran
+
+        // Fungsi untuk menambahkan form baru
+        function addNewInput() {
+            const container = document.getElementById('input-container');
+            const newInput = document.createElement('div');
+            newInput.classList.add('input-group', 'flex', 'items-center', 'gap-2');
+            newInput.innerHTML = `
+        {{-- Input Field Baru --}}
+        <x-input type="text" name="inputs[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
+
+        {{-- Tombol Plus (+) --}}
+        <button type="button" class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Plus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+
+        {{-- Tombol Minus (-) --}}
+        <button type="button" class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Minus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+        </button>
+    `;
+            container.appendChild(newInput);
+
+            // Tambahkan event listener untuk tombol plus di form baru
+            newInput.querySelector('.add-input').addEventListener('click', addNewInput);
+        }
+
+        // Tambahkan event listener untuk tombol plus di form pertama
+        document.querySelector('.add-input').addEventListener('click', addNewInput);
+
+        // Hapus Input
+        document.getElementById('input-container').addEventListener('click', function(e) {
+            if (e.target.closest('.remove-input')) {
+                const inputGroups = document.querySelectorAll('.input-group');
+                if (inputGroups.length > 1) { // Pastikan minimal ada 1 input field
+                    e.target.closest('.input-group').remove();
+                }
+            }
+        });
     </script>
 
 

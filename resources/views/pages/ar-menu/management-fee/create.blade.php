@@ -25,7 +25,7 @@
                                 <option value="">Pilih Kontrak</option>
                                 @foreach ($contracts as $contract)
                                     <option value="{{ $contract->id }}" data-employee="{{ $contract->employee_name }}"
-                                        data-type="{{ $contract->type }}">
+                                        data-type="{{ $contract->bill_type }}">
                                         {{ $contract->contract_number }}
                                     </option>
                                 @endforeach
@@ -72,8 +72,9 @@
                                 autocomplete="employee_name" readonly />
                             <x-input-error for="employee_name" class="mt-2" />
                         </div>
+                        {{-- Tipe Pembayaran --}}
                         <div class="sm:row-start-5">
-                            <x-label for="type" value="{{ __('Type') }}" />
+                            <x-label for="type" value="{{ __('Type Pembayaran') }}" />
                             <x-input id="type" name="type" placeholder="Auto" type="text"
                                 class="mt-1 block w-full min-h-[40px]" wire:model.live="state.type" required
                                 autocomplete="type" readonly />
