@@ -3,8 +3,8 @@
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 
   <!-- Box Status -->
-<div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-md rounded-lg p-5">
-    <div class="grid grid-cols-1 gap-4">
+<div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
+    <div class="grid grid-cols-2 gap-4">
         {{-- Status Transaksi --}}
         <div>
             {{-- <x-label for="transaction_status" value="{{ __('Status Transaksi') }}" class="text-gray-800 dark:text-gray-100" />
@@ -41,6 +41,18 @@
             @endif --}}
             <x-label for="document_status" value="{{ __('Status Dokumen') }}" class="text-gray-800 dark:text-gray-100" />
             <x-label-status :status="$document_status" />
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="grid grid-cols-1 gap-4">
+        {{-- Jenis --}}
+        <div>
+            <x-label for="transaction_status" value="{{ __('Jenis') }}" class="text-gray-800 dark:text-gray-100" />
+            <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                Management Non Fee
+            </p>
         </div>
     </div>
 </div>
