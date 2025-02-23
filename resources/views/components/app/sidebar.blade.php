@@ -94,16 +94,16 @@
                             <ul class="pl-8 mt-1 @if (!in_array(Request::segment(1), ['job'])) {{ 'hidden' }} @endif"
                                 :class="open ? '!block' : 'hidden'">
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('job-listing')) {{ '!text-violet-500' }} @endif"
-                                        href="{{ route('management-fee.index') }}">
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('job-listing')) {{ '!text-violet-500' }} @endif"
+                                        href="{{ route('management-fee*') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Management
                                             Fee</span>
                                     </a>
                                 </li>
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('job-post')) {{ '!text-violet-500' }} @endif"
-                                        href="{{ route('management-non-fee.index') }}">
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('job-post')) {{ '!text-violet-500' }} @endif"
+                                        href="{{ route('management-non-fee*') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Management
                                             Non Fee</span>
@@ -116,20 +116,20 @@
                     <!-- Invoice (Billing) -->
                     <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                     bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                    @if (Route::is('management-fee.index') || Route::is('management-non-fee.index')) 
+                    @if (Request::is('management-fee*') || Request::is('management-non-fee*')) 
                         from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] 
                     @endif"
-                    x-data="{ open: {{ Route::is('management-fee.index') || Route::is('management-non-fee.index') ? 1 : 0 }} }"
+                    x-data="{ open: {{ Request::is('management-fee*') || Request::is('management-non-fee*') ? 1 : 0 }} }"
                     >
                     <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                        @if (!Route::is('management-fee.index') && !Route::is('management-non-fee.index')) 
+                        @if (!Request::is('management-fee*') && !Request::is('management-non-fee*')) 
                             hover:text-gray-900 dark:hover:text-white 
                         @endif" 
                         href="#0" @click.prevent="open = !open; sidebarExpanded = true">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <svg class="shrink-0 fill-current 
-                                    @if (Route::is('management-fee.index') || Route::is('management-non-fee.index')) 
+                                    @if (Request::is('management-fee*') || Request::is('management-non-fee*')) 
                                         text-violet-500 
                                     @else 
                                         text-gray-400 dark:text-gray-500 
@@ -154,13 +154,13 @@
                     </a>
                     <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                         <ul class="pl-8 mt-1 
-                            @if (!Route::is('management-fee.index') && !Route::is('management-non-fee.index')) 
+                            @if (!Request::is('management-fee*') && !Request::is('management-non-fee*')) 
                                 hidden 
                             @endif" 
                             :class="open ? '!block' : 'hidden'">
                             <li class="mb-1 last:mb-0">
                                 <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                    @if (Route::is('management-fee.index')) !text-violet-500 @endif" 
+                                    @if (Request::is('management-fee*')) !text-violet-500 @endif" 
                                     href="{{ route('management-fee.index') }}">
                                     <span class="text-sm font-medium 
                                         lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -170,7 +170,7 @@
                             </li>
                             <li class="mb-1 last:mb-0">
                                 <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                    @if (Route::is('management-non-fee.index')) !text-violet-500 @endif" 
+                                    @if (Request::is('management-non-fee*')) !text-violet-500 @endif" 
                                     href="{{ route('management-non-fee.index') }}">
                                     <span class="text-sm font-medium 
                                         lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -213,14 +213,14 @@
                             <ul class="pl-8 mt-1 @if (!in_array(Request::segment(1), ['settings'])) {{ 'hidden' }} @endif"
                                 :class="open ? '!block' : 'hidden'">
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('account')) {{ '!text-violet-500' }} @endif"
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('account')) {{ '!text-violet-500' }} @endif"
                                         href="{{ route('contracts.index') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Contracts</span>
                                     </a>
                                 </li>
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('account')) {{ '!text-violet-500' }} @endif"
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('account')) {{ '!text-violet-500' }} @endif"
                                         href="">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">My
@@ -228,7 +228,7 @@
                                     </a>
                                 </li>
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('notifications')) {{ '!text-violet-500' }} @endif"
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('notifications')) {{ '!text-violet-500' }} @endif"
                                         href="">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">My
