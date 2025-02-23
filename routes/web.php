@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManfeeDocumentController;
+use App\Http\Controllers\NonManfeeDocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::resource('/management-fee', ManfeeDocumentController::class);
     Route::resource('/contracts', ContractsController::class);
+
+
+    Route::resource('/management-non-fee', NonManfeeDocumentController::class);
+    Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])
+    ->name('management-non-fee.show');
 
 
     Route::fallback(function () {

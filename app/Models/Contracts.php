@@ -30,6 +30,11 @@ class Contracts extends Model
         return $this->hasMany(ManfeeDocument::class, 'contract_id', 'id');
     }
 
+    public function nonManfeeDocuments()
+    {
+        return $this->hasMany(NonManfeeDocument::class, 'contract_id', 'id');
+    }
+
     // one to one
     public function billTypes()
     {
