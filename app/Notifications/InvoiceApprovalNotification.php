@@ -5,7 +5,6 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 
 class InvoiceApprovalNotification extends Notification
@@ -27,7 +26,7 @@ class InvoiceApprovalNotification extends Notification
     }
 
     /**
-     * Determine which notification channels to use.
+     * Tentukan channel notifikasi.
      */
     public function via($notifiable)
     {
@@ -35,7 +34,7 @@ class InvoiceApprovalNotification extends Notification
     }
 
     /**
-     * Get the array representation of the notification.
+     * Simpan data notifikasi dalam database.
      */
     public function toDatabase($notifiable)
     {
@@ -44,7 +43,7 @@ class InvoiceApprovalNotification extends Notification
             'invoice_number' => $this->document->invoice_number,
             'action' => $this->action,
             'message' => "Invoice #{$this->document->invoice_number} membutuhkan persetujuan dari {$this->role}.",
-            'url' => route('notifications.show', $this->document->id),
+            'url' => route('management-non-fee.show', $this->document->id),
         ];
     }
 }

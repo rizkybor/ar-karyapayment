@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\NotificationRecipient;
+use App\Models\Notification;
 
 class NotificationController extends Controller
 {
@@ -12,31 +14,36 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        $userId = Auth::id();
 
-        // Ambil notifikasi yang belum dibaca terlebih dahulu
-        $unreadNotifications = $user->unreadNotifications()->latest()->get();
-        $readNotifications = $user->readNotifications()->latest()->limit(10)->get(); // Batasi notifikasi lama
+        // Ambil semua notifikasi berdasarkan tabel pivot `notification_recipients`
+        $notifications = NotificationRecipient::where('user_id', $userId)
+            ->with('notification') // Pastikan relasi dengan tabel notifications
+            ->orderBy('created_at', 'asc')
+            ->paginate(30); // Pagination untuk setiap 30 notifikasi
 
-        return view('pages/notifications/index', compact('unreadNotifications', 'readNotifications'));
+        return view('pages/notifications/index', compact('notifications'));
     }
 
     /**
      * Menampilkan detail notifikasi dan menandainya sebagai telah dibaca.
      */
-    public function show($id)
+    public function show($notification_id)
     {
-        $user = Auth::user();
+        $userId = Auth::id();
 
-        // Ambil notifikasi tertentu
-        $notification = $user->notifications()->where('id', $id)->firstOrFail();
+        // Cari notifikasi berdasarkan tabel pivot `notification_recipients`
+        $notificationRecipient = NotificationRecipient::where('user_id', $userId)
+            ->where('notification_id', $notification_id)
+            ->with('notification')
+            ->firstOrFail();
 
-        // Tandai sebagai telah dibaca jika belum dibaca
-        if ($notification->unread()) {
-            $notification->markAsRead();
+        // Tandai sebagai telah dibaca
+        if (!$notificationRecipient->read_at) {
+            $notificationRecipient->update(['read_at' => now()]);
         }
 
-        return view('notifications.show', compact('notification'));
+        return view('pages/notifications/show', ['notification' => $notificationRecipient->notification]);
     }
 
     /**
@@ -44,8 +51,12 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        $user = Auth::user();
-        $user->unreadNotifications->markAsRead();
+        $userId = Auth::id();
+
+        // Tandai semua notifikasi user sebagai telah dibaca
+        NotificationRecipient::where('user_id', $userId)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
 
         return back()->with('success', 'Semua notifikasi telah ditandai sebagai dibaca.');
     }
@@ -53,12 +64,14 @@ class NotificationController extends Controller
     /**
      * Menghapus satu notifikasi.
      */
-    public function destroy($id)
+    public function destroy($notification_id)
     {
-        $user = Auth::user();
+        $userId = Auth::id();
 
-        // Cari dan hapus notifikasi
-        $user->notifications()->where('id', $id)->delete();
+        // Hapus notifikasi dari tabel `notification_recipients`
+        NotificationRecipient::where('user_id', $userId)
+            ->where('notification_id', $notification_id)
+            ->delete();
 
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     }
@@ -68,8 +81,10 @@ class NotificationController extends Controller
      */
     public function clearAll()
     {
-        $user = Auth::user();
-        $user->notifications()->delete();
+        $userId = Auth::id();
+
+        // Hapus semua notifikasi dari tabel `notification_recipients`
+        NotificationRecipient::where('user_id', $userId)->delete();
 
         return back()->with('success', 'Semua notifikasi berhasil dihapus.');
     }

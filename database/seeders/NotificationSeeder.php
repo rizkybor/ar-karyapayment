@@ -4,70 +4,46 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\Notification;
 
 class NotificationSeeder extends Seeder
 {
-    /**
-     * Jalankan seeder database.
-     */
     public function run(): void
     {
-        // Ambil ID user pertama (sesuaikan jika perlu)
-        $userId = DB::table('users')->first()->id ?? 1;
+        // Matikan sementara foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Notifikasi dummy untuk user tersebut
-        $notifications = [
-            [
+        // Hapus semua data pada tabel recipients sebelum menghapus notifications
+        DB::table('notification_recipients')->delete();
+        DB::table('notifications')->delete();
+
+        // Hidupkan kembali foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // Buat notifikasi dummy
+        $notifications = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $notifications[] = [
                 'id' => Str::uuid(),
                 'type' => 'App\Notifications\InvoiceApprovalNotification',
                 'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => $userId,
+                'notifiable_id' => 1, // Pastikan ada user dengan ID 1
                 'data' => json_encode([
-                    'message' => 'Invoice #001 telah disetujui oleh Manager Keuangan.',
-                    'document_id' => 1,
+                    'message' => "Invoice #00$i telah disetujui.",
+                    'document_id' => $i,
                     'status' => 'approved'
                 ]),
-                'read_at' => null,
-                'created_at' => Carbon::now()->subMinutes(10),
-                'updated_at' => Carbon::now()->subMinutes(10),
-            ],
-            [
-                'id' => Str::uuid(),
-                'type' => 'App\Notifications\InvoiceApprovalNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => $userId,
-                'data' => json_encode([
-                    'message' => 'Invoice #002 menunggu persetujuan dari Anda.',
-                    'document_id' => 2,
-                    'status' => 'pending'
-                ]),
-                'read_at' => null,
-                'created_at' => Carbon::now()->subMinutes(5),
-                'updated_at' => Carbon::now()->subMinutes(5),
-            ],
-            [
-                'id' => Str::uuid(),
-                'type' => 'App\Notifications\InvoiceApprovalNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => $userId,
-                'data' => json_encode([
-                    'message' => 'Invoice #003 telah direvisi oleh Kepala Divisi.',
-                    'document_id' => 3,
-                    'status' => 'revised'
-                ]),
-                'read_at' => Carbon::now()->subMinutes(1),
-                'created_at' => Carbon::now()->subMinutes(20),
-                'updated_at' => Carbon::now()->subMinutes(20),
-            ],
-        ];
+                'read_at' => $i <= 8 ? Carbon::now() : null, // 4 terbaru belum dibaca
+                'created_at' => Carbon::now()->subMinutes(5 * $i),
+                'updated_at' => Carbon::now()->subMinutes(5 * $i),
+            ];
+        }
 
-        // Masukkan data ke dalam tabel notifications
-        DB::table('notifications')->insert($notifications);
+        // Masukkan ke database
+        Notification::insert($notifications);
 
-        // Output ke terminal
-        $this->command->info('Notification seeder berhasil dijalankan!');
+        $this->command->info('Seeder NotificationSeeder berhasil dijalankan!');
     }
 }
