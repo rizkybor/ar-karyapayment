@@ -11,6 +11,8 @@ class DashboardController extends Controller
     {
         $dataFeed = new DataFeed();
 
+        // dd(auth()->user()->getRoleNames());
+
         return view('pages/dashboard/dashboard', compact('dataFeed'));
     }
 
