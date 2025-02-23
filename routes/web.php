@@ -36,6 +36,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('/management-non-fee', NonManfeeDocumentController::class);
     Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])
     ->name('management-non-fee.show');
+    Route::get('/management-non-fee/edit/{id}', [NonManfeeDocumentController::class, 'edit'])
+    ->name('management-non-fee.edit');
+   
+
+    // Route untuk Lampiran (Attachments)
+    Route::get('/management-non-fee/{id}/attachments', [NonManfeeDocumentController::class, 'attachments'])
+    ->name('attachments.index'); // Menampilkan daftar lampiran
+    Route::get('/management-non-fee/attachments/view/{id}', [NonManfeeDocumentController::class, 'viewAttachment'])
+    ->name('attachments.view'); // Melihat file lampiran
+    Route::delete('/management-non-fee/attachments/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])
+    ->name('attachments.destroy'); // Menghapus lampiran
 
 
     Route::fallback(function () {
