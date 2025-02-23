@@ -16,6 +16,7 @@ class ManfeeDocument extends Model
         'invoice_number',
         'receipt_number',
         'letter_number',
+        'manfee_bill',
         'period',
         'letter_subject',
         'category',
@@ -30,10 +31,4 @@ class ManfeeDocument extends Model
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
     }
-
-    // Akses billType melalui contract
-    // public function billTypes()
-    // {
-    //     return $this->contract->billType();
-    // }
 }
