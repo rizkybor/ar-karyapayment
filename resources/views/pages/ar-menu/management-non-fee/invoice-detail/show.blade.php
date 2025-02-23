@@ -40,14 +40,14 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                     <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
                         Batal
                     </x-secondary-button>
                     <x-button type="submit">Simpan</x-button>
                 </div>
-            </div>
+            </div> --}}
         </form>
     </div>
     <script>
