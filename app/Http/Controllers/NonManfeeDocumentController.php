@@ -123,15 +123,50 @@ class NonManfeeDocumentController extends Controller
             'created_at' => now()->format('d M Y H:i'),
         ];
 
-        return view('pages/ar-menu/management-non-fee/show', compact('document'));
+        // Data Dummy Lampiran
+        $attachments = [
+            (object) ['id' => 1, 'name' => 'BAP'],
+            (object) ['id' => 2, 'name' => 'Invoice'],
+            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
+        ];
+
+        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('document', 'attachments'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(NonManfeeDocument $NonManfeeDocument)
+    public function edit($id)
     {
-        //
+        // $document = NonManfeeDocument::findOrFail($id);
+
+        $document = [
+            'id' => $id,
+            'letter_number' => 'No. 001/KEU/KPU/SOL/I/2025',
+            'invoice_number' => 'No. 001/KW/KPU/SOL/I/2025',
+            'receipt_number' => 'No. 001/INV/KPU/SOL/I/2025',
+            'contract_id' => 123,
+            'period' => 'Januari 2025',
+            'letter_subject' => 'Tagihan Jasa Konsultasi',
+            'bill_type' => 'Non-Manfee',
+            'status' => 'Pending',
+            'created_by' => 'Admin',
+            'created_at' => now()->format('d M Y H:i'),
+        ];
+
+         // Data Dummy Lampiran
+         $attachments = [
+            (object) ['id' => 1, 'name' => 'BAP'],
+            (object) ['id' => 2, 'name' => 'Invoice'],
+            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
+        ];
+
+        // Data Dummy Lampiran
+        $files_faktur = [
+            (object) ['id' => 1, 'name' => 'File Faktur Pajak'],
+        ];
+
+        return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact('document', 'attachments', 'files_faktur'));
     }
 
     /**
@@ -152,6 +187,28 @@ class NonManfeeDocumentController extends Controller
         $NonManfeeDocument->delete();
 
         return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
+    }
+
+    public function attachments($id)
+    {
+        // Simulasi pengambilan data lampiran terkait dokumen tertentu
+        $attachments = [
+            (object) ['id' => 1, 'name' => 'BAP'],
+            (object) ['id' => 2, 'name' => 'Invoice'],
+            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
+        ];
+
+        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('attachments'));
+    }
+
+    public function viewAttachment($id)
+    {
+        return response()->json(['message' => "Melihat Lampiran dengan ID: $id"]);
+    }
+
+    public function destroyAttachment($id)
+    {
+        return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
     }
 
 
