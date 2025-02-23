@@ -1,4 +1,4 @@
-@props(['transaction_status' => 'Active', 'document_status' => '', 'isEditable' => false])
+@props(['transaction_status' => 'Active', 'document_status' => '', 'isEditable' => false, 'isShowPage' => false])
 
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 
@@ -46,6 +46,7 @@
 </div>
 
     <!-- Tombol Action (Sejajar dengan Card di Desktop, di Atas Card di Mobile) -->
+    @if ($isShowPage)
     <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
         <x-button-action color="blue" icon="print">Print</x-button-action>
         <x-button-action color="teal" icon="paid">
@@ -57,5 +58,7 @@
         <x-button-action color="green" icon="approve">Approve</x-button-action>
         <x-button-action color="green" icon="process">Process</x-button-action>
     </div>
+    @endif
+
 
 </div>
