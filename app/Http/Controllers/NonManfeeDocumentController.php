@@ -119,6 +119,7 @@ class NonManfeeDocumentController extends Controller
             'letter_subject' => 'Tagihan Jasa Konsultasi',
             'bill_type' => 'Non-Manfee',
             'status' => 'Pending',
+            'is_active' => 'True',
             'created_by' => 'Admin',
             'created_at' => now()->format('d M Y H:i'),
         ];
@@ -149,7 +150,8 @@ class NonManfeeDocumentController extends Controller
             'period' => 'Januari 2025',
             'letter_subject' => 'Tagihan Jasa Konsultasi',
             'bill_type' => 'Non-Manfee',
-            'status' => 'Pending',
+            'status' => 'Draft',
+            'is_active' => 'True',
             'created_by' => 'Admin',
             'created_at' => now()->format('d M Y H:i'),
         ];

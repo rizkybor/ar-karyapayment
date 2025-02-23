@@ -24,7 +24,7 @@
             </div> --}}
             {{-- for VIEW --}}
             {{-- <x-management-non-fee.header :status="$document['status']" :keterangan="$document['letter_subject']" /> --}}
-            <x-management-non-fee.header :status="$document['status']" :keterangan="$document['letter_subject']" isEditable="true" />
+            <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" isEditable="true" />
 
             {{-- AKUMULASI BIAYA --}}
             <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
