@@ -32,8 +32,8 @@ class ManfeeDocument extends Model
     }
 
     // Akses billType melalui contract
-    public function billTypes()
-    {
-        return $this->contract->billType();
-    }
+    // public function billTypes()
+    // {
+    //     return $this->contract->billType();
+    // }
 }
