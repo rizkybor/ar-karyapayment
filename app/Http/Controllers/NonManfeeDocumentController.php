@@ -6,9 +6,12 @@ use App\Models\Contracts;
 use App\Models\NonManfeeDocument;
 use App\Models\MasterBillType;
 use App\Models\User;
-use App\Models\ArDocument; // Model dokumen
+use App\Models\ArDocument;
+use App\Models\Notification;
+use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class NonManfeeDocumentController extends Controller
 {
@@ -121,23 +124,47 @@ class NonManfeeDocumentController extends Controller
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact('document', 'attachments', 'files_faktur'));
     }
 
-    /**
-     * Fungsi untuk menyetujui invoice dan mengirimkan notifikasi.
+   /**
+     * Menyetujui invoice dan mengirimkan notifikasi ke role berikutnya.
      */
     public function approveInvoice($document_id)
     {
         $document = ArDocument::findOrFail($document_id);
         
-        // Simulasi mendapatkan role berikutnya dalam flowchart
+        // Ambil role berikutnya dalam flowchart
         $nextRole = $this->getNextApprovalRole($document);
 
         if ($nextRole) {
             // Ambil semua user dengan role berikutnya
             $users = User::where('role', $nextRole)->get();
 
-            // Kirim notifikasi ke semua user yang memiliki role tersebut
-            foreach ($users as $user) {
-                $user->notify(new InvoiceApprovalNotification($document, 'approved', $nextRole));
+            if ($users->count() > 0) {
+                // Simpan notifikasi ke dalam tabel notifications
+                $notification = Notification::create([
+                    'id' => Str::uuid(),
+                    'type' => InvoiceApprovalNotification::class,
+                    'data' => json_encode([
+                        'document_id' => $document->id,
+                        'invoice_number' => $document->invoice_number,
+                        'action' => 'approved',
+                        'message' => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
+                        'url' => route('management-non-fee.show', $document->id),
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // Simpan setiap user yang menerima notifikasi ke tabel pivot
+                foreach ($users as $user) {
+                    NotificationRecipient::create([
+                        'id' => Str::uuid(),
+                        'notification_id' => $notification->id,
+                        'recipient_id' => $user->id,
+                        'read_at' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         }
 
