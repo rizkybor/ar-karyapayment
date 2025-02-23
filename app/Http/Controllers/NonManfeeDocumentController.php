@@ -118,19 +118,25 @@ class NonManfeeDocumentController extends Controller
             'period' => 'Januari 2025',
             'letter_subject' => 'Tagihan Jasa Konsultasi',
             'bill_type' => 'Non-Manfee',
-            'status' => 'Pending',
+            'status' => 'Draft',
+            'is_active' => 'True',
             'created_by' => 'Admin',
             'created_at' => now()->format('d M Y H:i'),
         ];
 
-        // Data Dummy Lampiran
-        $attachments = [
+         // Data Dummy Lampiran
+         $attachments = [
             (object) ['id' => 1, 'name' => 'BAP'],
             (object) ['id' => 2, 'name' => 'Invoice'],
             (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
         ];
 
-        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('document', 'attachments'));
+        // Data Dummy Lampiran
+        $files_faktur = [
+            (object) ['id' => 1, 'name' => 'File Faktur Pajak'],
+        ];
+
+        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('document', 'attachments', 'files_faktur'));
     }
 
     /**
@@ -149,7 +155,8 @@ class NonManfeeDocumentController extends Controller
             'period' => 'Januari 2025',
             'letter_subject' => 'Tagihan Jasa Konsultasi',
             'bill_type' => 'Non-Manfee',
-            'status' => 'Pending',
+            'status' => 'Draft',
+            'is_active' => 'True',
             'created_by' => 'Admin',
             'created_at' => now()->format('d M Y H:i'),
         ];

@@ -2,7 +2,7 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Detail Invoice (Non Fee)</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Detail Invoice #{{ $document['id'] }}</h1>
             </div>
         </div>
         <form action="{{ route('management-non-fee.store') }}" method="POST" enctype="multipart/form-data">
@@ -24,7 +24,7 @@
             </div> --}}
             {{-- for VIEW --}}
             {{-- <x-management-non-fee.header :status="$document['status']" :keterangan="$document['letter_subject']" /> --}}
-            <x-management-non-fee.header :status="$document['status']" :keterangan="$document['letter_subject']" isEditable="true" />
+            <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" isEditable="true" />
 
             {{-- AKUMULASI BIAYA --}}
             <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
@@ -80,7 +80,7 @@
                     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         Lampiran
                     </h5>
-                    <x-button type="button" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <x-button type="button" class="bg-violet-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
                         Tambah Lampiran +
                     </x-button>
                 </div>
@@ -118,8 +118,9 @@
                                             </td>
                                             <td class="p-2 whitespace-nowrap">
                                                 <div class="text-center flex items-center justify-center gap-2">
-                                                    <x-button
-                                                        href="{{ route('attachments.view', $attachment->id) }}">View</x-button>
+                                                    <x-button-action color="purple" icon="eye" href="{{ route('attachments.view', $attachment->id) }}">
+                                                        View
+                                                    </x-button-action>
                                                     <form action="{{ route('attachments.destroy', $attachment->id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus lampiran ini?');">
@@ -161,7 +162,7 @@
                     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         Faktur Pajak
                     </h5>
-                    <x-button type="button" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <x-button type="button" class="bg-violet-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
                         Tambah Faktur Pajak +
                     </x-button>
                 </div>
@@ -199,8 +200,10 @@
                                             </td>
                                             <td class="p-2 whitespace-nowrap">
                                                 <div class="text-center flex items-center justify-center gap-2">
-                                                    <x-button
-                                                        href="{{ route('attachments.view', $file->id) }}">View</x-button>
+                                                  
+                                                        <x-button-action color="purple" icon="eye"  href="{{ route('attachments.view', $file->id) }}">
+                                                            View
+                                                        </x-button-action>
                                                     <form action="{{ route('attachments.destroy', $file->id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus lampiran ini?');">
@@ -224,7 +227,7 @@
                     <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
                         Batal
                     </x-secondary-button>
-                    <x-button type="submit">Simpan</x-button>
+                    <x-button-action color="blue" type="submit">Simpan</x-button-action>
                 </div>
             </div>
         </form>
