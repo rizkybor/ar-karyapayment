@@ -31,14 +31,30 @@
 
                     <!-- Middle: Dropdown jumlah per halaman -->
                     <div class="flex items-center gap-2">
-                        <label for="perPage" class="text-sm text-gray-600 dark:text-gray-400">Show:</label>
-                        <select id="perPage"
-                            class="form-select border-gray-300 dark:border-gray-700 text-sm px-2 py-1 rounded"
-                            onchange="changePerPage()">
-                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                            <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100</option>
-                        </select>
+                        <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Show:
+                        </label>
+                        <div class="relative">
+                            <select id="perPage"
+                                class="appearance-none border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                text-sm text-gray-700 dark:text-gray-200 font-medium 
+                                px-3 pr-8 py-2 h-9 rounded-lg shadow-sm focus:ring focus:ring-blue-300 
+                                dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                onchange="changePerPage()">
+                                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                                <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100
+                                </option>
+                            </select>
+                            <!-- Icon Chevron -->
+                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -142,9 +158,21 @@
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    <div class="mt-4">
-                        {{ $NonManfeeDocs->appends(['per_page' => request('per_page', 10)])->links() }}
+                    <!-- Pagination di bawah table -->
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <!-- Menampilkan informasi jumlah data -->
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing <span class="font-medium">{{ $NonManfeeDocs->firstItem() }}</span> to
+                            <span class="font-medium">
+                                {{ min($NonManfeeDocs->firstItem() + request('per_page', 10) - 1, request('per_page', 10)) }}
+                            </span> of
+                            <span class="font-medium">{{ $NonManfeeDocs->total() }}</span> documents
+                        </p>
+
+                        <!-- Pagination links -->
+                        <div class="py-2">
+                            {{ $NonManfeeDocs->appends(['per_page' => request('per_page', 10)])->links() }}
+                        </div>
                     </div>
 
                 </div>
@@ -164,21 +192,21 @@
             checkboxes.forEach(checkbox => checkbox.checked = this.checked);
         });
 
-        document.getElementById("exportSelected").addEventListener("click", function () {
-        let selected = [];
-        document.querySelectorAll(".rowCheckbox:checked").forEach(checkbox => {
-            selected.push(checkbox.value);
+        document.getElementById("exportSelected").addEventListener("click", function() {
+            let selected = [];
+            document.querySelectorAll(".rowCheckbox:checked").forEach(checkbox => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length === 0) {
+                alert("Pilih minimal satu data untuk diexport!");
+                return;
+            }
+
+            // Menggunakan window.open agar browser mengunduh file
+            let url = `{{ route('management-non-fee.export') }}?ids=` + encodeURIComponent(selected.join(","));
+            window.open(url, '_blank');
         });
-
-        if (selected.length === 0) {
-            alert("Pilih minimal satu data untuk diexport!");
-            return;
-        }
-
-        // Menggunakan window.open agar browser mengunduh file
-        let url = `{{ route('management-non-fee.export') }}?ids=` + encodeURIComponent(selected.join(","));
-        window.open(url, '_blank');
-    });
     </script>
 
 </x-app-layout>
