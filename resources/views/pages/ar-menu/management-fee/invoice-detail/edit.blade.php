@@ -143,16 +143,66 @@
 
             {{-- DESKRIPSI --}}
             <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-                <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                    Despkripsi
-                </h5>
-                <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-                    <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                        <div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
-                            <div>
-                                <x-input id="dpp_pekerjaan" name="dpp_pekerjaan" type="text" class="w-full mt-1"
-                                    placeholder="Free Text" />
-                            </div>
+                <div class="flex justify-between items-center mb-3">
+                    <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        Deskripsi
+                    </h5>
+                    <x-button type="button" class="bg-violet-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                        Tambah Deskripsi +
+                    </x-button>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                    <div class="p-3">
+                        <!-- Table -->
+                        <div class="overflow-x-auto">
+                            <table class="table-auto w-full">
+                                <!-- Table header -->
+                                <thead
+                                    class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
+                                    <tr>
+                                        <th class="p-2 whitespace-nowrap">
+                                            <div class="font-semibold text-center">No</div>
+                                        </th>
+                                        <th class="p-2 whitespace-nowrap">
+                                            <div class="font-semibold text-left">Nama File</div>
+                                        </th>
+                                        <th class="p-2 whitespace-nowrap">
+                                            <div class="font-semibold text-center">Action</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <!-- Table body -->
+                                <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
+                                    @php $i = 1; @endphp
+                                    {{-- @foreach ($files_faktur as $file)
+                                        <tr>
+                                            <td class="p-2 whitespace-nowrap">
+                                                <div class="text-center">{{ $i++ }}</div>
+                                            </td>
+                                            <td class="p-2 whitespace-nowrap">
+                                                <div class="text-left">{{ $file->name }}</div>
+                                            </td>
+                                            <td class="p-2 whitespace-nowrap">
+                                                <div class="text-center flex items-center justify-center gap-2">
+
+                                                    <x-button-action color="purple" icon="eye"
+                                                        href="{{ route('attachments.view', $file->id) }}">
+                                                        View
+                                                    </x-button-action>
+                                                    <form action="{{ route('attachments.destroy', $file->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus lampiran ini?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <x-delete-button type="submit">Delete</x-delete-button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach --}}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

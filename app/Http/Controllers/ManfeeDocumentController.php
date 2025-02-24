@@ -88,9 +88,9 @@ class ManfeeDocumentController extends Controller
         $input['created_by'] = auth()->id();
 
         try {
-            ManfeeDocument::create($input);
+            $manfeeDoc = ManfeeDocument::create($input);
 
-            return redirect()->route('management-fee.index')->with('success', 'Data berhasil disimpan!');
+            return redirect()->route('management-fee.edit',  $manfeeDoc)->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             // dd($e);
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
