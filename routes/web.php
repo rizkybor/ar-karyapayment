@@ -55,10 +55,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/management-non-fee/attachments/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])
         ->name('attachments.destroy'); // Menghapus lampiran
 
-    // ✅ Pastikan resource tidak menangani `show`
+    // ✅ resource tidak menangani `show`
     Route::resource('/management-non-fee', NonManfeeDocumentController::class)->except(['show']);
 
-    // ✅ Buat route show secara eksplisit untuk mencegah bentrok
+    // ✅ route show eksplisit untuk mencegah bentrok
     Route::get('/management-non-fee/{id}', [NonManfeeDocumentController::class, 'show'])
         ->name('management-non-fee.show');
 
