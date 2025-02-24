@@ -9,7 +9,7 @@
 
         {{-- Header --}}
         {{-- <x-management-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" isShowPage="true" /> --}}
-        <x-management-fee.header :transaction_status="null" :document_status="$document_status" :category="$category" isShowPage="true" />
+        <x-management-fee.header :transaction_status="null" :document_status="null" :category="$category" isShowPage="true" />
 
 
         {{-- Akumulasi Biaya --}}

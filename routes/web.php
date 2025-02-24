@@ -42,6 +42,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('/management-fee', ManfeeDocumentController::class);
     Route::get('/management-fee/show/{id}', [ManfeeDocumentController::class, 'show'])
         ->name('management-fee.show');
+    Route::get('/management-fee/edit/{id}', [ManfeeDocumentController::class, 'edit'])
+        ->name('management-fee.edit');
 
     Route::resource('/management-non-fee', NonManfeeDocumentController::class);
     Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])

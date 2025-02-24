@@ -96,7 +96,9 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-secondary-button href="">Edit</x-secondary-button>
+                                                <a href="{{ route('management-fee.edit', $manfeeDoc->id) }}">
+                                                    <x-edit-button>Edit</x-edit-button>
+                                                </a>
                                                 <form action="{{ route('management-fee.destroy', $manfeeDoc->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
