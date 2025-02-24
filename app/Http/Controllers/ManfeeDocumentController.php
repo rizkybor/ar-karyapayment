@@ -58,7 +58,7 @@ class ManfeeDocumentController extends Controller
             'contract_id' => 'required|exists:contracts,id',
             'period' => 'required',
             'letter_subject' => 'required',
-            'bill_type' => 'required|exists:mst_bill_type,bill_type',
+            'manfee_bill' => 'required',
         ]);
 
         // Cek apakah contract_id sudah memiliki dokumen management_fee
@@ -79,19 +79,20 @@ class ManfeeDocumentController extends Controller
         $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
 
-        $input = $request->all();
+        $input = $request->only(['contract_id', 'period', 'letter_subject', 'manfee_bill']);
         $input['letter_number'] = $letterNumber;
         $input['invoice_number'] = $invoiceNumber;
         $input['receipt_number'] = $receiptNumber;
         $input['category'] = 'management_fee';
-        $input['status'] = $input['status'] ?? 0;
+        $input['status'] = $request->status ?? 0;
         $input['created_by'] = auth()->id();
 
         try {
-            ManfeeDocument::create($input);
+            $manfeeDoc = ManfeeDocument::create($input);
 
-            return redirect()->route('management-fee.index')->with('success', 'Data berhasil disimpan!');
+            return redirect()->route('management-fee.edit',  $manfeeDoc)->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
+            // dd($e);
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -99,17 +100,24 @@ class ManfeeDocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ManfeeDocument $manfeeDocument)
+    public function show($id)
     {
-        //
+        $manfeeDoc = ManfeeDocument::findOrFail($id);
+        $category = $manfeeDoc->category;
+        $document_status = $manfeeDoc->status;
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'category', 'document_status'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ManfeeDocument $manfeeDocument)
+    public function edit($id)
     {
-        //
+        $manfeeDoc = ManfeeDocument::findOrFail($id);
+        $category = $manfeeDoc->category;
+        $document_status = $manfeeDoc->status;
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'category', 'document_status'));
     }
 
     /**

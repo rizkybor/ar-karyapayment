@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('invoice_number', 255);
             $table->string('receipt_number', 255);
             $table->string('letter_number', 255);
+            $table->string('manfee_bill', 255);
             $table->string('period', 255);
             $table->string('letter_subject', 255);
             $table->string('category', 255);

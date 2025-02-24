@@ -3,22 +3,16 @@
 
         <!-- Dashboard actions -->
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
-
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">AR - Management Fee</h1>
             </div>
-
             <!-- Right: Actions -->
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-
             </div>
-
             <x-button type="button" onclick="window.location='{{ route('management-fee.create') }}'">
                 + Data Baru
             </x-button>
-
-
         </div>
 
         <!-- Cards -->
@@ -86,7 +80,9 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                <x-button href="">Detail Termin</x-button>
+                                                <a href="{{ route('management-fee.show', $manfeeDoc->id) }}">
+                                                    <x-button>Details Termin</x-button>
+                                                </a>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
@@ -94,7 +90,9 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-secondary-button href="">Edit</x-secondary-button>
+                                                <a href="{{ route('management-fee.edit', $manfeeDoc->id) }}">
+                                                    <x-edit-button>Edit</x-edit-button>
+                                                </a>
                                                 <form action="{{ route('management-fee.destroy', $manfeeDoc->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">

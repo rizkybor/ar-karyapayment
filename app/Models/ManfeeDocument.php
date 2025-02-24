@@ -17,6 +17,7 @@ class ManfeeDocument extends Model
         'invoice_number',
         'receipt_number',
         'letter_number',
+        'manfee_bill',
         'period',
         'letter_subject',
         'category',

@@ -61,9 +61,9 @@
                         </div>
                         <div class="sm:row-start-5">
                             <x-label for="bill_type" value="{{ __('Type Tagihan') }}" />
-                            <select id="bill_type" name="bill_type" class="mt-1 block w-full form-select" required>
+                            <select id="bill_type" name="manfee_bill" class="mt-1 block w-full form-select" required>
                                 <option value="">Pilih Type Tagihan</option>
-                                <!-- Opsi bill_type akan diisi oleh JavaScript -->
+                                <!-- Opsi akan diisi oleh JS -->
                             </select>
                             <x-input-error for="type" class="mt-2" />
                         </div>
@@ -95,13 +95,10 @@
 
             billTypes.forEach(billType => {
                 let option = document.createElement("option");
-                option.value = billType;
-                option.text = billType;
+                option.value = billType; // Mengisi value dengan bill_type
+                option.textContent = billType;
                 billTypeSelect.appendChild(option);
             });
-
-            // Debug: Tampilkan billTypes di console
-            console.log("Bill Types:", billTypes);
         }
     </script>
 </x-app-layout>
