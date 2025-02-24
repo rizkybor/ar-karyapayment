@@ -3,7 +3,16 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
-                    #{{ $document['invoice_number'] }}</h1>
+                    #{{ $document['invoice_number'] }}
+                </h1>
+            </div>
+            {{-- Tombol Kembali --}}
+            <div class="form-group">
+                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
+                        Kembali
+                    </x-secondary-button>
+                </div>
             </div>
         </div>
 
@@ -161,15 +170,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {{-- Tombol Kembali --}}
-        <div class="form-group">
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
-                    Kembali
-                </x-secondary-button>
             </div>
         </div>
     </div>

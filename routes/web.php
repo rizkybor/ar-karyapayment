@@ -52,6 +52,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     ->name('attachments.index'); // Menampilkan daftar lampiran
     Route::get('/management-non-fee/attachments/view/{id}', [NonManfeeDocumentController::class, 'viewAttachment'])
     ->name('attachments.view'); // Melihat file lampiran
+    Route::get('/management-non-fee/attachments/edit/{id}', [NonManfeeDocumentController::class, 'editAttachment'])
+    ->name('attachments.edit');
     Route::delete('/management-non-fee/attachments/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])
     ->name('attachments.destroy'); // Menghapus lampiran
 

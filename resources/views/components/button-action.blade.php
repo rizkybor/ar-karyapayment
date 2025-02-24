@@ -11,7 +11,6 @@
         'gray' => 'bg-gray-500 hover:bg-gray-600 focus:ring-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800 dark:focus:ring-gray-900',
         'purple' => 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-300 dark:bg-purple-700 dark:hover:bg-purple-800 dark:focus:ring-purple-900',
         'violet' => 'bg-violet-500 hover:bg-violet-600 focus:ring-violet-300 dark:bg-violet-700 dark:hover:bg-violet-800 dark:focus:ring-violet-900',
-
     ];
 
     $colorClass = $colors[$color] ?? $colors['gray'];
@@ -23,6 +22,8 @@
         'info' => '<path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h1m0 4h-1m0 0h-1m1-8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>',
         'reject' => '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>',
         'approve' => '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>',
+        'pencil' => '<path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L6 20l-4 1 1-4 13.5-13.5z"/>', 
+        'trash' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m-5 4v6m4-6v6m-8-6v6m-3 4h14a2 2 0 002-2V6H3v10a2 2 0 002 2z"/>',
     ];
 
     $iconSvg = isset($icons[$icon]) ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' . $icons[$icon] . '</svg>' : '';
@@ -30,7 +31,7 @@
 
 <button {{ $attributes->merge([
     'type' => 'button',
-    'class' => "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg text-white $colorClass focus:outline-none focus:ring-2 whitespace-nowrap"
+    'class' => "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-white $colorClass focus:outline-none focus:ring-2 whitespace-nowrap"
 ]) }}>
     {!! $iconSvg !!}
     {{ $slot }}

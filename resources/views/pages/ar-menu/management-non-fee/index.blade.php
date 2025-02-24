@@ -6,7 +6,8 @@
 
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Invoice (Billing) - Management Non Fee</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Invoice (Billing) -
+                    Management Non Fee</h1>
             </div>
 
             <!-- Right: Actions -->
@@ -14,9 +15,10 @@
 
             </div>
 
-            <x-button type="button" onclick="window.location='{{ route('management-non-fee.create') }}'">
+            <x-button-action color="violet" type="button"
+                onclick="window.location='{{ route('management-non-fee.create') }}'">
                 + Data Baru
-            </x-button>
+            </x-button-action>
 
 
         </div>
@@ -86,7 +88,8 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                <x-button-action color="violet" onclick="window.location.href='{{ route('management-non-fee.show', $NonManfeeDoc->id) }}'">
+                                                <x-button-action color="violet"
+                                                    onclick="window.location.href='{{ route('management-non-fee.show', $NonManfeeDoc->id) }}'">
                                                     Detail Termin
                                                 </x-button-action>
                                             </div>
@@ -96,15 +99,20 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="yellow" onclick="window.location.href='{{ route('management-non-fee.edit', $NonManfeeDoc->id) }}'">
-                                                    Edit
+                                                <!-- Tombol Edit dengan Icon Pencil -->
+                                                <x-button-action color="yellow" icon="pencil"
+                                                    onclick="window.location.href='{{ route('management-non-fee.edit', $NonManfeeDoc->id) }}'">
                                                 </x-button-action>
-                                                <form action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
+
+                                                <!-- Tombol Delete dengan Icon Trash -->
+                                                <form
+                                                    action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <x-delete-button type="submit">Delete</x-delete-button>
+                                                    <x-button-action color="red" icon="trash" type="submit">
+                                                    </x-button-action>
                                                 </form>
                                             </div>
                                         </td>

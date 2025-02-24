@@ -4,6 +4,14 @@
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Detail Invoice #{{ $document['id'] }}</h1>
             </div>
+            <div class="form-group">
+                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
+                        Batal
+                    </x-secondary-button>
+                    <x-button-action color="violet" type="submit">Simpan Detail Invoice</x-button-action>
+                </div>
+            </div>
         </div>
         <form action="{{ route('management-non-fee.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -80,9 +88,9 @@
                     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         Lampiran
                     </h5>
-                    <x-button type="button" class="bg-violet-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <x-button-action color="violet" type="button" class="border border-violet-500 text-violet-500 bg-violet-300 hover:bg-violet-500 hover:text-white px-4 py-2 rounded-lg transition duration-200">
                         Tambah Lampiran +
-                    </x-button>
+                    </x-button-action>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
@@ -101,7 +109,7 @@
                                             <div class="font-semibold text-left">Nama File</div>
                                         </th>
                                         <th class="p-2 whitespace-nowrap">
-                                            <div class="font-semibold text-center">Action</div>
+                                            <div class="font-semibold text-right">Action</div>
                                         </th>
                                     </tr>
                                 </thead>
@@ -116,17 +124,17 @@
                                             <td class="p-2 whitespace-nowrap">
                                                 <div class="text-left">{{ $attachment->name }}</div>
                                             </td>
-                                            <td class="p-2 whitespace-nowrap">
-                                                <div class="text-center flex items-center justify-center gap-2">
-                                                    <x-button-action color="purple" icon="eye" href="{{ route('attachments.view', $attachment->id) }}">
-                                                        View
+                                            <td class="p-2 whitespace-nowrap text-right">
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <x-button-action color="yellow" icon="pencil" href="{{ route('attachments.edit', $attachment->id) }}">
+                                                        Edit
                                                     </x-button-action>
                                                     <form action="{{ route('attachments.destroy', $attachment->id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus lampiran ini?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <x-delete-button type="submit">Delete</x-delete-button>
+                                                        <x-delete-button type="submit">Hapus</x-delete-button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -162,9 +170,9 @@
                     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                         Faktur Pajak
                     </h5>
-                    <x-button type="button" class="bg-violet-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <x-button-action color="violet" type="button" class="border border-violet-500 text-violet-500 bg-violet-300 hover:bg-violet-500 hover:text-white px-4 py-2 rounded-lg transition duration-200">
                         Tambah Faktur Pajak +
-                    </x-button>
+                    </x-button-action>
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
@@ -183,7 +191,7 @@
                                             <div class="font-semibold text-left">Nama File</div>
                                         </th>
                                         <th class="p-2 whitespace-nowrap">
-                                            <div class="font-semibold text-center">Action</div>
+                                            <div class="font-semibold text-right">Action</div>
                                         </th>
                                     </tr>
                                 </thead>
@@ -199,17 +207,16 @@
                                                 <div class="text-left">{{ $file->name }}</div>
                                             </td>
                                             <td class="p-2 whitespace-nowrap">
-                                                <div class="text-center flex items-center justify-center gap-2">
-                                                  
-                                                        <x-button-action color="purple" icon="eye"  href="{{ route('attachments.view', $file->id) }}">
-                                                            View
-                                                        </x-button-action>
+                                                <div class="flex items-center justify-end gap-2">
+                                                    <x-button-action color="yellow" icon="pencil" href="{{ route('attachments.edit', $file->id) }}">
+                                                        Edit
+                                                    </x-button-action>
                                                     <form action="{{ route('attachments.destroy', $file->id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus lampiran ini?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <x-delete-button type="submit">Delete</x-delete-button>
+                                                        <x-delete-button type="submit">Hapus</x-delete-button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -219,15 +226,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
-                        Batal
-                    </x-secondary-button>
-                    <x-button-action color="blue" type="submit">Simpan</x-button-action>
                 </div>
             </div>
         </form>
