@@ -11,16 +11,25 @@ use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Exports\NonManfeeDocumentExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class NonManfeeDocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $NonManfeeDocs = NonManfeeDocument::with('contract')->get();
-        return view('pages/ar-menu/management-non-fee/index', compact('NonManfeeDocs'));
+        // $NonManfeeDocs = NonManfeeDocument::with('contract')->get();
+        // return view('pages/ar-menu/management-non-fee/index', compact('NonManfeeDocs'));
+        // Ambil jumlah per halaman dari query string (default: 10)
+        $perPage = $request->input('per_page', 10);
+
+        // Ambil data dengan pagination
+        $NonManfeeDocs = NonManfeeDocument::with('contract')->paginate($perPage);
+
+        return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
     }
 
     /**
@@ -301,5 +310,16 @@ class NonManfeeDocumentController extends Controller
         } else {
             return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
         }
+    }
+
+    public function export(Request $request)
+    {
+        $ids = $request->query('ids');
+
+        if (!$ids) {
+            return back()->with('error', 'Tidak ada data yang dipilih untuk diexport.');
+        }
+    
+        return Excel::download(new NonManfeeDocumentExport($ids), 'non_manfee_documents.xlsx');
     }
 }
