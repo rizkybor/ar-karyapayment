@@ -86,7 +86,9 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                <x-button href="">Detail Termin</x-button>
+                                                <a href="{{ route('management-fee.show', $manfeeDoc->id) }}">
+                                                    <x-button>Details Termin</x-button>
+                                                </a>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
