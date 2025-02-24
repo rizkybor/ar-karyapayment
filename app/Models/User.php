@@ -68,4 +68,14 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function document()
+    {
+        return $this->morphTo();
+    }
 }

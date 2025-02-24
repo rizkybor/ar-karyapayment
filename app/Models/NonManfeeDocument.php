@@ -36,4 +36,14 @@ class NonManfeeDocument extends Model
     {
         return $this->contract->billType();
     }
+
+    public function approvals()
+    {
+        return $this->morphMany(DocumentApproval::class, 'document');
+    }
+
+    public function latestApproval()
+    {
+        return $this->morphOne(DocumentApproval::class, 'document')->latestOfMany();
+    }
 }
