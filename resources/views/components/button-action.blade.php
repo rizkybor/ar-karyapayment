@@ -9,7 +9,8 @@
         'red' => 'bg-red-500 hover:bg-red-600 focus:ring-red-300 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-red-900',
         'green' => 'bg-green-500 hover:bg-green-600 focus:ring-green-300 dark:bg-green-700 dark:hover:bg-green-800 dark:focus:ring-green-900',
         'gray' => 'bg-gray-500 hover:bg-gray-600 focus:ring-gray-300 dark:bg-gray-700 dark:hover:bg-gray-800 dark:focus:ring-gray-900',
-        'purple' => 'bg-violet-500 hover:bg-violet-600 focus:ring-purple-300 dark:bg-violet-700 dark:hover:bg-violet-800 dark:focus:ring-purple-900', // Tambahkan warna purple
+        'purple' => 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-300 dark:bg-purple-700 dark:hover:bg-purple-800 dark:focus:ring-purple-900',
+        'violet' => 'bg-violet-500 hover:bg-violet-600 focus:ring-violet-300 dark:bg-violet-700 dark:hover:bg-violet-800 dark:focus:ring-violet-900',
 
     ];
 
