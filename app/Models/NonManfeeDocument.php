@@ -31,9 +31,13 @@ class NonManfeeDocument extends Model
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
     }
 
-    // Akses billType melalui contract
-    public function billTypes()
+    public function approvals()
     {
-        return $this->contract->billType();
+        return $this->morphMany(DocumentApproval::class, 'document');
+    }
+
+    public function latestApproval()
+    {
+        return $this->morphOne(DocumentApproval::class, 'document')->latestOfMany();
     }
 }

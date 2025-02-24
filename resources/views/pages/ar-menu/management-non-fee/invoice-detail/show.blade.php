@@ -2,12 +2,22 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice #{{ $document['id'] }}</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
+                    #{{ $document['invoice_number'] }}
+                </h1>
+            </div>
+            {{-- Tombol Kembali --}}
+            <div class="form-group">
+                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
+                        Kembali
+                    </x-secondary-button>
+                </div>
             </div>
         </div>
 
         {{-- Header --}}
-        <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']"    isShowPage="true" />
+        <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" isShowPage="true" />
 
         {{-- AKUMULASI BIAYA --}}
         <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
@@ -61,22 +71,34 @@
                 <div class="p-3">
                     <div class="overflow-x-auto">
                         <table class="table-auto w-full">
-                            <thead class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
+                            <thead
+                                class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                 <tr>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-center">No</div></th>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-left">Nama File</div></th>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-center">Action</div></th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">No</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-left">Nama File</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Action</div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                                 @php $i = 1; @endphp
                                 @foreach ($attachments as $attachment)
                                     <tr>
-                                        <td class="p-2 whitespace-nowrap"><div class="text-center">{{ $i++ }}</div></td>
-                                        <td class="p-2 whitespace-nowrap"><div class="text-left">{{ $attachment->name }}</div></td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $i++ }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-left">{{ $attachment->name }}</div>
+                                        </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="purple" icon="eye" href="{{ route('attachments.view', $attachment->id) }}">
+                                                <x-button-action color="violet" icon="eye"
+                                                    href="{{ route('attachments.view', $attachment->id) }}">
                                                     View
                                                 </x-button-action>
                                             </div>
@@ -110,22 +132,34 @@
                 <div class="p-3">
                     <div class="overflow-x-auto">
                         <table class="table-auto w-full">
-                            <thead class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
+                            <thead
+                                class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                 <tr>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-center">No</div></th>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-left">Nama File</div></th>
-                                    <th class="p-2 whitespace-nowrap"><div class="font-semibold text-center">Action</div></th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">No</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-left">Nama File</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Action</div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                                 @php $i = 1; @endphp
                                 @foreach ($files_faktur as $file)
                                     <tr>
-                                        <td class="p-2 whitespace-nowrap"><div class="text-center">{{ $i++ }}</div></td>
-                                        <td class="p-2 whitespace-nowrap"><div class="text-left">{{ $file->name }}</div></td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-center">{{ $i++ }}</div>
+                                        </td>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <div class="text-left">{{ $file->name }}</div>
+                                        </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="purple" icon="eye" href="{{ route('attachments.view', $file->id) }}">
+                                                <x-button-action color="violet" icon="eye"
+                                                    href="{{ route('attachments.view', $file->id) }}">
                                                     View
                                                 </x-button-action>
                                             </div>
@@ -136,15 +170,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {{-- Tombol Kembali --}}
-        <div class="form-group">
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
-                    Kembali
-                </x-secondary-button>
             </div>
         </div>
     </div>
