@@ -98,9 +98,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="violet" icon="eye"
-                                                    href="{{ route('attachments.view', $attachment->id) }}">
-                                                    View
-                                                </x-button-action>
+                                                href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
+                                                View
+                                            </x-button-action>
                                             </div>
                                         </td>
                                     </tr>
@@ -159,9 +159,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="violet" icon="eye"
-                                                    href="{{ route('attachments.view', $file->id) }}">
-                                                    View
-                                                </x-button-action>
+                                                href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
+                                                View
+                                            </x-button-action>
                                             </div>
                                         </td>
                                     </tr>
