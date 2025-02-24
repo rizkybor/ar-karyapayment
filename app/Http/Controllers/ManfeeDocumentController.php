@@ -112,9 +112,12 @@ class ManfeeDocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ManfeeDocument $manfeeDocument)
+    public function edit($id)
     {
-        //
+        $manfeeDoc = ManfeeDocument::findOrFail($id);
+        $category = $manfeeDoc->category;
+        $document_status = $manfeeDoc->status;
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'category', 'document_status'));
     }
 
     /**
