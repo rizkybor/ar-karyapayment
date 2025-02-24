@@ -86,7 +86,9 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                <x-button href="">Detail Termin</x-button>
+                                                <x-button-action color="violet" onclick="window.location.href='{{ route('management-non-fee.show', $NonManfeeDoc->id) }}'">
+                                                    Detail Termin
+                                                </x-button-action>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
@@ -94,8 +96,10 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-secondary-button href="">Edit</x-secondary-button>
-                                                <form action="{{ route('management-fee.destroy', $NonManfeeDoc->id) }}"
+                                                <x-button-action color="yellow" onclick="window.location.href='{{ route('management-non-fee.edit', $NonManfeeDoc->id) }}'">
+                                                    Edit
+                                                </x-button-action>
+                                                <form action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                                     @csrf

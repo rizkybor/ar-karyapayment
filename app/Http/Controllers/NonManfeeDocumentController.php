@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contracts;
-use App\Models\DocumentApproval;
-use App\Models\NonManfeeDocument;
 use App\Models\User;
+use App\Models\Contracts;
+use App\Models\NonManfeeDocument;
+use App\Models\DocumentApproval;
 use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
@@ -28,12 +28,9 @@ class NonManfeeDocumentController extends Controller
      */
     public function create()
     {
-        $contracts = Contracts::where('type', 'management_non_fee')
+        $contracts = Contracts::where('type', 'non_management_fee')
             ->whereDoesntHave('nonManfeeDocuments')
-            ->with('billTypes')
             ->get();
-
-            dd($contracts);
 
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
@@ -84,6 +81,7 @@ class NonManfeeDocumentController extends Controller
         $input['receipt_number'] = $receiptNumber;
         $input['category'] = 'management_non_fee';
         $input['status'] = $input['status'] ?? 0;
+        $input['is_active'] = true;
         $input['created_by'] = auth()->id();
     
         try {
@@ -244,7 +242,7 @@ class NonManfeeDocumentController extends Controller
         $NonManfeeDocument = NonManfeeDocument::find($id);
         $NonManfeeDocument->delete();
 
-        return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
     public function attachments($id)
