@@ -100,9 +100,10 @@ class ManfeeDocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ManfeeDocument $manfeeDocument)
+    public function show($id)
     {
-        //
+        $manfeeDocument = ManfeeDocument::findOrFail($id);
+        return view('pages/ar-menu/management-fee/invoice-detail/show', compact('manfeeDocument'));
     }
 
     /**

@@ -37,13 +37,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('/management-fee', ManfeeDocumentController::class);
     Route::resource('/contracts', ContractsController::class);
 
+    Route::resource('/management-fee', ManfeeDocumentController::class);
+    Route::get('/management-fee/show/{id}', [ManfeeDocumentController::class, 'show'])
+        ->name('management-fee.show');
 
-    // MANAGEMENT NON FEE
-    Route::get('/management-non-fee/export/data', [NonManfeeDocumentController::class, 'export'])
-        ->name('management-non-fee.export');
+    Route::resource('/management-non-fee', NonManfeeDocumentController::class);
+    Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])
+        ->name('management-non-fee.show');
+    Route::get('/management-non-fee/edit/{id}', [NonManfeeDocumentController::class, 'edit'])
+        ->name('management-non-fee.edit');
+
 
     // Route untuk Lampiran (Attachments)
     Route::get('/management-non-fee/{id}/attachments', [NonManfeeDocumentController::class, 'attachments'])
