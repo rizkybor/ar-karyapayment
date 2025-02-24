@@ -41,13 +41,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('/contracts', ContractsController::class);
 
 
+    // MANAGEMENT NON FEE
     Route::resource('/management-non-fee', NonManfeeDocumentController::class);
     Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])
     ->name('management-non-fee.show');
     Route::get('/management-non-fee/edit/{id}', [NonManfeeDocumentController::class, 'edit'])
-    ->name('management-non-fee.edit');
-   
-
+    ->name('management-non-fee.edit');   
     // Route untuk Lampiran (Attachments)
     Route::get('/management-non-fee/{id}/attachments', [NonManfeeDocumentController::class, 'attachments'])
     ->name('attachments.index'); // Menampilkan daftar lampiran
