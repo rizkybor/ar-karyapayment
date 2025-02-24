@@ -45,30 +45,35 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/management-fee/edit/{id}', [ManfeeDocumentController::class, 'edit'])
         ->name('management-fee.edit');
 
-    Route::resource('/management-non-fee', NonManfeeDocumentController::class);
-    Route::get('/management-non-fee/show/{id}', [NonManfeeDocumentController::class, 'show'])
-        ->name('management-non-fee.show');
-    Route::get('/management-non-fee/edit/{id}', [NonManfeeDocumentController::class, 'edit'])
-        ->name('management-non-fee.edit');
+    // ROUTE MANAGEMENT NON FEE
+    Route::prefix('management-non-fee')->name('management-non-fee.')->group(function () {
 
+        // Export Data
+        Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
 
-    // Route untuk Lampiran (Attachments)
-    Route::get('/management-non-fee/{id}/attachments', [NonManfeeDocumentController::class, 'attachments'])
-        ->name('attachments.index'); // Menampilkan daftar lampiran
-    Route::get('/management-non-fee/attachments/view/{id}', [NonManfeeDocumentController::class, 'viewAttachment'])
-        ->name('attachments.view'); // Melihat file lampiran
-    Route::get('/management-non-fee/attachments/edit/{id}', [NonManfeeDocumentController::class, 'editAttachment'])
-        ->name('attachments.edit');
-    Route::delete('/management-non-fee/attachments/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])
-        ->name('attachments.destroy'); // Menghapus lampiran
+        // Create
+        Route::get('/create', [NonManfeeDocumentController::class, 'create'])->name('create');
+        Route::post('/store', [NonManfeeDocumentController::class, 'store'])->name('store');
 
-    // ✅ resource tidak menangani `show`
-    Route::resource('/management-non-fee', NonManfeeDocumentController::class)->except(['show']);
+        // Read
+        Route::get('/', [NonManfeeDocumentController::class, 'index'])->name('index');
+        Route::get('/show/{id}', [NonManfeeDocumentController::class, 'show'])->name('show');
 
-    // ✅ route show eksplisit untuk mencegah bentrok
-    Route::get('/management-non-fee/{id}', [NonManfeeDocumentController::class, 'show'])
-        ->name('management-non-fee.show');
+        // Update
+        Route::get('/edit/{id}', [NonManfeeDocumentController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [NonManfeeDocumentController::class, 'update'])->name('update');
 
+        // Delete
+        Route::delete('/destroy/{id}', [NonManfeeDocumentController::class, 'destroy'])->name('destroy');
+
+        // Route untuk Lampiran (Attachments)
+        Route::prefix('attachments')->name('attachments.')->group(function () {
+            Route::get('/{id}', [NonManfeeDocumentController::class, 'attachments'])->name('index'); // Menampilkan daftar lampiran
+            Route::get('/view/{id}', [NonManfeeDocumentController::class, 'viewAttachment'])->name('view'); // Melihat file lampiran
+            Route::get('/edit/{id}', [NonManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
+            Route::delete('/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
+        });
+    });
 
     Route::fallback(function () {
         return view('pages/utility/404');

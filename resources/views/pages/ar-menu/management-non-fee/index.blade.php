@@ -127,9 +127,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
                                                 <x-button-action color="violet"
-                                                    onclick="window.location.href='{{ route('management-non-fee.show', $NonManfeeDoc->id) }}'">
-                                                    Detail Termin
-                                                </x-button-action>
+                                                onclick="window.location.href='{{ route('management-non-fee.show', ['id' => $NonManfeeDoc->id]) }}'">
+                                                Detail Termin
+                                            </x-button-action>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
@@ -138,8 +138,8 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="yellow" icon="pencil"
-                                                    onclick="window.location.href='{{ route('management-non-fee.edit', $NonManfeeDoc->id) }}'">
-                                                </x-button-action>
+                                                onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $NonManfeeDoc->id]) }}'">
+                                            </x-button-action>
                                                 <form
                                                     action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
                                                     method="POST"
