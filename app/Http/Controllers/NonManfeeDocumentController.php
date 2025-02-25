@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Exports\NonManfeeDocumentExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class NonManfeeDocumentController extends Controller
 {
@@ -170,51 +174,102 @@ class NonManfeeDocumentController extends Controller
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact('document', 'attachments', 'files_faktur'));
     }
 
-    /**
-     * Menyetujui invoice dan mengirimkan notifikasi ke role berikutnya.
-     */
-    public function approveInvoice($document_id)
+    public function processApproval($documentId)
     {
-        $document = NonManfeeDocument::findOrFail($document_id);
+        DB::beginTransaction(); // Memulai transaksi database
 
-        // Ambil role berikutnya dalam flowchart
-        $nextRole = $this->getNextApprovalRole($document);
+        try {
+            $document = NonManfeeDocument::findOrFail($documentId);
+            $currentRole = optional($document->latestApproval)->role ?? 'maker';
 
-        if ($nextRole) {
-            // Ambil semua user dengan role berikutnya
-            $users = User::where('role', $nextRole)->get();
-
-            if ($users->count() > 0) {
-                // Simpan notifikasi ke dalam tabel notifications
-                $notification = Notification::create([
-                    'id' => Str::uuid(),
-                    'type' => InvoiceApprovalNotification::class,
-                    'data' => json_encode([
-                        'document_id' => $document->id,
-                        'invoice_number' => $document->invoice_number,
-                        'action' => 'approved',
-                        'message' => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
-                        'url' => route('management-non-fee.show', $document->id),
-                    ]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                // Simpan setiap user yang menerima notifikasi ke tabel pivot
-                foreach ($users as $user) {
-                    NotificationRecipient::create([
-                        'id' => Str::uuid(),
-                        'notification_id' => $notification->id,
-                        'recipient_id' => $user->id,
-                        'read_at' => null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
+            // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?
+            if ($document->last_reviewers === 'pajak') {
+                return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
             }
-        }
 
-        return back()->with('success', 'Invoice telah disetujui dan notifikasi telah dikirim.');
+            // 🔹 2️⃣ Validasi: Apakah user memiliki role yang diizinkan?
+            $userRole = Auth::user()->role;
+
+            if (!$userRole || $userRole !== $currentRole) {
+                return back()->with('error', "Anda tidak memiliki izin untuk menyetujui dokumen ini.");
+            }
+
+            // 🔹 3️⃣ Validasi: Apakah user sudah pernah approve dokumen ini sebelumnya?
+            $alreadyApproved = DocumentApproval::where([
+                'document_id'   => $document->id,
+                'document_type' => NonManfeeDocument::class,
+                'approver_id'   => Auth::id(),
+            ])->exists();
+
+            if ($alreadyApproved) {
+                return back()->with('error', "Anda sudah menyetujui dokumen ini sebelumnya.");
+            }
+
+            // 🔹 4️⃣ Dapatkan role approval berikutnya
+            $nextRole = $this->getNextApprovalRole($currentRole);
+
+            if (!$nextRole) {
+                return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
+            }
+
+            // 🔹 5️⃣ Ambil user dengan role berikutnya
+            $nextApprovers = User::where('role', $nextRole)->get();
+
+            if ($nextApprovers->isEmpty()) {
+                return back()->with('error', "Tidak ada user dengan role {$nextRole} yang bisa menyetujui dokumen ini.");
+            }
+
+            // 🔹 6️⃣ Simpan approval ke tabel `document_approvals`
+            DocumentApproval::create([
+                'document_id'   => $document->id,
+                'document_type' => NonManfeeDocument::class,
+                'approver_id'   => Auth::id(),
+                'role'          => $currentRole,
+                'status'        => (string) array_search($currentRole, $this->approvalStatusMap()), // Sesuaikan status berdasarkan role
+                'approved_at'   => now(),
+            ]);
+
+            // 🔹 7️⃣ Perbarui reviewer terakhir di dokumen
+            $document->update([
+                'last_reviewers' => $nextRole,
+                'status'         => (string) array_search($nextRole, $this->approvalStatusMap()), // Update status berdasarkan role
+            ]);
+
+            // 🔹 8️⃣ Kirim Notifikasi ke Role Berikutnya
+            $notification = Notification::create([
+                'type'            => InvoiceApprovalNotification::class,
+                'notifiable_type' => NonManfeeDocument::class,  
+                'notifiable_id'   => $document->id,             
+                'data'            => json_encode([
+                    'document_id'    => $document->id,
+                    'invoice_number' => $document->invoice_number,
+                    'action'         => 'approved',
+                    'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
+                    'url'            => route('management-non-fee.show', $document->id),
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // 🔹 9️⃣ Kirim notifikasi ke setiap user dengan role berikutnya
+            foreach ($nextApprovers as $user) {
+                NotificationRecipient::create([
+                    'notification_id' => $notification->id,
+                    'user_id'         => $user->id,
+                    'read_at'         => null,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+            }
+
+            DB::commit(); // Simpan semua perubahan dalam transaksi
+
+            return back()->with('success', "Dokumen telah disetujui dan diteruskan ke {$nextRole}.");
+        } catch (\Exception $e) {
+            DB::rollBack(); // Jika ada error, batalkan semua perubahan
+            Log::error("Error saat approval dokumen: " . $e->getMessage());
+            return back()->with('error', "Terjadi kesalahan saat memproses approval.");
+        }
     }
 
     /**
@@ -223,14 +278,31 @@ class NonManfeeDocumentController extends Controller
     private function getNextApprovalRole($currentRole)
     {
         $flow = [
-            'Maker' => 'Kepala Divisi',
-            'Kepala Divisi' => 'Pembendaharaan',
-            'Pembendahara Raan' => 'Manager Keuangan',
-            'Manager Keuangan' => 'Direktur Keuangan',
-            'Direktur Keuangan' => 'Pajak',
+            'maker'           => 'kadiv',
+            'kadiv'           => 'bendahara',
+            'bendahara'       => 'manager_anggaran',
+            'manager_anggaran' => 'direktur_keuangan',
+            'direktur_keuangan' => 'pajak',
         ];
 
         return $flow[$currentRole] ?? null;
+    }
+
+    /**
+     * Mapping Status Approval dengan angka
+     */
+    private function approvalStatusMap()
+    {
+        return [
+            '0' => 'draft',
+            '1' => 'kadiv',
+            '2' => 'bendahara',
+            '3' => 'manager_anggaran',
+            '4' => 'direktur_keuangan',
+            '5' => 'pajak',
+            '9' => 'need_info',
+            '99' => 'rejected',
+        ];
     }
 
     /**
@@ -274,44 +346,6 @@ class NonManfeeDocumentController extends Controller
         return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
     }
 
-
-    // APPROVAL OR PROCCESS
-    public function approveDocument($documentId)
-    {
-        $document = NonManfeeDocument::findOrFail($documentId);
-        $currentRole = $document->latestApproval ? $document->latestApproval->role : 'Maker';
-
-        // Dapatkan role approval berikutnya
-        $nextRole = $this->getNextApprovalRole($currentRole);
-
-        if ($nextRole) {
-            // Ambil user dengan role berikutnya
-            $nextApprovers = User::where('role', $nextRole)->get();
-
-            // Simpan approval di tabel `document_approvals`
-            DocumentApproval::create([
-                'document_id' => $document->id,
-                'document_type' => 'non_manfee',
-                'approver_id' => auth()->id(),
-                'role' => $currentRole,
-                'status' => 'approved',
-                'approved_at' => now(),
-            ]);
-
-            // Kirim notifikasi ke role berikutnya
-            foreach ($nextApprovers as $user) {
-                $user->notify(new InvoiceApprovalNotification($document, 'approved', $nextRole));
-            }
-
-            // Update status di dokumen
-            $document->update(['last_reviewers' => $nextRole]);
-
-            return back()->with('success', "Dokumen telah disetujui dan diteruskan ke {$nextRole}.");
-        } else {
-            return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
-        }
-    }
-
     public function export(Request $request)
     {
         $ids = $request->query('ids');
@@ -319,7 +353,7 @@ class NonManfeeDocumentController extends Controller
         if (!$ids) {
             return back()->with('error', 'Tidak ada data yang dipilih untuk diexport.');
         }
-    
+
         return Excel::download(new NonManfeeDocumentExport($ids), 'non_manfee_documents.xlsx');
     }
 }

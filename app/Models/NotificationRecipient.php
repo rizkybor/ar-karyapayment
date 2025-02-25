@@ -31,4 +31,12 @@ class NotificationRecipient extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Scope untuk mendapatkan notifikasi yang belum dibaca.
+     */
+    public function scopeUnread($query)
+    {
+        return $query->whereNull('read_at');
+    }
 }

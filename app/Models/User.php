@@ -69,13 +69,8 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function approver()
+    public function approvals()
     {
-        return $this->belongsTo(User::class, 'approver_id');
-    }
-
-    public function document()
-    {
-        return $this->morphTo();
+        return $this->hasMany(DocumentApproval::class, 'approver_id');
     }
 }

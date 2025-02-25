@@ -11,7 +11,7 @@ class Notification extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['id', 'type', 'notifiable_type', 'notifiable_id', 'data', 'read_at'];
+    protected $fillable = ['type', 'notifiable_type', 'notifiable_id', 'data', 'read_at'];
 
     protected $casts = [
         'data' => 'array', // Simpan data dalam format array
@@ -19,7 +19,7 @@ class Notification extends Model
     ];
 
     /**
-     * Relasi ke tabel pivot notification_recipients
+     * Relasi ke tabel notification_recipients
      */
     public function recipients(): HasMany
     {
@@ -32,5 +32,12 @@ class Notification extends Model
     public function notifiable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->whereHas('recipients', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        });
     }
 }

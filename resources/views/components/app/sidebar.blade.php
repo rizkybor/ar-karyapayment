@@ -70,6 +70,19 @@
                                         class="inline-flex items-center justify-center h-5 text-xs font-medium text-white bg-violet-400 px-2 rounded">
                                         {{ $unreadNotificationsCount ?? 0 }}</span>
                                 </div>
+
+
+                                {{-- Script jika ingin real-time  --}}
+                                {{-- <div class="flex flex-shrink-0 ml-2" x-data="{ count: {{ $unreadNotificationsCount ?? 0 }} }" x-init="setInterval(() => {
+                                    fetch('/notifications/unread-count')
+                                        .then(response => response.json())
+                                        .then(data => count = data.unread_count);
+                                }, 30000)">
+                                    <span class="inline-flex items-center justify-center h-5 text-xs font-medium text-white bg-violet-400 px-2 rounded">
+                                        <span x-text="count"></span>
+                                    </span>
+                                </div> --}}
+
                             </div>
                         </a>
                     </li>
