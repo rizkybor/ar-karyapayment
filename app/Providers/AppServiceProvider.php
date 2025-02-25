@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
+use App\Models\NotificationRecipient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
@@ -26,9 +27,14 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('id');
         View::composer('*', function ($view) {
             if (Auth::check()) {
-                $unreadNotificationsCount = Auth::user()->unreadNotifications->count();
-                $view->with('unreadNotificationsCount', $unreadNotificationsCount);
+                $unreadCount = NotificationRecipient::where('user_id', Auth::id())
+                    ->whereNull('read_at')
+                    ->count();
+            } else {
+                $unreadCount = 0;
             }
+    
+            $view->with('unreadNotificationsCount', $unreadCount);
         });
         Paginator::useTailwind();
     }

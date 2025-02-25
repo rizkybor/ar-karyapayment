@@ -5,19 +5,24 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
+   /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('notification_recipients', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('notification_id');
-            $table->foreign('notification_id')->references('id')->on('notifications')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Tambahkan ini
+            $table->id();
+            $table->foreignId('notification_id')->constrained('notifications')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('notification_recipients');
     }

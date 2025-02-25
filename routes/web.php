@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -69,6 +70,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::get('/edit/{id}', [NonManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
             Route::delete('/{id}', [NonManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
         });
+
+        Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
     });
 
     Route::fallback(function () {

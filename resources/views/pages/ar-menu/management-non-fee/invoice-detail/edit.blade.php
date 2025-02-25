@@ -17,6 +17,8 @@
             </div>
         </div>
 
+        <div class="border border-white-300 dark:border-white-700 my-6"></div>
+
         <form action="{{ route('management-non-fee.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
