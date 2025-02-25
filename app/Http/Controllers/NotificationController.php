@@ -14,17 +14,15 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $userId = Auth::id();
-
-        // Ambil semua notifikasi berdasarkan tabel pivot `notification_recipients`
+        $userId = auth()->id();
+    
         $notifications = NotificationRecipient::where('user_id', $userId)
-            ->with('notification') // Pastikan relasi dengan tabel notifications
-            ->orderBy('created_at', 'asc')
-            ->paginate(30); // Pagination untuk setiap 30 notifikasi
-
+            ->with('notification')
+            ->orderByRaw('read_at IS NULL DESC, created_at DESC') // Unread dulu, lalu terbaru
+            ->paginate(30);
+        dd($notifications, $userId);
         return view('pages/notifications/index', compact('notifications'));
     }
-
     /**
      * Menampilkan detail notifikasi dan menandainya sebagai telah dibaca.
      */

@@ -1,4 +1,9 @@
-@props(['transaction_status' => 'Active', 'document_status' => '', 'isEditable' => false, 'isShowPage' => false])
+@props([
+    'transaction_status' => '', 
+    'document_status' => '', 
+    'isEditable' => false, 
+    'isShowPage' => false,
+])
 
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 

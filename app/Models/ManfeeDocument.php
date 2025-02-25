@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class ManfeeDocument extends Model
 {
     use HasFactory;
@@ -30,5 +31,21 @@ class ManfeeDocument extends Model
     public function contract()
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
+    }
+
+    // Akses billType melalui contract
+    public function billTypes()
+    {
+        return $this->contract->billType();
+    }
+
+    public function approvals()
+    {
+        return $this->morphMany(DocumentApproval::class, 'document');
+    }
+
+    public function latestApproval()
+    {
+        return $this->morphOne(DocumentApproval::class, 'document')->latestOfMany();
     }
 }

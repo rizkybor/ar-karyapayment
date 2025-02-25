@@ -64,10 +64,10 @@
             </div>
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
+                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
                         Batal
                     </x-secondary-button>
-                    <x-button-action color="blue" type="submit">Simpan</x-button>
+                    <x-button-action color="violet" type="submit">Simpan</x-button>
                 </div>
             </div>
         </form>

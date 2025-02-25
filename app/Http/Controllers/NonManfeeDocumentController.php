@@ -2,26 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Contracts;
 use App\Models\NonManfeeDocument;
-use App\Models\MasterBillType;
-use App\Models\User;
-use App\Models\ArDocument;
+use App\Models\DocumentApproval;
 use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Exports\NonManfeeDocumentExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class NonManfeeDocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $NonManfeeDocs = NonManfeeDocument::with('contract')->get();
-        return view('pages/ar-menu/management-non-fee/index', compact('NonManfeeDocs'));
+        // $NonManfeeDocs = NonManfeeDocument::with('contract')->get();
+        // return view('pages/ar-menu/management-non-fee/index', compact('NonManfeeDocs'));
+        // Ambil jumlah per halaman dari query string (default: 10)
+        $perPage = $request->input('per_page', 10);
+
+        // Ambil data dengan pagination
+        $NonManfeeDocs = NonManfeeDocument::with('contract')->paginate($perPage);
+
+        return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
     }
 
     /**
@@ -29,9 +37,7 @@ class NonManfeeDocumentController extends Controller
      */
     public function create()
     {
-        $contracts = Contracts::where('type', 'management_non_fee')
-            ->whereDoesntHave('nonManfeeDocuments')
-            ->with('billTypes')
+        $contracts = Contracts::where('type', 'non_management_fee')
             ->get();
 
         $monthRoman = $this->convertToRoman(date('n'));
@@ -52,10 +58,50 @@ class NonManfeeDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $documentId = 1; // ID Dummy
+        // Validasi input
+        $request->validate([
+            'contract_id' => 'required|exists:contracts,id',
+            'period' => 'required',
+            'letter_subject' => 'required',
+        ]);
 
-        return redirect()->route('management-non-fee.show', ['id' => $documentId])
-            ->with('success', 'Data berhasil disimpan!');
+        // Cek apakah contract_id sudah memiliki dokumen non_manfee
+        $existingDocument = NonManfeeDocument::where('contract_id', $request->contract_id)->first();
+        if ($existingDocument) {
+            return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
+        }
+
+        // Generate nomor surat, invoice, dan kwitansi
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        $lastNumber = NonManfeeDocument::max('letter_number');
+        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+
+        $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+
+        // Menyiapkan data untuk disimpan
+        $input = $request->all();
+        $input['letter_number'] = $letterNumber;
+        $input['invoice_number'] = $invoiceNumber;
+        $input['receipt_number'] = $receiptNumber;
+        $input['category'] = 'management_non_fee';
+        $input['status'] = $input['status'] ?? 0;
+        $input['is_active'] = true;
+        $input['created_by'] = auth()->id();
+
+        try {
+            // Simpan dokumen baru
+            $document = NonManfeeDocument::create($input);
+
+            // Redirect ke halaman detail dengan ID yang benar
+            return redirect()->route('management-non-fee.show', ['id' => $document->id])
+                ->with('success', 'Data berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -124,13 +170,13 @@ class NonManfeeDocumentController extends Controller
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact('document', 'attachments', 'files_faktur'));
     }
 
-   /**
+    /**
      * Menyetujui invoice dan mengirimkan notifikasi ke role berikutnya.
      */
     public function approveInvoice($document_id)
     {
-        $document = ArDocument::findOrFail($document_id);
-        
+        $document = NonManfeeDocument::findOrFail($document_id);
+
         // Ambil role berikutnya dalam flowchart
         $nextRole = $this->getNextApprovalRole($document);
 
@@ -174,17 +220,17 @@ class NonManfeeDocumentController extends Controller
     /**
      * Fungsi untuk mendapatkan role berikutnya dalam flowchart.
      */
-    private function getNextApprovalRole($document)
+    private function getNextApprovalRole($currentRole)
     {
-        $approvalSteps = [
+        $flow = [
             'Maker' => 'Kepala Divisi',
-            'Kepala Divisi' => 'Pembendahara Raan',
+            'Kepala Divisi' => 'Pembendaharaan',
             'Pembendahara Raan' => 'Manager Keuangan',
             'Manager Keuangan' => 'Direktur Keuangan',
             'Direktur Keuangan' => 'Pajak',
         ];
 
-        return $approvalSteps[$document->last_reviewers] ?? null;
+        return $flow[$currentRole] ?? null;
     }
 
     /**
@@ -204,7 +250,7 @@ class NonManfeeDocumentController extends Controller
         $NonManfeeDocument = NonManfeeDocument::find($id);
         $NonManfeeDocument->delete();
 
-        return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
     public function attachments($id)
@@ -226,5 +272,54 @@ class NonManfeeDocumentController extends Controller
     public function destroyAttachment($id)
     {
         return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
+    }
+
+
+    // APPROVAL OR PROCCESS
+    public function approveDocument($documentId)
+    {
+        $document = NonManfeeDocument::findOrFail($documentId);
+        $currentRole = $document->latestApproval ? $document->latestApproval->role : 'Maker';
+
+        // Dapatkan role approval berikutnya
+        $nextRole = $this->getNextApprovalRole($currentRole);
+
+        if ($nextRole) {
+            // Ambil user dengan role berikutnya
+            $nextApprovers = User::where('role', $nextRole)->get();
+
+            // Simpan approval di tabel `document_approvals`
+            DocumentApproval::create([
+                'document_id' => $document->id,
+                'document_type' => 'non_manfee',
+                'approver_id' => auth()->id(),
+                'role' => $currentRole,
+                'status' => 'approved',
+                'approved_at' => now(),
+            ]);
+
+            // Kirim notifikasi ke role berikutnya
+            foreach ($nextApprovers as $user) {
+                $user->notify(new InvoiceApprovalNotification($document, 'approved', $nextRole));
+            }
+
+            // Update status di dokumen
+            $document->update(['last_reviewers' => $nextRole]);
+
+            return back()->with('success', "Dokumen telah disetujui dan diteruskan ke {$nextRole}.");
+        } else {
+            return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
+        }
+    }
+
+    public function export(Request $request)
+    {
+        $ids = $request->query('ids');
+
+        if (!$ids) {
+            return back()->with('error', 'Tidak ada data yang dipilih untuk diexport.');
+        }
+    
+        return Excel::download(new NonManfeeDocumentExport($ids), 'non_manfee_documents.xlsx');
     }
 }
