@@ -39,9 +39,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
-    // ROUTE CONTRACTS
+    // ROUTE CONTRACTS (Super Admin)
 
-    Route::resource('/contracts', ContractsController::class);
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::resource('/contracts', ContractsController::class);
+    });
+
 
     // ROUTE MANAGEMENT FEE
 

@@ -16,6 +16,12 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         // Role
+        $role_super_admin = Role::updateOrCreate(
+            [
+                'name' => 'super_admin',
+            ],
+            ['name' => 'super_admin']
+        );
 
         $role_maker = Role::updateOrCreate(
             [
@@ -69,7 +75,6 @@ class PermissionSeeder extends Seeder
         );
 
         // Assign Permission
-
         $role_maker->givePermissionTo($dashboard);
         $role_kadiv->givePermissionTo($dashboard);
         $role_bendahara->givePermissionTo($dashboard);
@@ -78,6 +83,9 @@ class PermissionSeeder extends Seeder
         $role_pajak->givePermissionTo($dashboard);
 
         // Assign User
+        $user_super_admin = User::where('role', 'super_admin')->first();
+        $user_super_admin->assignRole('super_admin');
+
         $userMaker = User::where('role', 'maker')->first();
         $userMaker->assignRole('maker');
 
