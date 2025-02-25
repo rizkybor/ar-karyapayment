@@ -66,7 +66,8 @@
                                 </div>
                             </div>
 
-                            <div>
+                            {{-- option active --}}
+                            {{-- <div>
                                 <x-label for="type" value="Tipe Kontrak" />
                                 <select id="type" name="type" class="mt-1 block w-full form-select">
                                     <option value="">Pilih Tipe Kontrak</option>
@@ -77,7 +78,21 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div> --}}
+
+                            <div>
+                                <x-label for="type" value="Tipe Kontrak" />
+                                <select id="type" name="type" class="mt-1 block w-full form-select" disabled>
+                                    @foreach ($mstType as $type)
+                                        <option value="{{ $type->type }}"
+                                            {{ $contract->type == $type->type ? 'selected' : '' }}>
+                                            {{ ucwords(str_replace('_', ' ', $type->type)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" name="type" value="{{ $contract->type }}">
                             </div>
+
 
                             <div>
                                 <x-label for="path" value="Path Contract" />
@@ -99,8 +114,8 @@
                                             <button type="button"
                                                 class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
                                                 <!-- Plus Icon -->
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" d="M12 4v16m8-8H4" />
                                                 </svg>

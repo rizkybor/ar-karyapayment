@@ -118,7 +118,7 @@ class ContractsController extends Controller
             'value' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
-            'type' => 'required',
+            'type' => 'nullable',
             'path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'bill_type' => 'nullable|array', // Ubah menjadi nullable
             'address' => 'required',
