@@ -3,7 +3,8 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                    Edit Detail Invoice #{{ $document['id'] }}
+                    Edit Detail Invoice
+                    #{{ $document['invoice_number'] }}
                 </h1>
             </div>
             <div class="form-group">
