@@ -13,9 +13,9 @@
                         Kembali
                     </x-secondary-button>
                     <x-button-action color="yellow"
-                    onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $document['id']]) }}'">
-                    Edit
-                </x-button-action>
+                        onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $document['id']]) }}'">
+                        Edit
+                    </x-button-action>
                 </div>
             </div>
         </div>
