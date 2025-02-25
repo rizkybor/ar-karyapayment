@@ -12,12 +12,18 @@
                     <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
                         Kembali
                     </x-secondary-button>
+                    <x-button-action color="yellow"
+                    onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $document['id']]) }}'">
+                    Edit
+                </x-button-action>
                 </div>
             </div>
         </div>
 
+        <div class="border border-white-300 dark:border-white-700 my-6"></div>
+
         {{-- Header --}}
-        <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" isShowPage="true" />
+        <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" :document="$document" isShowPage="true" />
 
         {{-- AKUMULASI BIAYA --}}
         <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
@@ -98,9 +104,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
-                                                View
-                                            </x-button-action>
+                                                    href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
+                                                    View
+                                                </x-button-action>
                                             </div>
                                         </td>
                                     </tr>
@@ -159,9 +165,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
-                                                View
-                                            </x-button-action>
+                                                    href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
+                                                    View
+                                                </x-button-action>
                                             </div>
                                         </td>
                                     </tr>

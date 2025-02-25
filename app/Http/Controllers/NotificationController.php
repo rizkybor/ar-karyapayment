@@ -15,12 +15,13 @@ class NotificationController extends Controller
     public function index()
     {
         $userId = auth()->id();
-    
+
         $notifications = NotificationRecipient::where('user_id', $userId)
+            ->whereHas('notification') // ✅ Pastikan notifikasi masih ada
             ->with('notification')
-            ->orderByRaw('read_at IS NULL DESC, created_at DESC') // Unread dulu, lalu terbaru
+            ->orderByRaw('read_at IS NULL DESC, created_at DESC')
             ->paginate(30);
-        dd($notifications, $userId);
+
         return view('pages/notifications/index', compact('notifications'));
     }
     /**
@@ -30,13 +31,15 @@ class NotificationController extends Controller
     {
         $userId = Auth::id();
 
-        // Cari notifikasi berdasarkan tabel pivot `notification_recipients`
         $notificationRecipient = NotificationRecipient::where('user_id', $userId)
             ->where('notification_id', $notification_id)
             ->with('notification')
-            ->firstOrFail();
+            ->first();
 
-        // Tandai sebagai telah dibaca
+        if (!$notificationRecipient || !$notificationRecipient->notification) {
+            return back()->with('error', 'Notifikasi tidak ditemukan atau telah dihapus.');
+        }
+
         if (!$notificationRecipient->read_at) {
             $notificationRecipient->update(['read_at' => now()]);
         }
@@ -66,10 +69,17 @@ class NotificationController extends Controller
     {
         $userId = Auth::id();
 
-        // Hapus notifikasi dari tabel `notification_recipients`
+        // Hapus dari tabel pivot `notification_recipients`
         NotificationRecipient::where('user_id', $userId)
             ->where('notification_id', $notification_id)
             ->delete();
+
+        // Jika tidak ada penerima lain, hapus dari `notifications`
+        $remainingRecipients = NotificationRecipient::where('notification_id', $notification_id)->count();
+
+        if ($remainingRecipients === 0) {
+            Notification::where('id', $notification_id)->delete();
+        }
 
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     }
@@ -81,9 +91,23 @@ class NotificationController extends Controller
     {
         $userId = Auth::id();
 
-        // Hapus semua notifikasi dari tabel `notification_recipients`
+        // Hapus semua notifikasi user dari `notification_recipients`
         NotificationRecipient::where('user_id', $userId)->delete();
 
+        // Hapus notifikasi yang sudah tidak memiliki penerima
+        Notification::whereDoesntHave('recipients')->delete();
+
         return back()->with('success', 'Semua notifikasi berhasil dihapus.');
+    }
+
+    public function getUnreadNotificationsCount()
+    {
+        $userId = auth()->id();
+
+        $count = NotificationRecipient::where('user_id', $userId)
+            ->whereNull('read_at') // Hanya notifikasi yang belum dibaca
+            ->count();
+
+        return response()->json(['unread_count' => $count]);
     }
 }

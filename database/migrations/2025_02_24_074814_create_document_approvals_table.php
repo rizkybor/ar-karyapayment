@@ -12,12 +12,13 @@ return new class extends Migration {
     {
         Schema::create('document_approvals', function (Blueprint $table) {
             $table->id();
-            $table->morphs('document'); // Bisa digunakan untuk manfee_documents & non_manfee_documents
-            $table->foreignId('approver_id')->constrained('users')->onDelete('cascade'); // User yang melakukan approval
-            $table->string('role'); // Posisi approval (Maker, Kadiv, dll)
-            $table->tinyInteger('status')->default(0); // 0: Pending, 1: Approved, 2: Rejected, 3: Revised
-            $table->text('comments')->nullable(); // Catatan dari approver (jika ada)
-            $table->timestamp('approved_at')->nullable(); // Waktu disetujui
+            $table->unsignedBigInteger('document_id');
+            $table->string('document_type');
+            $table->foreignId('approver_id')->constrained('users')->onDelete('cascade');
+            $table->string('role')->index(); 
+            $table->string('status')->default('0')->index(); 
+            $table->text('comments')->nullable();
+            $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });
     }
