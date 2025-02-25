@@ -85,6 +85,7 @@ class ManfeeDocumentController extends Controller
         $input['receipt_number'] = $receiptNumber;
         $input['category'] = 'management_fee';
         $input['status'] = $request->status ?? 0;
+        $input['is_active'] = true;
         $input['created_by'] = auth()->id();
 
         try {
