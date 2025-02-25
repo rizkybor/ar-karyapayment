@@ -27,9 +27,11 @@
                         <div><strong>Tipe Kontrak:</strong> {{ ucwords(str_replace('_', ' ', $contract->type)) }}</div>
                         <div><strong>Path Contract:</strong> <a href="{{ asset($contract->path) }}" class="text-blue-500"
                                 target="_blank">Lihat Dokumen</a></div>
-                        <div><strong>Tipe Pembayaran:</strong>
-                            {{ $mstBillType->pluck('bill_type')->implode(', ') }}
-                        </div>
+                        @if ($mstBillType->isNotEmpty())
+                            <div><strong>Tipe Pembayaran:</strong>
+                                {{ $mstBillType->pluck('bill_type')->implode(', ') }}
+                            </div>
+                        @endif
                         <div><strong>Alamat:</strong> {{ $contract->address }}</div>
                         <div><strong>Unit Kerja:</strong> {{ ucwords(str_replace('_', ' ', $contract->work_unit)) }}
                         </div>
