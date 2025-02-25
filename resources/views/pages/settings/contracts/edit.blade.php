@@ -86,13 +86,15 @@
                                 <x-input-error for="path" class="mt-2" />
                             </div>
 
-                            <div>
+                            {{-- Form Tipe Pembayaran --}}
+                            <div id="bill-type-container"
+                                class="{{ $contract->type === 'management_fee' ? '' : 'hidden' }}">
                                 <x-label for="bill_type" value="Tipe Pembayaran" />
-                                {{-- Input Container --}}
                                 <div id="input-container" class="space-y-4">
+                                    {{-- Tampilkan input bill_type yang sudah ada --}}
                                     @foreach ($mstBillType as $index => $billType)
                                         <div class="input-group flex items-center gap-2">
-                                            <x-input type="text" name="bill_type[]" class="mt-1 block w-full"
+                                            <x-input type="text" name="bill_type[]" class="block w-full"
                                                 value="{{ $billType->bill_type }}" placeholder="Masukkan teks" />
                                             <button type="button"
                                                 class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
@@ -114,6 +116,32 @@
                                             </button>
                                         </div>
                                     @endforeach
+
+                                    {{-- Tambahkan input kosong jika tidak ada data bill_type --}}
+                                    @if ($mstBillType->isEmpty())
+                                        <div class="input-group flex items-center gap-2">
+                                            <x-input type="text" name="bill_type[]" class="block w-full"
+                                                placeholder="Masukkan teks" />
+                                            <button type="button"
+                                                class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                                <!-- Plus Icon -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                            </button>
+                                            <button type="button"
+                                                class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+                                                <!-- Minus Icon -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M20 12H4" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -152,9 +180,84 @@
         </div>
     </div>
 
-    {{-- JavaScript untuk format Rupiah dan input dinamis --}}
+    {{-- JavaScript --}}
     <script>
-        // Format Rupiah
+        // bill type
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeDropdown = document.getElementById('type');
+            const billTypeContainer = document.getElementById('bill-type-container');
+            const inputContainer = document.getElementById('input-container');
+
+            // Fungsi untuk menampilkan/menyembunyikan form Tipe Pembayaran
+            function toggleBillTypeForm() {
+                if (typeDropdown.value === 'management_fee') {
+                    billTypeContainer.classList.remove('hidden');
+
+                    // Pastikan ada minimal satu input field
+                    if (inputContainer.querySelectorAll('.input-group').length === 0) {
+                        addNewInput();
+                    }
+                } else {
+                    billTypeContainer.classList.add('hidden');
+                }
+            }
+
+            // Panggil fungsi saat halaman dimuat
+            toggleBillTypeForm();
+
+            // Panggil fungsi saat dropdown berubah
+            typeDropdown.addEventListener('change', toggleBillTypeForm);
+
+            // Fungsi untuk menambahkan input baru
+            function addNewInput() {
+                const newInput = document.createElement('div');
+                newInput.classList.add('input-group', 'flex', 'items-center', 'gap-2');
+
+                newInput.innerHTML = `
+      
+                                            <x-input type="text" name="bill_type[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
+
+        {{-- Tombol Plus (+) --}}
+        <button type="button" class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Plus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </button>
+
+        {{-- Tombol Minus (-) --}}
+        <button type="button" class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
+            <!-- Minus Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+        </button>
+                                      
+    `;
+
+                inputContainer.appendChild(newInput);
+            }
+
+
+            // Event listener untuk tombol "Tambah Input"
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.add-input')) {
+                    addNewInput();
+                }
+            });
+
+            // Event listener untuk tombol "Hapus Input"
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-input')) {
+                    const inputGroups = inputContainer.querySelectorAll('.input-group');
+                    if (inputGroups.length > 1) {
+                        e.target.closest('.input-group').remove();
+                    }
+                }
+            });
+        });
+
+        // Fungsi untuk format Rupiah
         function formatRupiah(input) {
             let value = input.value.replace(/\D/g, ""); // Hanya angka
             let formatted = new Intl.NumberFormat("id-ID").format(value); // Format ke Rp
@@ -175,50 +278,5 @@
             let startDate = document.getElementById("start_date").value;
             document.getElementById("end_date").setAttribute("min", startDate);
         }
-
-        // Input Tipe Pembayaran
-        // Fungsi untuk menambahkan form baru
-        function addNewInput() {
-            const container = document.getElementById('input-container');
-            const newInput = document.createElement('div');
-            newInput.classList.add('input-group', 'flex', 'items-center', 'gap-2');
-            newInput.innerHTML = `
-        {{-- Input Field Baru --}}
-        <x-input type="text" name="bill_type[]" class="mt-1 block w-full" placeholder="Masukkan teks" />
-
-        {{-- Tombol Plus (+) --}}
-        <button type="button" class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
-            <!-- Plus Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-        </button>
-
-        {{-- Tombol Minus (-) --}}
-        <button type="button" class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
-            <!-- Minus Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-            </svg>
-        </button>
-    `;
-            container.appendChild(newInput);
-
-            // Tambahkan event listener untuk tombol plus di form baru
-            newInput.querySelector('.add-input').addEventListener('click', addNewInput);
-        }
-
-        // Tambahkan event listener untuk tombol plus di form pertama
-        document.querySelector('.add-input').addEventListener('click', addNewInput);
-
-        // Hapus Input
-        document.getElementById('input-container').addEventListener('click', function(e) {
-            if (e.target.closest('.remove-input')) {
-                const inputGroups = document.querySelectorAll('.input-group');
-                if (inputGroups.length > 1) { // Pastikan minimal ada 1 input field
-                    e.target.closest('.input-group').remove();
-                }
-            }
-        });
     </script>
 </x-app-layout>

@@ -110,7 +110,7 @@ class ContractsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contracts $contract) // Ubah dari $contracts ke $contract
+    public function update(Request $request, Contracts $contract)
     {
         $request->validate([
             'contract_number' => 'required',
@@ -120,7 +120,7 @@ class ContractsController extends Controller
             'end_date' => 'required',
             'type' => 'required',
             'path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'bill_type' => 'required',
+            'bill_type' => 'nullable|array', // Ubah menjadi nullable
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
@@ -148,14 +148,16 @@ class ContractsController extends Controller
 
         $contract->update($input);
 
-        // Hapus data bill_type lama
         MasterBillType::where('contract_id', $contract->id)->delete();
 
-        foreach ($request->bill_type as $billType) {
-            MasterBillType::create([
-                'contract_id' => $contract->id,
-                'bill_type' => $billType,
-            ]);
+        // Simpan data bill_type hanya jika tipe kontrak adalah management_fee
+        if ($request->type === 'management_fee' && !empty($request->bill_type)) {
+            foreach ($request->bill_type as $billType) {
+                MasterBillType::create([
+                    'contract_id' => $contract->id,
+                    'bill_type' => $billType,
+                ]);
+            }
         }
 
         return redirect()->route('contracts.index')->with('success', 'Data berhasil diperbaharui!');
