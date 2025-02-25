@@ -44,7 +44,7 @@ class ContractsController extends Controller
             'end_date' => 'required',
             'type' => 'required',
             'path' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'bill_type' => 'required|array', // Pastikan bill_type adalah array
+            'bill_type' => 'nullable|array',
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
@@ -72,12 +72,14 @@ class ContractsController extends Controller
         // Simpan data kontrak ke database
         $contract = Contracts::create($input);
 
-        // Simpan data bill_type ke tabel mst_bill_type
-        foreach ($request->bill_type as $billType) {
-            MasterBillType::create([
-                'contract_id' => $contract->id,
-                'bill_type' => $billType,
-            ]);
+        // Simpan data bill_type hanya jika tipe kontrak adalah management_fee
+        if ($input['type'] === 'management_fee' && !empty($request->bill_type)) {
+            foreach ($request->bill_type as $billType) {
+                MasterBillType::create([
+                    'contract_id' => $contract->id,
+                    'bill_type' => $billType,
+                ]);
+            }
         }
 
         return redirect()->route('contracts.index')->with('success', 'Data berhasil disimpan!');

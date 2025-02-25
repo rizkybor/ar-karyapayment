@@ -92,18 +92,14 @@
                                 <x-input-error for="path" class="mt-2" />
                             </div>
 
-                            <div>
-                                <!-- Label -->
+                            <div id="bill-type-container" class="hidden"> <!-- Awalnya disembunyikan -->
                                 <x-label for="bill_type" value="{{ __('Tipe Pembayaran') }}" />
-
-                                {{-- Input Container --}}
                                 <div id="input-container" class="space-y-4">
                                     <div class="input-group flex items-center gap-2">
                                         <x-input type="text" name="bill_type[]" class="mt-1 block w-full"
                                             placeholder="Masukkan teks" />
                                         <button type="button"
                                             class="add-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300">
-                                            <!-- Plus Icon -->
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -113,7 +109,6 @@
                                         <button type="button"
                                             class="remove-input btn bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-gray-800 dark:text-gray-300"
                                             disabled>
-                                            <!-- Minus Icon -->
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -235,6 +230,20 @@
                     e.target.closest('.input-group').remove();
                 }
             }
+        });
+
+        // bill type
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeDropdown = document.getElementById('type'); // Dropdown Tipe Kontrak
+            const billTypeContainer = document.getElementById('bill-type-container'); // Container Tipe Pembayaran
+
+            typeDropdown.addEventListener('change', function() {
+                if (typeDropdown.value === 'management_fee') {
+                    billTypeContainer.classList.remove('hidden'); // Tampilkan form
+                } else {
+                    billTypeContainer.classList.add('hidden'); // Sembunyikan form
+                }
+            });
         });
     </script>
 

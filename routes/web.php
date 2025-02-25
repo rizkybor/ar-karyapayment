@@ -37,13 +37,41 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+
+    // ROUTE CONTRACTS
+
     Route::resource('/contracts', ContractsController::class);
 
-    Route::resource('/management-fee', ManfeeDocumentController::class);
-    Route::get('/management-fee/show/{id}', [ManfeeDocumentController::class, 'show'])
-        ->name('management-fee.show');
-    Route::get('/management-fee/edit/{id}', [ManfeeDocumentController::class, 'edit'])
-        ->name('management-fee.edit');
+    // ROUTE MANAGEMENT FEE
+
+    Route::prefix('management-fee')->name('management-fee.')->group(function () {
+
+        // Read
+        Route::get('/', [ManfeeDocumentController::class, 'index'])->name('index');
+        Route::get('/show/{id}', [ManfeeDocumentController::class, 'show'])->name('show');
+
+        // Create
+        Route::get('/create', [ManfeeDocumentController::class, 'create'])->name('create');
+        Route::post('/store', [ManfeeDocumentController::class, 'store'])->name('store');
+
+        // Update
+        Route::get('/edit/{id}', [ManfeeDocumentController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [ManfeeDocumentController::class, 'update'])->name('update');
+
+        // Delete
+        Route::delete('/destroy/{id}', [ManfeeDocumentController::class, 'destroy'])->name('destroy');
+
+        // // Export Data
+        // Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
+
+        // Route untuk Lampiran (Attachments)
+        // Route::prefix('attachments')->name('attachments.')->group(function () {
+        //     Route::get('/{id}', [ManfeeDocumentController::class, 'attachments'])->name('index'); // Menampilkan daftar lampiran
+        //     Route::get('/view/{id}', [ManfeeDocumentController::class, 'viewAttachment'])->name('view'); // Melihat file lampiran
+        //     Route::get('/edit/{id}', [ManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
+        //     Route::delete('/{id}', [ManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
+        // });
+    });
 
     // ROUTE MANAGEMENT NON FEE
     Route::prefix('management-non-fee')->name('management-non-fee.')->group(function () {
