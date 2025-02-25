@@ -6,74 +6,42 @@
     'category' => '',
 ])
 
-<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
+<div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-5">
 
     <!-- Box Status -->
-    <div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-        <div class="grid grid-cols-2 gap-4">
+    <div class="w-full lg:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {{-- Status Transaksi --}}
             <div>
-                {{-- <x-label for="transaction_status" value="{{ __('Status Transaksi') }}" class="text-gray-800 dark:text-gray-100" />
-            @if ($isEditable)
-                <select id="transaction_status" name="transaction_status" class="form-input w-full mt-1">
-                    <option value="Active" {{ $transaction_status == 'Active' ? 'selected' : '' }}>Active</option>
-                    <option value="Non Active" {{ $transaction_status == 'Non Active' ? 'selected' : '' }}>Non Active</option>
-                </select>
-            @else
-                <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">{{ $transaction_status ?: 'Belum Ditentukan' }}</p>
-            @endif --}}
                 <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
                     class="text-gray-800 dark:text-gray-100" />
                 <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
                     {{ $transaction_status == 'Active' ? 'Aktif' : 'Tidak Aktif' }}
                 </p>
-
             </div>
 
-            {{-- Status Document --}}
+            {{-- Status Dokumen --}}
             <div>
-                {{-- <x-label for="document_status" value="{{ __('Status Dokumen') }}" class="text-gray-800 dark:text-gray-100" />
-            @if ($isEditable)
-                <x-input id="document_status" name="document_status" type="text" class="w-full mt-1"
-                    value="{{ $document_status }}" />
-            @else
-                @if ($transaction_status == 'Active')
-                    <p class="mt-1 text-gray-800 dark:text-gray-200">-</p>
-                @elseif ($transaction_status == 'Non Active')
-                    <a href="{{ route('download.keterangan') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Download Keterangan
-                    </a>
-                @else
-                    <p class="mt-1 text-gray-800 dark:text-gray-200">{{ $document_status ?: '-' }}</p>
-                @endif
-            @endif --}}
                 <x-label for="document_status" value="{{ __('Status Dokumen') }}"
                     class="text-gray-800 dark:text-gray-100" />
                 <x-label-status :status="$document_status" />
             </div>
         </div>
 
-        <br />
-
-        <div class="grid grid-cols-1 gap-4">
+        <div class="mt-4">
             {{-- Jenis --}}
-            <div>
-                <x-label for="transaction_status" value="{{ __('Jenis') }}"
-                    class="text-gray-800 dark:text-gray-100" />
-                <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                    {{ ucwords(str_replace('_', ' ', $category)) }}
-                </p>
-            </div>
+            <x-label for="transaction_status" value="{{ __('Jenis') }}" class="text-gray-800 dark:text-gray-100" />
+            <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                {{ ucwords(str_replace('_', ' ', $category)) }}
+            </p>
         </div>
     </div>
 
-    <!-- Tombol Action (Sejajar dengan Card di Desktop, di Atas Card di Mobile) -->
+    <!-- Tombol Action -->
     @if ($isShowPage)
-        <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+        <div class="flex flex-wrap gap-2 lg:flex-nowrap lg:items-start w-full lg:w-auto">
             <x-button-action color="blue" icon="print">Print</x-button-action>
-            <x-button-action color="teal" icon="paid">
-                Paid
-            </x-button-action>
+            <x-button-action color="teal" icon="paid">Paid</x-button-action>
             <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
             <x-button-action color="orange" icon="info">Need Info</x-button-action>
             <x-button-action color="red" icon="reject">Reject</x-button-action>
@@ -81,6 +49,4 @@
             <x-button-action color="green" icon="process">Process</x-button-action>
         </div>
     @endif
-
-
 </div>

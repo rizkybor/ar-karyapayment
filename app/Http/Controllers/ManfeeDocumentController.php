@@ -119,8 +119,9 @@ class ManfeeDocumentController extends Controller
     {
         $manfeeDoc = ManfeeDocument::findOrFail($id);
         $category = $manfeeDoc->category;
-        $document_status = $manfeeDoc->status;
-        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'category', 'document_status'));
+        $document_status = $manfeeDoc->status == '0' ? 'Draft' : 'Published';
+        $transaction_status = $manfeeDoc->is_active == 1 ? 'Active' : 'Inactive';
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'category', 'document_status', 'transaction_status'));
     }
 
     /**
