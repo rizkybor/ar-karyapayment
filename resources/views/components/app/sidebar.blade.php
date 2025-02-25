@@ -201,6 +201,7 @@
                             <ul class="pl-8 mt-1 
                             @if (!Request::is('management-fee*') && !Request::is('management-non-fee*')) hidden @endif"
                                 :class="open ? '!block' : 'hidden'">
+
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
                                     @if (Request::is('management-fee*')) !text-violet-500 @endif"
@@ -229,17 +230,17 @@
                     <!-- Settings -->
                     <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                         bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                        @if (Request::is('settings*') || Request::is('contracts*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
-                        x-data="{ open: {{ Request::is('settings*') || Request::is('contracts*') ? 1 : 0 }} }">
+                        @if (Request::is('user*') || Request::is('contracts*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
+                        x-data="{ open: {{ Request::is('user*') || Request::is('contracts*') ? 1 : 0 }} }">
 
                         <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                            @if (!Request::is('settings*') && !Request::is('contracts*')) hover:text-gray-900 dark:hover:text-white @endif"
+                            @if (!Request::is('user*') && !Request::is('contracts*')) hover:text-gray-900 dark:hover:text-white @endif"
                             href="#0" @click.prevent="open = !open; sidebarExpanded = true">
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 fill-current 
-                                        @if (Request::is('settings*') || Request::is('contracts*')) text-violet-500 
+                                        @if (Request::is('user*') || Request::is('contracts*')) text-violet-500 
                                         @else text-gray-400 dark:text-gray-500 @endif"
                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         viewBox="0 0 16 16">
@@ -266,16 +267,29 @@
                         <!-- Dropdown -->
                         <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                             <ul class="pl-8 mt-1 
-                                @if (!Request::is('settings*') && !Request::is('contracts*')) hidden @endif"
+                                @if (!Request::is('user*') && !Request::is('contracts*')) hidden @endif"
                                 :class="open ? '!block' : 'hidden'">
 
+                                @role('super_admin')
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
                                         @if (Request::is('contracts*')) !text-violet-500 @endif"
                                         href="{{ route('contracts.index') }}">
                                         <span
                                             class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                            Settings
+                                            Contracts
+                                        </span>
+                                    </a>
+                                </li>
+                                @endrole
+
+                                <li class="mb-1 last:mb-0">
+                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
+                                        @if (Request::is('user*')) !text-violet-500 @endif"
+                                        href="{{ route('profile.show') }}">
+                                        <span
+                                            class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                            Profile
                                         </span>
                                     </a>
                                 </li>
