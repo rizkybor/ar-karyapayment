@@ -26,11 +26,14 @@
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
                 <header
                     class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
                     <!-- Left: Title -->
-                    <h2 class="font-semibold dark:text-gray-100">Management Non Fee Docs</h2>
-
+                    <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
+                    <x-search-form/>
+                    </div>
                     <!-- Middle: Dropdown jumlah per halaman -->
                     <div class="flex items-center gap-2">
+                        
                         <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Show:
                         </label>
@@ -60,7 +63,6 @@
 
                 </header>
                 <div class="p-3">
-
                     <!-- Table -->
                     <div class="overflow-x-auto">
                         <table class="table-auto w-full">
@@ -127,9 +129,9 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
                                                 <x-button-action color="violet"
-                                                onclick="window.location.href='{{ route('management-non-fee.show', ['id' => $NonManfeeDoc->id]) }}'">
-                                                Detail Termin
-                                            </x-button-action>
+                                                    onclick="window.location.href='{{ route('management-non-fee.show', ['id' => $NonManfeeDoc->id]) }}'">
+                                                    Detail Termin
+                                                </x-button-action>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
@@ -138,8 +140,8 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
                                                 <x-button-action color="yellow" icon="pencil"
-                                                onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $NonManfeeDoc->id]) }}'">
-                                            </x-button-action>
+                                                    onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $NonManfeeDoc->id]) }}'">
+                                                </x-button-action>
                                                 <form
                                                     action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
                                                     method="POST"
@@ -158,6 +160,7 @@
                         </table>
                     </div>
 
+
                     <!-- Pagination di bawah table -->
                     <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <!-- Menampilkan informasi jumlah data -->
@@ -169,15 +172,14 @@
                             <span class="font-medium">{{ $NonManfeeDocs->total() }}</span> documents
                         </p>
 
-                        <!-- Pagination links -->
-                        <div class="py-2">
-                            {{ $NonManfeeDocs->appends(['per_page' => request('per_page', 10)])->links() }}
-                        </div>
+                        <!-- Menggunakan Komponen Pagination -->
+                        <x-pagination-numeric :data="$NonManfeeDocs" />
                     </div>
-
                 </div>
+
             </div>
         </div>
+    </div>
 
     </div>
 
