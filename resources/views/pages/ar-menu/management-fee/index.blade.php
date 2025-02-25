@@ -80,9 +80,10 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                <a href="{{ route('management-fee.show', $manfeeDoc->id) }}">
-                                                    <x-button>Details Termin</x-button>
-                                                </a>
+                                                <x-button-action color="violet"
+                                                    onclick="window.location.href='{{ route('management-fee.show', ['id' => $manfeeDoc->id]) }}'">
+                                                    Detail Termin
+                                                </x-button-action>
                                             </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
@@ -90,15 +91,16 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <a href="{{ route('management-fee.edit', $manfeeDoc->id) }}">
-                                                    <x-edit-button>Edit</x-edit-button>
-                                                </a>
+                                                <x-button-action color="yellow" icon="pencil"
+                                                    onclick="window.location.href='{{ route('management-fee.edit', ['id' => $manfeeDoc->id]) }}'">
+                                                </x-button-action>
                                                 <form action="{{ route('management-fee.destroy', $manfeeDoc->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <x-delete-button type="submit">Delete</x-delete-button>
+                                                    <x-button-action color="red" icon="trash" type="submit">
+                                                    </x-button-action>
                                                 </form>
                                             </div>
                                         </td>
