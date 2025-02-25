@@ -50,9 +50,9 @@ class NonManfeeDocumentController extends Controller
         $lastNumber = NonManfeeDocument::max('letter_number');
         $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
 
-        $letterNumber = sprintf("No. %06d/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("No. %06d/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("No. %06d/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $letterNumber = sprintf("No. %06d/NF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("No. %06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("No. %06d/NF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/management-non-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
