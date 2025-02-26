@@ -119,33 +119,36 @@ class NonManfeeDocumentController extends Controller
      */
     public function show($id)
     {
-        dd($id);
-        $document = [
-            'id' => $id,
-            'letter_number' => 'No. 001/KEU/KPU/SOL/I/2025',
-            'invoice_number' => 'No. 001/KW/KPU/SOL/I/2025',
-            'receipt_number' => 'No. 001/INV/KPU/SOL/I/2025',
-            'contract_id' => 123,
-            'period' => 'Januari 2025',
-            'letter_subject' => 'Tagihan Jasa Konsultasi',
-            'bill_type' => 'Non-Manfee',
-            'status' => 'Draft',
-            'is_active' => 'True',
-            'created_by' => 'Admin',
-            'created_at' => now()->format('d M Y H:i'),
-        ];
+        // Ambil data Non Manfee Document berdasarkan ID
+        $nonManfeeDocument = NonManfeeDocument::with([
+            'accumulatedCosts',
+            'attachments',
+            'descriptions',
+            'taxFiles'
+        ])->findOrFail($id);
 
-        $attachments = [
-            (object) ['id' => 1, 'name' => 'BAP'],
-            (object) ['id' => 2, 'name' => 'Invoice'],
-            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
-        ];
+        // Status kategori & status dokumen
+        $category = $nonManfeeDocument->category;
+        $document_status = $nonManfeeDocument->status == '0' ? 'Draft' : 'Published';
+        $transaction_status = $nonManfeeDocument->is_active == 1 ? 'Active' : 'Inactive';
 
-        $files_faktur = [
-            (object) ['id' => 1, 'name' => 'File Faktur Pajak'],
-        ];
-
-        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('document', 'attachments', 'files_faktur'));
+        // Data dari tabel terkait berdasarkan ID document
+        $attachments = $nonManfeeDocument->attachments;
+        $files_faktur = $nonManfeeDocument->taxFiles;
+        $histories = $nonManfeeDocument->histories;
+        $accumulatedCosts = $nonManfeeDocument->accumulatedCosts;
+        $descriptions = $nonManfeeDocument->descriptions;
+        
+        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact(
+            'nonManfeeDocument',
+            'category',
+            'document_status',
+            'transaction_status',
+            'attachments',
+            'files_faktur',
+            'accumulatedCosts',
+            'descriptions'
+        ));
     }
 
     /**
@@ -326,8 +329,8 @@ class NonManfeeDocumentController extends Controller
      */
     public function destroy($id)
     {
-        $NonManfeeDocument = NonManfeeDocument::find($id);
-        $NonManfeeDocument->delete();
+        $nonManfeeDocument = NonManfeeDocument::find($id);
+        $nonManfeeDocument->delete();
 
         return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
     }

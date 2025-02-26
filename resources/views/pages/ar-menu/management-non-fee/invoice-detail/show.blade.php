@@ -3,7 +3,7 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
-                    #{{ $document['invoice_number'] }}
+                    #{{ $nonManfeeDocument['invoice_number'] }}
                 </h1>
             </div>
             {{-- Tombol Kembali --}}
@@ -13,7 +13,7 @@
                         Kembali
                     </x-secondary-button>
                     <x-button-action color="yellow"
-                        onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $document['id']]) }}'">
+                        onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $nonManfeeDocument['id']]) }}'">
                         Edit
                     </x-button-action>
                 </div>
@@ -23,7 +23,7 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- Header --}}
-        <x-management-non-fee.header :transaction_status="$document['is_active']" :document_status="$document['status']" :document="$document" isShowPage="true" />
+        <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
 
         {{-- AKUMULASI BIAYA --}}
         <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
@@ -36,31 +36,31 @@
                     {{-- Akun --}}
                     <div class="col-span-1">
                         <x-label for="akun" value="{{ __('Akun') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $document['akun'] ?? '-' }}</p>
+                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['akun'] ?? '-' }}</p>
                     </div>
 
                     {{-- DPP Pekerjaan --}}
                     <div class="col-span-1">
                         <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $document['dpp_pekerjaan'] ?? '-' }}</p>
+                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['dpp_pekerjaan'] ?? '-' }}</p>
                     </div>
 
                     {{-- RATE PPN --}}
                     <div class="col-span-1 sm:col-span-1">
                         <x-label for="rate_ppn" value="{{ __('RATE PPN') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $document['rate_ppn'] ?? '-' }}</p>
+                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['rate_ppn'] ?? '-' }}</p>
                     </div>
 
                     {{-- NILAI PPN --}}
                     <div class="col-span-1 sm:col-span-1">
                         <x-label for="nilai_ppn" value="{{ __('NILAI PPN') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $document['nilai_ppn'] ?? '-' }}</p>
+                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['nilai_ppn'] ?? '-' }}</p>
                     </div>
 
                     {{-- JUMLAH --}}
                     <div class="col-span-1 sm:col-span-2">
                         <x-label for="jumlah" value="{{ __('JUMLAH') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $document['jumlah'] ?? '-' }}</p>
+                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['jumlah'] ?? '-' }}</p>
                     </div>
 
                 </div>
@@ -124,7 +124,7 @@
                 Deskripsi
             </h5>
             <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <p class="text-gray-800 dark:text-gray-200">{{ $document['deskripsi'] ?? '-' }}</p>
+                <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['deskripsi'] ?? '-' }}</p>
             </div>
         </div>
 
