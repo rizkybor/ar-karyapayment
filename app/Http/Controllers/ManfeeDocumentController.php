@@ -2,20 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Contracts;
 use App\Models\ManfeeDocument;
-use App\Models\MasterBillType;
+use App\Models\DocumentApproval;
+use App\Models\Notification;
+use App\Models\NotificationRecipient;
+use App\Notifications\InvoiceApprovalNotification;
+// use App\Models\MasterBillType;
+use App\Exports\ManfeeDocumentExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ManfeeDocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $manfeeDocs = ManfeeDocument::with('contract')->get();
-        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs'));
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $manfeeDocs = ManfeeDocument::with('contract')
+            ->when($search, function ($query, $search) {
+                $query->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhere('receipt_number', 'like', "%{$search}%")
+                    ->orWhere('letter_number', 'like', "%{$search}%")
+                    ->orWhere('manfee_bill', 'like', "%{$search}%")
+                    ->orWhere('period', 'like', "%{$search}%")
+                    ->orWhere('letter_subject', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhereHas('contract', function ($contractQuery) use ($search) {
+                        $contractQuery->where('contract_number', 'like', "%{$search}%")
+                            ->orWhere('employee_name', 'like', "%{$search}%")
+                            ->orWhere('work_unit', 'like', "%{$search}%")
+                            ->orWhere('value', 'like', "%{$search}%");
+                    });
+            })
+            ->paginate($perPage);
+
+        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs', 'perPage', 'search'));
     }
 
     /**
@@ -35,9 +66,11 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Nomer terakhir + 10
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = ManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         // Format nomor surat, invoice, dan kwitansi
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -71,8 +104,11 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = ManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -149,5 +185,170 @@ class ManfeeDocumentController extends Controller
     {
         $romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
         return $romans[$month - 1];
+    }
+
+    // Button Approval
+    public function processApproval($documentId)
+    {
+        DB::beginTransaction(); // Memulai transaksi database
+
+        try {
+            $document = ManfeeDocument::findOrFail($documentId);
+            $currentRole = optional($document->latestApproval)->role ?? 'maker';
+
+            // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?
+            if ($document->last_reviewers === 'pajak') {
+                return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
+            }
+
+            // 🔹 2️⃣ Validasi: Apakah user memiliki role yang diizinkan?
+            $userRole = Auth::user()->role;
+
+            if (!$userRole || $userRole !== $currentRole) {
+                return back()->with('error', "Anda tidak memiliki izin untuk menyetujui dokumen ini.");
+            }
+
+            // 🔹 3️⃣ Validasi: Apakah user sudah pernah approve dokumen ini sebelumnya?
+            $alreadyApproved = DocumentApproval::where([
+                'document_id'   => $document->id,
+                'document_type' => ManfeeDocument::class,
+                'approver_id'   => Auth::id(),
+            ])->exists();
+
+            if ($alreadyApproved) {
+                return back()->with('error', "Anda sudah menyetujui dokumen ini sebelumnya.");
+            }
+
+            // 🔹 4️⃣ Dapatkan role approval berikutnya
+            $nextRole = $this->getNextApprovalRole($currentRole);
+
+            if (!$nextRole) {
+                return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
+            }
+
+            // 🔹 5️⃣ Ambil user dengan role berikutnya
+            $nextApprovers = User::where('role', $nextRole)->get();
+
+            if ($nextApprovers->isEmpty()) {
+                return back()->with('error', "Tidak ada user dengan role {$nextRole} yang bisa menyetujui dokumen ini.");
+            }
+
+            // 🔹 6️⃣ Simpan approval ke tabel `document_approvals`
+            DocumentApproval::create([
+                'document_id'   => $document->id,
+                'document_type' => ManfeeDocument::class,
+                'approver_id'   => Auth::id(),
+                'role'          => $currentRole,
+                'status'        => (string) array_search($currentRole, $this->approvalStatusMap()), // Sesuaikan status berdasarkan role
+                'approved_at'   => now(),
+            ]);
+
+            // 🔹 7️⃣ Perbarui reviewer terakhir di dokumen
+            $document->update([
+                'last_reviewers' => $nextRole,
+                'status'         => (string) array_search($nextRole, $this->approvalStatusMap()), // Update status berdasarkan role
+            ]);
+
+            // 🔹 8️⃣ Kirim Notifikasi ke Role Berikutnya
+            $notification = Notification::create([
+                'type'            => InvoiceApprovalNotification::class,
+                'notifiable_type' => ManfeeDocument::class,
+                'notifiable_id'   => $document->id,
+                'data'            => json_encode([
+                    'document_id'    => $document->id,
+                    'invoice_number' => $document->invoice_number,
+                    'action'         => 'approved',
+                    'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
+                    'url'            => route('management-non-fee.show', $document->id),
+                ]),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // 🔹 9️⃣ Kirim notifikasi ke setiap user dengan role berikutnya
+            foreach ($nextApprovers as $user) {
+                NotificationRecipient::create([
+                    'notification_id' => $notification->id,
+                    'user_id'         => $user->id,
+                    'read_at'         => null,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+            }
+
+            DB::commit(); // Simpan semua perubahan dalam transaksi
+
+            return back()->with('success', "Dokumen telah disetujui dan diteruskan ke {$nextRole}.");
+        } catch (\Exception $e) {
+            DB::rollBack(); // Jika ada error, batalkan semua perubahan
+            Log::error("Error saat approval dokumen: " . $e->getMessage());
+            return back()->with('error', "Terjadi kesalahan saat memproses approval.");
+        }
+    }
+
+    /**
+     * Fungsi untuk mendapatkan role berikutnya dalam flowchart.
+     */
+    private function getNextApprovalRole($currentRole)
+    {
+        $flow = [
+            'maker'           => 'kadiv',
+            'kadiv'           => 'bendahara',
+            'bendahara'       => 'manager_anggaran',
+            'manager_anggaran' => 'direktur_keuangan',
+            'direktur_keuangan' => 'pajak',
+        ];
+
+        return $flow[$currentRole] ?? null;
+    }
+
+    /**
+     * Mapping Status Approval dengan angka
+     */
+    private function approvalStatusMap()
+    {
+        return [
+            '0' => 'draft',
+            '1' => 'kadiv',
+            '2' => 'bendahara',
+            '3' => 'manager_anggaran',
+            '4' => 'direktur_keuangan',
+            '5' => 'pajak',
+            '9' => 'need_info',
+            '99' => 'rejected',
+        ];
+    }
+
+    public function attachments($id)
+    {
+        $attachments = [
+            (object) ['id' => 1, 'name' => 'BAP'],
+            (object) ['id' => 2, 'name' => 'Invoice'],
+            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
+        ];
+
+        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('attachments'));
+    }
+
+    public function viewAttachment($id)
+    {
+        return response()->json(['message' => "Melihat Lampiran dengan ID: $id"]);
+    }
+
+    public function destroyAttachment($id)
+    {
+        return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
+    }
+
+    // excel
+    public function export(Request $request)
+    {
+        $ids = $request->query('ids');
+
+        if (!$ids) {
+            return back()->with('error', 'Tidak ada data yang dipilih untuk diexport.');
+        }
+
+        return Excel::download(new ManfeeDocumentExport($ids), 'manfee_documents.xlsx');
     }
 }

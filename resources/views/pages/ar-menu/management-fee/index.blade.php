@@ -2,27 +2,67 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
         <!-- Dashboard actions -->
-        <div class="sm:flex sm:justify-between sm:items-center mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
             <!-- Left: Title -->
-            <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">AR - Management Fee</h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                Invoice (Billing)
+            </h1>
+
+            <!-- Right: Buttons -->
+            <div class="flex gap-2 mt-4 sm:mt-0">
+                <x-button-action color="green" id="exportSelected">
+                    Export Selected
+                </x-button-action>
+
+                <x-button-action color="violet" type="button"
+                    onclick="window.location='{{ route('management-fee.create') }}'">
+                    + Data Baru
+                </x-button-action>
             </div>
-            <!-- Right: Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-            </div>
-            <x-button type="button" onclick="window.location='{{ route('management-fee.create') }}'">
-                + Data Baru
-            </x-button>
         </div>
 
         <!-- Cards -->
         <div class="grid grid-cols-12 gap-6">
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                    <h2 class="font-semibold  dark:text-gray-100">Customers</h2>
+                <header
+                    class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <!-- Left: Title -->
+                        <h2 class="font-semibold dark:text-gray-100 py-3">Management Fee</h2>
+                        <x-search-form placeholder="Search…" :value="$search ?? ''" />
+                    </div>
+                    <!-- Middle: Dropdown jumlah per halaman -->
+                    <div class="flex items-center gap-2">
+
+                        <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Show:
+                        </label>
+                        <div class="relative">
+                            <select id="perPage"
+                                class="appearance-none border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                            text-sm text-gray-700 dark:text-gray-200 font-medium 
+                            px-3 pr-8 py-2 h-9 rounded-lg shadow-sm focus:ring focus:ring-blue-300 
+                            dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                onchange="changePerPage()">
+                                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                                <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100
+                                </option>
+                            </select>
+                            <!-- Icon Chevron -->
+                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </header>
                 <div class="p-3">
-
                     <!-- Table -->
                     <div class="overflow-x-auto">
                         <table class="table-auto w-full">
@@ -30,6 +70,10 @@
                             <thead
                                 class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                 <tr>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <input type="checkbox" id="selectAll"
+                                            class="form-checkbox h-5 w-5 text-blue-600">
+                                    </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">No</div>
                                     </th>
@@ -54,7 +98,6 @@
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Action</div>
                                     </th>
-
                                 </tr>
                             </thead>
                             <!-- Table body -->
@@ -62,6 +105,11 @@
                                 @php $i = 1; @endphp
                                 @foreach ($manfeeDocs as $manfeeDoc)
                                     <tr>
+                                        <td class="p-2 whitespace-nowrap">
+                                            <input type="checkbox"
+                                                class="rowCheckbox form-checkbox h-5 w-5 text-blue-600"
+                                                value="{{ $manfeeDoc->id }}">
+                                        </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">{{ $i++ }}</div>
                                         </td>
@@ -104,19 +152,58 @@
                                                 </form>
                                             </div>
                                         </td>
-
                                     </tr>
                                 @endforeach
                             </tbody>
 
                         </table>
-
                     </div>
 
+
+                    <!-- Pagination di bawah table -->
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <!-- Menampilkan informasi jumlah data -->
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing <span class="font-medium">{{ $manfeeDocs->firstItem() }}</span> to
+                            <span class="font-medium">
+                                {{ min($manfeeDocs->firstItem() + request('per_page', 10) - 1, request('per_page', 10)) }}
+                            </span> of
+                            <span class="font-medium">{{ $manfeeDocs->total() }}</span> documents
+                        </p>
+
+                        <!-- Menggunakan Komponen Pagination -->
+                        <x-pagination-numeric :data="$manfeeDocs" />
+                    </div>
                 </div>
+
             </div>
-
         </div>
-
     </div>
+    <script>
+        function changePerPage() {
+            let perPage = document.getElementById("perPage").value;
+            window.location.href = "{{ route('management-fee.index') }}?per_page=" + perPage;
+        }
+
+        document.getElementById("selectAll").addEventListener("click", function() {
+            let checkboxes = document.querySelectorAll(".rowCheckbox");
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+
+        document.getElementById("exportSelected").addEventListener("click", function() {
+            let selected = [];
+            document.querySelectorAll(".rowCheckbox:checked").forEach(checkbox => {
+                selected.push(checkbox.value);
+            });
+
+            if (selected.length === 0) {
+                alert("Pilih minimal satu data untuk diexport!");
+                return;
+            }
+
+            // Menggunakan window.open agar browser mengunduh file
+            let url = `{{ route('management-fee.export') }}?ids=` + encodeURIComponent(selected.join(","));
+            window.open(url, '_blank');
+        });
+    </script>
 </x-app-layout>

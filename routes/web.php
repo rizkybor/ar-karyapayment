@@ -66,7 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/destroy/{id}', [ManfeeDocumentController::class, 'destroy'])->name('destroy');
 
         // // Export Data
-        // Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
+        Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
 
         // Route untuk Lampiran (Attachments)
         // Route::prefix('attachments')->name('attachments.')->group(function () {
@@ -75,6 +75,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //     Route::get('/edit/{id}', [ManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
         //     Route::delete('/{id}', [ManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
         // });
+
+        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
     });
 
     // ROUTE MANAGEMENT NON FEE

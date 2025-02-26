@@ -11,12 +11,17 @@
                     <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
                         Kembali
                     </x-secondary-button>
+                    <x-button-action color="yellow"
+                        onclick="window.location.href='{{ route('management-fee.edit', ['id' => $manfeeDoc->id]) }}'">
+                        Edit
+                    </x-button-action>
                 </div>
             </div>
         </div>
 
         {{-- Header --}}
-        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isShowPage="true" />
+        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" :document="$manfeeDoc"
+            isShowPage="true" />
 
         {{-- Detail Biaya --}}
         <div class="mt-5 mb-5 md:mt-0 md:col-span-2">

@@ -4,6 +4,7 @@
     'isEditable' => false,
     'isShowPage' => false,
     'category' => '',
+    'document' => [],
 ])
 
 <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-5">
@@ -39,14 +40,22 @@
 
     <!-- Tombol Action -->
     @if ($isShowPage)
-        <div class="flex flex-wrap gap-2 lg:flex-nowrap lg:items-start w-full lg:w-auto">
+        <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
             <x-button-action color="blue" icon="print">Print</x-button-action>
-            <x-button-action color="teal" icon="paid">Paid</x-button-action>
+            <x-button-action color="teal" icon="paid">
+                Paid
+            </x-button-action>
             <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
             <x-button-action color="orange" icon="info">Need Info</x-button-action>
             <x-button-action color="red" icon="reject">Reject</x-button-action>
             <x-button-action color="green" icon="approve">Approve</x-button-action>
-            <x-button-action color="green" icon="process">Process</x-button-action>
+            <form action="{{ route('management-fee.processApproval', $document['id']) }}" method="POST"
+                onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                @csrf
+                @method('PUT')
+                <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
+            </form>
         </div>
     @endif
+
 </div>
