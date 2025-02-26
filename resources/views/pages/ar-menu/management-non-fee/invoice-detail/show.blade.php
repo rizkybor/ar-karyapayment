@@ -5,7 +5,6 @@
                 <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
                     #{{ $nonManfeeDocument['invoice_number'] }}
                 </h1>
-                <p>{{ $nonManfeeDocument }}</p>
             </div>
             {{-- Tombol Kembali --}}
             <div class="form-group">
@@ -23,7 +22,7 @@
 
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
-        {{-- Header --}}
+        {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
 
         {{-- AKUMULASI BIAYA --}}
@@ -32,18 +31,10 @@
         {{-- LAMPIRAN --}}
         <x-management-non-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
 
-        {{-- untuk edit  --}}
-        {{-- <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
-
         {{-- DESKRIPSI --}}
         <x-management-non-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
 
-        {{-- untuk edit --}}
-        {{-- <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
-
         {{-- FAKTUR PAJAK --}}
         <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
-        {{-- untuk edit --}}
-        {{-- <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
     </div>
 </x-app-layout>
