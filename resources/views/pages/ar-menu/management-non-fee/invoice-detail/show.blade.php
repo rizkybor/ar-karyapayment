@@ -62,7 +62,7 @@
                 </div>
             </div>
         </div> --}}
-        <x-management-non-fee.accumulated-cost.index 
+        <x-management-non-fee.accumulated-costs.index 
             :nonManfeeDocument="$nonManfeeDocument" 
             :isEdit="false" />
 
