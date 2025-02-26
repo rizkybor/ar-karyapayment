@@ -9,10 +9,9 @@
             </div>
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.show', ['id' => $nonManfeeDocument->id]) }}'">
-                        Batal
+                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
+                        Kembali
                     </x-secondary-button>
-                    <x-button-action color="violet" type="submit">Simpan Detail Invoice</x-button-action>
                 </div>
             </div>
         </div>
