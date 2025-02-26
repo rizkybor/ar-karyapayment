@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PermissionSeeder::class,
             MasterDataSeeder::class,
+            ContractInvoiceSeeder::class,
+            MasterBillTypeSeeder::class,
         ]);
     }
 }
