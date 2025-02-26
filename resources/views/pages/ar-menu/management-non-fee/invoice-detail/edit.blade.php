@@ -29,7 +29,7 @@
             <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 
             {{-- LAMPIRAN --}}
-            <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
+            <x-management-non-fee.attachments.edit-view :nonManfeeDocument="$nonManfeeDocument" />
 
             {{-- DESKRIPSI --}}
             <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />

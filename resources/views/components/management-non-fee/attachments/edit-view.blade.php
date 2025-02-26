@@ -1,7 +1,10 @@
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-    <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-        Lampiran
-    </h5>
+    <div class="flex justify-between items-center mb-3">
+        <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Lampiran
+        </h5>
+        <x-management-non-fee.attachments.modals.modal-create />
+    </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <div class="p-3">
