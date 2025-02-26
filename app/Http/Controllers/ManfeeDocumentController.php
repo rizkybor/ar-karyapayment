@@ -49,8 +49,6 @@ class ManfeeDocumentController extends Controller
         return view('pages/ar-menu/management-fee/index', compact('manfeeDocs', 'perPage', 'search'));
     }
 
-
-
     /**
      * Show the form for creating a new resource.
      */

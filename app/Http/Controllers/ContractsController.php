@@ -14,10 +14,23 @@ class ContractsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $contracts = Contracts::all();
-        return view('pages/settings/contracts/index', compact('contracts'));
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $contracts = Contracts::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('contract_number', 'like', "%{$search}%")
+                    ->orWhere('employee_name', 'like', "%{$search}%")
+                    ->orWhere('value', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('work_unit', 'like', "%{$search}%");
+            })
+            ->paginate($perPage);
+
+        return view('pages/settings/contracts/index', compact('contracts', 'perPage'));
     }
 
     /**

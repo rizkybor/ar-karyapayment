@@ -42,8 +42,8 @@
                             @endforeach
 
                             @foreach ($nonManfeeDocuments as $doc)
-                                <li><strong>Invoice Number Documents
-                                        {{ $doc->invoice_number ?? 'Tidak ada invoice' }}</li>
+                                <li><strong>Invoice Number Documents:</strong>
+                                    {{ $doc->invoice_number ?? 'Tidak ada invoice' }}</li>
                             @endforeach
                         </ul>
 
