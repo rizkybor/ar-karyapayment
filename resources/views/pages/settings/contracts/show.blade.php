@@ -35,6 +35,18 @@
                         <div><strong>Alamat:</strong> {{ $contract->address }}</div>
                         <div><strong>Unit Kerja:</strong> {{ ucwords(str_replace('_', ' ', $contract->work_unit)) }}
                         </div>
+                        <ul>
+                            @foreach ($manfeeDocuments as $doc)
+                                <li><strong>Invoice Number Documents:</strong>
+                                    {{ $doc->invoice_number ?? 'Tidak ada invoice' }}</li>
+                            @endforeach
+
+                            @foreach ($nonManfeeDocuments as $doc)
+                                <li><strong>Invoice Number Documents
+                                        {{ $doc->invoice_number ?? 'Tidak ada invoice' }}</li>
+                            @endforeach
+                        </ul>
+
                     </div>
                 </div>
 

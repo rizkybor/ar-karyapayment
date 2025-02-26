@@ -93,7 +93,19 @@ class ContractsController extends Controller
         $mstBillType = MasterBillType::where('contract_id', $contract->id)->get();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
-        return view('pages/settings/contracts/show', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
+
+        $contract->load(['manfeeDocuments', 'nonManfeeDocuments']);
+        $manfeeDocuments = $contract->manfeeDocuments;
+        $nonManfeeDocuments = $contract->nonManfeeDocuments;
+
+        return view('pages/settings/contracts/show', compact(
+            'contract',
+            'mstType',
+            'mstBillType',
+            'mstWorkUnit',
+            'manfeeDocuments',
+            'nonManfeeDocuments'
+        ));
     }
 
     /**

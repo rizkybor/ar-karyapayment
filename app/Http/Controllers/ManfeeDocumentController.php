@@ -35,9 +35,11 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Nomer terakhir + 10
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = ManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         // Format nomor surat, invoice, dan kwitansi
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -71,8 +73,11 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = ManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
