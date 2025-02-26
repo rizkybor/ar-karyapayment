@@ -5,7 +5,7 @@
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <!-- Left: Title -->
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">AR - Management Fee</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Invoice (Billing)</h1>
             </div>
             <!-- Right: Actions -->
             <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
@@ -19,7 +19,7 @@
         <div class="grid grid-cols-12 gap-6">
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
                 <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-                    <h2 class="font-semibold  dark:text-gray-100">Customers</h2>
+                    <h2 class="font-semibold  dark:text-gray-100">Management Fee</h2>
                 </header>
                 <div class="p-3">
 
