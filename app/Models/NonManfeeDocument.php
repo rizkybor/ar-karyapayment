@@ -40,4 +40,34 @@ class NonManfeeDocument extends Model
     {
         return $this->morphOne(DocumentApproval::class, 'document')->latestOfMany();
     }
+
+    // ✅ Relasi ke Non Manfee Doc Accumulated Costs
+    public function accumulatedCosts()
+    {
+        return $this->hasMany(NonManfeeDocAccumulatedCost::class, 'document_id');
+    }
+
+    // ✅ Relasi ke Non Manfee Doc Attachments
+    public function attachments()
+    {
+        return $this->hasMany(NonManfeeDocAttachment::class, 'document_id');
+    }
+
+    // ✅ Relasi ke Non Manfee Doc Descriptions
+    public function descriptions()
+    {
+        return $this->hasMany(NonManfeeDocDescription::class, 'document_id');
+    }
+
+    // ✅ Relasi ke Non Manfee Doc Histories
+    public function histories()
+    {
+        return $this->hasMany(NonManfeeDocHistory::class, 'document_id');
+    }
+
+    // ✅ Relasi ke Non Manfee Doc Tax
+    public function taxFiles()
+    {
+        return $this->hasMany(NonManfeeDocTax::class, 'document_id');
+    }
 }
