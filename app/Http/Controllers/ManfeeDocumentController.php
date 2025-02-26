@@ -10,6 +10,8 @@ use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
 // use App\Models\MasterBillType;
+use App\Exports\ManfeeDocumentExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +22,12 @@ class ManfeeDocumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $manfeeDocs = ManfeeDocument::with('contract')->get();
-        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs'));
+        $perPage = $request->input('per_page', 10);
+
+        $manfeeDocs = ManfeeDocument::with('contract')->paginate($perPage);
+        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs', 'perPage'));
     }
 
     /**
@@ -315,5 +319,17 @@ class ManfeeDocumentController extends Controller
     public function destroyAttachment($id)
     {
         return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
+    }
+
+    // excel
+    public function export(Request $request)
+    {
+        $ids = $request->query('ids');
+
+        if (!$ids) {
+            return back()->with('error', 'Tidak ada data yang dipilih untuk diexport.');
+        }
+
+        return Excel::download(new ManfeeDocumentExport($ids), 'manfee_documents.xlsx');
     }
 }

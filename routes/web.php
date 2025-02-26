@@ -66,7 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::delete('/destroy/{id}', [ManfeeDocumentController::class, 'destroy'])->name('destroy');
 
         // // Export Data
-        // Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
+        Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
 
         // Route untuk Lampiran (Attachments)
         // Route::prefix('attachments')->name('attachments.')->group(function () {
