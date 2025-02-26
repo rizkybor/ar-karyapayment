@@ -29,7 +29,7 @@
                     <div>
                         <!-- Left: Title -->
                         <h2 class="font-semibold dark:text-gray-100 py-3">Management Fee</h2>
-                        <x-search-form />
+                        <x-search-form placeholder="Search…" :value="$search ?? ''" />
                     </div>
                     <!-- Middle: Dropdown jumlah per halaman -->
                     <div class="flex items-center gap-2">
