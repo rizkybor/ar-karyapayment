@@ -47,8 +47,11 @@ class NonManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = NonManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         $letterNumber = sprintf("No. %06d/NF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("No. %06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -79,8 +82,11 @@ class NonManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
+        // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = NonManfeeDocument::max('letter_number');
-        $nextNumber = $lastNumber ? (intval(substr($lastNumber, 4, 6)) + 10) : 100;
+        preg_match('/^(\d{6})/', $lastNumber, $matches);
+        $lastNumeric = $matches[1] ?? '000100';
+        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
 
         $letterNumber = sprintf("%06d/NF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("%06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -113,6 +119,7 @@ class NonManfeeDocumentController extends Controller
      */
     public function show($id)
     {
+        dd($id);
         $document = [
             'id' => $id,
             'letter_number' => 'No. 001/KEU/KPU/SOL/I/2025',
@@ -238,8 +245,8 @@ class NonManfeeDocumentController extends Controller
             // 🔹 8️⃣ Kirim Notifikasi ke Role Berikutnya
             $notification = Notification::create([
                 'type'            => InvoiceApprovalNotification::class,
-                'notifiable_type' => NonManfeeDocument::class,  
-                'notifiable_id'   => $document->id,             
+                'notifiable_type' => NonManfeeDocument::class,
+                'notifiable_id'   => $document->id,
                 'data'            => json_encode([
                     'document_id'    => $document->id,
                     'invoice_number' => $document->invoice_number,
