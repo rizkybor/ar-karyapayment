@@ -27,13 +27,13 @@
                 <header
                     class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                    <!-- Left: Title -->
-                    <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
-                    <x-search-form/>
+                        <!-- Left: Title -->
+                        <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
+                        <x-search-form />
                     </div>
                     <!-- Middle: Dropdown jumlah per halaman -->
                     <div class="flex items-center gap-2">
-                        
+
                         <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Show:
                         </label>
@@ -139,9 +139,11 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="yellow" icon="pencil"
-                                                    onclick="window.location.href='{{ route('management-non-fee.edit', ['id' => $NonManfeeDoc->id]) }}'">
-                                                </x-button-action>
+                                                @if (!empty($NonManfeeDoc->id))
+                                                    <x-button-action color="yellow" icon="pencil"
+                                                        onclick="window.location.href='{{ route('management-non-fee.edit.index', ['document_id' => $NonManfeeDoc->id]) }}'">
+                                                    </x-button-action>
+                                                @endif
                                                 <form
                                                     action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
                                                     method="POST"

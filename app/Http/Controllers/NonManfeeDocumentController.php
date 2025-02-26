@@ -10,7 +10,6 @@ use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use App\Exports\NonManfeeDocumentExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
@@ -25,13 +24,15 @@ class NonManfeeDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        // $NonManfeeDocs = NonManfeeDocument::with('contract')->get();
-        // return view('pages/ar-menu/management-non-fee/index', compact('NonManfeeDocs'));
         // Ambil jumlah per halaman dari query string (default: 10)
         $perPage = $request->input('per_page', 10);
 
         // Ambil data dengan pagination
         $NonManfeeDocs = NonManfeeDocument::with('contract')->paginate($perPage);
+
+        if (!$NonManfeeDocs) {
+            return redirect()->route('management-non-fee.index')->with('error', 'Data tidak ditemukan.');
+        }
 
         return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
     }
@@ -117,7 +118,7 @@ class NonManfeeDocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($document_id)
     {
         // Ambil data Non Manfee Document berdasarkan ID
         $nonManfeeDocument = NonManfeeDocument::with([
@@ -125,7 +126,7 @@ class NonManfeeDocumentController extends Controller
             'attachments',
             'descriptions',
             'taxFiles'
-        ])->findOrFail($id);
+        ])->findOrFail($document_id);
 
         return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact(
             'nonManfeeDocument'
@@ -135,7 +136,7 @@ class NonManfeeDocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit($document_id)
     {
         // Ambil data Non Manfee Document berdasarkan ID dengan relasi
         $nonManfeeDocument = NonManfeeDocument::with([
@@ -143,11 +144,22 @@ class NonManfeeDocumentController extends Controller
             'attachments',
             'descriptions',
             'taxFiles'
-        ])->findOrFail($id);
+        ])->findOrFail($document_id);
 
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact(
             'nonManfeeDocument'
         ));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $nonManfeeDocument = NonManfeeDocument::find($id);
+        $nonManfeeDocument->delete();
+
+        return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
     public function processApproval($documentId)
@@ -291,37 +303,8 @@ class NonManfeeDocumentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Fungsi untuk Export File Non Manfee
      */
-    public function destroy($id)
-    {
-        $nonManfeeDocument = NonManfeeDocument::find($id);
-        $nonManfeeDocument->delete();
-
-        return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
-    }
-
-    public function attachments($id)
-    {
-        $attachments = [
-            (object) ['id' => 1, 'name' => 'BAP'],
-            (object) ['id' => 2, 'name' => 'Invoice'],
-            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
-        ];
-
-        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('attachments'));
-    }
-
-    public function viewAttachment($id)
-    {
-        return response()->json(['message' => "Melihat Lampiran dengan ID: $id"]);
-    }
-
-    public function destroyAttachment($id)
-    {
-        return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
-    }
-
     public function export(Request $request)
     {
         $ids = $request->query('ids');
