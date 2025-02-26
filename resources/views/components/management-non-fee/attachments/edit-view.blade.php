@@ -3,7 +3,7 @@
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Lampiran
         </h5>
-        <x-management-non-fee.attachments.modals.modal-create />
+        <x-modal.management-non-fee.modal-create-attachment />
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
