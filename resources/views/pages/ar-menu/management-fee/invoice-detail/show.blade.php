@@ -16,7 +16,8 @@
         </div>
 
         {{-- Header --}}
-        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isShowPage="true" />
+        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" :document="$manfeeDoc"
+            isShowPage="true" />
 
         {{-- Detail Biaya --}}
         <div class="mt-5 mb-5 md:mt-0 md:col-span-2">

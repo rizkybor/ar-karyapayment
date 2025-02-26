@@ -75,6 +75,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         //     Route::get('/edit/{id}', [ManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
         //     Route::delete('/{id}', [ManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
         // });
+
+        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
     });
 
     // ROUTE MANAGEMENT NON FEE
