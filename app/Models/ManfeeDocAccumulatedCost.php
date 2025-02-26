@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ManfeeDocAccumalatedCost extends Model
+class ManfeeDocAccumulatedCost extends Model
 {
     use HasFactory;
 
-    protected $table = 'manfee_doc_accumalated_costs';
+    protected $table = 'manfee_doc_accumulated_costs';
 
     protected $fillable = [
         'document_id',
