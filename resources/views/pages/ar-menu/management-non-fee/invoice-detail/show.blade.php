@@ -27,155 +27,23 @@
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
 
         {{-- AKUMULASI BIAYA --}}
-        {{-- <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Akumulasi Biaya
-            </h5>
-            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                    <div class="col-span-1">
-                        <x-label for="akun" value="{{ __('Akun') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['akun'] ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-span-1">
-                        <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['dpp_pekerjaan'] ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-span-1 sm:col-span-1">
-                        <x-label for="rate_ppn" value="{{ __('RATE PPN') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['rate_ppn'] ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-span-1 sm:col-span-1">
-                        <x-label for="nilai_ppn" value="{{ __('NILAI PPN') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['nilai_ppn'] ?? '-' }}</p>
-                    </div>
-
-                    <div class="col-span-1 sm:col-span-2">
-                        <x-label for="jumlah" value="{{ __('JUMLAH') }}" />
-                        <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['jumlah'] ?? '-' }}</p>
-                    </div>
-
-                </div>
-            </div>
-        </div> --}}
-        <x-management-non-fee.accumulated-costs.index 
-            :nonManfeeDocument="$nonManfeeDocument" 
-            :isEdit="false" />
+        <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 
         {{-- LAMPIRAN --}}
-        <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Lampiran
-            </h5>
+        <x-management-non-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
 
-            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                <div class="p-3">
-                    <div class="overflow-x-auto">
-                        <table class="table-auto w-full">
-                            <thead
-                                class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
-                                <tr>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">No</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-left">Nama File</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Action</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                @php $i = 1; @endphp
-                                @foreach ($attachments as $attachment)
-                                    <tr>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $i++ }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-left">{{ $attachment->name }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="violet" icon="eye"
-                                                    href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
-                                                    View
-                                                </x-button-action>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- untuk edit  --}}
+        {{-- <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
 
         {{-- DESKRIPSI --}}
-        <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Deskripsi
-            </h5>
-            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument['deskripsi'] ?? '-' }}</p>
-            </div>
-        </div>
+        <x-management-non-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
+
+        {{-- untuk edit --}}
+        {{-- <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
 
         {{-- FAKTUR PAJAK --}}
-        <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Faktur Pajak
-            </h5>
-
-            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
-                <div class="p-3">
-                    <div class="overflow-x-auto">
-                        <table class="table-auto w-full">
-                            <thead
-                                class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
-                                <tr>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">No</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-left">Nama File</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Action</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                @php $i = 1; @endphp
-                                @foreach ($files_faktur as $file)
-                                    <tr>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $i++ }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-left">{{ $file->name }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center flex items-center justify-center gap-2">
-                                                <x-button-action color="violet" icon="eye"
-                                                    href="{{ route('management-non-fee.attachments.view', ['id' => $attachment->id]) }}">
-                                                    View
-                                                </x-button-action>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
+        {{-- untuk edit --}}
+        {{-- <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
     </div>
 </x-app-layout>

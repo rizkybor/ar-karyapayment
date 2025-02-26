@@ -134,8 +134,6 @@ class NonManfeeDocumentController extends Controller
 
         // Data dari tabel terkait berdasarkan ID document
         $attachments = $nonManfeeDocument->attachments;
-        $files_faktur = $nonManfeeDocument->taxFiles;
-        $histories = $nonManfeeDocument->histories;
         $accumulatedCosts = $nonManfeeDocument->accumulatedCosts;
         $descriptions = $nonManfeeDocument->descriptions;
         
@@ -145,7 +143,6 @@ class NonManfeeDocumentController extends Controller
             'document_status',
             'transaction_status',
             'attachments',
-            'files_faktur',
             'accumulatedCosts',
             'descriptions'
         ));
