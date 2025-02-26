@@ -31,6 +31,34 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
+    <style>
+        /* Hilangkan margin extra DataTables */
+        .dataTables_wrapper {
+            margin-top: 0 !important;
+        }
+
+        /* Sesuaikan search bar dan dropdown jumlah entri */
+        .dataTables_filter {
+            display: none;
+            /* Hilangkan search bawaan */
+        }
+
+        .dataTables_length {
+            display: none;
+            /* Hilangkan dropdown bawaan */
+        }
+
+        /* Styling untuk pagination */
+        .dataTables_paginate {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .dataTables_paginate .pagination {
+            gap: 5px;
+        }
+    </style>
 </head>
 
 <body class="font-inter antialiased bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400"
