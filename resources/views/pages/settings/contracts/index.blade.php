@@ -119,23 +119,23 @@
 
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center flex justify-center gap-x-2">
-                                                <a href="{{ route('contracts.show', $contract->id) }}">
-                                                    <x-secondary-button>Details</x-secondary-button>
-                                                </a>
-                                                <a href="{{ route('contracts.edit', $contract->id) }}">
-                                                    <x-edit-button>Edit</x-edit-button>
-                                                </a>
-
-
+                                            <div class="text-center flex items-center justify-center gap-2">
+                                                <x-button-action color="violet" icon="view"
+                                                    onclick="window.location.href='{{ route('contracts.show', $contract->id) }}'">
+                                                </x-button-action>
+                                                <x-button-action color="yellow" icon="pencil"
+                                                    onclick="window.location.href='{{ route('contracts.edit', $contract->id) }}'">
+                                                </x-button-action>
                                                 <form
                                                     action="{{ route('contracts.destroy', ['contract' => $contract->id]) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <x-delete-button type="submit">Delete</x-delete-button>
+                                                    <x-button-action color="red" icon="trash" type="submit">
+                                                    </x-button-action>
                                                 </form>
+
 
                                             </div>
                                         </td>
