@@ -108,7 +108,7 @@ class NonManfeeDocumentController extends Controller
             $document = NonManfeeDocument::create($input);
 
             // Redirect ke halaman detail dengan ID yang benar
-            return redirect()->route('management-non-fee.show', ['id' => $document->id])
+            return redirect()->route('management-non-fee.show', ['document_id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -162,12 +162,15 @@ class NonManfeeDocumentController extends Controller
         return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
-    public function processApproval($documentId)
+    /**
+     * Proses Document with Approval Level
+     */
+    public function processApproval($document_id)
     {
         DB::beginTransaction(); // Memulai transaksi database
 
         try {
-            $document = NonManfeeDocument::findOrFail($documentId);
+            $document = NonManfeeDocument::findOrFail($document_id);
             $currentRole = optional($document->latestApproval)->role ?? 'maker';
 
             // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?

@@ -93,10 +93,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // CRUD utama menggunakan `Route::resource`
         Route::resource('/', NonManfeeDocumentController::class)->except(['show']);
-        Route::get('/{id}', [NonManfeeDocumentController::class, 'show'])->name('show');
+        Route::get('{document_id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
 
         // Route proses persetujuan
-        Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/process/{document_id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
 
         // ✨ Prefix Edit Non Fee
         Route::prefix('{document_id}/edit')->name('edit.')->group(function () {

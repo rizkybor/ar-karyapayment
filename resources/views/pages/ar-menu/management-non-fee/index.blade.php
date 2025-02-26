@@ -129,7 +129,7 @@
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
                                                 <x-button-action color="violet"
-                                                    onclick="window.location.href='{{ route('management-non-fee.show', ['id' => $NonManfeeDoc->id]) }}'">
+                                                    onclick="window.location.href='{{ route('management-non-fee.show', ['document_id' => $NonManfeeDoc->id]) }}'">
                                                     Detail Termin
                                                 </x-button-action>
                                             </div>
