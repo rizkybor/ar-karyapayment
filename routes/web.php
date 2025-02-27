@@ -9,6 +9,8 @@ use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\ManfeeDocumentController;
 
+
+use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\NonManfeeDocumentController;
 use App\Http\Controllers\NonManfeeAccumulatedCostController;
 use App\Http\Controllers\NonManfeeAttachmentController;
@@ -107,7 +109,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::prefix('management-non-fee')->name('management-non-fee.')->group(function () {
 
         // Datatable NonManfee 
-        Route::get('/datatable', [NonManfeeDocumentController::class, 'getDataTable'])->name('datatable');
+        Route::get('/datatable', [NonManfeeDocumentDataTableController::class, 'index'])->name('datatable');
 
         // Export Data
         Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
