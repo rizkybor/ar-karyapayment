@@ -11,10 +11,6 @@
                     <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
                         Kembali
                     </x-secondary-button>
-                    <x-button-action color="yellow"
-                        onclick="window.location.href='{{ route('management-fee.edit', ['id' => $manfeeDoc->id]) }}'">
-                        Edit
-                    </x-button-action>
                 </div>
             </div>
         </div>

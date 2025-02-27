@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manfee_doc_accumalated_costs', function (Blueprint $table) {
+        Schema::create('manfee_doc_accumulated_costs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained('manfee_documents')->onDelete('cascade');
             $table->string('account', 255);
