@@ -31,6 +31,25 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
+
+    <style>
+        .dataTables_paginate {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            #tablePagination {
+                justify-content: center !important;
+                margin-top: 5px;
+            }
+
+            #tableInfo {
+                text-align: center;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
 </head>
 
 <body class="font-inter antialiased bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400"
