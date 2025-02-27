@@ -24,7 +24,6 @@ class ManfeeDocumentController extends Controller
      */
     public function index()
     {
-
         return view('pages/ar-menu/management-fee/index');
     }
 

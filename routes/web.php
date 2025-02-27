@@ -74,7 +74,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Update
         Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
 
-        Route::prefix('{id}/edit')->name('edit.')->group(function () {
+        Route::prefix('{document_id}/edit')->name('edit.')->group(function () {
 
             // Route::get('/', [ManfeeDocumentController::class, 'edit'])->name('index');
 
