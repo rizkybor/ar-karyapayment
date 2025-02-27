@@ -3,17 +3,10 @@
 
         <!-- Dashboard actions -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-            <!-- Left: Title -->
-            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                Invoice (Billing)
-            </h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Invoice (Billing)</h1>
 
-            <!-- Right: Buttons -->
             <div class="flex gap-2 mt-4 sm:mt-0">
-                <x-button-action color="green" id="exportSelected">
-                    Export Selected
-                </x-button-action>
-
+                <x-button-action color="green" id="exportSelected">Export Selected</x-button-action>
                 <x-button-action color="violet" type="button"
                     onclick="window.location='{{ route('management-non-fee.create') }}'">
                     + Data Baru
@@ -26,156 +19,74 @@
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
                 <header
                     class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <!-- Left: Title -->
-                        <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
-                        <x-search-form />
-                    </div>
-                    <!-- Middle: Dropdown jumlah per halaman -->
-                    <div class="flex items-center gap-2">
+                    <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
+                </header>
+                <div class="p-3">
+                    <!-- Table Controls -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                       
 
-                        <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Show:
-                        </label>
                         <div class="relative">
+                            <input type="search" id="searchTable"
+                                class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-10 py-2 h-9 rounded-lg shadow-sm 
+                                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                placeholder="Search...">
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <label for="perPage"
+                                class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
                             <select id="perPage"
-                                class="appearance-none border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                                text-sm text-gray-700 dark:text-gray-200 font-medium 
-                                px-3 pr-8 py-2 h-9 rounded-lg shadow-sm focus:ring focus:ring-blue-300 
-                                dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
-                                onchange="changePerPage()">
-                                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                                <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50</option>
-                                <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100
-                                </option>
+                                class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                    text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-8 py-2 h-9 rounded-lg shadow-sm 
+                                    focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                                <option value="10">10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
                             </select>
-                            <!-- Icon Chevron -->
-                            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </div>
                         </div>
                     </div>
 
-
-                </header>
-                <div class="p-3">
                     <!-- Table -->
                     <div class="overflow-x-auto">
-                        <table class="table-auto w-full">
-                            <!-- Table header -->
+                        <table id="nonManfeeTable" class="table-auto w-full">
                             <thead
                                 class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                                 <tr>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <input type="checkbox" id="selectAll"
-                                            class="form-checkbox h-5 w-5 text-blue-600">
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">No</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-left">No Kontrak</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Nama Pemberi Kerja</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Total Nilai Kontrak</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Jangka Waktu</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Termin Invoice</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Total</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Action</div>
-                                    </th>
+                                    <th class="p-2 whitespace-nowrap"><input type="checkbox" id="selectAll"
+                                            class="form-checkbox h-5 w-5 text-blue-600"></th>
+                                    <th class="p-2 whitespace-nowrap">No</th>
+                                    <th class="p-2 whitespace-nowrap">No Kontrak</th>
+                                    <th class="p-2 whitespace-nowrap">Nama Pemberi Kerja</th>
+                                    <th class="p-2 whitespace-nowrap">Total Nilai Kontrak</th>
+                                    <th class="p-2 whitespace-nowrap">Jangka Waktu</th>
+                                    <th class="p-2 whitespace-nowrap">Termin Invoice</th>
+                                    <th class="p-2 whitespace-nowrap">Total</th>
+                                    <th class="p-2 whitespace-nowrap">Action</th>
                                 </tr>
                             </thead>
-                            <!-- Table body -->
-                            <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                @php $i = 1; @endphp
-                                @foreach ($NonManfeeDocs as $NonManfeeDoc)
-                                    <tr>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <input type="checkbox"
-                                                class="rowCheckbox form-checkbox h-5 w-5 text-blue-600"
-                                                value="{{ $NonManfeeDoc->id }}">
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $i++ }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-left">{{ $NonManfeeDoc->contract->contract_number }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $NonManfeeDoc->contract->employee_name }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">Rp
-                                                {{ number_format($NonManfeeDoc->contract->value, 0, ',', '.') }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $NonManfeeDoc->period }}</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">
-                                                <x-button-action color="violet"
-                                                    onclick="window.location.href='{{ route('management-non-fee.show', ['document_id' => $NonManfeeDoc->id]) }}'">
-                                                    Detail Termin
-                                                </x-button-action>
-                                            </div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">-</div>
-                                        </td>
-                                        <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center flex items-center justify-center gap-2">
-                                                @if (!empty($NonManfeeDoc->id))
-                                                    <x-button-action color="yellow" icon="pencil"
-                                                        onclick="window.location.href='{{ route('management-non-fee.edit.index', ['document_id' => $NonManfeeDoc->id]) }}'">
-                                                    </x-button-action>
-                                                @endif
-                                                <form
-                                                    action="{{ route('management-non-fee.destroy', $NonManfeeDoc->id) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-button-action color="red" icon="trash" type="submit">
-                                                    </x-button-action>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-
                         </table>
                     </div>
 
+                    <!-- Pagination -->
+                    {{-- <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm text-gray-500 dark:text-gray-400" id="tableInfo"></p>
+                        <div id="tablePagination" class="flex gap-2"></div>
+                    </div> --}}
 
                     <!-- Pagination di bawah table -->
                     <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <!-- Menampilkan informasi jumlah data -->
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Showing <span class="font-medium">{{ $NonManfeeDocs->firstItem() }}</span> to
+                         <!-- Menampilkan informasi jumlah data -->
+                         <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing <span class="font-medium">1</span> to
                             <span class="font-medium">
-                                {{ min($NonManfeeDocs->firstItem() + request('per_page', 10) - 1, request('per_page', 10)) }}
+                               1
                             </span> of
-                            <span class="font-medium">{{ $NonManfeeDocs->total() }}</span> documents
+                            <span class="font-medium">1</span> documents
                         </p>
-
                         <!-- Menggunakan Komponen Pagination -->
-                        <x-pagination-numeric :data="$NonManfeeDocs" />
+                        <x-pagination-numeric  />
                     </div>
                 </div>
 
@@ -185,32 +96,135 @@
 
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
     <script>
-        function changePerPage() {
-            let perPage = document.getElementById("perPage").value;
-            window.location.href = "{{ route('management-non-fee.index') }}?per_page=" + perPage;
-        }
-
-        document.getElementById("selectAll").addEventListener("click", function() {
-            let checkboxes = document.querySelectorAll(".rowCheckbox");
-            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
-        });
-
-        document.getElementById("exportSelected").addEventListener("click", function() {
-            let selected = [];
-            document.querySelectorAll(".rowCheckbox:checked").forEach(checkbox => {
-                selected.push(checkbox.value);
+        $(document).ready(function() {
+            let table = $('#nonManfeeTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('management-non-fee.datatable') }}",
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
+                dom: 'rtip',
+                responsive: true,
+                columns: [{
+                        data: 'id',
+                        name: 'id',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}">`;
+                        }
+                    },
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'contract.contract_number',
+                        name: 'contract.contract_number',
+                        className: 'text-left'
+                    },
+                    {
+                        data: 'contract.employee_name',
+                        name: 'contract.employee_name',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'contract.value',
+                        name: 'contract.value',
+                        className: 'text-center',
+                        render: function(data) {
+                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
+                        }
+                    },
+                    {
+                        data: 'period',
+                        name: 'period',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'termin_invoice',
+                        name: 'termin_invoice',
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            let detailUrl =
+                                "{{ route('management-non-fee.show', ['document_id' => ':id']) }}"
+                                .replace(':id', row.id);
+                            return `<button class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
+                        onclick="window.location.href='${detailUrl}'">
+                        Detail Termin</button>`;
+                        }
+                    },
+                    {
+                        data: 'total',
+                        name: 'total',
+                        className: 'text-center',
+                        defaultContent: '-'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center',
+                        render: function(data, type, row) {
+                            let editUrl =
+                                "{{ route('management-non-fee.edit.index', ['document_id' => ':id']) }}"
+                                .replace(':id', row.id);
+                            return `<button class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
+                        onclick="window.location.href='${editUrl}'">
+                        Edit</button>`;
+                        }
+                    }
+                ],
+                infoCallback: function(settings, start, end, max, total, pre) {
+                    // return `Showing ${start} to ${end} of ${total} documents`;
+                },
+                drawCallback: function(settings) {
+                    $('#tablePagination').html($('.dataTables_paginate'));
+                }
             });
 
-            if (selected.length === 0) {
-                alert("Pilih minimal satu data untuk diexport!");
-                return;
-            }
+            // ✅ Event Listener untuk Export Selected
+            $('#exportSelected').on('click', function() {
+                let selected = [];
+                $('.rowCheckbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
 
-            // Menggunakan window.open agar browser mengunduh file
-            let url = `{{ route('management-non-fee.export') }}?ids=` + encodeURIComponent(selected.join(","));
-            window.open(url, '_blank');
+                if (selected.length === 0) {
+                    alert("Pilih minimal satu data untuk diexport!");
+                    return;
+                }
+
+                let url = "{{ route('management-non-fee.export') }}?ids=" + encodeURIComponent(selected
+                    .join(","));
+                window.open(url, '_blank');
+            });
+
+            // ✅ Custom Search Bar
+            $('#searchTable').on('keyup', function() {
+                table.search(this.value).draw();
+            });
+
+            // ✅ Custom Dropdown Entries
+            $('#perPage').on('change', function() {
+                table.page.len($(this).val()).draw();
+            });
+
+            // ✅ Checkbox Select All
+            $('#selectAll').on('click', function() {
+                let rows = table.rows({
+                    search: 'applied'
+                }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
         });
     </script>
-
 </x-app-layout>
