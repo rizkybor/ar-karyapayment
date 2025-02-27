@@ -48,4 +48,35 @@ class ManfeeDocument extends Model
     {
         return $this->morphOne(DocumentApproval::class, 'document')->latestOfMany();
     }
+
+    // Edit
+    public function detailPayments()
+    {
+        return $this->hasMany(ManfeeDocDetailPayments::class, 'document_id');
+    }
+
+    public function accumulatedCosts()
+    {
+        return $this->hasMany(ManfeeDocAccumulatedCost::class, 'document_id');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(ManfeeDocAttachments::class, 'document_id');
+    }
+
+    public function descriptions()
+    {
+        return $this->hasMany(ManfeeDocDescriptions::class, 'document_id');
+    }
+
+    public function taxFiles()
+    {
+        return $this->hasMany(ManfeeDocTax::class, 'document_id');
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(ManfeeDocHistories::class, 'document_id');
+    }
 }

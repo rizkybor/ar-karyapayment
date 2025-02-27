@@ -20,4 +20,9 @@ class ManfeeDocHistories extends Model
         'action',
         'notes',
     ];
+
+    public function ManfeeDocument()
+    {
+        return $this->belongsTo(ManfeeDocument::class, 'document_id');
+    }
 }

@@ -15,4 +15,9 @@ class ManfeeDocDescriptions extends Model
         'document_id',
         'description',
     ];
+
+    public function ManfeeDocument()
+    {
+        return $this->belongsTo(ManfeeDocument::class, 'document_id');
+    }
 }

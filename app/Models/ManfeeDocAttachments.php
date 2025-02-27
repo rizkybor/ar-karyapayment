@@ -16,4 +16,9 @@ class ManfeeDocAttachments extends Model
         'file_name',
         'path',
     ];
+
+    public function ManfeeDocument()
+    {
+        return $this->belongsTo(ManfeeDocument::class, 'document_id');
+    }
 }

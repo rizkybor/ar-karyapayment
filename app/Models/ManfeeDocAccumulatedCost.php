@@ -21,4 +21,9 @@ class ManfeeDocAccumulatedCost extends Model
         'nilai_ppn',
         'total',
     ];
+
+    public function ManfeeDocument()
+    {
+        return $this->belongsTo(ManfeeDocument::class, 'document_id');
+    }
 }

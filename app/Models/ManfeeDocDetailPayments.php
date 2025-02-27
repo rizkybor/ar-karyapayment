@@ -16,4 +16,9 @@ class ManfeeDocDetailPayments extends Model
         'expense_type',
         'total_expense',
     ];
+
+    public function ManfeeDocument()
+    {
+        return $this->belongsTo(ManfeeDocument::class, 'document_id');
+    }
 }
