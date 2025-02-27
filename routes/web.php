@@ -91,7 +91,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Datatable NonManfee 
         Route::get('/datatable', [NonManfeeDocumentController::class, 'getDataTable'])->name('datatable');
 
-
         // Export Data
         Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
 

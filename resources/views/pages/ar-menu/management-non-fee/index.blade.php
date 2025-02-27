@@ -24,6 +24,16 @@
                 <div class="p-3">
                     <!-- Table Controls -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                       
+
+                        <div class="relative">
+                            <input type="search" id="searchTable"
+                                class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-10 py-2 h-9 rounded-lg shadow-sm 
+                                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                placeholder="Search...">
+                        </div>
+
                         <div class="flex items-center gap-2">
                             <label for="perPage"
                                 class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
@@ -35,14 +45,6 @@
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                        </div>
-
-                        <div class="relative">
-                            <input type="search" id="searchTable"
-                                class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-10 py-2 h-9 rounded-lg shadow-sm 
-                                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
-                                placeholder="Search...">
                         </div>
                     </div>
 
@@ -68,9 +70,23 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    {{-- <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <p class="text-sm text-gray-500 dark:text-gray-400" id="tableInfo"></p>
                         <div id="tablePagination" class="flex gap-2"></div>
+                    </div> --}}
+
+                    <!-- Pagination di bawah table -->
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                         <!-- Menampilkan informasi jumlah data -->
+                         <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing <span class="font-medium">1</span> to
+                            <span class="font-medium">
+                               1
+                            </span> of
+                            <span class="font-medium">1</span> documents
+                        </p>
+                        <!-- Menggunakan Komponen Pagination -->
+                        <x-pagination-numeric  />
                     </div>
                 </div>
 
@@ -168,7 +184,7 @@
                     }
                 ],
                 infoCallback: function(settings, start, end, max, total, pre) {
-                    return `Showing ${start} to ${end} of ${total} documents`;
+                    // return `Showing ${start} to ${end} of ${total} documents`;
                 },
                 drawCallback: function(settings) {
                     $('#tablePagination').html($('.dataTables_paginate'));
