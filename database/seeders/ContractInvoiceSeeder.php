@@ -57,6 +57,20 @@ class ContractInvoiceSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'contract_number' => 'ADSAKDSA26',
+                'employee_name' => 'PT. Pasific',
+                'value' => 50000000,
+                'start_date' => Carbon::now()->subYear(),
+                'end_date' => Carbon::now()->addMonths(3),
+                'type' => 'management_fee',
+                'path' => 'awdkasdk12.png',
+                'address' => 'Jl. Ansaman Raya No. 15, Surabaya',
+                'work_unit' => 'keuangan',
+                'status' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

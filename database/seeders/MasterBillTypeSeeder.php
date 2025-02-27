@@ -35,6 +35,24 @@ class MasterBillTypeSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'contract_id' => '4',
+                'bill_type' => 'Gaji',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'contract_id' => '4',
+                'bill_type' => 'SPPD',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'contract_id' => '4',
+                'bill_type' => 'Lembur',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
