@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\ContractsController;
-use App\Http\Controllers\ManfeeAttachmentController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\ManfeeDocumentController;
-
+use App\Http\Controllers\ManfeeAttachmentController;
+use App\Http\Controllers\ManfeeDocumentDataTableController;
 
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\NonManfeeDocumentController;
@@ -58,6 +58,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // ROUTE MANAGEMENT FEE
     Route::prefix('management-fee')->name('management-fee.')->group(function () {
+
+        Route::get('/datatable', [ManfeeDocumentDataTableController::class, 'index'])->name('datatable');
 
         // Read
         Route::get('/', [ManfeeDocumentController::class, 'index'])->name('index');
