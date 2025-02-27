@@ -20,10 +20,10 @@
             <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isEditable="true" />
 
             {{-- DETAIL BIAYA --}}
-            <x-management-fee.detail-biaya.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+            <x-management-fee.detail-biaya.edit :ManfeeDocument="$manfeeDoc" :isEdit="false" />
 
             {{-- AKUMULASI BIAYA --}}
-            <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+            <x-management-fee.accumulated-costs.edit :ManfeeDocument="$manfeeDoc" :isEdit="false" />
 
             {{-- LAMPIRAN --}}
             <x-management-fee.attachments.edit-view :ManfeeDocument="$manfeeDoc" />
