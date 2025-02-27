@@ -19,22 +19,19 @@ class NonManfeeDocumentDataTableController extends Controller
 
         return DataTables::eloquent($query)
             ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
-            ->addColumn('contract.contract_number', function ($row) {
-                return $row->contract ? $row->contract->contract_number : '-';
-            })
-            ->addColumn('contract.employee_name', function ($row) {
-                return $row->contract ? $row->contract->employee_name : '-';
-            })
-            ->addColumn('contract.value', function ($row) {
-                return $row->contract && is_numeric($row->contract->value)
-                    ? (float) $row->contract->value
-                    : 0.00;
-            })
+            
             ->addColumn('termin_invoice', function ($row) {
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
             ->addColumn('total', function ($row) {
-                return '-'; // Tidak bisa difilter, hanya sebagai tampilan
+                return '-';
+            })
+
+            // FILTER SEARCH untuk `contract.contract_number`
+            ->filterColumn('contract.contract_number', function ($query, $keyword) {
+                $query->whereHas('contract', function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+                });
             })
 
             // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
