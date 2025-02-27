@@ -22,31 +22,10 @@ class ManfeeDocumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $perPage = $request->input('per_page', 10);
-        $search = $request->input('search');
 
-        $manfeeDocs = ManfeeDocument::with('contract')
-            ->when($search, function ($query, $search) {
-                $query->where('invoice_number', 'like', "%{$search}%")
-                    ->orWhere('receipt_number', 'like', "%{$search}%")
-                    ->orWhere('letter_number', 'like', "%{$search}%")
-                    ->orWhere('manfee_bill', 'like', "%{$search}%")
-                    ->orWhere('period', 'like', "%{$search}%")
-                    ->orWhere('letter_subject', 'like', "%{$search}%")
-                    ->orWhere('category', 'like', "%{$search}%")
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhereHas('contract', function ($contractQuery) use ($search) {
-                        $contractQuery->where('contract_number', 'like', "%{$search}%")
-                            ->orWhere('employee_name', 'like', "%{$search}%")
-                            ->orWhere('work_unit', 'like', "%{$search}%")
-                            ->orWhere('value', 'like', "%{$search}%");
-                    });
-            })
-            ->paginate($perPage);
-
-        return view('pages/ar-menu/management-fee/index', compact('manfeeDocs', 'perPage', 'search'));
+        return view('pages/ar-menu/management-fee/index');
     }
 
     /**

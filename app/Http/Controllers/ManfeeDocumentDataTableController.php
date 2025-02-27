@@ -14,7 +14,7 @@ class ManfeeDocumentDataTableController extends Controller
   public function index(Request $request)
   {
     $query = ManfeeDocument::query()
-      ->with('contract') // Load relasi contract
+      ->with('contract')
       ->select('manfee_documents.*');
 
     return DataTables::eloquent($query)
@@ -37,14 +37,27 @@ class ManfeeDocumentDataTableController extends Controller
         return '-'; // Tidak bisa difilter, hanya sebagai tampilan
       })
 
-      // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
+      // FILTER SEARCH untuk `contract.contract_number`
+      ->filterColumn('contract.contract_number', function ($query, $keyword) {
+        $query->whereHas('contract', function ($q) use ($keyword) {
+          $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+        });
+      })
+
+      // FILTER SEARCH untuk `contract.employee_name`
       ->filterColumn('contract.employee_name', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
           $q->whereRaw('LOWER(employee_name) LIKE ?', ["%" . strtolower($keyword) . "%"]);
         });
       })
 
-      // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
+      // FILTER SEARCH untuk `contract.value`
+      ->filterColumn('contract.value', function ($query, $keyword) {
+        $query->whereHas('contract', function ($q) use ($keyword) {
+          $q->whereRaw('value LIKE ?', ["%" . $keyword . "%"]);
+        });
+      })
+
       ->rawColumns(['action'])
       ->make(true);
   }
