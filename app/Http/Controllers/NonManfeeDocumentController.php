@@ -39,42 +39,6 @@ class NonManfeeDocumentController extends Controller
         return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
     }
 
-    public function getDataTable(Request $request)
-    {
-        $query = NonManfeeDocument::query()
-            ->with('contract') // Load relasi contract
-            ->select('non_manfee_documents.*');
-
-        return DataTables::eloquent($query)
-            ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
-            ->addColumn('contract.contract_number', function ($row) {
-                return $row->contract ? $row->contract->contract_number : '-';
-            })
-            ->addColumn('contract.employee_name', function ($row) {
-                return $row->contract ? $row->contract->employee_name : '-';
-            })
-            ->addColumn('contract.value', function ($row) {
-                return $row->contract ? number_format($row->contract->value, 0, ',', '.') : '-';
-            })
-            ->addColumn('termin_invoice', function ($row) {
-                return $row->contract ? $row->contract->termin_invoice : '-';
-            })
-            ->addColumn('total', function ($row) {
-                return '-'; // Tidak bisa difilter, hanya sebagai tampilan
-            })
-
-            // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
-            ->filterColumn('contract.employee_name', function ($query, $keyword) {
-                $query->whereHas('contract', function ($q) use ($keyword) {
-                    $q->whereRaw('LOWER(employee_name) LIKE ?', ["%" . strtolower($keyword) . "%"]);
-                });
-            })
-
-            // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
-            ->rawColumns(['action'])
-            ->make(true);
-    }
-
     /**
      * Show the form for creating a new resource.
      */

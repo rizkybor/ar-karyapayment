@@ -169,9 +169,18 @@
                         data: 'contract.value',
                         name: 'contract.value',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
-                        render: function(data) {
-                            return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
+                        render: function (data, type, row) {
+                        // Jika data NULL atau NaN, tampilkan "Rp 0,00"
+                        if (!data || isNaN(parseFloat(data))) {
+                            return 'Rp 0,00';
                         }
+
+                        // Format angka dengan 2 desimal sebagai Rupiah
+                        return 'Rp ' + new Intl.NumberFormat('id-ID', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        }).format(parseFloat(data));
+                    }
                     },
                     {
                         data: 'period',
