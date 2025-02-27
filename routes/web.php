@@ -61,50 +61,32 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         Route::get('/datatable', [ManfeeDocumentDataTableController::class, 'index'])->name('datatable');
 
-        // Read
-        Route::get('/', [ManfeeDocumentController::class, 'index'])->name('index');
+        Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
 
-        // Create
-        Route::get('/create', [ManfeeDocumentController::class, 'create'])->name('create');
-        Route::post('/store', [ManfeeDocumentController::class, 'store'])->name('store');
+        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+
+
+        Route::resource('/', ManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
+            'index' => 'index',
+            'create' => 'create',
+            'store' => 'store',
+            'update' => 'update',
+            'destroy' => 'destroy',
+        ]);
 
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
 
-        // Update
+        // Edit
         Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
 
-        Route::prefix('{document_id}/edit')->name('edit.')->group(function () {
-
-            // Route::get('/', [ManfeeDocumentController::class, 'edit'])->name('index');
-
-            // Route Lampiran (Attachments)
-            Route::prefix('attachments')->name('attachments.')->group(function () {
-                // Route::get('/', [ManfeeAttachmentController::class, 'index'])->name('index');
-                Route::get('/{attachment_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
-                Route::post('/store', [ManfeeAttachmentController::class, 'store'])->name('store');
-                Route::put('/update/{attachment_id}', [ManfeeAttachmentController::class, 'update'])->name('update');
-                Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
-            });
+        // Prefix untuk attachments
+        Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
+            Route::get('/{attachment_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
+            Route::post('/{attachment_id}/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+            Route::put('/{attachment_id}/update', [ManfeeAttachmentController::class, 'update'])->name('update');
+            Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
         });
-
-        Route::put('/update/{id}', [ManfeeDocumentController::class, 'update'])->name('update');
-
-        // Delete
-        Route::delete('/destroy/{id}', [ManfeeDocumentController::class, 'destroy'])->name('destroy');
-
-        // // Export Data
-        Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
-
-        // Route untuk Lampiran (Attachments)
-        // Route::prefix('attachments')->name('attachments.')->group(function () {
-        //     Route::get('/{id}', [ManfeeDocumentController::class, 'attachments'])->name('index'); // Menampilkan daftar lampiran
-        //     Route::get('/view/{id}', [ManfeeDocumentController::class, 'viewAttachment'])->name('view'); // Melihat file lampiran
-        //     Route::get('/edit/{id}', [ManfeeDocumentController::class, 'editAttachment'])->name('edit'); // Edit lampiran
-        //     Route::delete('/{id}', [ManfeeDocumentController::class, 'destroyAttachment'])->name('destroy'); // Menghapus lampiran
-        // });
-
-        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
     });
 
     // ROUTE MANAGEMENT NON FEE
