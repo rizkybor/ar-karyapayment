@@ -99,7 +99,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
 
         // CRUD utama menggunakan `Route::resource`
-        Route::resource('/', NonManfeeDocumentController::class)->except(['show']);
+        Route::resource('/', NonManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
+            'index' => 'index',
+            'create' => 'create',
+            'store' => 'store',
+            'update' => 'update',
+            'destroy' => 'destroy',
+        ]);
+
+        // Details
         Route::get('{document_id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
 
         // Route proses persetujuan
