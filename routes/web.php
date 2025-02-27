@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContractsController;
+use App\Http\Controllers\ManfeeAttachmentController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
@@ -58,14 +59,31 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // Read
         Route::get('/', [ManfeeDocumentController::class, 'index'])->name('index');
-        Route::get('/show/{id}', [ManfeeDocumentController::class, 'show'])->name('show');
 
         // Create
         Route::get('/create', [ManfeeDocumentController::class, 'create'])->name('create');
         Route::post('/store', [ManfeeDocumentController::class, 'store'])->name('store');
 
+        // Details
+        Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
+
         // Update
-        Route::get('/edit/{id}', [ManfeeDocumentController::class, 'edit'])->name('edit');
+        Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
+
+        Route::prefix('{id}/edit')->name('edit.')->group(function () {
+
+            // Route::get('/', [ManfeeDocumentController::class, 'edit'])->name('index');
+
+            // Route Lampiran (Attachments)
+            Route::prefix('attachments')->name('attachments.')->group(function () {
+                // Route::get('/', [ManfeeAttachmentController::class, 'index'])->name('index');
+                Route::get('/{attachment_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
+                Route::post('/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+                Route::put('/update/{attachment_id}', [ManfeeAttachmentController::class, 'update'])->name('update');
+                Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
+            });
+        });
+
         Route::put('/update/{id}', [ManfeeDocumentController::class, 'update'])->name('update');
 
         // Delete
