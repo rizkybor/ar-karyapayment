@@ -13,27 +13,25 @@
                 </div>
             </div>
         </div>
-        <form action="{{ route('management-fee.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
 
-            {{-- HEADER --}}
-            <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isEditable="true" />
+        {{-- HEADER --}}
+        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isEditable="true" />
 
-            {{-- DETAIL BIAYA --}}
-            <x-management-fee.detail-biaya.edit :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+        {{-- DETAIL BIAYA --}}
+        {{-- <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
 
-            {{-- AKUMULASI BIAYA --}}
-            <x-management-fee.accumulated-costs.edit :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+        {{-- AKUMULASI BIAYA --}}
+        {{-- <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
 
-            {{-- LAMPIRAN --}}
-            <x-management-fee.attachments.edit-view :ManfeeDocument="$manfeeDoc" />
+        {{-- LAMPIRAN --}}
+        <x-management-fee.attachments.edit-view :manfeeDoc="$manfeeDoc" />
 
-            {{-- DESKRIPSI --}}
-            <x-management-fee.descriptions.edit :ManfeeDocument="$manfeeDoc" />
+        {{-- DESKRIPSI --}}
+        {{-- <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" /> --}}
 
-            {{-- FAKTUR PAJAK --}}
-            <x-management-fee.tax-files.edit :ManfeeDocument="$manfeeDoc" />
-        </form>
+        {{-- FAKTUR PAJAK --}}
+        {{-- <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" /> --}}
+
     </div>
     <script></script>
 </x-app-layout>

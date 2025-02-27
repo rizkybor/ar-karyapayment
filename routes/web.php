@@ -78,13 +78,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
 
         // Edit
+        // management-fee.edit
         Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
 
         // Prefix untuk attachments
         Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
+            // management-fee.attachments.show
             Route::get('/{attachment_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
-            Route::post('/{attachment_id}/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+            // management-fee.attachments.store
+            Route::post('/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+            // management-fee.attachments.update
             Route::put('/{attachment_id}/update', [ManfeeAttachmentController::class, 'update'])->name('update');
+            // management-fee.attachments.destroy
             Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
         });
     });
