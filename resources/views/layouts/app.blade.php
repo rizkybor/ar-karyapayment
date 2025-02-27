@@ -31,83 +31,22 @@
             document.querySelector('html').style.colorScheme = 'dark';
         }
     </script>
+
     <style>
-        /* Wrapper untuk DataTables agar tidak overflow */
-        .dataTables_wrapper {
-            margin-top: 0 !important;
-            overflow-x: auto;
-        }
-
-        /* Styling Pagination agar lebih elegan */
         .dataTables_paginate {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 6px;
-            margin-top: 10px;
+            display: none !important;
         }
 
-        .dataTables_paginate .paginate_button {
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            background-color: #f3f4f6;
-            color: #374151;
-            font-weight: 500;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .dataTables_paginate .paginate_button:hover {
-            background-color: #e5e7eb;
-        }
-
-        .dataTables_paginate .paginate_button.current {
-            background-color: #6366f1;
-            color: white;
-            border-color: #6366f1;
-        }
-
-        .dataTables_paginate .paginate_button.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Responsif: Stack pagination di layar kecil */
-        @media (max-width: 768px) {
-            .dataTables_paginate {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-        }
-
-        /* Styling untuk search bar dan dropdown */
-        .custom-controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .custom-search {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .custom-search input {
-            border: 1px solid #d1d5db;
-            padding: 6px 12px;
-            border-radius: 6px;
-        }
-
-        /* Responsif: Search dan dropdown stack di layar kecil */
         @media (max-width: 640px) {
-            .custom-controls {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
+            #tablePagination {
+                justify-content: center !important;
+                margin-top: 5px;
+            }
+
+            #tableInfo {
+                text-align: center;
+                width: 100%;
+                margin-bottom: 5px;
             }
         }
     </style>

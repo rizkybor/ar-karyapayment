@@ -3,10 +3,17 @@
 
         <!-- Dashboard actions -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Invoice (Billing)</h1>
+            <!-- Left: Title -->
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                Invoice (Billing)
+            </h1>
 
+            <!-- Right: Buttons -->
             <div class="flex gap-2 mt-4 sm:mt-0">
-                <x-button-action color="green" id="exportSelected">Export Selected</x-button-action>
+                <x-button-action color="green" id="exportSelected">
+                    Export Selected
+                </x-button-action>
+
                 <x-button-action color="violet" type="button"
                     onclick="window.location='{{ route('management-non-fee.create') }}'">
                     + Data Baru
@@ -24,8 +31,6 @@
                 <div class="p-3">
                     <!-- Table Controls -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-                       
-
                         <div class="relative">
                             <input type="search" id="searchTable"
                                 class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
@@ -34,13 +39,14 @@
                                 placeholder="Search...">
                         </div>
 
-                        <div class="flex items-center gap-2">
+                        <!-- Show Entries Dropdown (Hidden on Mobile) -->
+                        <div class="hidden sm:flex items-center gap-2">
                             <label for="perPage"
                                 class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
                             <select id="perPage"
                                 class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                                    text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-8 py-2 h-9 rounded-lg shadow-sm 
-                                    focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-8 py-2 h-9 rounded-lg shadow-sm 
+                                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
                                 <option value="10">10</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
@@ -56,37 +62,52 @@
                                 <tr>
                                     <th class="p-2 whitespace-nowrap"><input type="checkbox" id="selectAll"
                                             class="form-checkbox h-5 w-5 text-blue-600"></th>
-                                    <th class="p-2 whitespace-nowrap">No</th>
-                                    <th class="p-2 whitespace-nowrap">No Kontrak</th>
-                                    <th class="p-2 whitespace-nowrap">Nama Pemberi Kerja</th>
-                                    <th class="p-2 whitespace-nowrap">Total Nilai Kontrak</th>
-                                    <th class="p-2 whitespace-nowrap">Jangka Waktu</th>
-                                    <th class="p-2 whitespace-nowrap">Termin Invoice</th>
-                                    <th class="p-2 whitespace-nowrap">Total</th>
-                                    <th class="p-2 whitespace-nowrap">Action</th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">No</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-left">No Kontrak</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Nama Pemberi Kerja</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Total Nilai Kontrak</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Jangka Waktu</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Termin Invoice</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Total</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Action</div>
+                                    </th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
-                    {{-- <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-sm text-gray-500 dark:text-gray-400" id="tableInfo"></p>
-                        <div id="tablePagination" class="flex gap-2"></div>
-                    </div> --}}
+                    <!-- Show Entries Dropdown (Visible only on Mobile) -->
+                    <div class="flex items-center gap-2 sm:hidden mt-5">
+                        <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
+                        <select id="perPage"
+                            class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                            text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-8 py-2 h-9 rounded-lg shadow-sm 
+                            focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                            <option value="10">10</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
 
                     <!-- Pagination di bawah table -->
-                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                         <!-- Menampilkan informasi jumlah data -->
-                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Showing <span class="font-medium">1</span> to
-                            <span class="font-medium">
-                               1
-                            </span> of
-                            <span class="font-medium">1</span> documents
-                        </p>
-                        <!-- Menggunakan Komponen Pagination -->
-                        <x-pagination-numeric  />
+                    <div class="mt-1 flex flex-col sm:flex-row sm:items-center justify-between">
+                        <div id="tableInfo" class="text-sm text-gray-500 dark:text-gray-400"></div>
+                        <div id="tablePagination"></div>
                     </div>
                 </div>
 
@@ -109,12 +130,14 @@
                 lengthChange: false,
                 searching: false,
                 dom: 'rtip',
+                pagingType: "simple",
                 responsive: true,
                 columns: [{
                         data: 'id',
                         name: 'id',
                         orderable: false,
                         searchable: false,
+                        className: 'p-2 whitespace-nowrap',
                         render: function(data) {
                             return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}">`;
                         }
@@ -123,22 +146,29 @@
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'p-2 whitespace-nowrap text-sm',
                     },
                     {
                         data: 'contract.contract_number',
                         name: 'contract.contract_number',
-                        className: 'text-left'
+                        className: 'p-2 whitespace-nowrap text-left text-sm',
+                        render: function(data) {
+                            return `<div>${data ?? '-'}</div>`;
+                        }
                     },
                     {
                         data: 'contract.employee_name',
                         name: 'contract.employee_name',
-                        className: 'text-center'
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
+                        render: function(data) {
+                            return `<div>${data ?? '-'}</div>`;
+                        }
                     },
                     {
                         data: 'contract.value',
                         name: 'contract.value',
-                        className: 'text-center',
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
                         render: function(data) {
                             return 'Rp ' + new Intl.NumberFormat('id-ID').format(data);
                         }
@@ -146,7 +176,7 @@
                     {
                         data: 'period',
                         name: 'period',
-                        className: 'text-center'
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
                     },
                     {
                         data: 'termin_invoice',
@@ -156,15 +186,15 @@
                             let detailUrl =
                                 "{{ route('management-non-fee.show', ['document_id' => ':id']) }}"
                                 .replace(':id', row.id);
-                            return `<button class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
-                        onclick="window.location.href='${detailUrl}'">
-                        Detail Termin</button>`;
+                            return `<x-button-action class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
+                            onclick="window.location.href='${detailUrl}'">
+                            Detail Termin</x-button-action>`;
                         }
                     },
                     {
                         data: 'total',
                         name: 'total',
-                        className: 'text-center',
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
                         defaultContent: '-'
                     },
                     {
@@ -172,22 +202,119 @@
                         name: 'action',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center',
+                        className: 'p-2 whitespace-nowrap text-center',
                         render: function(data, type, row) {
                             let editUrl =
                                 "{{ route('management-non-fee.edit.index', ['document_id' => ':id']) }}"
                                 .replace(':id', row.id);
-                            return `<button class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-700"
-                        onclick="window.location.href='${editUrl}'">
-                        Edit</button>`;
+                            let deleteUrl = "{{ route('management-non-fee.destroy', ':id') }}"
+                                .replace(':id', row.id);
+
+                            return `
+                            <div class="text-center flex items-center justify-center gap-2">
+                                <!-- Tombol Edit -->
+                                <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
+                                        onclick="window.location.href='${editUrl}'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Tombol Delete -->
+                                <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-200"
+                                            type="submit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        `;
                         }
                     }
                 ],
                 infoCallback: function(settings, start, end, max, total, pre) {
-                    // return `Showing ${start} to ${end} of ${total} documents`;
+                    return `
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing <span class="font-medium">${start}</span> to
+                            <span class="font-medium">${end}</span> of
+                            <span class="font-medium">${total}</span> documents
+                        </p>
+                    `;
                 },
                 drawCallback: function(settings) {
-                    $('#tablePagination').html($('.dataTables_paginate'));
+                    let pageInfo = table.page.info(); // Ambil informasi pagination
+                    let currentPage = pageInfo.page + 1; // Page index mulai dari 0, jadi +1
+                    let totalPages = pageInfo.pages;
+
+                    let paginationHtml = `
+                        <div class="flex justify-center">
+                            <nav class="flex" role="navigation" aria-label="Navigation">
+                                <div class="mr-2">
+                                    ${currentPage > 1 ? `
+                                            <button onclick="table.page(${currentPage - 2}).draw(false)" 
+                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </button>` : `
+                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </span>`}
+                                </div>
+                                <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
+
+                    for (let i = 1; i <= totalPages; i++) {
+                        if (i === currentPage) {
+                            paginationHtml += `
+                                <li>
+                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+                                        border border-gray-200 dark:border-gray-700/60 text-violet-500">
+                                        ${i}
+                                    </span>
+                                </li>`;
+                        } else {
+                            paginationHtml += `
+                                <li>
+                                    <button onclick="table.page(${i - 1}).draw(false)" 
+                                        class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+                                        hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
+                                        text-gray-600 dark:text-gray-300">
+                                        ${i}
+                                    </button>
+                                </li>`;
+                        }
+                    }
+
+                    paginationHtml += `
+                                </ul>
+                                <div class="ml-2">
+                                    ${currentPage < totalPages ? `
+                                            <button onclick="table.page(${currentPage}).draw(false)" 
+                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                </svg>
+                                            </button>` : `
+                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                </svg>
+                                            </span>`}
+                                </div>
+                            </nav>
+                        </div>`;
+
+                    $('#tablePagination').html(paginationHtml);
                 }
             });
 
