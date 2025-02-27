@@ -13,7 +13,8 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "maatwebsite/excel": "*",
-        "spatie/laravel-permission": "^6.10"
+        "spatie/laravel-permission": "^6.10",
+        "yajra/laravel-datatables-oracle": "^10.11"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",

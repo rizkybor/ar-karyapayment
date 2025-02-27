@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Contracts;
+use Yajra\DataTables\DataTables;
 use App\Models\NonManfeeDocument;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
@@ -35,6 +36,20 @@ class NonManfeeDocumentController extends Controller
         }
 
         return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
+    }
+
+    public function getDataTable(Request $request)
+    {
+        Log::info('Datatable request received', $request->all()); // Debugging
+
+        $query = NonManfeeDocument::with('contract'); // Load relasi contract
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                return '<button onclick="alert(\'Detail ID: ' . $row->id . '\')">Detail</button>';
+            })
+            ->toJson();
     }
 
     /**
