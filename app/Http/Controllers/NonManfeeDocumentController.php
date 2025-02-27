@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Contracts;
-use Yajra\DataTables\DataTables;
+// use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use App\Models\NonManfeeDocument;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
@@ -40,16 +41,38 @@ class NonManfeeDocumentController extends Controller
 
     public function getDataTable(Request $request)
     {
-        Log::info('Datatable request received', $request->all()); // Debugging
+        $query = NonManfeeDocument::query()
+            ->with('contract') // Load relasi contract
+            ->select('non_manfee_documents.*');
 
-        $query = NonManfeeDocument::with('contract'); // Load relasi contract
-
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                return '<button onclick="alert(\'Detail ID: ' . $row->id . '\')">Detail</button>';
+        return DataTables::eloquent($query)
+            ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
+            ->addColumn('contract.contract_number', function ($row) {
+                return $row->contract ? $row->contract->contract_number : '-';
             })
-            ->toJson();
+            ->addColumn('contract.employee_name', function ($row) {
+                return $row->contract ? $row->contract->employee_name : '-';
+            })
+            ->addColumn('contract.value', function ($row) {
+                return $row->contract ? number_format($row->contract->value, 0, ',', '.') : '-';
+            })
+            ->addColumn('termin_invoice', function ($row) {
+                return $row->contract ? $row->contract->termin_invoice : '-';
+            })
+            ->addColumn('total', function ($row) {
+                return '-'; // Tidak bisa difilter, hanya sebagai tampilan
+            })
+
+            // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
+            ->filterColumn('contract.employee_name', function ($query, $keyword) {
+                $query->whereHas('contract', function ($q) use ($keyword) {
+                    $q->whereRaw('LOWER(employee_name) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+                });
+            })
+
+            // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
+            ->rawColumns(['action'])
+            ->make(true);
     }
 
     /**
