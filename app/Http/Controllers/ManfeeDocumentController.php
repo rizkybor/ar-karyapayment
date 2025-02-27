@@ -297,27 +297,6 @@ class ManfeeDocumentController extends Controller
         ];
     }
 
-    public function attachments($id)
-    {
-        $attachments = [
-            (object) ['id' => 1, 'name' => 'BAP'],
-            (object) ['id' => 2, 'name' => 'Invoice'],
-            (object) ['id' => 3, 'name' => 'Kontrak Kerja'],
-        ];
-
-        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact('attachments'));
-    }
-
-    public function viewAttachment($id)
-    {
-        return response()->json(['message' => "Melihat Lampiran dengan ID: $id"]);
-    }
-
-    public function destroyAttachment($id)
-    {
-        return redirect()->back()->with('success', "Lampiran dengan ID: $id telah dihapus.");
-    }
-
     // excel
     public function export(Request $request)
     {
