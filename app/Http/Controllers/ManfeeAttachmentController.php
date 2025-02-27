@@ -16,6 +16,7 @@ class ManfeeAttachmentController extends Controller
         $attachment = ManfeeDocAttachments::where('document_id', $document_id)
             ->where('id', $attachment_id)
             ->firstOrFail();
+        dd($attachment);
 
         return response()->json($attachment);
     }

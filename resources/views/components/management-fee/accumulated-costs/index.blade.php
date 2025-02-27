@@ -16,58 +16,73 @@
          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
              {{-- Akun --}}
              <div class="col-span-1 sm:col-span-2 lg:col-span-3">
-                 <x-label for="test" value="{{ __('Akun') }}" />
-                 <select id="akun" name="akun" class="form-input mt-1 block w-full min-h-[40px]" disabled>
-                     <option value="">Select Account by Accurate</option>
-                 </select>
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="akun" value="{{ __('Akun') }}" />
+                 @if ($isEdit)
+                     <x-input id="akun" class="block mt-1 w-full" type="text" name="akun"
+                         value="{{ old('akun', $ManfeeDocument->akun ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->akun ?? '-' }}</p>
+                 @endif
              </div>
              {{-- Rate Manfee --}}
              <div class="col-span-1 sm:col-span-2 lg:col-span-2 lg:col-start-4">
-                 <x-label for="test" value="{{ __('Rate Manfee') }}" />
-                 <select id="akun" name="akun" class="form-input mt-1 block w-full min-h-[40px]">
-                     <option value="">Percentage (10%)</option>
-                 </select>
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="rate_manfee" value="{{ __('Rate Manfee') }}" />
+                 @if ($isEdit)
+                     <x-input id="rate_manfee" class="block mt-1 w-full" type="text" name="rate_manfee"
+                         value="{{ old('rate_manfee', $ManfeeDocument->rate_manfee ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->rate_manfee ?? '-' }}</p>
+                 @endif
              </div>
 
              <div class="col-span-1 sm:col-span-2 lg:col-span-3 lg:col-start-6">
-                 <x-label for="test" value="{{ __('Nilai Manfee') }}" />
-                 <x-input id="test" type="text" class="mt-1 block w-full min-h-[40px]"
-                     wire:model.live="state.test" required autocomplete="test"
-                     placeholder="= Subtotal Detail Biaya * Rate Manfee" disabled />
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="nilai_manfee" value="{{ __('Nilai Manfee') }}" />
+                 @if ($isEdit)
+                     <x-input id="nilai_manfee" class="block mt-1 w-full" type="text" name="nilai_manfee"
+                         value="{{ old('nilai_manfee', $ManfeeDocument->nilai_manfee ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->nilai_manfee ?? '-' }}</p>
+                 @endif
              </div>
 
              <div class="col-span-1 sm:col-span-3 lg:col-span-5 lg:row-start-2">
-                 <x-label for="test" value="{{ __('DPP') }}" />
-                 <x-input id="test" type="text" class="mt-1 block w-full min-h-[40px]"
-                     wire:model.live="state.test" required autocomplete="test"
-                     placeholder="= Nilai Manfee (+ Jika Ada Biaya Non Personil)" disabled />
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan') }}" />
+                 @if ($isEdit)
+                     <x-input id="dpp_pekerjaan" class="block mt-1 w-full" type="text" name="dpp_pekerjaan"
+                         value="{{ old('dpp_pekerjaan', $ManfeeDocument->dpp_pekerjaan ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->dpp_pekerjaan ?? '-' }}</p>
+                 @endif
              </div>
 
              <div class="col-span-1 sm:col-span-3 lg:col-span-5 lg:row-start-3">
-                 <x-label for="test" value="{{ __('RATE PPN') }}" />
-                 <x-input id="test" type="text" class="mt-1 block w-full min-h-[40px]"
-                     wire:model.live="state.test" required autocomplete="test" placeholder="Percentage Rate PPN" />
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="rate_ppn" value="{{ __('RATE PPN') }}" />
+                 @if ($isEdit)
+                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
+                         value="{{ old('rate_ppn', $ManfeeDocument->rate_ppn ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->rate_ppn ?? '-' }}</p>
+                 @endif
              </div>
 
              <div class="col-span-1 sm:col-span-2 lg:col-span-5 lg:col-start-1 lg:row-start-4">
-                 <x-label for="test" value="{{ __('JUMLAH') }}" />
-                 <x-input id="test" type="text" class="mt-1 block w-full min-h-[40px]"
-                     wire:model.live="state.test" required autocomplete="test"
-                     placeholder="Seluruh Jenis Biaya + Nilai Manfee + Nilai PPN" disabled />
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="jumlah" value="{{ __('JUMLAH') }}" />
+                 @if ($isEdit)
+                     <x-input id="jumlah" class="block mt-1 w-full" type="text" name="jumlah"
+                         value="{{ old('jumlah', $ManfeeDocument->jumlah ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->jumlah ?? '-' }}</p>
+                 @endif
              </div>
 
              <div class="col-span-1 sm:col-span-2 lg:col-span-3 lg:col-start-6 lg:row-start-3">
-                 <x-label for="test" value="{{ __('NILAI PPN') }}" />
-                 <x-input id="test" type="text" class="mt-1 block w-full min-h-[40px]"
-                     wire:model.live="state.test" required autocomplete="test" placeholder="= DPP * RATE PPN"
-                     disabled />
-                 <x-input-error for="test" class="mt-2" />
+                 <x-label for="nilai_ppn" value="{{ __('NILAI PPN') }}" />
+                 @if ($isEdit)
+                     <x-input id="nilai_ppn" class="block mt-1 w-full" type="text" name="nilai_ppn"
+                         value="{{ old('nilai_ppn', $ManfeeDocument->nilai_ppn ?? '') }}" />
+                 @else
+                     <p class="text-gray-800 dark:text-gray-200">{{ $ManfeeDocument->nilai_ppn ?? '-' }}</p>
+                 @endif
              </div>
          </div>
          {{-- Akumulasi Biaya Form End --}}
