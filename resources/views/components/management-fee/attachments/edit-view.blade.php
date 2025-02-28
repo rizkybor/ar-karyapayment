@@ -40,10 +40,10 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
-                                            {{-- <x-button-action color="violet" icon="eye"
+                                            <x-button-action color="violet" icon="eye"
                                                 href="{{ route('management-fee.attachments.show', ['id' => $manfeeDoc->id, 'attachment_id' => $file->id]) }}">
                                                 View
-                                            </x-button-action> --}}
+                                            </x-button-action>
                                             <x-button-action color="red" icon="trash"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus lampiran ini?') 
                                                 && document.getElementById('delete-attachment-{{ $file->id }}').submit()">

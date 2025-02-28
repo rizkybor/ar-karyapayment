@@ -20,19 +20,19 @@
             isShowPage="true" />
 
         {{-- DETAIL BIAYA --}}
-        <x-management-fee.detail-biaya.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+        {{-- <x-management-fee.detail-biaya.index :ManfeeDocument="$manfeeDoc" :isEdit="false" /> --}}
 
         {{-- AKUMULASI BIAYA --}}
-        <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
+        {{-- <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" /> --}}
 
         {{-- LAMPIRAN --}}
-        <x-management-fee.attachments.index :ManfeeDocument="$manfeeDoc" />
+        <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />
 
         {{-- DESKRIPSI --}}
-        <x-management-fee.descriptions.index :ManfeeDocument="$manfeeDoc" />
+        {{-- <x-management-fee.descriptions.index :ManfeeDocument="$manfeeDoc" /> --}}
 
         {{-- FAKTUR PAJAK --}}
-        <x-management-fee.tax-files.index :ManfeeDocument="$manfeeDoc" />
+        {{-- <x-management-fee.tax-files.index :ManfeeDocument="$manfeeDoc" /> --}}
 
 
     </div>
