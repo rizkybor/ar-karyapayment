@@ -27,7 +27,7 @@
         <x-management-fee.attachments.edit-view :manfeeDoc="$manfeeDoc" />
 
         {{-- DESKRIPSI --}}
-        {{-- <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" /> --}}
+        <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
 
         {{-- FAKTUR PAJAK --}}
         {{-- <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" /> --}}

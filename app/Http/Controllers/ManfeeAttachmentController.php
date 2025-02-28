@@ -24,8 +24,6 @@ class ManfeeAttachmentController extends Controller
      */
     public function store(Request $request, $id)
     {
-        logger('Request data:', $request->all());
-        logger('Document ID:', ['id' => $id]);
         $request->validate([
             'file_name' => 'required|string|max:255',
             'file' => 'required|file|max:2048',

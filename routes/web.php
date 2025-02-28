@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContractsController;
+use App\Http\Controllers\ManfeeDescriptionsController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataFeedController;
@@ -91,6 +92,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::put('/{attachment_id}/update', [ManfeeAttachmentController::class, 'update'])->name('update');
             // management-fee.attachments.destroy
             Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/descriptions')->name('descriptions.')->group(function () {
+            // management-fee.descriptions.show
+            Route::get('/{description_id}', [ManfeeDescriptionsController::class, 'show'])->name('show');
+            // management-fee.descriptions.store
+            Route::post('/store', [ManfeeDescriptionsController::class, 'store'])->name('store');
+            // management-fee.descriptions.update
+            Route::put('/{description_id}/update', [ManfeeDescriptionsController::class, 'update'])->name('update');
+            // management-fee.descriptions.destroy
+            Route::delete('/{description_id}', [ManfeeDescriptionsController::class, 'destroy'])->name('destroy');
         });
     });
 

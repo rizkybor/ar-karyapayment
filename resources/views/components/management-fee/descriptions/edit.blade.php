@@ -1,7 +1,12 @@
+@props(['manfeeDoc'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-    <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-        Deskripsi
-    </h5>
+    <div class="flex justify-between items-center mb-3">
+        <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            Deskripsi
+        </h5>
+        <x-modal.management-fee.modal-create-descriptions :manfeeDoc="$manfeeDoc" />
+    </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <div class="p-3">
@@ -14,7 +19,7 @@
                                 <div class="font-semibold text-center">No</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Deskripsi</div>
+                                <div class="font-semibold text-center">Deskripsi</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">Aksi</div>
@@ -23,27 +28,31 @@
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
-                        @if (!empty($ManfeeDocument->descriptions) && $ManfeeDocument->descriptions->count())
-                            @foreach ($ManfeeDocument->descriptions as $desc)
+                        @if (!empty($manfeeDoc->descriptions) && $manfeeDoc->descriptions->count())
+                            @foreach ($manfeeDoc->descriptions as $desc)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $desc->note }}</div>
+                                    <td class="p-2 text-left break-words max-w-xs">
+                                        {{ $desc->description }}
                                     </td>
+
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
+                                            <form id="delete-description-{{ $desc->id }}" method="POST"
+                                                action="{{ route('management-fee.descriptions.destroy', ['id' => $manfeeDoc->id, 'description_id' => $desc->id]) }}"
+                                                class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+
                                             <x-button-action color="red" icon="trash"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus deskripsi ini?') 
                                                 && document.getElementById('delete-description-{{ $desc->id }}').submit()">
                                                 Hapus
                                             </x-button-action>
-                                            <form id="delete-description-{{ $desc->id }}" method="POST"
-                                                action="{{ route('management-fee.descriptions.delete', ['id' => $desc->id]) }}"
-                                                class="hidden">
-                                                @csrf
-                                                @method('DELETE')
+
                                             </form>
                                         </div>
                                     </td>
