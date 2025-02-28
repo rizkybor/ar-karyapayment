@@ -30,7 +30,7 @@
         <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
 
         {{-- FAKTUR PAJAK --}}
-        {{-- <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" /> --}}
+        <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" />
 
     </div>
     <script></script>

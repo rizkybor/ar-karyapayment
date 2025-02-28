@@ -1,7 +1,12 @@
+@props(['manfeeDoc'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-    <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-        Faktur Pajak
-    </h5>
+    <div class="flex justify-between items-center mb-3">
+        <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            Faktur Pajak
+        </h5>
+        <x-modal.management-fee.modal-create-tax :manfeeDoc="$manfeeDoc" />
+    </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <div class="p-3">
@@ -23,19 +28,19 @@
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
-                        @if (!empty($ManfeeDocument->taxFiles) && $ManfeeDocument->taxFiles->count())
-                            @foreach ($ManfeeDocument->taxFiles as $file)
+                        @if (!empty($manfeeDoc->taxFiles) && $manfeeDoc->taxFiles->count())
+                            @foreach ($manfeeDoc->taxFiles as $file)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center">{{ $i++ }}</div>
+                                        <div class="text-center">{{ $loop->iteration }}</div>
                                     </td>
-                                    <td class="p-2 whitespace-nowrap">
+                                    <td class="p-2 break-words">
                                         <div class="text-left">{{ $file->file_name }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.attachments.view', ['id' => $file->id]) }}">
+                                                href="{{ route('management-fee.taxs.show', ['id' => $manfeeDoc->id, 'tax_id' => $file->id]) }}">
                                                 View
                                             </x-button-action>
                                             <x-button-action color="red" icon="trash"
@@ -44,7 +49,7 @@
                                                 Hapus
                                             </x-button-action>
                                             <form id="delete-taxfile-{{ $file->id }}" method="POST"
-                                                action="{{ route('management-fee.tax-files.delete', ['id' => $file->id]) }}"
+                                                action="{{ route('management-fee.taxs.destroy', ['id' => $manfeeDoc->id, 'tax_id' => $file->id]) }}"
                                                 class="hidden">
                                                 @csrf
                                                 @method('DELETE')
@@ -61,6 +66,7 @@
                             </tr>
                         @endif
                     </tbody>
+
                 </table>
             </div>
         </div>
