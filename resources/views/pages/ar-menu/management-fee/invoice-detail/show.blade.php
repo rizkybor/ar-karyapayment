@@ -29,7 +29,7 @@
         <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />
 
         {{-- DESKRIPSI --}}
-        {{-- <x-management-fee.descriptions.index :ManfeeDocument="$manfeeDoc" /> --}}
+        <x-management-fee.descriptions.index :manfeeDoc="$manfeeDoc" />
 
         {{-- FAKTUR PAJAK --}}
         {{-- <x-management-fee.tax-files.index :ManfeeDocument="$manfeeDoc" /> --}}

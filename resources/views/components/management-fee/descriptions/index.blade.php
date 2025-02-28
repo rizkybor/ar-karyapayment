@@ -1,3 +1,5 @@
+@props(['manfeeDoc'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
         Deskripsi
@@ -20,14 +22,14 @@
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
-                        @if (!empty($ManfeeDocument->descriptions) && $ManfeeDocument->descriptions->count())
-                            @foreach ($ManfeeDocument->descriptions as $desc)
+                        @if (!empty($manfeeDoc->descriptions) && $manfeeDoc->descriptions->count())
+                            @foreach ($manfeeDoc->descriptions as $desc)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $desc->note }}</div>
+                                    <td class="p-2 text-left break-words max-w-xs">
+                                        {{ $desc->description }}
                                     </td>
                                 </tr>
                             @endforeach
