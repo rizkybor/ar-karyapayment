@@ -25,7 +25,7 @@ class NonManfeeDocumentSeeder extends Seeder
 
         $data = [];
 
-        for ($i = 1; $i <= 5000; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $contract_id = $contracts->random();
 
             $data[] = [
@@ -47,7 +47,7 @@ class NonManfeeDocumentSeeder extends Seeder
 
         // Insert data ke database dengan batch untuk performa lebih baik
         DB::table('non_manfee_documents')->insert($data);
-        
+
         $this->command->info("✅ Berhasil menambahkan 5000 data Management Non Fee.");
     }
 }
