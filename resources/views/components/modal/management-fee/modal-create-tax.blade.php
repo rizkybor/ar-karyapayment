@@ -27,7 +27,7 @@
                 <div class="flex justify-end gap-2">
                     <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md"
                         @click="modalOpen = false">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Simpan</button>
+                    <button type="submit" class="px-4 py-2 bg-violet-500 text-white rounded-md">Simpan</button>
                 </div>
             </form>
         </div>
