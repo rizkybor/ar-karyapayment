@@ -33,7 +33,7 @@ class NonManfeeDocumentSeeder extends Seeder
                 'invoice_number' => 'INV-' . Str::upper(Str::random(10)),
                 'receipt_number' => 'REC-' . Str::upper(Str::random(10)),
                 'letter_number'  => 'LTR-' . Str::upper(Str::random(10)),
-                'period'         => now()->subMonths(rand(1, 12))->format('Y-m'),
+                'period'         => '14',
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_non_fee',
                 'status'         => rand(0, 1) ? 'approved' : 'pending',
