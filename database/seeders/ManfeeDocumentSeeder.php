@@ -33,7 +33,7 @@ class ManfeeDocumentSeeder extends Seeder
         preg_match('/^(\d{6})/', $lastNumber, $matches);
         $lastNumeric = $matches[1] ?? '000100';
 
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $nextNumber = intval($lastNumeric) + (($i + 1) * 10);
             $month = $monthRoman[rand(1, 12)];
 
