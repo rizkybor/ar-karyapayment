@@ -1,9 +1,10 @@
+{{-- @props(['manfeeDoc']) --}}
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Detail Biaya
+            Tambah Detail Biaya
         </h5>
-        <x-modal.management-fee.modal-create-attachment />
+        <x-modal.management-fee.modal-create-detailbiaya />
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
@@ -17,7 +18,10 @@
                                 <div class="font-semibold text-center">No</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Nama File</div>
+                                <div class="font-semibold text-left">Jenis Biaya</div>
+                            </th>
+                            <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-left">Total Jenis</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">Aksi</div>

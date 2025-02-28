@@ -18,7 +18,7 @@
         <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isEditable="true" />
 
         {{-- DETAIL BIAYA --}}
-        {{-- <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
+        <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" />
 
         {{-- AKUMULASI BIAYA --}}
         {{-- <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
