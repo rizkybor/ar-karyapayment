@@ -1,3 +1,5 @@
+@props(['manfeeDoc'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
         Faktur Pajak
@@ -23,8 +25,8 @@
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
-                        @if (!empty($ManfeeDocument->taxFiles) && $ManfeeDocument->taxFiles->count())
-                            @foreach ($ManfeeDocument->taxFiles as $file)
+                        @if (!empty($manfeeDoc->taxFiles) && $manfeeDoc->taxFiles->count())
+                            @foreach ($manfeeDoc->taxFiles as $file)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
@@ -35,7 +37,7 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.attachments.view', ['id' => $file->id]) }}">
+                                                href="{{ route('management-fee.taxs.show', ['id' => $manfeeDoc->id, 'tax_id' => $file->id]) }}">
                                                 View
                                             </x-button-action>
                                         </div>

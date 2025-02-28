@@ -32,7 +32,7 @@
         <x-management-fee.descriptions.index :manfeeDoc="$manfeeDoc" />
 
         {{-- FAKTUR PAJAK --}}
-        {{-- <x-management-fee.tax-files.index :ManfeeDocument="$manfeeDoc" /> --}}
+        <x-management-fee.tax-files.index :manfeeDoc="$manfeeDoc" />
 
 
     </div>
