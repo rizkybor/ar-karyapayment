@@ -24,7 +24,7 @@
         <div class="grid grid-cols-1 gap-6 mt-6">
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-non-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument"  :akunOptions="$akunOptions" :isEdit="false" />
+                <x-management-non-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions" :isEdit="false" />
             </div>
 
             {{-- LAMPIRAN --}}
@@ -38,9 +38,11 @@
             </div>
 
             {{-- FAKTUR PAJAK --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
-            </div>
+            @role('pajak')
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
+                </div>
+            @endrole
         </div>
 
     </div>
