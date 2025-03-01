@@ -35,8 +35,8 @@ class NonManfeeAccumulatedCostController extends Controller
             'total' => 'required|numeric|min:0',
         ]);
 
-        $accumulatedCost = NonManfeeDocAccumulatedCost::create([
-            'id' => $id,
+        NonManfeeDocAccumulatedCost::create([
+            'document_id' => $id,
             'account' => $request->account,
             'dpp' => $request->dpp,
             'rate_ppn' => $request->rate_ppn,
@@ -44,10 +44,7 @@ class NonManfeeAccumulatedCostController extends Controller
             'total' => $request->total,
         ]);
 
-        return response()->json([
-            'message' => 'Biaya terakumulasi berhasil ditambahkan.',
-            'data' => $accumulatedCost
-        ], 201);
+        return redirect()->route('management-non-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**

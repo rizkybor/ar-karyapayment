@@ -33,7 +33,7 @@ class NonManfeeDescriptionController extends Controller
             'description' => $request->description,
         ]);
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('management-non-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -61,12 +61,12 @@ class NonManfeeDescriptionController extends Controller
      */
     public function destroy($id, $description_id)
     {
-        $description = NonManfeeDocDescription::where('id', $id)
+        $description = NonManfeeDocDescription::where('document_id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 
         $description->delete();
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Dewscription berhasil dihapus!');
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Description berhasil dihapus!');
     }
 }

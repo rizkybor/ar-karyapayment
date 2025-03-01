@@ -25,19 +25,21 @@ class NonManfeeTaxController extends Controller
     public function store(Request $request, $id)
     {
         $request->validate([
-            'tax_type' => 'required|string|max:255',
-            'percentage' => 'required|numeric|min:0|max:100',
-            'amount' => 'required|numeric|min:0',
+            'file_name' => 'required|string|max:255',
+            'file' => 'required|file|max:2048',
         ]);
 
-        $tax = NonManfeeDocTax::create([
-            'id' => $id,
-            'tax_type' => $request->tax_type,
-            'percentage' => $request->percentage,
-            'amount' => $request->amount,
+        // Simpan file dan ambil path-nya
+        $path = $request->file('file')->store('attachments', 'public');
+
+        // Simpan ke database
+        NonManfeeDocTax::create([
+            'document_id' => $id,
+            'file_name' => $request->file_name,
+            'path' => $path,
         ]);
 
-        return response()->json(['message' => 'Pajak berhasil ditambahkan.', 'data' => $tax]);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -69,12 +71,12 @@ class NonManfeeTaxController extends Controller
      */
     public function destroy($id, $tax_id)
     {
-        $tax = NonManfeeDocTax::where('id', $id)
+        $tax = NonManfeeDocTax::where('document_id', $id)
                             ->where('id', $tax_id)
                             ->firstOrFail();
 
         $tax->delete();
 
-        return response()->json(['message' => 'Pajak berhasil dihapus.']);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Tax berhasil dihapus!');
     }
 }

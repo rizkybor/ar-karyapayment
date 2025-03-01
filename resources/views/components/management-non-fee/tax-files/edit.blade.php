@@ -37,7 +37,7 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-end gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-non-fee.attachments.view', ['id' => $file->id]) }}">
+                                                href="{{ route('management-non-fee.taxes.show', ['id' => $nonManfeeDocument->id, 'taxes_id' => $file->id]) }}">
                                                 View
                                             </x-button-action>
                                             <x-button-action color="red" icon="trash"
@@ -46,7 +46,7 @@
                                                 Hapus
                                             </x-button-action>
                                             <form id="delete-taxfile-{{ $file->id }}" method="POST"
-                                                action="{{ route('management-non-fee.tax-files.delete', ['id' => $file->id]) }}"
+                                                action="{{ route('management-non-fee.taxes.destroy', ['id' => $nonManfeeDocument->id, 'taxes_id' => $file->id]) }}"
                                                 class="hidden">
                                                 @csrf
                                                 @method('DELETE')

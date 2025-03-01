@@ -34,7 +34,7 @@ class NonManfeeAttachmentController extends Controller
 
 
         NonManfeeDocAttachment::create([
-            'id' => $id,
+            'document_id' => $id,
             'file_name' => $request->file_name,
             'path' => $path,
         ]);
@@ -67,12 +67,12 @@ class NonManfeeAttachmentController extends Controller
      */
     public function destroy($id, $attachment_id)
     {
-        $attachment = NonManfeeDocAttachment::where('id', $id)
+        $attachment = NonManfeeDocAttachment::where('document_id', $id)
             ->where('id', $attachment_id)
             ->firstOrFail();
 
         $attachment->delete();
 
-        return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Deskripsi berhasil dihapus!');
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Attachment berhasil dihapus!');
     }
 }
