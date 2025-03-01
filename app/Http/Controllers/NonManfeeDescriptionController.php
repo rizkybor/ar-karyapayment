@@ -28,12 +28,12 @@ class NonManfeeDescriptionController extends Controller
             'description' => 'required|string|max:500',
         ]);
 
-        $description = NonManfeeDocDescription::create([
-            'id' => $id,
+        NonManfeeDocDescription::create([
+            'document_id' => $id,
             'description' => $request->description,
         ]);
 
-        return response()->json(['message' => 'Deskripsi berhasil ditambahkan.', 'data' => $description]);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -67,6 +67,6 @@ class NonManfeeDescriptionController extends Controller
 
         $description->delete();
 
-        return response()->json(['message' => 'Deskripsi berhasil dihapus.']);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Dewscription berhasil dihapus!');
     }
 }

@@ -73,6 +73,6 @@ class NonManfeeAttachmentController extends Controller
 
         $attachment->delete();
 
-        return response()->json(['message' => 'Lampiran berhasil dihapus.']);
+        return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Deskripsi berhasil dihapus!');
     }
 }

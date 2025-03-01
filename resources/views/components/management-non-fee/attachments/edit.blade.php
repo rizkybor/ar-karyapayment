@@ -22,7 +22,7 @@
                                 <div class="font-semibold text-left">Nama File</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-center">Aksi</div>
+                                <div class="font-semibold text-right">Aksi</div>
                             </th>
                         </tr>
                     </thead>
@@ -38,7 +38,7 @@
                                         <div class="text-left">{{ $file->file_name }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center flex items-center justify-center gap-2">
+                                        <div class="text-center flex items-center justify-end gap-2">
                                             <x-button-action color="violet" icon="eye"
                                                 href="{{ route('management-non-fee.attachments.show', ['id' => $nonManfeeDocument->id, 'attachment_id' => $file->id]) }}">
                                                 View

@@ -16,21 +16,22 @@
             </div>
         </div>
 
+        <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" isEditable="true" />
 
         {{-- AKUMULASI BIAYA --}}
-        {{-- <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" /> --}}
+        <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 
         {{-- LAMPIRAN --}}
-        <x-management-non-fee.attachments.edit-view :nonManfeeDocument="$nonManfeeDocument" />
+        <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
 
         {{-- DESKRIPSI --}}
-        {{-- <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
+        <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
 
 
         {{-- FAKTUR PAJAK --}}
-        {{-- <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" /> --}}
+        <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
 
 </x-app-layout>
