@@ -29,10 +29,4 @@ class NonManfeeDocAccumulatedCost extends Model
     {
         return $this->hasMany(NonManfeeDocAccumulatedCost::class, 'document_id');
     }
-
-    // Ambil total dari table `non_manfee_doc_accumulated_costs`
-    public function getTotalAttribute()
-    {
-        return $this->accumulatedCosts()->sum('total');
-    }
 }

@@ -17,7 +17,7 @@ class NonManfeeDocumentDataTableController extends Controller
     {
         $userId = Auth::id();
         $query = NonManfeeDocument::query()
-            ->with('contract') // Load relasi contract
+            ->with(['contract', 'accumulatedCosts'])
             ->where('created_by', $userId)
             ->select('non_manfee_documents.*');
 
@@ -28,8 +28,13 @@ class NonManfeeDocumentDataTableController extends Controller
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
             ->addColumn('total', function ($row) {
-                // ✅ Ambil nilai total dari relasi `accumulatedCost`
-                return $row->accumulatedCost ? number_format($row->accumulatedCost->total, 2, ',', '.') : 'Rp 0,00';
+                // Ambil akumulasi biaya pertama jika ada
+                $firstAccumulatedCost = $row->accumulatedCosts->first();
+
+                // Pastikan ada data, jika tidak tampilkan Rp 0,00
+                return $firstAccumulatedCost
+                    ? 'Rp ' . number_format($firstAccumulatedCost->total, 2, ',', '.')
+                    : 'Rp 0,00';
             })
 
             // FILTER SEARCH untuk `contract.contract_number`
