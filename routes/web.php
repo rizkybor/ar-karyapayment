@@ -83,6 +83,18 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // management-fee.edit
         Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
 
+        // Prefix untuk accumulated cost
+        Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
+            // management-fee.attachments.show
+            Route::get('/{accumulated_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
+            // management-fee.attachments.store
+            Route::post('/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+            // management-fee.attachments.update
+            Route::put('/{accumulated_id}/update', [ManfeeAttachmentController::class, 'update'])->name('update');
+            // management-fee.attachments.destroy
+            Route::delete('/{accumulated_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
+        });
+
         // Prefix untuk attachments
         Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
             // management-fee.attachments.show

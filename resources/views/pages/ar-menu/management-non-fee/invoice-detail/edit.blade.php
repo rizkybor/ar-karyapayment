@@ -21,17 +21,27 @@
         {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" isEditable="true" />
 
-        {{-- AKUMULASI BIAYA --}}
-        <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
+        <div class="grid grid-cols-1 gap-6 mt-6">
+            {{-- AKUMULASI BIAYA --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions" :isEdit="false" />
+            </div>
 
-        {{-- LAMPIRAN --}}
-        <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
+            {{-- LAMPIRAN --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
 
-        {{-- DESKRIPSI --}}
-        <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
+            {{-- DESKRIPSI --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
 
+            {{-- FAKTUR PAJAK --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
+        </div>
 
-        {{-- FAKTUR PAJAK --}}
-        <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
-
+    </div>
 </x-app-layout>
