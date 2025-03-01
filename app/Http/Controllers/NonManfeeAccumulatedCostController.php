@@ -2,90 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
+use App\Models\NonManfeeDocument;
 use App\Models\NonManfeeDocAccumulatedCost;
+use Illuminate\Http\Request;
 
 class NonManfeeAccumulatedCostController extends Controller
 {
     /**
-     * Menampilkan detail biaya berdasarkan id dan accumulated_cost_id.
+     * Menampilkan data Akumulasi Biaya berdasarkan ID dokumen.
      */
-    public function show($id, $accumulated_cost_id)
+    public function show($id)
     {
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
-                            ->where('id', $accumulated_cost_id)
-                            ->firstOrFail();
+        $nonManfeeDocument = NonManfeeDocument::findOrFail($id);
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
 
         return response()->json([
-            'message' => 'Data ditemukan',
-            'data' => $accumulatedCost
+            'akun' => $accumulatedCost->account ?? null,
+            'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,
+            'rate_ppn' => $accumulatedCost->rate_ppn ?? 0,
+            'nilai_ppn' => $accumulatedCost->nilai_ppn ?? 0,
+            'jumlah' => $accumulatedCost->total ?? 0,
         ]);
     }
 
     /**
-     * Menyimpan biaya baru ke database.
+     * Menyimpan atau memperbarui data Akumulasi Biaya.
      */
-    public function store(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'account' => 'required|string|max:255',
-            'dpp' => 'required|numeric|min:0',
-            'rate_ppn' => 'required|numeric|min:0|max:100',
-            'nilai_ppn' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
+            'akun' => 'required|string|max:255',
+            'dpp_pekerjaan' => 'required|numeric|min:0',
+            'rate_ppn' => 'required|integer|min:0|max:999',
         ]);
 
-        NonManfeeDocAccumulatedCost::create([
-            'document_id' => $id,
-            'account' => $request->account,
-            'dpp' => $request->dpp,
-            'rate_ppn' => $request->rate_ppn,
-            'nilai_ppn' => $request->nilai_ppn,
-            'total' => $request->total,
-        ]);
+        // Konversi nilai agar bisa diproses dalam database
+        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan);
+        $ratePpn = (int) $request->rate_ppn;
+        $nilaiPpn = ($dppPekerjaan * $ratePpn) / 100;
+        $jumlah = $dppPekerjaan + $nilaiPpn;
 
-        return redirect()->route('management-non-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
+        // Simpan ke tabel akumulasi biaya
+        $accumulatedCost = NonManfeeDocAccumulatedCost::updateOrCreate(
+            ['document_id' => $id],
+            [
+                'account' => $request->akun,
+                'dpp' => $dppPekerjaan,
+                'rate_ppn' => $ratePpn,
+                'nilai_ppn' => $nilaiPpn,
+                'total' => $jumlah,
+            ]
+        );
+
+        return redirect()->route('management-non-fee.edit', ['id' => $id])
+            ->with('success', 'Akumulasi Biaya berhasil diperbarui!');
     }
-
-    /**
-     * Mengupdate biaya di database.
-     */
-    public function update(Request $request, $id, $accumulated_cost_id)
+    
+    public function destroy($id)
     {
-        $request->validate([
-            'account' => 'required|string|max:255',
-            'dpp' => 'required|numeric|min:0',
-            'rate_ppn' => 'required|numeric|min:0|max:100',
-            'nilai_ppn' => 'required|numeric|min:0',
-            'total' => 'required|numeric|min:0',
-        ]);
-
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
-                            ->where('id', $accumulated_cost_id)
-                            ->firstOrFail();
-
-        $accumulatedCost->update($request->all());
-
-        return response()->json([
-            'message' => 'Biaya terakumulasi berhasil diperbarui.',
-            'data' => $accumulatedCost
-        ]);
-    }
-
-    /**
-     * Menghapus biaya dari database berdasarkan id dan accumulated_cost_id.
-     */
-    public function destroy($id, $accumulated_cost_id)
-    {
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
-                            ->where('id', $accumulated_cost_id)
-                            ->firstOrFail();
-        
-        $accumulatedCost->delete();
-
-        return response()->json([
-            'message' => 'Biaya terakumulasi berhasil dihapus.'
-        ]);
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
+    
+        if ($accumulatedCost) {
+            $accumulatedCost->delete();
+        }
+    
+        return redirect()->route('management-non-fee.edit', ['id' => $id])
+            ->with('success', 'Akumulasi Biaya berhasil dihapus!');
     }
 }
