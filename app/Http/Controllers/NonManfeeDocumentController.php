@@ -17,7 +17,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\View;
 
 
 
@@ -140,8 +139,10 @@ class NonManfeeDocumentController extends Controller
             'taxFiles'
         ])->findOrFail($id);
 
+        $akunOptions = ['Kas', 'Bank', 'Piutang', 'Hutang', 'Modal'];
+
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact(
-            'nonManfeeDocument'
+            'nonManfeeDocument', 'akunOptions'
         ));
     }
 

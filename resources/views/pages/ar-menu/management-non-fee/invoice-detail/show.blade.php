@@ -16,21 +16,31 @@
             </div>
         </div>
 
-        <div class="border border-white-300 dark:border-white-700 my-6"></div>
-
         {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
-        
-        {{-- AKUMULASI BIAYA --}}
-        <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 
-        {{-- LAMPIRAN --}}
-        <x-management-non-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
 
-        {{-- DESKRIPSI --}}
-        <x-management-non-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
+        <div class="grid grid-cols-1 gap-6 mt-6">
 
-        {{-- FAKTUR PAJAK --}}
-        <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
+            {{-- AKUMULASI BIAYA --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
+            </div>
+
+            {{-- LAMPIRAN --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
+
+            {{-- DESKRIPSI --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
+
+            {{-- FAKTUR PAJAK --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
+            </div>
+        </div>
     </div>
 </x-app-layout>
