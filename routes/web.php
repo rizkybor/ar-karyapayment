@@ -137,47 +137,48 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ]);
 
         // Details
-        Route::get('{document_id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
+        Route::get('{id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
 
         // Route proses persetujuan
-        Route::put('/process/{document_id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
 
-        // ✨ Prefix Edit Non Fee
-        Route::prefix('{document_id}/edit')->name('edit.')->group(function () {
 
-            Route::get('/', [NonManfeeDocumentController::class, 'edit'])->name('index');
+         // Edit
+        // management-fee.edit
+        Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
 
-            // Route Accumulated Cost
-            Route::prefix('accumulated-costs')->name('accumulated-costs.')->group(function () {
-                Route::get('/{accumulated_cost_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');
-                Route::post('/store', [NonManfeeAccumulatedCostController::class, 'store'])->name('store');
-                Route::put('/update/{accumulated_cost_id}', [NonManfeeAccumulatedCostController::class, 'update'])->name('update');
-                Route::delete('/{accumulated_cost_id}', [NonManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
-            });
+        // Prefix untuk attachments
+        Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
+            // management-non-fee.attachments.show
+            Route::get('/{attachment_id}', [NonManfeeAttachmentController::class, 'show'])->name('show');
+            // management-non-fee.attachments.store
+            Route::post('/store', [NonManfeeAttachmentController::class, 'store'])->name('store');
+            // management-non-fee.attachments.update
+            Route::put('/{attachment_id}/update', [NonManfeeAttachmentController::class, 'update'])->name('update');
+            // management-non-fee.attachments.destroy
+            Route::delete('/{attachment_id}', [NonManfeeAttachmentController::class, 'destroy'])->name('destroy');
+        });
 
-            // Route Lampiran (Attachments)
-            Route::prefix('attachments')->name('attachments.')->group(function () {
-                Route::get('/{attachment_id}', [NonManfeeAttachmentController::class, 'show'])->name('show');
-                Route::post('/store', [NonManfeeAttachmentController::class, 'store'])->name('store');
-                Route::put('/update/{attachment_id}', [NonManfeeAttachmentController::class, 'update'])->name('update');
-                Route::delete('/{attachment_id}', [NonManfeeAttachmentController::class, 'destroy'])->name('destroy');
-            });
+        Route::prefix('{id}/edit/descriptions')->name('descriptions.')->group(function () {
+            // management-non-fee.descriptions.show
+            Route::get('/{description_id}', [NonManfeeDescriptionController::class, 'show'])->name('show');
+            // management-non-fee.descriptions.store
+            Route::post('/store', [NonManfeeDescriptionController::class, 'store'])->name('store');
+            // management-non-fee.descriptions.update
+            Route::put('/{description_id}/update', [NonManfeeDescriptionController::class, 'update'])->name('update');
+            // management-non-fee.descriptions.destroy
+            Route::delete('/{description_id}', [NonManfeeDescriptionController::class, 'destroy'])->name('destroy');
+        });
 
-            // Route Descriptions
-            Route::prefix('descriptions')->name('descriptions.')->group(function () {
-                Route::get('/{description_id}', [NonManfeeDescriptionController::class, 'show'])->name('show');
-                Route::post('/store', [NonManfeeDescriptionController::class, 'store'])->name('store');
-                Route::put('/update/{description_id}', [NonManfeeDescriptionController::class, 'update'])->name('update');
-                Route::delete('/{description_id}', [NonManfeeDescriptionController::class, 'destroy'])->name('destroy');
-            });
-
-            // Route Taxes
-            Route::prefix('taxes')->name('taxes.')->group(function () {
-                Route::get('/{tax_id}', [NonManfeeTaxController::class, 'show'])->name('show');
-                Route::post('/store', [NonManfeeTaxController::class, 'store'])->name('store');
-                Route::put('/update/{tax_id}', [NonManfeeTaxController::class, 'update'])->name('update');
-                Route::delete('/{tax_id}', [NonManfeeTaxController::class, 'destroy'])->name('destroy');
-            });
+        Route::prefix('{id}/edit/taxes')->name('taxes.')->group(function () {
+            // management-non-fee.taxs.show
+            Route::get('/{taxes_id}', [NonManfeeTaxController::class, 'show'])->name('show');
+            // management-non-fee.taxs.store
+            Route::post('/store', [NonManfeeTaxController::class, 'store'])->name('store');
+            // management-non-fee.taxs.update
+            Route::put('/{taxes_id}/update', [NonManfeeTaxController::class, 'update'])->name('update');
+            // management-non-fee.taxs.destroy
+            Route::delete('/{taxes_id}', [NonManfeeTaxController::class, 'destroy'])->name('destroy');
         });
 
         // Route History

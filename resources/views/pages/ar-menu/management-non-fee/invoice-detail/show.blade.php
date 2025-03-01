@@ -20,7 +20,7 @@
 
         {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
-
+        
         {{-- AKUMULASI BIAYA --}}
         <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 

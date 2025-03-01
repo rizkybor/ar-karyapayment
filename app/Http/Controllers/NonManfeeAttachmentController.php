@@ -8,13 +8,13 @@ use App\Models\NonManfeeDocAttachment;
 class NonManfeeAttachmentController extends Controller
 {
     /**
-     * Menampilkan detail lampiran berdasarkan ID dan document_id.
+     * Menampilkan detail lampiran berdasarkan ID dan id.
      */
-    public function show($document_id, $attachment_id)
+    public function show($id, $attachment_id)
     {
-        $attachment = NonManfeeDocAttachment::where('document_id', $document_id)
-                            ->where('id', $attachment_id)
-                            ->firstOrFail();
+        $attachment = NonManfeeDocAttachment::where('id', $id)
+            ->where('id', $attachment_id)
+            ->firstOrFail();
 
         return response()->json($attachment);
     }
@@ -22,36 +22,38 @@ class NonManfeeAttachmentController extends Controller
     /**
      * Menyimpan lampiran baru ke database.
      */
-    public function store(Request $request, $document_id)
+    public function store(Request $request, $id)
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
             'file' => 'required|file|max:2048',
         ]);
 
-        $path = $request->file('file')->store('attachments');
+        // Simpan file dan ambil path-nya
+        $path = $request->file('file')->store('attachments', 'public');
 
-        $attachment = NonManfeeDocAttachment::create([
-            'document_id' => $document_id,
+
+        NonManfeeDocAttachment::create([
+            'document_id' => $id,
             'file_name' => $request->file_name,
             'path' => $path,
         ]);
 
-        return response()->json(['message' => 'Lampiran berhasil ditambahkan.', 'data' => $attachment]);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
      * Mengupdate lampiran di database.
      */
-    public function update(Request $request, $document_id, $attachment_id)
+    public function update(Request $request, $id, $attachment_id)
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
         ]);
 
-        $attachment = NonManfeeDocAttachment::where('document_id', $document_id)
-                            ->where('id', $attachment_id)
-                            ->firstOrFail();
+        $attachment = NonManfeeDocAttachment::where('id', $id)
+            ->where('id', $attachment_id)
+            ->firstOrFail();
 
         $attachment->update([
             'file_name' => $request->file_name,
@@ -61,16 +63,16 @@ class NonManfeeAttachmentController extends Controller
     }
 
     /**
-     * Menghapus lampiran dari database berdasarkan ID dan document_id.
+     * Menghapus lampiran dari database berdasarkan ID dan id.
      */
-    public function destroy($document_id, $attachment_id)
+    public function destroy($id, $attachment_id)
     {
-        $attachment = NonManfeeDocAttachment::where('document_id', $document_id)
-                            ->where('id', $attachment_id)
-                            ->firstOrFail();
+        $attachment = NonManfeeDocAttachment::where('document_id', $id)
+            ->where('id', $attachment_id)
+            ->firstOrFail();
 
         $attachment->delete();
 
-        return response()->json(['message' => 'Lampiran berhasil dihapus.']);
+        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Attachment berhasil dihapus!');
     }
 }

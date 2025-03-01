@@ -20,10 +20,10 @@
             isShowPage="true" />
 
         {{-- DETAIL BIAYA --}}
-        {{-- <x-management-fee.detail-biaya.index :ManfeeDocument="$manfeeDoc" :isEdit="false" /> --}}
+        <x-management-fee.detail-biaya.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
 
         {{-- AKUMULASI BIAYA --}}
-        {{-- <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" /> --}}
+        <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
 
         {{-- LAMPIRAN --}}
         <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />

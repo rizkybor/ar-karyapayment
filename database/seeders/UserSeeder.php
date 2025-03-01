@@ -9,19 +9,36 @@ use Illuminate\Support\Facades\Hash;
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Jalankan seeder database.
      */
     public function run(): void
     {
         $users = [
-            ['name' => 'Super Admin', 'email' => 'superadmin@example.com', 'role' => 'super_admin'],
-            ['name' => 'Maker 1', 'email' => 'maker1@example.com', 'role' => 'maker'],
-            ['name' => 'Maker 2', 'email' => 'maker2@example.com', 'role' => 'maker'],
-            ['name' => 'Kadiv User', 'email' => 'kadiv@example.com', 'role' => 'kadiv'],
-            ['name' => 'Bendahara User', 'email' => 'bendahara@example.com', 'role' => 'bendahara'],
-            ['name' => 'Manager Anggaran', 'email' => 'manager_anggaran@example.com', 'role' => 'manager_anggaran'],
-            ['name' => 'Direktur Keuangan', 'email' => 'direktur@example.com', 'role' => 'direktur_keuangan'],
-            ['name' => 'Pajak User', 'email' => 'pajak@example.com', 'role' => 'pajak'],
+            // Super Admin
+            ['name' => 'Super Admin', 'email' => 'superadmin@example.com', 'role' => 'super_admin', 'department' => null, 'position' => null],
+
+            // Maker Users
+            ['name' => 'Maker 1', 'email' => 'maker1@example.com', 'role' => 'maker', 'department' => 'Department SDM', 'position' => 'Staff'],
+            ['name' => 'Maker 2', 'email' => 'maker2@example.com', 'role' => 'maker', 'department' => 'Departmen Pengadaan dan Administrasi Umum', 'position' => 'Staff'],
+
+            // Kepala Divisi (Kadiv)
+            ['name' => 'Kadiv Operasi', 'email' => 'kadiv.operasi@example.com', 'role' => 'kadiv', 'department' => 'Departmen Operasi', 'position' => 'Kepala Departemen'],
+            ['name' => 'Kadiv Keuangan', 'email' => 'kadiv.keuangan@example.com', 'role' => 'kadiv', 'department' => 'Departmen Keuangan', 'position' => 'Kepala Departemen'],
+            ['name' => 'Kadiv Pengadaan', 'email' => 'kadiv.pengadaan@example.com', 'role' => 'kadiv', 'department' => 'Departmen Pengadaan dan Administrasi Umum', 'position' => 'Kepala Departemen'],
+            ['name' => 'Kadiv SDM', 'email' => 'kadiv.sdm@example.com', 'role' => 'kadiv', 'department' => 'Departmen SDM', 'position' => 'Kepala Departemen'],
+
+            // Pembendaharaan
+            ['name' => 'Pembendaharaan User', 'email' => 'pembendaharaan@example.com', 'role' => 'pembendaharaan', 'department' => 'Departmen Keuangan', 'position' => 'Pembendaharaan'],
+
+            // Pajak
+            ['name' => 'Pajak User', 'email' => 'pajak@example.com', 'role' => 'pajak', 'department' => 'Departmen Keuangan', 'position' => 'Pajak'],
+
+            // Direktur Anggaran
+            ['name' => 'Direktur Anggaran User', 'email' => 'dirut.anggaran@example.com', 'role' => 'direktur_anggaran', 'department' => 'Departmen Operasi', 'position' => 'Direktur Anggaran'],
+            
+            // Direktur Utama
+            ['name' => 'Direktur Utama User', 'email' => 'dirut.utama@example.com', 'role' => 'direktur_utama', 'department' => 'Departmen Operasi', 'position' => 'Direktur Utama'],
+
         ];
 
         foreach ($users as $user) {
@@ -30,8 +47,8 @@ class UserSeeder extends Seeder
                 'email' => $user['email'],
                 'password' => Hash::make('P@ssw0rd'),
                 'nip' => rand(10000000, 99999999),
-                'department' => 'Finance',
-                'position' => ucfirst(str_replace('_', ' ', $user['role'])),
+                'department' => $user['department'],
+                'position' => $user['position'],
                 'role' => $user['role'],
                 'employee_status' => 'permanent',
                 'gender' => 'male',

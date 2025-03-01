@@ -186,6 +186,9 @@
                         data: 'period',
                         name: 'period',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
+                        render: function(data) {
+                            return `<div>${data ?? '-'} day</div>`;
+                        }
                     },
                     {
                         data: 'termin_invoice',
@@ -195,9 +198,9 @@
                             let detailUrl =
                                 "{{ route('management-fee.show', ['id' => ':id']) }}"
                                 .replace(':id', row.id);
-                            return `<x-button-action class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
+                            return `<x-button-action-detail-termin class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
                             onclick="window.location.href='${detailUrl}'">
-                            Detail Termin</x-button-action>`;
+                            Detail Termin</x-button-action-detail-termin>`;
                         }
                     },
                     {

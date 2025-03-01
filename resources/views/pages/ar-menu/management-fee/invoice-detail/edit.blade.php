@@ -24,7 +24,7 @@
         {{-- <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
 
         {{-- LAMPIRAN --}}
-        <x-management-fee.attachments.edit-view :manfeeDoc="$manfeeDoc" />
+        <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
 
         {{-- DESKRIPSI --}}
         <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />

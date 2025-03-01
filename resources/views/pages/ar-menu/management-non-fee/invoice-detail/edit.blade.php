@@ -18,24 +18,20 @@
 
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
-        <form action="{{ route('management-non-fee.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+        {{-- HEADER --}}
+        <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" isEditable="true" />
 
-            {{-- HEADER --}}
-            <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" isEditable="true" />
+        {{-- AKUMULASI BIAYA --}}
+        <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
 
-            {{-- AKUMULASI BIAYA --}}
-            <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
+        {{-- LAMPIRAN --}}
+        <x-management-non-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
 
-            {{-- LAMPIRAN --}}
-            <x-management-non-fee.attachments.edit-view :nonManfeeDocument="$nonManfeeDocument" />
-
-            {{-- DESKRIPSI --}}
-            <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
+        {{-- DESKRIPSI --}}
+        <x-management-non-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
 
 
-            {{-- FAKTUR PAJAK --}}
-            <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
-        </form>
-    </div>
+        {{-- FAKTUR PAJAK --}}
+        <x-management-non-fee.tax-files.edit :nonManfeeDocument="$nonManfeeDocument" />
+
 </x-app-layout>

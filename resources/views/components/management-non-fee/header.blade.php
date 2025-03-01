@@ -24,27 +24,12 @@
             @endif --}}
             <x-label for="transaction_status" value="{{ __('Status Transaksi') }}" class="text-gray-800 dark:text-gray-100" />
             <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                {{ $transaction_status === 'True' ? 'Aktif' : ($transaction_status === 'False' ? 'Tidak Aktif' : 'Belum Ditentukan') }}
+                {{ $transaction_status ? 'Invoice Aktif' : 'Invoice Tidak Aktif' }}
             </p>
         </div>
 
         {{-- Status Document --}}
         <div>
-            {{-- <x-label for="document_status" value="{{ __('Status Dokumen') }}" class="text-gray-800 dark:text-gray-100" />
-            @if ($isEditable)
-                <x-input id="document_status" name="document_status" type="text" class="w-full mt-1"
-                    value="{{ $document_status }}" />
-            @else
-                @if ($transaction_status == 'Active')
-                    <p class="mt-1 text-gray-800 dark:text-gray-200">-</p>
-                @elseif ($transaction_status == 'Non Active')
-                    <a href="{{ route('download.keterangan') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Download Keterangan
-                    </a>
-                @else
-                    <p class="mt-1 text-gray-800 dark:text-gray-200">{{ $document_status ?: '-' }}</p>
-                @endif
-            @endif --}}
             <x-label for="document_status" value="{{ __('Status Dokumen') }}" class="text-gray-800 dark:text-gray-100" />
             <x-label-status :status="$document_status" />
         </div>
@@ -66,19 +51,30 @@
     <!-- Tombol Action (Sejajar dengan Card di Desktop, di Atas Card di Mobile) -->
     @if ($isShowPage)
     <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
-        <x-button-action color="blue" icon="print">Print</x-button-action>
-        <x-button-action color="teal" icon="paid">
-            Paid
-        </x-button-action>
-        <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
-        <x-button-action color="orange" icon="info">Need Info</x-button-action>
-        <x-button-action color="red" icon="reject">Reject</x-button-action>
-        <x-button-action color="green" icon="approve">Approve</x-button-action>
-        <form action="{{ route('management-non-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-            @csrf
-            @method('PUT')
-            <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
-        </form>
+        @if (auth()->user()->role !== 'maker')
+            <x-button-action color="blue" icon="print">Print</x-button-action>
+            <x-button-action color="teal" icon="paid">Paid</x-button-action>
+            <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
+            <x-button-action color="orange" icon="info">Need Info</x-button-action>
+            <x-button-action color="red" icon="reject">Reject</x-button-action>
+            <x-button-action color="green" icon="approve">Approve</x-button-action>
+        @endif
+
+        @if (auth()->user()->role === 'maker')
+            {{-- Proccess --}}
+            <form action="{{ route('management-non-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                @csrf
+                @method('PUT')
+                <x-button-action color="orange" icon="reply" type="submit">Reply Info</x-button-action>
+            </form>
+
+            {{-- Reply Info --}}
+            <form action="{{ route('management-non-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                @csrf
+                @method('PUT')
+                <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
+            </form>
+        @endif
     </div>
     @endif
 

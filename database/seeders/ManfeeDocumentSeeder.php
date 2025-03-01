@@ -47,14 +47,16 @@ class ManfeeDocumentSeeder extends Seeder
                 'receipt_number' => $receiptNumber,
                 'letter_number' => $letterNumber,
                 'manfee_bill' => $faker->randomFloat(2, 1000, 10000),
-                'period' => $faker->monthName . ' ' . $year,
+                'period' => '14',
                 'letter_subject' => $faker->sentence(3),
                 'category' => 'management_fee',
-                'status' => $faker->randomElement([0, 1]),
+                'status' => 0,
                 'last_reviewers' => $faker->name,
                 'is_active' => true,
                 'created_by' => 1,
             ]);
         }
+
+        $this->command->info("✅ Berhasil menambahkan 10 data Management Fee.");
     }
 }
