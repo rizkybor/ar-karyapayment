@@ -5,11 +5,13 @@
     $firstAccumulatedCost = $nonManfeeDocument->accumulatedCosts->first();
 @endphp
 
-<form method="POST" 
-    action="{{ route('non-management-fee.accumulated.' . ($firstAccumulatedCost ? 'update' : 'store'), 
-    ['id' => $nonManfeeDocument->id, 'accumulated_id' => $firstAccumulatedCost->id ?? null]) }}">
+<form method="POST"
+    action="{{ route('non-management-fee.accumulated.' . ($firstAccumulatedCost ? 'update' : 'store'), [
+        'id' => $nonManfeeDocument->id,
+        'accumulated_id' => $firstAccumulatedCost->id ?? null,
+    ]) }}">
     @csrf
-    @if($firstAccumulatedCost)
+    @if ($firstAccumulatedCost)
         @method('PUT')
     @endif
 
@@ -46,7 +48,7 @@
                         </select>
                     @else
                         <p class="text-gray-800 dark:text-gray-200">
-                            {{ $firstAccumulatedCost->account ?? 'Belum memilih akun' }}
+                            {{ $firstAccumulatedCost->account == '' ?? 'Belum memilih akun' }}
                         </p>
                     @endif
                 </div>
@@ -60,7 +62,7 @@
                             oninput="formatCurrency(this); calculateValues()" />
                     @else
                         <p class="text-gray-800 dark:text-gray-200">
-                            Rp {{ number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.') }}
+                            Rp. {{ number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.') }}
                         </p>
                     @endif
                 </div>
@@ -82,19 +84,31 @@
                 {{-- NILAI PPN (Auto) --}}
                 <div class="col-span-1 sm:col-span-1">
                     <x-label for="nilai_ppn" value="{{ __('NILAI PPN (Rp)') }}" />
-                    <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                        name="nilai_ppn"
-                        value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
-                        readonly />
+                    @if ($isEdit)
+                        <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                            name="nilai_ppn"
+                            value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
+                            readonly />
+                    @else
+                        <p class="text-gray-800 dark:text-gray-200">
+                            Rp. {{ number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.') }}
+                        </p>
+                    @endif
                 </div>
 
                 {{-- JUMLAH (Auto) --}}
                 <div class="col-span-1 sm:col-span-2">
                     <x-label for="jumlah" value="{{ __('JUMLAH (Rp)') }}" />
-                    <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                        name="jumlah"
-                        value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
-                        readonly />
+                    @if ($isEdit)
+                        <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                            name="jumlah"
+                            value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
+                            readonly />
+                    @else
+                        <p class="text-gray-800 dark:text-gray-200 text-2xl font-bold">
+                            Rp. {{ number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.') }}
+                        </p>
+                    @endif
                 </div>
 
             </div>
