@@ -22,8 +22,10 @@
         x-transition:leave="transition ease-out duration-200" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0" x-cloak>
         <div class="pt-0.5 pb-2 px-3 mb-1 border-b border-gray-200 dark:border-gray-700/60">
-            <div class="font-medium text-gray-800 dark:text-gray-100">{{ Auth::user()->name }}</div>
-            <div class="text-xs text-gray-500 dark:text-gray-400 italic">{{ Auth::user()->position }}</div>
+            <div class="font-medium text-gray-800 dark:text-gray-100 mb-3">{{ Auth::user()->name }}</div>
+            
+            <div class="text-xs text-gray-500 dark:text-gray-400 italic">Jabatan : {{ Auth::user()->position }}</div>
+            <div class="border-t border-white-300 dark:border-white-700 my-1"></div>
             <div class="text-xs text-gray-500 dark:text-gray-400 italic">{{ Auth::user()->department }}</div>
         </div>
         <ul>
