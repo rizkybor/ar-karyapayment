@@ -8,7 +8,7 @@
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full"
             @click.outside="modalOpen = false">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tambah Faktu Pajak</h3>
-            <form action="{{ route('management-non-fee.taxes.store', ['id' => $nonManfeeDocument->id]) }}" method="POST"
+            <form action="{{ route('non-management-fee.taxes.store', ['id' => $nonManfeeDocument->id]) }}" method="POST"
                 enctype="multipart/form-data">
                 @csrf
                 <div class="mb-4">

@@ -237,7 +237,7 @@ class ManfeeDocumentController extends Controller
                     'invoice_number' => $document->invoice_number,
                     'action'         => 'approved',
                     'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
-                    'url'            => route('management-non-fee.show', $document->id),
+                    'url'            => route('non-management-fee.show', $document->id),
                 ]),
                 'created_at' => now(),
                 'updated_at' => now(),

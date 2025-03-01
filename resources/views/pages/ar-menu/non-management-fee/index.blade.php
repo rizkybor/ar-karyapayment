@@ -15,7 +15,7 @@
                 </x-button-action>
 
                 <x-button-action color="violet" type="button"
-                    onclick="window.location='{{ route('management-non-fee.create') }}'">
+                    onclick="window.location='{{ route('non-management-fee.create') }}'">
                     + Data Baru
                 </x-button-action>
             </div>
@@ -26,7 +26,7 @@
             <div class="col-span-full xl:col-span-12 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
                 <header
                     class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <h2 class="font-semibold dark:text-gray-100 py-3">Management Non Fee</h2>
+                    <h2 class="font-semibold dark:text-gray-100 py-3">Non Management Fee</h2>
                 </header>
                 <div class="p-3">
                     <!-- Table Controls -->
@@ -125,7 +125,7 @@
             let table = $('#nonManfeeTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('management-non-fee.datatable') }}",
+                ajax: "{{ route('non-management-fee.datatable') }}",
                 pageLength: 10,
                 lengthChange: false,
                 searching: true,
@@ -197,7 +197,7 @@
                         className: 'text-center',
                         render: function(data, type, row) {
                             let detailUrl =
-                                "{{ route('management-non-fee.show', ['id' => ':id']) }}"
+                                "{{ route('non-management-fee.show', ['id' => ':id']) }}"
                                 .replace(':id', row.id);
                             return `<x-button-action-detail-termin class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
                             onclick="window.location.href='${detailUrl}'">
@@ -218,9 +218,9 @@
                         className: 'p-2 whitespace-nowrap text-center',
                         render: function(data, type, row) {
                             let editUrl =
-                                "{{ route('management-non-fee.edit', ['id' => ':id']) }}"
+                                "{{ route('non-management-fee.edit', ['id' => ':id']) }}"
                                 .replace(':id', row.id);
-                            let deleteUrl = "{{ route('management-non-fee.destroy', ':id') }}"
+                            let deleteUrl = "{{ route('non-management-fee.destroy', ':id') }}"
                                 .replace(':id', row.id);
 
                             return `
@@ -343,7 +343,7 @@
                     return;
                 }
 
-                let url = "{{ route('management-non-fee.export') }}?ids=" + encodeURIComponent(selected
+                let url = "{{ route('non-management-fee.export') }}?ids=" + encodeURIComponent(selected
                     .join(","));
                 window.open(url, '_blank');
             });

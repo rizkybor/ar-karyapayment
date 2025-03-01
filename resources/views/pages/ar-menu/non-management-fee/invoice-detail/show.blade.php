@@ -9,7 +9,7 @@
             {{-- Tombol Kembali --}}
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('management-non-fee.index') }}'">
+                    <x-secondary-button onclick="window.location='{{ route('non-management-fee.index') }}'">
                         Kembali
                     </x-secondary-button>
                 </div>
@@ -19,30 +19,30 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
 
 
         <div class="grid grid-cols-1 gap-6 mt-6">
 
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-non-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
+                <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
             </div>
 
             {{-- LAMPIRAN --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-non-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
+                <x-non-management-fee.attachments.index :nonManfeeDocument="$nonManfeeDocument" />
             </div>
 
             {{-- DESKRIPSI --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-non-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
+                <x-non-management-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
             </div>
 
             {{-- FAKTUR PAJAK --}}
             @role('pajak')
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                    <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
+                    <x-non-management-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
                 </div>
             @endrole
         </div>

@@ -35,7 +35,7 @@ class NonManfeeDescriptionController extends Controller
             'description' => $request->description,
         ]);
 
-        return redirect()->route('management-non-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('non-management-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -69,6 +69,6 @@ class NonManfeeDescriptionController extends Controller
 
         $description->delete();
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Description berhasil dihapus!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Description berhasil dihapus!');
     }
 }

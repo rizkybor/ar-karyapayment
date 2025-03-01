@@ -42,7 +42,7 @@
         <div>
             <x-label for="transaction_status" value="{{ __('Jenis') }}" class="text-gray-800 dark:text-gray-100" />
             <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                Management Non Fee
+                Non Management Fee
             </p>
         </div>
     </div>
@@ -62,14 +62,14 @@
 
         @if (auth()->user()->role === 'maker')
             {{-- Proccess --}}
-            <form action="{{ route('management-non-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+            <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
                 @csrf
                 @method('PUT')
                 <x-button-action color="orange" icon="reply" type="submit">Reply Info</x-button-action>
             </form>
 
             {{-- Reply Info --}}
-            <form action="{{ route('management-non-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+            <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
                 @csrf
                 @method('PUT')
                 <x-button-action color="green" icon="process" type="submit">Process</x-button-action>

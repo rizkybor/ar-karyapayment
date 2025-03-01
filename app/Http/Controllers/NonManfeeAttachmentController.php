@@ -39,7 +39,7 @@ class NonManfeeAttachmentController extends Controller
             'path' => $path,
         ]);
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -73,6 +73,6 @@ class NonManfeeAttachmentController extends Controller
 
         $attachment->delete();
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])->with('success', 'Attachment berhasil dihapus!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Attachment berhasil dihapus!');
     }
 }

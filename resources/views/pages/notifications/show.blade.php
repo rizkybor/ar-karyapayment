@@ -24,7 +24,7 @@
             <!-- Tampilkan link ke dokumen jika ada -->
             @if (!empty($notification->data['document_id']))
                 <div class="mb-4">
-                    <x-button-action color="blue" icon="eye" href="{{ route('management-non-fee.show', $notification->data['document_id']) }}">
+                    <x-button-action color="blue" icon="eye" href="{{ route('non-management-fee.show', $notification->data['document_id']) }}">
                         Lihat Dokumen
                     </x-button-action>
                 </div>

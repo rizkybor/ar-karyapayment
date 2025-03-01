@@ -28,7 +28,7 @@ class NonManfeeDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        return view('pages/ar-menu/management-non-fee/index');
+        return view('pages/ar-menu/non-management-fee/index');
     }
 
     /**
@@ -52,7 +52,7 @@ class NonManfeeDocumentController extends Controller
         $invoiceNumber = sprintf("No. %06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $receiptNumber = sprintf("No. %06d/NF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
-        return view('pages/ar-menu/management-non-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
+        return view('pages/ar-menu/non-management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
 
     /**
@@ -107,7 +107,7 @@ class NonManfeeDocumentController extends Controller
             ]);
 
             // Redirect ke halaman detail dengan ID yang benar
-            return redirect()->route('management-non-fee.show', ['id' => $document->id])
+            return redirect()->route('non-management-fee.show', ['id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -127,7 +127,7 @@ class NonManfeeDocumentController extends Controller
             'taxFiles'
         ])->findOrFail($id);
 
-        return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact(
+        return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
             'nonManfeeDocument'
         ));
     }
@@ -147,7 +147,7 @@ class NonManfeeDocumentController extends Controller
 
         $akunOptions = ['Kas', 'Bank', 'Piutang', 'Hutang', 'Modal'];
 // dd($nonManfeeDocument->accumulatedCosts);
-        return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact(
+        return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
             'akunOptions'
         ));
@@ -161,7 +161,7 @@ class NonManfeeDocumentController extends Controller
         $nonManfeeDocument = NonManfeeDocument::find($id);
         $nonManfeeDocument->delete();
 
-        return redirect()->route('management-non-fee.index')->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('non-management-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
     /**
@@ -238,7 +238,7 @@ class NonManfeeDocumentController extends Controller
                     'invoice_number' => $document->invoice_number,
                     'action'         => 'approved',
                     'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
-                    'url'            => route('management-non-fee.show', $document->id),
+                    'url'            => route('non-management-fee.show', $document->id),
                 ]),
                 'created_at' => now(),
                 'updated_at' => now(),

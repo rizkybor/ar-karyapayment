@@ -6,7 +6,7 @@
 @endphp
 
 <form method="POST" 
-    action="{{ route('management-non-fee.accumulated.' . ($firstAccumulatedCost ? 'update' : 'store'), 
+    action="{{ route('non-management-fee.accumulated.' . ($firstAccumulatedCost ? 'update' : 'store'), 
     ['id' => $nonManfeeDocument->id, 'accumulated_id' => $firstAccumulatedCost->id ?? null]) }}">
     @csrf
     @if($firstAccumulatedCost)
