@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\NonManfeeDocument;
+use Carbon\Carbon;
 use App\Models\Contracts;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -40,8 +41,8 @@ class NonManfeeDocumentSeeder extends Seeder
                 'last_reviewers' => null,
                 'is_active'      => true,
                 'created_by'     => 1,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'created_at'     => Carbon::now(),,
+                'updated_at'     => Carbon::now(),,
             ];
         }
 
