@@ -54,7 +54,7 @@ class NonManfeeAccumulatedCostController extends Controller
             ]
         );
 
-        return redirect()->route('management-non-fee.edit', ['id' => $id])
+        return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Akumulasi Biaya berhasil diperbarui!');
     }
     
@@ -66,7 +66,7 @@ class NonManfeeAccumulatedCostController extends Controller
             $accumulatedCost->delete();
         }
     
-        return redirect()->route('management-non-fee.edit', ['id' => $id])
+        return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Akumulasi Biaya berhasil dihapus!');
     }
 }
