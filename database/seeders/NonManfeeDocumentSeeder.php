@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\NonManfeeDocument;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Contracts;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -24,10 +24,19 @@ class NonManfeeDocumentSeeder extends Seeder
             return;
         }
 
+        // Ambil semua user yang memiliki role 'maker'
+        $makers = User::where('role', 'maker')->pluck('id');
+
+        if ($makers->isEmpty()) {
+            $this->command->warn("Tidak ada user dengan role 'maker'. Seeder dihentikan.");
+            return;
+        }
+
         $data = [];
 
         for ($i = 1; $i <= 10; $i++) {
             $contract_id = $contracts->random();
+            $created_by = $makers->random(); 
 
             $data[] = [
                 'contract_id'    => $contract_id,
@@ -40,9 +49,9 @@ class NonManfeeDocumentSeeder extends Seeder
                 'status'         => 0,
                 'last_reviewers' => null,
                 'is_active'      => true,
-                'created_by'     => 1,
-                'created_at'     => Carbon::now(),,
-                'updated_at'     => Carbon::now(),,
+                'created_by'     => $created_by,
+                'created_at'     => Carbon::now(),
+                'updated_at'     => Carbon::now(),
             ];
         }
 
