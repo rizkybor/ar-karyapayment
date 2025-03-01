@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NonManfeeDocument;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
@@ -13,36 +14,41 @@ class NonManfeeDocumentDataTableController extends Controller
      */
     public function index(Request $request)
     {
-        $query = NonManfeeDocument::query()
-            ->with('contract') // Load relasi contract
+        $user = Auth::user(); // Ambil user yang sedang login
+
+        // Ambil dokumen yang dibuat oleh user atau yang membutuhkan approvalnya
+        $query = NonManfeeDocument::with('contract')
+            ->where('created_by', $user->id)
+            ->orWhereHas('approvals', function ($q) use ($user) {
+                $q->where('approver_id', $user->id);
+            })
             ->select('non_manfee_documents.*');
 
         return DataTables::eloquent($query)
-            ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
-            
+            ->addIndexColumn()
+            ->addColumn('contract_number', function ($row) {
+                return $row->contract ? $row->contract->contract_number : '-';
+            })
+            ->addColumn('employee_name', function ($row) {
+                return $row->contract ? $row->contract->employee_name : '-';
+            })
             ->addColumn('termin_invoice', function ($row) {
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
             ->addColumn('total', function ($row) {
-                return '-';
+                return 'Rp ' . number_format($row->total ?? 0, 2, ',', '.');
             })
-
-            // FILTER SEARCH untuk `contract.contract_number`
-            ->filterColumn('contract.contract_number', function ($query, $keyword) {
+            ->filterColumn('contract_number', function ($query, $keyword) {
                 $query->whereHas('contract', function ($q) use ($keyword) {
-                $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+                    $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
                 });
             })
-
-            // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
-            ->filterColumn('contract.employee_name', function ($query, $keyword) {
+            ->filterColumn('employee_name', function ($query, $keyword) {
                 $query->whereHas('contract', function ($q) use ($keyword) {
                     $q->whereRaw('LOWER(employee_name) LIKE ?', ["%" . strtolower($keyword) . "%"]);
                 });
             })
-
-            // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
-            ->rawColumns(['action'])
+            ->rawColumns(['status', 'action'])
             ->make(true);
-        }
+    }
 }

@@ -125,7 +125,13 @@
             let table = $('#nonManfeeTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('management-non-fee.datatable') }}",
+                ajax: {
+                    url: "{{ route('management-non-fee.datatable') }}",
+                    type: "GET",
+                    data: function(d) {
+                        d.per_page = $('#perPage').val();
+                    }
+                },
                 pageLength: 10,
                 lengthChange: false,
                 searching: true,

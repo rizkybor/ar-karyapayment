@@ -25,19 +25,20 @@ class NonManfeeDocumentController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        // Ambil jumlah per halaman dari query string (default: 10)
-        $perPage = $request->input('per_page', 10);
+{
+    $user = Auth::user(); // Ambil user yang sedang login
+    $perPage = $request->input('per_page', 10);
 
-        // Ambil data dengan pagination
-        $NonManfeeDocs = NonManfeeDocument::with('contract')->paginate($perPage);
+    // Ambil dokumen yang dibuat oleh user login atau menunggu approvalnya
+    $NonManfeeDocs = NonManfeeDocument::with('contract')
+        ->where('created_by', $user->id)
+        ->orWhereHas('approvals', function ($q) use ($user) {
+            $q->where('approver_id', $user->id);
+        })
+        ->paginate($perPage);
 
-        if (!$NonManfeeDocs) {
-            return redirect()->route('management-non-fee.index')->with('error', 'Data tidak ditemukan.');
-        }
-
-        return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
-    }
+    return view('pages.ar-menu.management-non-fee.index', compact('NonManfeeDocs', 'perPage'));
+}
 
     /**
      * Show the form for creating a new resource.
