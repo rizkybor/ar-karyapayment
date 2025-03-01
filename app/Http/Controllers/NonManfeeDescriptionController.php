@@ -8,11 +8,11 @@ use App\Models\NonManfeeDocDescription;
 class NonManfeeDescriptionController extends Controller
 {
     /**
-     * Menampilkan detail deskripsi berdasarkan ID dan document_id.
+     * Menampilkan detail deskripsi berdasarkan ID dan id.
      */
-    public function show($document_id, $description_id)
+    public function show($id, $description_id)
     {
-        $description = NonManfeeDocDescription::where('document_id', $document_id)
+        $description = NonManfeeDocDescription::where('id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 
@@ -22,14 +22,14 @@ class NonManfeeDescriptionController extends Controller
     /**
      * Menyimpan deskripsi baru ke database.
      */
-    public function store(Request $request, $document_id)
+    public function store(Request $request, $id)
     {
         $request->validate([
             'description' => 'required|string|max:500',
         ]);
 
         $description = NonManfeeDocDescription::create([
-            'document_id' => $document_id,
+            'id' => $id,
             'description' => $request->description,
         ]);
 
@@ -39,13 +39,13 @@ class NonManfeeDescriptionController extends Controller
     /**
      * Mengupdate deskripsi di database.
      */
-    public function update(Request $request, $document_id, $description_id)
+    public function update(Request $request, $id, $description_id)
     {
         $request->validate([
             'description' => 'required|string|max:500',
         ]);
 
-        $description = NonManfeeDocDescription::where('document_id', $document_id)
+        $description = NonManfeeDocDescription::where('id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 
@@ -57,11 +57,11 @@ class NonManfeeDescriptionController extends Controller
     }
 
     /**
-     * Menghapus deskripsi dari database berdasarkan ID dan document_id.
+     * Menghapus deskripsi dari database berdasarkan ID dan id.
      */
-    public function destroy($document_id, $description_id)
+    public function destroy($id, $description_id)
     {
-        $description = NonManfeeDocDescription::where('document_id', $document_id)
+        $description = NonManfeeDocDescription::where('id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 

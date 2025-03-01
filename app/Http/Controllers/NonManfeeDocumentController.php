@@ -110,7 +110,7 @@ class NonManfeeDocumentController extends Controller
             $document = NonManfeeDocument::create($input);
 
             // Redirect ke halaman detail dengan ID yang benar
-            return redirect()->route('management-non-fee.show', ['document_id' => $document->id])
+            return redirect()->route('management-non-fee.show', ['id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -120,7 +120,7 @@ class NonManfeeDocumentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($document_id)
+    public function show($id)
     {
         // Ambil data Non Manfee Document berdasarkan ID
         $nonManfeeDocument = NonManfeeDocument::with([
@@ -128,7 +128,7 @@ class NonManfeeDocumentController extends Controller
             'attachments',
             'descriptions',
             'taxFiles'
-        ])->findOrFail($document_id);
+        ])->findOrFail($id);
 
         return view('pages/ar-menu/management-non-fee/invoice-detail/show', compact(
             'nonManfeeDocument'
@@ -138,7 +138,7 @@ class NonManfeeDocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($document_id)
+    public function edit($id)
     {
         // Ambil data Non Manfee Document berdasarkan ID dengan relasi
         $nonManfeeDocument = NonManfeeDocument::with([
@@ -146,7 +146,7 @@ class NonManfeeDocumentController extends Controller
             'attachments',
             'descriptions',
             'taxFiles'
-        ])->findOrFail($document_id);
+        ])->findOrFail($id);
 
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact(
             'nonManfeeDocument'
@@ -167,12 +167,12 @@ class NonManfeeDocumentController extends Controller
     /**
      * Proses Document with Approval Level
      */
-    public function processApproval($document_id)
+    public function processApproval($id)
     {
         DB::beginTransaction(); // Memulai transaksi database
 
         try {
-            $document = NonManfeeDocument::findOrFail($document_id);
+            $document = NonManfeeDocument::findOrFail($id);
             $currentRole = optional($document->latestApproval)->role ?? 'maker';
 
             // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?
@@ -189,7 +189,7 @@ class NonManfeeDocumentController extends Controller
 
             // 🔹 3️⃣ Validasi: Apakah user sudah pernah approve dokumen ini sebelumnya?
             $alreadyApproved = DocumentApproval::where([
-                'document_id'   => $document->id,
+                'id'   => $document->id,
                 'document_type' => NonManfeeDocument::class,
                 'approver_id'   => Auth::id(),
             ])->exists();
@@ -214,7 +214,7 @@ class NonManfeeDocumentController extends Controller
 
             // 🔹 6️⃣ Simpan approval ke tabel `document_approvals`
             DocumentApproval::create([
-                'document_id'   => $document->id,
+                'id'   => $document->id,
                 'document_type' => NonManfeeDocument::class,
                 'approver_id'   => Auth::id(),
                 'role'          => $currentRole,
@@ -234,7 +234,7 @@ class NonManfeeDocumentController extends Controller
                 'notifiable_type' => NonManfeeDocument::class,
                 'notifiable_id'   => $document->id,
                 'data'            => json_encode([
-                    'document_id'    => $document->id,
+                    'id'    => $document->id,
                     'invoice_number' => $document->invoice_number,
                     'action'         => 'approved',
                     'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",

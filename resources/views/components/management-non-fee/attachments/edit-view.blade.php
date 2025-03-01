@@ -1,16 +1,19 @@
+@props(['nonManfeeDocument'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Lampiran
         </h5>
-        <x-modal.management-non-fee.modal-create-attachment />
+        <x-modal.management-non-fee.modal-create-attachment :nonManfeeDocument="$nonManfeeDocument" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <div class="p-3">
             <div class="overflow-x-auto">
                 <table class="table-auto w-full">
-                    <thead class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
+                    <thead
+                        class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                         <tr>
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">No</div>
@@ -37,7 +40,7 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-non-fee.attachments.view', ['id' => $file->id]) }}">
+                                                href="{{ route('management-non-fee.attachments.show', ['id' => $nonManfeeDocument->id, 'attachment_id' => $file->id]) }}">
                                                 View
                                             </x-button-action>
                                             <x-button-action color="red" icon="trash"
@@ -46,7 +49,7 @@
                                                 Hapus
                                             </x-button-action>
                                             <form id="delete-attachment-{{ $file->id }}" method="POST"
-                                                action="{{ route('management-non-fee.attachments.delete', ['id' => $file->id]) }}"
+                                                action="{{ route('management-non-fee.attachments.destroy', ['id' => $nonManfeeDocument->id, 'attachment_id' => $file->id]) }}"
                                                 class="hidden">
                                                 @csrf
                                                 @method('DELETE')

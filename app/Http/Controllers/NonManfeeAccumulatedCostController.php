@@ -8,11 +8,11 @@ use App\Models\NonManfeeDocAccumulatedCost;
 class NonManfeeAccumulatedCostController extends Controller
 {
     /**
-     * Menampilkan detail biaya berdasarkan document_id dan accumulated_cost_id.
+     * Menampilkan detail biaya berdasarkan id dan accumulated_cost_id.
      */
-    public function show($document_id, $accumulated_cost_id)
+    public function show($id, $accumulated_cost_id)
     {
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $document_id)
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
                             ->where('id', $accumulated_cost_id)
                             ->firstOrFail();
 
@@ -25,7 +25,7 @@ class NonManfeeAccumulatedCostController extends Controller
     /**
      * Menyimpan biaya baru ke database.
      */
-    public function store(Request $request, $document_id)
+    public function store(Request $request, $id)
     {
         $request->validate([
             'account' => 'required|string|max:255',
@@ -36,7 +36,7 @@ class NonManfeeAccumulatedCostController extends Controller
         ]);
 
         $accumulatedCost = NonManfeeDocAccumulatedCost::create([
-            'document_id' => $document_id,
+            'id' => $id,
             'account' => $request->account,
             'dpp' => $request->dpp,
             'rate_ppn' => $request->rate_ppn,
@@ -53,7 +53,7 @@ class NonManfeeAccumulatedCostController extends Controller
     /**
      * Mengupdate biaya di database.
      */
-    public function update(Request $request, $document_id, $accumulated_cost_id)
+    public function update(Request $request, $id, $accumulated_cost_id)
     {
         $request->validate([
             'account' => 'required|string|max:255',
@@ -63,7 +63,7 @@ class NonManfeeAccumulatedCostController extends Controller
             'total' => 'required|numeric|min:0',
         ]);
 
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $document_id)
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
                             ->where('id', $accumulated_cost_id)
                             ->firstOrFail();
 
@@ -76,11 +76,11 @@ class NonManfeeAccumulatedCostController extends Controller
     }
 
     /**
-     * Menghapus biaya dari database berdasarkan document_id dan accumulated_cost_id.
+     * Menghapus biaya dari database berdasarkan id dan accumulated_cost_id.
      */
-    public function destroy($document_id, $accumulated_cost_id)
+    public function destroy($id, $accumulated_cost_id)
     {
-        $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $document_id)
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $id)
                             ->where('id', $accumulated_cost_id)
                             ->firstOrFail();
         

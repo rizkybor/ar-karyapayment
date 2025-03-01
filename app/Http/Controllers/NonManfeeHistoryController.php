@@ -39,7 +39,7 @@ class NonManfeeHistoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'document_id' => 'required|exists:non_manfee_documents,id',
+            'id' => 'required|exists:non_manfee_documents,id',
             'performed_by' => 'required|string|max:255',
             'role' => 'required|string|max:255',
             'previous_status' => 'nullable|string|max:255',

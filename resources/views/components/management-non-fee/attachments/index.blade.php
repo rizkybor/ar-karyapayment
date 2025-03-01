@@ -1,3 +1,5 @@
+@props(['nonManfeeDocument'])
+
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
         Lampiran
@@ -34,9 +36,9 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-non-fee.attachments.view', ['id' => $file->id]) }}">
-                                                View
-                                            </x-button-action>
+                                            href="{{ route('management-non-fee.attachments.show', ['id' => $nonManfeeDocument->id, 'attachment_id' => $file->id]) }}">
+                                            View
+                                        </x-button-action>
                                         </div>
                                     </td>
                                 </tr>
