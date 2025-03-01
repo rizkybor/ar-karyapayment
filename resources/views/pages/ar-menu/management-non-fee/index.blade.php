@@ -187,7 +187,8 @@
                         name: 'period',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
                         render: function(data) {
-                            return `<div>${data ?? '-'} day</div>`;
+                            return `<div>${data ?? '-'} hari</div>`;
+
                         }
                     },
                     {
