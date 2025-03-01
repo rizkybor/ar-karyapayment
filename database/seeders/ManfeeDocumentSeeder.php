@@ -50,11 +50,13 @@ class ManfeeDocumentSeeder extends Seeder
                 'period' => '14',
                 'letter_subject' => $faker->sentence(3),
                 'category' => 'management_fee',
-                'status' => $faker->randomElement([0, 1]),
+                'status' => 0,
                 'last_reviewers' => $faker->name,
                 'is_active' => true,
                 'created_by' => 1,
             ]);
         }
+
+        $this->command->info("✅ Berhasil menambahkan 10 data Management Fee.");
     }
 }

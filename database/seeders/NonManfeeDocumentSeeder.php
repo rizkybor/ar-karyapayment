@@ -36,7 +36,7 @@ class NonManfeeDocumentSeeder extends Seeder
                 'period'         => '14',
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_non_fee',
-                'status'         => rand(0, 1) ? 'approved' : 'pending',
+                'status'         => 0,
                 'last_reviewers' => null,
                 'is_active'      => true,
                 'created_by'     => 1,
@@ -48,6 +48,6 @@ class NonManfeeDocumentSeeder extends Seeder
         // Insert data ke database dengan batch untuk performa lebih baik
         DB::table('non_manfee_documents')->insert($data);
 
-        $this->command->info("✅ Berhasil menambahkan 5000 data Management Non Fee.");
+        $this->command->info("✅ Berhasil menambahkan 10 data Management Non Fee.");
     }
 }
