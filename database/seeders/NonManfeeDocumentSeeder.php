@@ -58,6 +58,6 @@ class NonManfeeDocumentSeeder extends Seeder
         // Insert data ke database dengan batch untuk performa lebih baik
         DB::table('non_manfee_documents')->insert($data);
 
-        $this->command->info("✅ Berhasil menambahkan 10 data Management Non Fee.");
+        $this->command->info("✅ Berhasil menambahkan 10 data Non Management Fee.");
     }
 }

@@ -42,7 +42,7 @@
         <div>
             <x-label for="transaction_status" value="{{ __('Jenis') }}" class="text-gray-800 dark:text-gray-100" />
             <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                Management Non Fee
+                Non Management Fee
             </p>
         </div>
     </div>

@@ -118,7 +118,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         });
     });
 
-    // ROUTE MANAGEMENT NON FEE
+    // ROUTE NON MANAGEMENT FEE
     Route::prefix('non-management-fee')->name('non-management-fee.')->group(function () {
 
         // Datatable NonManfee 
