@@ -44,7 +44,7 @@
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                     <x-management-non-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
                 </div>
-                @endrole
-                    </div>
+            @endrole
+        </div>
     </div>
 </x-app-layout>

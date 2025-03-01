@@ -1,27 +1,27 @@
 @props(['nonManfeeDocument', 'akunOptions' => [], 'isEdit' => false])
 
-    @csrf
-    @method('PUT')
+@csrf
+@method('PUT')
 
-    <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-        <div class="flex justify-between items-center mb-3">
-            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Akumulasi Biaya
-            </h5>
-            @if ($isEdit == true)
+<div class="mt-5 mb-5 md:mt-0 md:col-span-2">
+    <div class="flex justify-between items-center mb-3">
+        <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Akumulasi Biaya
+        </h5>
+        @if ($isEdit == true)
             <x-button-action color="violet" type="submit">
                 Simpan Akumulasi Biaya
             </x-button-action>
-            @endif
-        </div>
+        @endif
+    </div>
 
-        <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            @php
+    <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+        @php
             $firstAccumulatedCost = $nonManfeeDocument->accumulatedCosts->first();
         @endphp
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        
+
             {{-- Akun (Dropdown) --}}
             <div class="col-span-1">
                 <x-label for="akun" value="{{ __('Akun') }}" />
@@ -32,18 +32,19 @@
                         focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all">
                         <option value="">Pilih Akun</option>
                         @foreach ($akunOptions as $akun)
-                            <option value="{{ $akun }}" {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun ? 'selected' : '' }}>
+                            <option value="{{ $akun }}"
+                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun ? 'selected' : '' }}>
                                 {{ $akun }}
                             </option>
                         @endforeach
                     </select>
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ $firstAccumulatedCost->account ?? '-' }}
+                        {{ $firstAccumulatedCost->account == '' ? 'Tidak ada akun yang dipilih' : $firstAccumulatedCost->account }}
                     </p>
                 @endif
             </div>
-        
+
             {{-- DPP Pekerjaan --}}
             <div class="col-span-1">
                 <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan (Rp)') }}" />
@@ -57,7 +58,7 @@
                     </p>
                 @endif
             </div>
-        
+
             {{-- RATE PPN --}}
             <div class="col-span-1 sm:col-span-1">
                 <x-label for="rate_ppn" value="{{ __('RATE PPN (%)') }}" />
@@ -71,26 +72,28 @@
                     </p>
                 @endif
             </div>
-        
+
             {{-- NILAI PPN (Auto) --}}
             <div class="col-span-1 sm:col-span-1">
                 <x-label for="nilai_ppn" value="{{ __('NILAI PPN (Rp)') }}" />
-                <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text" name="nilai_ppn"
+                <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                    name="nilai_ppn"
                     value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
                     readonly />
             </div>
-        
+
             {{-- JUMLAH (Auto) --}}
             <div class="col-span-1 sm:col-span-2">
                 <x-label for="jumlah" value="{{ __('JUMLAH (Rp)') }}" />
-                <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text" name="jumlah"
+                <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                    name="jumlah"
                     value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
                     readonly />
             </div>
-        
-        </div>
+
         </div>
     </div>
+</div>
 
 <script>
     function validateRatePPN(input) {
@@ -109,7 +112,7 @@
     function formatCurrency(input) {
         // Hapus semua karakter selain angka
         let value = input.value.replace(/\D/g, '');
-        
+
         // Format angka ke bentuk ribuan dengan separator koma
         input.value = new Intl.NumberFormat("id-ID").format(value);
     }
