@@ -1,20 +1,27 @@
 @props(['nonManfeeDocument', 'akunOptions' => [], 'isEdit' => false])
 
-<div class="mt-5 mb-5 md:mt-0 md:col-span-2">
-    <div class="flex justify-between items-center mb-3">
-        <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Akumulasi Biaya
-        </h5>
-        @if ($isEdit == true)
-        <x-button-action color="violet" type="submit">
-            Simpan Akumulasi Biaya
-        </x-button-action>
-        @endif
-    </div>
+    @csrf
+    @method('PUT')
 
-    <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+    <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
+        <div class="flex justify-between items-center mb-3">
+            <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Akumulasi Biaya
+            </h5>
+            @if ($isEdit == true)
+            <x-button-action color="violet" type="submit">
+                Simpan Akumulasi Biaya
+            </x-button-action>
+            @endif
+        </div>
+
+        <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            @php
+            $firstAccumulatedCost = $nonManfeeDocument->accumulatedCosts->first();
+        @endphp
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
+        
             {{-- Akun (Dropdown) --}}
             <div class="col-span-1">
                 <x-label for="akun" value="{{ __('Akun') }}" />
@@ -25,63 +32,65 @@
                         focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all">
                         <option value="">Pilih Akun</option>
                         @foreach ($akunOptions as $akun)
-                            <option value="{{ $akun }}" {{ old('akun', $nonManfeeDocument->akun ?? '') == $akun ? 'selected' : '' }}>
+                            <option value="{{ $akun }}" {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun ? 'selected' : '' }}>
                                 {{ $akun }}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">{{ $nonManfeeDocument->akun ?? '-' }}</p>
+                    <p class="text-gray-800 dark:text-gray-200">
+                        {{ $firstAccumulatedCost->account ?? '-' }}
+                    </p>
                 @endif
             </div>
-
+        
             {{-- DPP Pekerjaan --}}
             <div class="col-span-1">
                 <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan (Rp)') }}" />
                 @if ($isEdit)
                     <x-input id="dpp_pekerjaan" class="block mt-1 w-full" type="text" name="dpp_pekerjaan"
-                        value="{{ old('dpp_pekerjaan', number_format($nonManfeeDocument->dpp_pekerjaan ?? 0, 0, ',', '.')) }}"
+                        value="{{ old('dpp_pekerjaan', number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.')) }}"
                         oninput="formatCurrency(this); calculateValues()" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        Rp {{ number_format($nonManfeeDocument->dpp_pekerjaan ?? 0, 0, ',', '.') }}
+                        Rp {{ number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.') }}
                     </p>
                 @endif
             </div>
-
+        
             {{-- RATE PPN --}}
             <div class="col-span-1 sm:col-span-1">
                 <x-label for="rate_ppn" value="{{ __('RATE PPN (%)') }}" />
                 @if ($isEdit)
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
-                        value="{{ old('rate_ppn', intval($nonManfeeDocument->rate_ppn ?? 0)) }}"
+                        value="{{ old('rate_ppn', intval($firstAccumulatedCost->rate_ppn ?? 0)) }}"
                         oninput="validateRatePPN(this); calculateValues()" maxlength="3" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ intval($nonManfeeDocument->rate_ppn ?? 0) }}%
+                        {{ intval($firstAccumulatedCost->rate_ppn ?? 0) }}%
                     </p>
                 @endif
             </div>
-
+        
             {{-- NILAI PPN (Auto) --}}
             <div class="col-span-1 sm:col-span-1">
                 <x-label for="nilai_ppn" value="{{ __('NILAI PPN (Rp)') }}" />
                 <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text" name="nilai_ppn"
-                    value="{{ old('nilai_ppn', number_format($nonManfeeDocument->nilai_ppn ?? 0, 0, ',', '.')) }}"
+                    value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
                     readonly />
             </div>
-
+        
             {{-- JUMLAH (Auto) --}}
             <div class="col-span-1 sm:col-span-2">
                 <x-label for="jumlah" value="{{ __('JUMLAH (Rp)') }}" />
                 <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text" name="jumlah"
-                    value="{{ old('jumlah', number_format($nonManfeeDocument->jumlah ?? 0, 0, ',', '.')) }}"
+                    value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
                     readonly />
             </div>
-
+        
+        </div>
         </div>
     </div>
-</div>
 
 <script>
     function validateRatePPN(input) {

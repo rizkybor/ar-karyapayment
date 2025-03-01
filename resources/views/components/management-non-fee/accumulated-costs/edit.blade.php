@@ -3,7 +3,7 @@
     @method('PUT')
 
     <x-management-non-fee.accumulated-costs.index 
-        :nonManfeeDocument="$nonManfeeDocument" 
+        :nonManfeeDocument="$nonManfeeDocument"
         :akunOptions="$akunOptions"
         :isEdit="true" 
     />

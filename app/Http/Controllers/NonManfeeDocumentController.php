@@ -7,6 +7,7 @@ use App\Models\Contracts;
 // use Yajra\DataTables\DataTables;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\NonManfeeDocument;
+use App\Models\NonManfeeDocAccumulatedCost;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
 use App\Models\NotificationRecipient;
@@ -100,6 +101,11 @@ class NonManfeeDocumentController extends Controller
             // Simpan dokumen baru
             $document = NonManfeeDocument::create($input);
 
+            // **Buat data di NonManfeeDocAccumulatedCost dengan hanya document_id**
+            NonManfeeDocAccumulatedCost::create([
+                'document_id' => $document->id,
+            ]);
+
             // Redirect ke halaman detail dengan ID yang benar
             return redirect()->route('management-non-fee.show', ['id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
@@ -142,7 +148,8 @@ class NonManfeeDocumentController extends Controller
         $akunOptions = ['Kas', 'Bank', 'Piutang', 'Hutang', 'Modal'];
 
         return view('pages/ar-menu/management-non-fee/invoice-detail/edit', compact(
-            'nonManfeeDocument', 'akunOptions'
+            'nonManfeeDocument',
+            'akunOptions'
         ));
     }
 
