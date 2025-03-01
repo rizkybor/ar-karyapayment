@@ -16,6 +16,8 @@
             </div>
         </div>
 
+        <div class="border border-white-300 dark:border-white-700 my-6"></div>
+
         {{-- HEADER --}}
         <x-management-non-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
 
