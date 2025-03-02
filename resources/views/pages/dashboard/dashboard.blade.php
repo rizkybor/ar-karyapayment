@@ -23,7 +23,7 @@
             <x-dashboard-invoice.card-stick :dataDocuments=$dataInvoices />
 
             <!-- Line chart (Acme Advanced) -->
-            <x-dashboard-invoice.card-rounded :dataInvoices=$dataInvoices :draftCount=$draftCount
+            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataInvoices :draftCount=$draftCount
                 :onProgressCount=$onProgressCount :rejectedCount=$rejectedCount :completedCount=$completedCount/>
 
             <!-- Card (Customers) -->

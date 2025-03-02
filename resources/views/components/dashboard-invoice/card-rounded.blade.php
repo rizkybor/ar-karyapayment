@@ -1,10 +1,15 @@
 <div
     class="flex flex-col col-span-full sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-4 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
     <div class="px-5 pt-5">
-        <header class="flex justify-between items-start">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Status Payment</h2>
+        <header class="flex flex-wrap justify-between items-center gap-2 mb-10">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Status Payment
+            </h2>
+            <h6 class="text-sm text-gray-600 dark:text-gray-400">
+                Total Invoices Terbuat: {{ number_format($totalInvoices, 0, ',', '.') }}
+            </h6>
         </header>
-        <div class="mt-2 flex justify-center items-center h-64">
+        <div class="mt-2 flex justify-center items-center md:h-64 h-74">
             <div id="pie-chart"></div>
         </div>
     </div>
