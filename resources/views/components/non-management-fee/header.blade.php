@@ -62,7 +62,13 @@
                 <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
                 <x-button-action color="orange" icon="info">Need Info</x-button-action>
                 <x-button-action color="red" icon="reject">Reject</x-button-action>
-                <x-button-action color="green" icon="approve">Approve</x-button-action>
+                {{-- <x-button-action color="green" icon="approve">Approve</x-button-action> --}}
+                <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
+                onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                @csrf
+                @method('PUT')
+                <x-button-action color="green" icon="approve" type="submit">Approve</x-button-action>
+            </form>
             @endif
 
             @if (auth()->user()->role === 'maker')
