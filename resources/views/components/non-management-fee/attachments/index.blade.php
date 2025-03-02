@@ -41,7 +41,8 @@
                                             </x-button-action>
 
                                             <!-- Panggil Komponen Modal -->
-                                            <x-modal.global.modal-view-global-file :file="$file" :nonManfeeDocument="$nonManfeeDocument" />
+                                            <x-modal.global.modal-view-global-file :file="$file"
+                                                :nonManfeeDocument="$nonManfeeDocument" />
                                             <!-- End Komponen Modal -->
                                         </div>
                                     </td>

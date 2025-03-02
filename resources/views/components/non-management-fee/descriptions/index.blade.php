@@ -17,9 +17,6 @@
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-left">Deskripsi</div>
                             </th>
-                            <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-end">Aksi</div>
-                            </th>
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
@@ -32,14 +29,6 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">{{ $desc->description }}</div>
-                                    </td>
-                                    <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center flex items-center justify-end gap-2">
-                                            <x-button-action color="violet" icon="eye"
-                                            href="{{ route('non-management-fee.descriptions.show', ['id' => $nonManfeeDocument->id, 'description_id' => $desc->id]) }}">
-                                            View
-                                        </x-button-action>
-                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

@@ -30,7 +30,7 @@
                         @php $i = 1; @endphp
                         @if (!empty($nonManfeeDocument->attachments) && $nonManfeeDocument->attachments->count())
                             @foreach ($nonManfeeDocument->attachments as $file)
-                                <tr>
+                                <tr x-data="{ modalOpen: false }">
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">{{ $i++ }}</div>
                                     </td>
@@ -39,10 +39,15 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-end gap-2">
-                                            <x-button-action color="violet" icon="eye"
-                                                href="{{ route('non-management-fee.attachments.show', ['id' => $nonManfeeDocument->id, 'attachment_id' => $file->id]) }}">
+                                            <x-button-action color="violet" icon="eye" @click="modalOpen = true">
                                                 View
                                             </x-button-action>
+
+                                            <!-- Panggil Komponen Modal -->
+                                            <x-modal.global.modal-view-global-file :file="$file"
+                                                :nonManfeeDocument="$nonManfeeDocument" />
+                                            <!-- End Komponen Modal -->
+
                                             <x-button-action color="red" icon="trash"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus lampiran ini?') 
                                                 && document.getElementById('delete-attachment-{{ $file->id }}').submit()">
