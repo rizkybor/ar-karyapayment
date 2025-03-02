@@ -87,6 +87,7 @@ class DocumentApproval extends Model
             '3' => 'Pending at Manager Keuangan',
             '4' => 'Pending at Direktur Keuangan',
             '5' => 'Pending at Pajak',
+            '6' => 'Close Doc at Pembendaharaan',
             '9' => 'Requires Information',
             '99' => 'Rejected',
         ];

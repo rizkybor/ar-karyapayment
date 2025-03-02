@@ -55,8 +55,10 @@
     @if ($isShowPage)
         <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
             @if (auth()->user()->role !== 'maker')
-                <x-button-action color="blue" icon="print">Print</x-button-action>
-                <x-button-action color="teal" icon="paid">Paid</x-button-action>
+                @if ($document_status == 0)
+                    <x-button-action color="blue" icon="print">Print</x-button-action>
+                    <x-button-action color="teal" icon="paid">Paid</x-button-action>
+                @endif
                 <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
                 <x-button-action color="orange" icon="info">Need Info</x-button-action>
                 <x-button-action color="red" icon="reject">Reject</x-button-action>
