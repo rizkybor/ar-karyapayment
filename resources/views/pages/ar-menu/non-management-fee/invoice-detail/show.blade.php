@@ -22,7 +22,7 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :document="$nonManfeeDocument" isShowPage="true" />
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :latestApprover=$latestApprover :document="$nonManfeeDocument" isShowPage="true" />
 
 
         <div class="grid grid-cols-1 gap-6 mt-6">

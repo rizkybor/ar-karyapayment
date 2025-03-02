@@ -124,11 +124,17 @@ class NonManfeeDocumentController extends Controller
             'accumulatedCosts',
             'attachments',
             'descriptions',
-            'taxFiles'
+            'taxFiles',
+            'approvals.approver'
         ])->findOrFail($id);
 
+        $latestApprover = DocumentApproval::where('document_id', $id)
+        ->with('approver')
+        ->latest('updated_at') // Ambil hanya yang paling baru
+        ->first();
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
-            'nonManfeeDocument'
+            'nonManfeeDocument', 'latestApprover'
         ));
     }
 

@@ -4,6 +4,7 @@
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
+    'latestApprover' => '',
 ])
 
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
@@ -59,16 +60,22 @@
                     <x-button-action color="blue" icon="print">Print</x-button-action>
                     <x-button-action color="teal" icon="paid">Paid</x-button-action>
                 @endif
-                <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action>
-                <x-button-action color="orange" icon="info">Need Info</x-button-action>
-                <x-button-action color="red" icon="reject">Reject</x-button-action>
-                {{-- <x-button-action color="green" icon="approve">Approve</x-button-action> --}}
-                <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
-                onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-                @csrf
-                @method('PUT')
-                <x-button-action color="green" icon="approve" type="submit">Approve</x-button-action>
-            </form>
+                
+                {{-- <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action> --}}
+                
+                @if (auth()->user()->role === $latestApprover->role)
+                    <x-button-action color="orange" icon="info">Need Info</x-button-action>
+                    <x-button-action color="red" icon="reject">Reject</x-button-action>
+                    {{-- <x-button-action color="green" icon="approve">Approve</x-button-action> --}}
+                    <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                        @csrf
+                        @method('PUT')
+                        <x-button-action color="green" icon="approve" type="submit">Approve</x-button-action>
+
+                    </form>
+                @endif
+
             @endif
 
             @if (auth()->user()->role === 'maker')
