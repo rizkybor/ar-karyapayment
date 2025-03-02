@@ -15,10 +15,17 @@ class NonManfeeDocumentDataTableController extends Controller
      */
     public function index(Request $request)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+
+        // Query utama dengan `where(function ($query) {...})`
         $query = NonManfeeDocument::query()
             ->with(['contract', 'accumulatedCosts'])
-            ->where('created_by', $userId)
+            ->where(function ($query) use ($user) {
+                $query->where('created_by', $user->id) // Dokumen yang dibuat oleh user
+                    ->orWhereHas('approvals', function ($q) use ($user) {
+                        $q->where('approver_id', $user->id); // Dokumen yang user harus approve
+                    });
+            })
             ->select('non_manfee_documents.*');
 
         return DataTables::eloquent($query)

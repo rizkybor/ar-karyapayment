@@ -76,13 +76,13 @@
                 @endif
 
                 @if ($document_status == 0)
-                {{-- Proccess --}}
-                <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
-                    onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-                    @csrf
-                    @method('PUT')
-                    <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
-                </form>
+                    {{-- Proccess --}}
+                    <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
+                        onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
+                        @csrf
+                        @method('PUT')
+                        <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
+                    </form>
                 @endif
             @endif
         </div>
