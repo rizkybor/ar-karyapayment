@@ -17,8 +17,27 @@
     $rejectedCount = $dataInvoices->where('status', 99)->count();
     $completedCount = $dataInvoices->where('status', 100)->count();
 
-    // Pastikan nilai dalam array benar-benar integer (bukan string)
-    $chartData = [(int) $draftCount, (int) $onProgressCount, (int) $rejectedCount, (int) $completedCount];
+    // Hitung total semua invoice
+    $totalInvoices = $draftCount + $onProgressCount + $rejectedCount + $completedCount;
+
+    // Menghindari error jika total 0
+    if ($totalInvoices === 0) {
+        $chartData = [0, 0, 0, 0];
+    } else {
+        $chartData = [
+            round(($draftCount / $totalInvoices) * 100),
+            round(($onProgressCount / $totalInvoices) * 100),
+            round(($rejectedCount / $totalInvoices) * 100),
+            round(($completedCount / $totalInvoices) * 100),
+        ];
+
+        // Koreksi jika total tidak tepat 100% akibat pembulatan
+        $totalRounded = array_sum($chartData);
+        $difference = 100 - $totalRounded;
+
+        // Tambahkan atau kurangi dari kategori terakhir agar total tetap 100%
+        $chartData[count($chartData) - 1] += $difference;
+    }
 @endphp
 
 <script>
@@ -30,7 +49,7 @@
         console.log("Chart Data:", chartData); // Debugging
 
         const chartConfig2 = {
-            series: chartData, // Masukkan array angka
+            series: chartData, // Persentase data
             labels: chartLabels, // Label kategori
             chart: {
                 type: "pie",
@@ -44,8 +63,8 @@
             dataLabels: {
                 enabled: true,
                 formatter: function(val, opts) {
-                    return new Intl.NumberFormat("id-ID").format(opts.w.globals.series[opts.seriesIndex]) +
-                        " (" + val.toFixed(1) + "%)";
+                    let count = Math.round((val / 100) * {!! json_encode($totalInvoices) !!}); // Hitung jumlah dokumen asli
+                    return `${count} Invoices (${Math.round(val)}%)`; // Format tanpa desimal
                 },
                 style: {
                     fontSize: "12px",
@@ -68,9 +87,10 @@
             tooltip: {
                 y: {
                     formatter: function(val) {
+                        let count = Math.round((val / 100) * {!! json_encode($totalInvoices) !!}); // Hitung jumlah dokumen asli
                         return new Intl.NumberFormat("id-ID", {
                             style: "decimal"
-                        }).format(val) + " Invoices";
+                        }).format(count) + " Invoices (" + Math.round(val) + "%)";
                     }
                 }
             }
