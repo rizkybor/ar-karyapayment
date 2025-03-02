@@ -145,8 +145,8 @@ class NonManfeeDocumentController extends Controller
             'taxFiles'
         ])->findOrFail($id);
 
-        $akunOptions = ['Kas', 'Bank', 'Piutang', 'Hutang', 'Modal'];
-// dd($nonManfeeDocument->accumulatedCosts);
+        $akunOptions = ['Kas (0001)', 'Bank (0002)', 'Piutang (0003)', 'Hutang (0004)', 'Modal (0005)'];
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
             'akunOptions'

@@ -28,32 +28,55 @@ class NonManfeeAccumulatedCostController extends Controller
     /**
      * Menyimpan atau memperbarui data Akumulasi Biaya.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $accumulated_id = null)
     {
+        // Debugging untuk melihat data yang dikirim
+    
+        // Validasi input
         $request->validate([
             'akun' => 'required|string|max:255',
             'dpp_pekerjaan' => 'required|numeric|min:0',
-            'rate_ppn' => 'required|integer|min:0|max:999',
+            'rate_ppn' => 'required|numeric|min:0|max:999.99',
+        ], [
+            'akun.required' => 'Akun wajib diisi.',
+            'akun.string' => 'Akun harus berupa teks.',
+            'akun.max' => 'Akun tidak boleh lebih dari 255 karakter.',
+    
+            'dpp_pekerjaan.required' => 'DPP Pekerjaan harus diisi.',
+            'dpp_pekerjaan.numeric' => 'DPP Pekerjaan harus berupa angka.',
+            'dpp_pekerjaan.min' => 'DPP Pekerjaan tidak boleh kurang dari 0.',
+    
+            'rate_ppn.required' => 'Rate PPN harus diisi.',
+            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (bisa menggunakan titik atau koma untuk desimal).',
+            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 0.',
+            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
 
-        // Konversi nilai agar bisa diproses dalam database
-        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan);
-        $ratePpn = (int) $request->rate_ppn;
+
+
+        // Konversi nilai agar sesuai database
+        $dppPekerjaan = (float) preg_replace('/[^0-9.]/', '', str_replace(',', '.', $request->dpp_pekerjaan));
+        $ratePpn = (float) str_replace(',', '.', $request->rate_ppn);
         $nilaiPpn = ($dppPekerjaan * $ratePpn) / 100;
         $jumlah = $dppPekerjaan + $nilaiPpn;
+        
 
-        // Simpan ke tabel akumulasi biaya
+        // Simpan atau update data ke database
         $accumulatedCost = NonManfeeDocAccumulatedCost::updateOrCreate(
-            ['document_id' => $id],
+            [
+                'id' => $accumulated_id, // Jika `accumulated_id` ada, update. Jika tidak, buat baru
+                'document_id' => $id
+            ],
             [
                 'account' => $request->akun,
                 'dpp' => $dppPekerjaan,
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,
                 'total' => $jumlah,
-            ]
-        );
-
+                ]
+            );
+            
+        // Redirect ke halaman edit dengan pesan sukses
         return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Akumulasi Biaya berhasil diperbarui!');
     }

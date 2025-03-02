@@ -143,17 +143,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
 
 
-         // Edit
+        // Edit
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
-        
+
         // Prefix untuk accumulated cost
         Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
-            // management-fee.attachments.show
             Route::get('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');
-            // management-fee.attachments.update
-            Route::put('/{accumulated_id}/update', [NonManfeeAccumulatedCostController::class, 'update'])->name('update');
-            // management-fee.attachments.destroy
+            Route::put('/{accumulated_id}/update', [NonManfeeAccumulatedCostController::class, 'update'])->name('update'); // Tetap pakai PUT
             Route::delete('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
         });
 

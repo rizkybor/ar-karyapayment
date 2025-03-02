@@ -1,4 +1,4 @@
-@props(['color' => 'gray', 'icon' => null])
+@props(['color' => 'gray', 'icon' => null, 'disabled' => false])
 
 @php
     $colors = [
@@ -47,12 +47,17 @@
             $icons[$icon] .
             '</svg>'
         : '';
+    
+        $disabledClass = $disabled
+        ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-50 hover:bg-gray-400'
+        : $colorClass;
 @endphp
 
 <button
     {{ $attributes->merge([
         'type' => 'button',
         'class' => "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-white $colorClass focus:outline-none focus:ring-2 whitespace-nowrap",
+        'disabled' => $disabled ? 'disabled' : null,
     ]) }}>
     {!! $iconSvg !!}
     {{ $slot }}
