@@ -20,10 +20,16 @@
         <div class="grid grid-cols-12 gap-6">
 
             <!-- Line chart (Acme Plus) -->
-            <x-dashboard.dashboard-card-01 />
+            <x-dashboard-invoice.card-stick :dataDocuments=$dataInvoices />
 
             <!-- Line chart (Acme Advanced) -->
-            <x-dashboard.dashboard-card-02 />
+            <x-dashboard-invoice.card-rounded :dataInvoices=$dataInvoices :draftCount=$draftCount
+                :onProgressCount=$onProgressCount :rejectedCount=$rejectedCount :completedCount=$completedCount/>
+
+            <!-- Card (Customers) -->
+            <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoices />
+
+            <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoices />
 
             {{-- <!-- Line chart (Acme Professional) -->
             <x-dashboard.dashboard-card-03 :dataFeed="$dataFeed" />
@@ -46,8 +52,6 @@
             <!-- Stacked bar chart (Sales VS Refunds) -->
             <x-dashboard.dashboard-card-09 /> --}}
 
-            <!-- Card (Customers) -->
-            <x-dashboard.dashboard-card-10 />
 
             {{-- <!-- Card (Reasons for Refunds) -->
             <x-dashboard.dashboard-card-11 />

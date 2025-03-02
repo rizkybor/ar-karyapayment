@@ -90,6 +90,7 @@ class DocumentApproval extends Model
             '6' => 'Close Doc at Pembendaharaan',
             '9' => 'Requires Information',
             '99' => 'Rejected',
+            '100' => 'Completed',
         ];
 
         return $statuses[$this->status] ?? 'Unknown';

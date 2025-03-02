@@ -12,6 +12,7 @@
         '6' => 'Close Doc at Pembendaharaan',
         '9' => 'Requires Information',
         '99' => 'Rejected',
+        '100' => 'Completed',
     ];
 
     // Mapping warna berdasarkan status teks
@@ -24,6 +25,7 @@
         'Checked by Pajak' => 'bg-teal-200 text-teal-800',
         'Requires Information' => 'bg-pink-200 text-pink-800',
         'Rejected' => 'bg-red-200 text-red-800',
+        'Completed' => 'bg-green-200 text-green-800',
     ];
 
     // Konversi status angka menjadi teks
