@@ -403,6 +403,7 @@ class NonManfeeDocumentController extends Controller
             '5' => 'pajak',
             '9' => 'need_info',
             '99' => 'rejected',
+            '100' => 'completed',
         ];
     }
 
