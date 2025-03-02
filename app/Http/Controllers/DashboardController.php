@@ -26,7 +26,10 @@ class DashboardController extends Controller
         $completedCount = $dataInvoices->where('status', 100)->count();
         $rejectedCount = $dataInvoices->where('status', 99)->count();
 
-        return view('pages/dashboard/dashboard', compact('dataInvoices', 'draftCount', 'onProgressCount', 'completedCount', 'rejectedCount'));
+        $totalInvoices = $draftCount + $onProgressCount + $completedCount + $rejectedCount;
+
+
+        return view('pages/dashboard/dashboard', compact('dataInvoices', 'draftCount', 'onProgressCount', 'completedCount', 'rejectedCount', 'totalInvoices'));
     }
 
     /**
