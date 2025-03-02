@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\NonManfeeDocument;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\View;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
@@ -15,10 +15,17 @@ class NonManfeeDocumentDataTableController extends Controller
      */
     public function index(Request $request)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+
+        // Query utama dengan `where(function ($query) {...})`
         $query = NonManfeeDocument::query()
             ->with(['contract', 'accumulatedCosts'])
-            ->where('created_by', $userId)
+            ->where(function ($query) use ($user) {
+                $query->where('created_by', $user->id) // Dokumen yang dibuat oleh user
+                    ->orWhereHas('approvals', function ($q) use ($user) {
+                        $q->where('approver_id', $user->id); // Dokumen yang user harus approve
+                    });
+            })
             ->select('non_manfee_documents.*');
 
         return DataTables::eloquent($query)
@@ -27,6 +34,12 @@ class NonManfeeDocumentDataTableController extends Controller
             ->addColumn('termin_invoice', function ($row) {
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
+
+            // ✅ Tambahkan kolom status dengan komponen Blade
+            ->addColumn('status', function ($row) {
+                return view('components.label-status-table', ['status' => $row->status])->render();
+            })
+
             ->addColumn('total', function ($row) {
                 // Ambil akumulasi biaya pertama jika ada
                 $firstAccumulatedCost = $row->accumulatedCosts->first();
@@ -52,7 +65,7 @@ class NonManfeeDocumentDataTableController extends Controller
             })
 
             // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
-            ->rawColumns(['action'])
+            ->rawColumns(['status', 'action'])
             ->make(true);
     }
 }
