@@ -3,18 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-
 use App\Models\NonManfeeDocDescription;
 
 class NonManfeeDescriptionController extends Controller
 {
     /**
-     * Menampilkan detail deskripsi berdasarkan ID dan id.
+     * Menampilkan detail deskripsi berdasarkan ID dokumen dan ID deskripsi.
      */
     public function show($id, $description_id)
     {
-        $description = NonManfeeDocDescription::where('id', $id)
+        $description = NonManfeeDocDescription::where('document_id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 
@@ -30,12 +28,13 @@ class NonManfeeDescriptionController extends Controller
             'description' => 'required|string|max:500',
         ]);
 
-        NonManfeeDocDescription::create([
+        $description = NonManfeeDocDescription::create([
             'document_id' => $id,
             'description' => $request->description,
         ]);
 
-        return redirect()->route('non-management-fee.edit', ['document_id' => $id])->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])
+                         ->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -47,7 +46,7 @@ class NonManfeeDescriptionController extends Controller
             'description' => 'required|string|max:500',
         ]);
 
-        $description = NonManfeeDocDescription::where('id', $id)
+        $description = NonManfeeDocDescription::where('document_id', $id)
                             ->where('id', $description_id)
                             ->firstOrFail();
 
@@ -55,11 +54,14 @@ class NonManfeeDescriptionController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json(['message' => 'Deskripsi berhasil diperbarui.', 'data' => $description]);
+        return response()->json([
+            'message' => 'Deskripsi berhasil diperbarui.',
+            'data' => $description
+        ]);
     }
 
     /**
-     * Menghapus deskripsi dari database berdasarkan ID dan id.
+     * Menghapus deskripsi dari database berdasarkan ID dokumen dan ID deskripsi.
      */
     public function destroy($id, $description_id)
     {
@@ -69,6 +71,7 @@ class NonManfeeDescriptionController extends Controller
 
         $description->delete();
 
-        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Description berhasil dihapus!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])
+                         ->with('success', 'Deskripsi berhasil dihapus!');
     }
 }
