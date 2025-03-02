@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             ['name' => 'Super Admin', 'email' => 'superadmin@example.com', 'role' => 'super_admin', 'department' => null, 'position' => null],
 
             // Maker Users
-            ['name' => 'Maker 1', 'email' => 'maker1@example.com', 'role' => 'maker', 'department' => 'Department SDM', 'position' => 'Staff'],
+            ['name' => 'Maker 1', 'email' => 'maker1@example.com', 'role' => 'maker', 'department' => 'Departmen SDM', 'position' => 'Staff'],
             ['name' => 'Maker 2', 'email' => 'maker2@example.com', 'role' => 'maker', 'department' => 'Departmen Pengadaan dan Administrasi Umum', 'position' => 'Staff'],
 
             // Kepala Divisi (Kadiv)
