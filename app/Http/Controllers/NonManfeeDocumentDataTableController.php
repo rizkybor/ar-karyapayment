@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\NonManfeeDocument;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\View;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
@@ -35,7 +35,7 @@ class NonManfeeDocumentDataTableController extends Controller
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
 
-              // ✅ Tambahkan kolom status dengan komponen Blade
+            // ✅ Tambahkan kolom status dengan komponen Blade
             ->addColumn('status', function ($row) {
                 return view('components.label-status-table', ['status' => $row->status])->render();
             })
@@ -65,7 +65,7 @@ class NonManfeeDocumentDataTableController extends Controller
             })
 
             // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
-            ->rawColumns(['status','action'])
+            ->rawColumns(['status', 'action'])
             ->make(true);
     }
 }

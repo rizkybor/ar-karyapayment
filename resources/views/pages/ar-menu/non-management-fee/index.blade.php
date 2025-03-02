@@ -160,9 +160,9 @@
                     {
                         data: 'status',
                         name: 'status',
-                        className: 'p-2 whitespace-nowrap text-center text-sm', // Atur lebar kolom (misalnya 8rem atau 32px)
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
                     },
                     {
                         data: 'contract.employee_name',
