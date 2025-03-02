@@ -28,32 +28,50 @@ class NonManfeeAccumulatedCostController extends Controller
     /**
      * Menyimpan atau memperbarui data Akumulasi Biaya.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $accumulated_id)
     {
+        // Debugging untuk memastikan request masuk
+        dd($request->all()); 
+    
+        // Validasi data
         $request->validate([
             'akun' => 'required|string|max:255',
             'dpp_pekerjaan' => 'required|numeric|min:0',
-            'rate_ppn' => 'required|integer|min:0|max:999',
+            'rate_ppn' => 'required|numeric|min:0|max:999.99', // Gunakan float untuk mendukung desimal
         ]);
-
+    
         // Konversi nilai agar bisa diproses dalam database
         $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan);
-        $ratePpn = (int) $request->rate_ppn;
+        $ratePpn = (float) str_replace(',', '.', $request->rate_ppn); // Pastikan mendukung angka desimal
         $nilaiPpn = ($dppPekerjaan * $ratePpn) / 100;
         $jumlah = $dppPekerjaan + $nilaiPpn;
-
-        // Simpan ke tabel akumulasi biaya
-        $accumulatedCost = NonManfeeDocAccumulatedCost::updateOrCreate(
-            ['document_id' => $id],
-            [
+    
+        // Cek apakah data akumulasi biaya sudah ada berdasarkan ID
+        $accumulatedCost = NonManfeeDocAccumulatedCost::where('id', $accumulated_id)
+            ->where('document_id', $id)
+            ->first();
+    
+        if ($accumulatedCost) {
+            // Update jika data sudah ada
+            $accumulatedCost->update([
                 'account' => $request->akun,
                 'dpp' => $dppPekerjaan,
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,
                 'total' => $jumlah,
-            ]
-        );
-
+            ]);
+        } else {
+            // Jika tidak ada, buat baru
+            NonManfeeDocAccumulatedCost::create([
+                'document_id' => $id,
+                'account' => $request->akun,
+                'dpp' => $dppPekerjaan,
+                'rate_ppn' => $ratePpn,
+                'nilai_ppn' => $nilaiPpn,
+                'total' => $jumlah,
+            ]);
+        }
+    
         return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Akumulasi Biaya berhasil diperbarui!');
     }

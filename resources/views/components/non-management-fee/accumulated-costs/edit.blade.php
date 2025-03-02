@@ -1,8 +1,9 @@
-<form method="POST" action="{{ route('non-management-fee.accumulated.' . ($nonManfeeDocument->accumulatedCosts->isNotEmpty() ? 'update' : 'store'), ['id' => $nonManfeeDocument->id, 'accumulated_id' => $nonManfeeDocument->accumulatedCosts->first()->id ?? null]) }}">
+<form method="POST" action="{{ route('non-management-fee.accumulated.update', [
+    'id' => $nonManfeeDocument->id, 
+    'accumulated_id' => optional($nonManfeeDocument->accumulatedCosts->first())->id
+]) }}" id="accumulatedForm">
     @csrf
-    @if($nonManfeeDocument->accumulatedCosts->isNotEmpty())
-        @method('PUT')
-    @endif
+    @method('PUT') 
 
     <x-non-management-fee.accumulated-costs.index 
         :nonManfeeDocument="$nonManfeeDocument"
