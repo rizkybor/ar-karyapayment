@@ -99,6 +99,9 @@
      function confirmSubmit(event) {
         event.preventDefault(); // Cegah form terkirim langsung
 
+        let saveButton = document.getElementById("saveButton");
+        if (saveButton.disabled) return; // Cegah jika tombol masih disabled
+
         Swal.fire({
             title: "Apakah Anda yakin?",
             text: "Data yang telah diperbarui akan tersimpan.",
