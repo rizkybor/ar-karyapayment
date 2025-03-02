@@ -10,7 +10,7 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-        <x-button-action color="violet" icon="save" id="saveButton" disabled onclick="confirmSubmit(event)">
+        <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
             Simpan Akumulasi Biaya
         </x-button-action>
         @endif
