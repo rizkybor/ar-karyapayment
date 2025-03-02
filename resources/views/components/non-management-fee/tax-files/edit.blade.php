@@ -10,7 +10,8 @@
         <div class="p-3">
             <div class="overflow-x-auto">
                 <table class="table-auto w-full">
-                    <thead class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
+                    <thead
+                        class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                         <tr>
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-left">No</div>
@@ -27,7 +28,7 @@
                         @php $i = 1; @endphp
                         @if (!empty($nonManfeeDocument->taxFiles) && $nonManfeeDocument->taxFiles->count())
                             @foreach ($nonManfeeDocument->taxFiles as $file)
-                                <tr>
+                                <tr x-data="{ modalOpen: false }">
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">{{ $i++ }}</div>
                                     </td>
@@ -36,10 +37,15 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-end gap-2">
-                                            <x-button-action color="violet" icon="eye"
-                                                href="{{ route('non-management-fee.taxes.show', ['id' => $nonManfeeDocument->id, 'taxes_id' => $file->id]) }}">
+                                            <x-button-action color="violet" icon="eye" @click="modalOpen = true">
                                                 View
                                             </x-button-action>
+
+                                            <!-- Panggil Komponen Modal -->
+                                            <x-modal.global.modal-view-global-file :file="$file"
+                                                :nonManfeeDocument="$nonManfeeDocument" />
+                                            <!-- End Komponen Modal -->
+
                                             <x-button-action color="red" icon="trash"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus faktur pajak ini?') 
                                                 && document.getElementById('delete-taxfile-{{ $file->id }}').submit()">
