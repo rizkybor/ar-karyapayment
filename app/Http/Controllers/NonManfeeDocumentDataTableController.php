@@ -34,6 +34,12 @@ class NonManfeeDocumentDataTableController extends Controller
             ->addColumn('termin_invoice', function ($row) {
                 return $row->contract ? $row->contract->termin_invoice : '-';
             })
+
+              // ✅ Tambahkan kolom status dengan komponen Blade
+            ->addColumn('status', function ($row) {
+                return view('components.label-status-table', ['status' => $row->status])->render();
+            })
+
             ->addColumn('total', function ($row) {
                 // Ambil akumulasi biaya pertama jika ada
                 $firstAccumulatedCost = $row->accumulatedCosts->first();
@@ -59,7 +65,7 @@ class NonManfeeDocumentDataTableController extends Controller
             })
 
             // 🛑 Hapus filterColumn untuk `total` karena bukan field di database
-            ->rawColumns(['action'])
+            ->rawColumns(['status','action'])
             ->make(true);
     }
 }

@@ -82,11 +82,11 @@ class DocumentApproval extends Model
     {
         $statuses = [
             '0' => 'Draft',
-            '1' => 'Pending at Kepala Divisi',
-            '2' => 'Pending at Pembendaharaan',
-            '3' => 'Pending at Manager Keuangan',
-            '4' => 'Pending at Direktur Keuangan',
-            '5' => 'Pending at Pajak',
+            '1' => 'Checked by Kepala Divisi',
+            '2' => 'Checked by Pembendaharaan',
+            '3' => 'Checked by Manager Keuangan',
+            '4' => 'Checked by Direktur Keuangan',
+            '5' => 'Checked by Pajak',
             '6' => 'Close Doc at Pembendaharaan',
             '9' => 'Requires Information',
             '99' => 'Rejected',

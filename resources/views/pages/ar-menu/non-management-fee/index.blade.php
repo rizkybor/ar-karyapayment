@@ -69,6 +69,9 @@
                                         <div class="font-semibold text-left">No Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Status</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Nama Pemberi Kerja</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
@@ -76,9 +79,6 @@
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Jangka Waktu</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Termin Invoice</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Total</div>
@@ -158,6 +158,13 @@
                         }
                     },
                     {
+                        data: 'status',
+                        name: 'status',
+                        className: 'p-2 whitespace-nowrap text-center text-sm', // Atur lebar kolom (misalnya 8rem atau 32px)
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'contract.employee_name',
                         name: 'contract.employee_name',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
@@ -169,18 +176,18 @@
                         data: 'contract.value',
                         name: 'contract.value',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
-                        render: function (data, type, row) {
-                        // Jika data NULL atau NaN, tampilkan "Rp 0,00"
-                        if (!data || isNaN(parseFloat(data))) {
-                            return 'Rp 0,00';
-                        }
+                        render: function(data, type, row) {
+                            // Jika data NULL atau NaN, tampilkan "Rp 0,00"
+                            if (!data || isNaN(parseFloat(data))) {
+                                return 'Rp 0,00';
+                            }
 
-                        // Format angka dengan 2 desimal sebagai Rupiah
-                        return 'Rp ' + new Intl.NumberFormat('id-ID', { 
-                            minimumFractionDigits: 2, 
-                            maximumFractionDigits: 2 
-                        }).format(parseFloat(data));
-                    }
+                            // Format angka dengan 2 desimal sebagai Rupiah
+                            return 'Rp ' + new Intl.NumberFormat('id-ID', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }).format(parseFloat(data));
+                        }
                     },
                     {
                         data: 'period',
@@ -189,19 +196,6 @@
                         render: function(data) {
                             return `<div>${data ?? '-'} hari</div>`;
 
-                        }
-                    },
-                    {
-                        data: 'termin_invoice',
-                        name: 'termin_invoice',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            let detailUrl =
-                                "{{ route('non-management-fee.show', ['id' => ':id']) }}"
-                                .replace(':id', row.id);
-                            return `<x-button-action-detail-termin class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
-                            onclick="window.location.href='${detailUrl}'">
-                            Detail Termin</x-button-action-detail-termin>`;
                         }
                     },
                     {
@@ -217,14 +211,29 @@
                         searchable: false,
                         className: 'p-2 whitespace-nowrap text-center',
                         render: function(data, type, row) {
+                            let detailUrl =
+                                "{{ route('non-management-fee.show', ['id' => ':id']) }}"
+                                .replace(':id', row.id);
+
                             let editUrl =
                                 "{{ route('non-management-fee.edit', ['id' => ':id']) }}"
                                 .replace(':id', row.id);
+
                             let deleteUrl = "{{ route('non-management-fee.destroy', ':id') }}"
                                 .replace(':id', row.id);
 
                             return `
                             <div class="text-center flex items-center justify-center gap-2">
+                              
+
+                                <!-- Tombol View -->
+                                <button class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-all duration-200"
+                                         onclick="window.location.href='${detailUrl}'">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 12s-3-4-7-4-7 4-7 4 3 4 7 4 7-4 7-4z"/><circle cx="12" cy="12" r="2"/>
+                                    </svg>
+                                </button>
+
                                 <!-- Tombol Edit -->
                                 <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
                                         onclick="window.location.href='${editUrl}'">
@@ -268,19 +277,19 @@
                             <nav class="flex" role="navigation" aria-label="Navigation">
                                 <div class="mr-2">
                                     ${currentPage > 1 ? `
-                                        <button onclick="table.page(${currentPage - 2}).draw(false)" 
-                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                            </svg>
-                                        </button>` : `
-                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                            </svg>
-                                        </span>`}
+                                            <button onclick="table.page(${currentPage - 2}).draw(false)" 
+                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </button>` : `
+                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </span>`}
                                 </div>
                                 <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -310,19 +319,19 @@
                                 </ul>
                                 <div class="ml-2">
                                     ${currentPage < totalPages ? `
-                                        <button onclick="table.page(${currentPage}).draw(false)" 
-                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                            </svg>
-                                        </button>` : `
-                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                            </svg>
-                                        </span>`}
+                                            <button onclick="table.page(${currentPage}).draw(false)" 
+                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                </svg>
+                                            </button>` : `
+                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                </svg>
+                                            </span>`}
                                 </div>
                             </nav>
                         </div>`;
