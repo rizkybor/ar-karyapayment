@@ -31,11 +31,12 @@ class NonManfeeAccumulatedCostController extends Controller
     public function update(Request $request, $id, $accumulated_id = null)
     {
         // Debugging untuk melihat data yang dikirim
+        // dd($request->all());
     
-        // Validasi input
+        // Validasi input dengan custom messages
         $request->validate([
             'akun' => 'required|string|max:255',
-            'dpp_pekerjaan' => 'required|numeric|min:0',
+            'dpp_pekerjaan' => 'required|string|min:1', // String karena ada format angka dengan titik
             'rate_ppn' => 'required|numeric|min:0|max:999.99',
         ], [
             'akun.required' => 'Akun wajib diisi.',
@@ -43,25 +44,21 @@ class NonManfeeAccumulatedCostController extends Controller
             'akun.max' => 'Akun tidak boleh lebih dari 255 karakter.',
     
             'dpp_pekerjaan.required' => 'DPP Pekerjaan harus diisi.',
-            'dpp_pekerjaan.numeric' => 'DPP Pekerjaan harus berupa angka.',
             'dpp_pekerjaan.min' => 'DPP Pekerjaan tidak boleh kurang dari 0.',
     
             'rate_ppn.required' => 'Rate PPN harus diisi.',
-            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (bisa menggunakan titik atau koma untuk desimal).',
+            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
             'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 0.',
             'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
-
-
-
-        // Konversi nilai agar sesuai database
-        $dppPekerjaan = (float) preg_replace('/[^0-9.]/', '', str_replace(',', '.', $request->dpp_pekerjaan));
-        $ratePpn = (float) str_replace(',', '.', $request->rate_ppn);
-        $nilaiPpn = ($dppPekerjaan * $ratePpn) / 100;
-        $jumlah = $dppPekerjaan + $nilaiPpn;
-        
-
-        // Simpan atau update data ke database
+    
+        // **Konversi format angka untuk penyimpanan ke database**
+        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
+        $ratePpn = (float) str_replace(',', '.', $request->rate_ppn); // Ubah koma menjadi titik untuk desimal
+        $nilaiPpn = round(($dppPekerjaan * $ratePpn) / 100, 2); // Hitung nilai PPN
+        $jumlah = $dppPekerjaan + $nilaiPpn; // Total nilai
+    
+        // Cek apakah `accumulated_id` ada, jika ada update, jika tidak buat baru
         $accumulatedCost = NonManfeeDocAccumulatedCost::updateOrCreate(
             [
                 'id' => $accumulated_id, // Jika `accumulated_id` ada, update. Jika tidak, buat baru
@@ -73,9 +70,9 @@ class NonManfeeAccumulatedCostController extends Controller
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,
                 'total' => $jumlah,
-                ]
-            );
-            
+            ]
+        );
+    
         // Redirect ke halaman edit dengan pesan sukses
         return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Akumulasi Biaya berhasil diperbarui!');

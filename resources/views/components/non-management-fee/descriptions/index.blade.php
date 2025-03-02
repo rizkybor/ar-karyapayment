@@ -36,7 +36,7 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-end gap-2">
                                             <x-button-action color="violet" icon="eye"
-                                            href="{{ route('non-management-fee.descriptions.show', ['id' => $nonManfeeDocument->id, 'description_id' => $file->id]) }}">
+                                            href="{{ route('non-management-fee.descriptions.show', ['id' => $nonManfeeDocument->id, 'description_id' => $desc->id]) }}">
                                             View
                                         </x-button-action>
                                         </div>

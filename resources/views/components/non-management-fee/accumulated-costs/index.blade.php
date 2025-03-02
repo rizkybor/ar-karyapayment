@@ -10,9 +10,9 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-        <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
-            Simpan Akumulasi Biaya
-        </x-button-action>
+            <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
+                Simpan Akumulasi Biaya
+            </x-button-action>
         @endif
     </div>
 
@@ -23,7 +23,8 @@
             <div class="col-span-1">
                 <x-label for="akun" value="{{ __('Akun') }}" />
                 @if ($isEdit)
-                    <select id="akun" name="akun" class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                    <select id="akun" name="akun"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
                         text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
                         focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
                         onchange="checkChanges()">
@@ -58,7 +59,7 @@
 
             {{-- RATE PPN --}}
             <div class="col-span-1 sm:col-span-1">
-                <x-label for="rate_ppn" value="{{ __('RATE PPN (%)') }}" />
+                <x-label for="rate_ppn" value="{{ __('Rate PPN (%)') }}" />
                 @if ($isEdit)
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
                         value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '')) }}"
@@ -72,20 +73,32 @@
 
             {{-- NILAI PPN (Auto) --}}
             <div class="col-span-1 sm:col-span-1">
-                <x-label for="nilai_ppn" value="{{ __('NILAI PPN (Rp)') }}" />
-                <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                    name="nilai_ppn"
-                    value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
-                    readonly />
+                <x-label for="nilai_ppn" value="{{ __('Nilai PPN (Rp)') }}" />
+                @if ($isEdit)
+                    <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                        name="nilai_ppn"
+                        value="{{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.')) }}"
+                        readonly />
+                @else
+                    <p class="text-gray-800 dark:text-gray-200">
+                        Rp. {{ number_format($firstAccumulatedCost->nilai_ppn ?? 0, 0, ',', '.') }}
+                    </p>
+                @endif
             </div>
 
             {{-- JUMLAH (Auto) --}}
             <div class="col-span-1 sm:col-span-2">
-                <x-label for="jumlah" value="{{ __('JUMLAH (Rp)') }}" />
-                <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                    name="jumlah"
-                    value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
-                    readonly />
+                <x-label for="jumlah" value="{{ __('Total Akumulasi Biaya (Rp)') }}" />
+                @if ($isEdit)
+                    <x-input id="jumlah" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
+                        name="jumlah"
+                        value="{{ old('jumlah', number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.')) }}"
+                        readonly />
+                @else
+                    <p class="text-gray-800 dark:text-gray-200 text-2xl font-bold">
+                        Rp. {{ number_format($firstAccumulatedCost->total ?? 0, 0, ',', '.') }}
+                    </p>
+                @endif
             </div>
 
         </div>
@@ -96,7 +109,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-     function confirmSubmit(event) {
+    function confirmSubmit(event) {
         event.preventDefault(); // Cegah form terkirim langsung
 
         let saveButton = document.getElementById("saveButton");
@@ -118,7 +131,7 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         let saveButton = document.getElementById("saveButton");
 
         if (saveButton) {
@@ -133,12 +146,13 @@
 
         window.checkChanges = function() {
             let akunValue = document.getElementById("akun")?.value || '';
-            let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '';
+            let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') ||
+            '';
             let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
 
             let hasChanged = akunValue !== initialData.akun ||
-                            dppPekerjaanValue !== initialData.dpp_pekerjaan ||
-                            ratePpnValue !== initialData.rate_ppn;
+                dppPekerjaanValue !== initialData.dpp_pekerjaan ||
+                ratePpnValue !== initialData.rate_ppn;
 
             if (saveButton) {
                 saveButton.disabled = !hasChanged;
@@ -169,7 +183,8 @@
         };
 
         window.calculateValues = function() {
-            let dppPekerjaan = parseFloat(document.getElementById("dpp_pekerjaan").value.replace(/\./g, '') || 0);
+            let dppPekerjaan = parseFloat(document.getElementById("dpp_pekerjaan").value.replace(/\./g,
+                '') || 0);
             let ratePpn = parseFloat(document.getElementById("rate_ppn").value.replace(',', '.') || 0);
 
             let nilaiPpn = (dppPekerjaan * ratePpn) / 100;
