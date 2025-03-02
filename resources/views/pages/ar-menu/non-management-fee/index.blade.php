@@ -227,7 +227,7 @@
 
                                 <!-- Tombol View -->
                               <div class="relative group">
-                                    <button class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-all duration-200"
+                                    <button class="bg-violet-500 text-white p-2 rounded-lg hover:bg-violet-600 transition-all duration-200"
                                             onclick="window.location.href='${detailUrl}'">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 12s-3-4-7-4-7 4-7 4 3 4 7 4 7-4 7-4z"/>
