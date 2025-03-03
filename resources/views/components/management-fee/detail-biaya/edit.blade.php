@@ -9,7 +9,8 @@
             <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
                 :account_dummy="$account_dummy" />
             @if ($manfeeDoc->detailPayments && $manfeeDoc->detailPayments->isNotEmpty())
-                <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" />
+                <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
+                    :account_dummy="$account_dummy" />
             @endif
 
         </div>
