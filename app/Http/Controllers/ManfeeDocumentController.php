@@ -122,7 +122,9 @@ class ManfeeDocumentController extends Controller
         $document_status = $manfeeDoc->status == '0' ? 'Draft' : 'Published';
         $transaction_status = $manfeeDoc->is_active == 1 ? 'Active' : 'Inactive';
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'category', 'document_status', 'transaction_status'));
+        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'category', 'document_status', 'transaction_status', 'jenis_biaya'));
     }
 
 

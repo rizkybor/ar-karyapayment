@@ -13,8 +13,6 @@ class ManfeeDetailPaymentsController extends Controller
             ->where('id', $docdetail_id)
             ->firstOrFail();
 
-        dd($docdetail);
-
         return response()->json($docdetail);
     }
 

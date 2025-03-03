@@ -20,7 +20,7 @@
             isShowPage="true" />
 
         {{-- DETAIL BIAYA --}}
-        <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :isEdit="false" />
+        <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
 
         {{-- AKUMULASI BIAYA --}}
         <x-management-fee.accumulated-costs.index :ManfeeDocument="$manfeeDoc" :isEdit="false" />
