@@ -44,6 +44,13 @@
             </div>
         </div>
 
+        @if ($isEditable)
+            <x-button-action color="blue" icon="eye"
+                onclick="window.location.href='{{ route('non-management-fee.show', $document->id) }}'">
+                Process Document
+            </x-button-action>
+        @endif
+
         <!-- Tombol Action -->
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
