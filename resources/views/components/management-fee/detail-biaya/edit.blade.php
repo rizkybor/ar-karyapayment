@@ -7,7 +7,10 @@
         </h5>
         <div class="flex gap-2 mt-4 sm:mt-0">
             <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" />
-            <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" />
+            @if ($manfeeDoc->detailPayments && $manfeeDoc->detailPayments->isNotEmpty())
+                <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" />
+            @endif
+
         </div>
 
     </div>
