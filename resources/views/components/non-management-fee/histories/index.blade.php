@@ -14,7 +14,7 @@
         <!-- Header Modal -->
         <div class="flex justify-between items-center border-b pb-3 mb-3">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Riwayat Transaksi
+                Riwayat Dokumen
             </h3>
             <button class="text-gray-500 dark:text-gray-300 hover:text-red-500 transition-all"
                 onclick="closeHistoryModal()">
@@ -83,7 +83,7 @@
                         <div class="text-center p-4">
                             <span class="block text-4xl">📄</span>
                             <p class="text-gray-500 dark:text-gray-400 mt-2">
-                                Belum ada riwayat transaksi.
+                                Belum ada Riwayat Dokumen.
                             </p>
                         </div>`;
                     return;
