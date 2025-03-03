@@ -15,9 +15,10 @@ return new class extends Migration {
             $table->unsignedBigInteger('document_id');
             $table->string('document_type');
             $table->foreignId('approver_id')->constrained('users')->onDelete('cascade');
-            $table->string('role')->index(); 
-            $table->string('status')->default('0')->index(); 
-            $table->text('comments')->nullable();
+            $table->string('approver_role')->index();
+            $table->foreignId('submitter_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('submitter_role')->index();
+            $table->string('status')->default('0')->index();
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });

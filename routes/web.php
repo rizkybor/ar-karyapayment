@@ -44,6 +44,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])
+    ->name('notifications.markAsRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
@@ -120,14 +122,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // ROUTE NON MANAGEMENT FEE
     Route::prefix('non-management-fee')->name('non-management-fee.')->group(function () {
-
-        // Datatable NonManfee 
         Route::get('/datatable', [NonManfeeDocumentDataTableController::class, 'index'])->name('datatable');
-
-        // Export Data
         Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
-
-        // CRUD utama menggunakan `Route::resource`
         Route::resource('/', NonManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
             'index' => 'index',
             'create' => 'create',
@@ -135,18 +131,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'update' => 'update',
             'destroy' => 'destroy',
         ]);
-
-        // Details
         Route::get('{id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
-
-        // Route proses persetujuan
         Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
-
+        Route::put('/revision/{id}', [NonManfeeDocumentController::class, 'processRevision'])->name('processRevision');
+        //  Route::put('/revision-reply/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
 
         // Edit
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
-
         // Prefix untuk accumulated cost
         Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
             Route::get('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');

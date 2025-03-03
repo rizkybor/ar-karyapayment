@@ -6,15 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type', 'notifiable_type', 'notifiable_id', 'data', 'read_at'];
+    protected $fillable = [
+        'type',
+        'notifiable_type',
+        'notifiable_id',
+        'messages',
+        'read_at',
+        'sender_id',
+        'sender_role'
+    ];
 
     protected $casts = [
-        'data' => 'array', // Simpan data dalam format array
+        'messages' => 'string',
         'read_at' => 'datetime',
     ];
 
@@ -34,6 +43,17 @@ class Notification extends Model
         return $this->morphTo();
     }
 
+    /**
+     * Relasi ke User yang mengirim notifikasi
+     */
+    public function sender(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    /**
+     * Scope untuk mengambil notifikasi berdasarkan user penerima.
+     */
     public function scopeForUser($query, $userId)
     {
         return $query->whereHas('recipients', function ($q) use ($userId) {

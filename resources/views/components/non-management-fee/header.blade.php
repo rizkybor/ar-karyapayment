@@ -7,101 +7,115 @@
     'latestApprover' => '',
 ])
 
-<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
+<div x-data="{ modalOpen: false }">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 
-    <!-- Box Status -->
-    <div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-        <div class="grid grid-cols-2 gap-4">
-            {{-- Status Transaksi --}}
-            <div>
-                {{-- <x-label for="transaction_status" value="{{ __('Status Transaksi') }}" class="text-gray-800 dark:text-gray-100" />
-            @if ($isEditable)
-                <select id="transaction_status" name="transaction_status" class="form-input w-full mt-1">
-                    <option value="Active" {{ $transaction_status == 'Active' ? 'selected' : '' }}>Active</option>
-                    <option value="Non Active" {{ $transaction_status == 'Non Active' ? 'selected' : '' }}>Non Active</option>
-                </select>
-            @else
-                <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">{{ $transaction_status ?: 'Belum Ditentukan' }}</p>
-            @endif --}}
-                <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
-                    class="text-gray-800 dark:text-gray-100" />
-                <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                    {{ $transaction_status ? 'Invoice Aktif' : 'Invoice Tidak Aktif' }}
-                </p>
+        <!-- Box Status -->
+        <div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
+            <div class="grid grid-cols-2 gap-4">
+                {{-- Status Transaksi --}}
+                <div>
+                    <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                        {{ $transaction_status ? 'Invoice Aktif' : 'Invoice Tidak Aktif' }}
+                    </p>
+                </div>
+
+                {{-- Status Dokumen --}}
+                <div>
+                    <x-label for="document_status" value="{{ __('Status Dokumen') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+                    <x-label-status :status="$document_status" />
+                </div>
             </div>
 
-            {{-- Status Document --}}
-            <div>
-                <x-label for="document_status" value="{{ __('Status Dokumen') }}"
-                    class="text-gray-800 dark:text-gray-100" />
-                <x-label-status :status="$document_status" />
-            </div>
-        </div>
+            <br />
 
-        <br />
-
-        <div class="grid grid-cols-1 gap-4">
-            {{-- Jenis --}}
-            <div>
-                <x-label for="transaction_status" value="{{ __('Jenis') }}"
-                    class="text-gray-800 dark:text-gray-100" />
-                <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                    Non Management Fee
-                </p>
+            <div class="grid grid-cols-1 gap-4">
+                {{-- Jenis --}}
+                <div>
+                    <x-label for="transaction_status" value="{{ __('Jenis') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                        Non Management Fee
+                    </p>
+                </div>
             </div>
         </div>
+
+        <!-- Tombol Action -->
+        @if ($isShowPage)
+            <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+                @if (auth()->user()->role !== 'maker')
+                    @if ($document_status == 0)
+                        <x-button-action color="blue" icon="print">Print</x-button-action>
+                        <x-button-action color="teal" icon="paid">Paid</x-button-action>
+                    @endif
+
+                    @if (auth()->user()->role === $latestApprover->approver_role)
+                        <x-button-action color="orange" icon="info">Need Info</x-button-action>
+                        <x-button-action color="red" icon="reject">Reject</x-button-action>
+
+
+                        <x-button-action color="blue" icon="approve"
+                        data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
+                        data-title="Approve Document" data-button-text="Approve"
+                        data-button-color="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700" onclick="openModal(this)">
+                        Approve
+                    </x-button-action>
+                    @endif
+                @endif
+
+                @if (auth()->user()->role === 'maker')
+
+                    @if ($document_status == 0)
+                        <x-button-action color="orange" icon="reply"
+                            data-action="{{ route('non-management-fee.processRevision', $document['id']) }}"
+                            data-title="Reply Info" data-button-text="Reply Info"
+                            data-button-color="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-700'" onclick="openModal(this)">
+                            Reply Info
+                        </x-button-action>
+                    @endif
+
+                    @if ($document_status == 0)
+                        <x-button-action color="green" icon="process"
+                            data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
+                            data-title="Process Document" data-button-text="Process"
+                            data-button-color="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700" onclick="openModal(this)">
+                            Process
+                        </x-button-action>
+                    @endif
+                @endif
+            </div>
+        @endif
     </div>
 
-    <!-- Tombol Action (Sejajar dengan Card di Desktop, di Atas Card di Mobile) -->
-    @if ($isShowPage)
-        <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
-            @if (auth()->user()->role !== 'maker')
-                @if ($document_status == 0)
-                    <x-button-action color="blue" icon="print">Print</x-button-action>
-                    <x-button-action color="teal" icon="paid">Paid</x-button-action>
-                @endif
-                
-                {{-- <x-button-action color="yellow" icon="cancel">Batal Transaksi</x-button-action> --}}
-                
-                @if (auth()->user()->role === $latestApprover->role)
-                    <x-button-action color="orange" icon="info">Need Info</x-button-action>
-                    <x-button-action color="red" icon="reject">Reject</x-button-action>
-                    {{-- <x-button-action color="green" icon="approve">Approve</x-button-action> --}}
-                    <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-                        @csrf
-                        @method('PUT')
-                        <x-button-action color="green" icon="approve" type="submit">Approve</x-button-action>
-
-                    </form>
-                @endif
-
-            @endif
-
-            @if (auth()->user()->role === 'maker')
-
-                @if ($document_status == 0)
-                    {{-- Reply Info --}}
-                    <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-                        @csrf
-                        @method('PUT')
-                        <x-button-action color="orange" icon="reply" type="submit">Reply Info</x-button-action>
-                    </form>
-                @endif
-
-                @if ($document_status == 0)
-                    {{-- Proccess --}}
-                    <form action="{{ route('non-management-fee.processApproval', $document['id']) }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin memproses dokumen ini?');">
-                        @csrf
-                        @method('PUT')
-                        <x-button-action color="green" icon="process" type="submit">Process</x-button-action>
-                    </form>
-                @endif
-            @endif
-        </div>
-    @endif
-
-
+    <!-- Panggil Komponen Modal dengan Route -->
+    <x-modal.global.modal-proccess-global :document="$document" />
 </div>
+
+<!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
+<script>
+    function openModal(button) {
+        let actionRoute = button.getAttribute('data-action'); 
+        let modalTitle = button.getAttribute('data-title'); 
+        let buttonText = button.getAttribute('data-button-text'); 
+        let buttonColor = button.getAttribute('data-button-color'); 
+
+        document.querySelector('#modalForm').setAttribute('action', actionRoute); 
+        document.querySelector('#modalTitle').innerText = modalTitle; 
+        document.querySelector('#modalSubmitButton').innerText = buttonText;
+        document.querySelector('#modalSubmitButton').setAttribute('data-button-color',
+        buttonColor); 
+        document.querySelector('#modalSubmitButton').classList.remove('bg-green-500', 'hover:bg-green-600',
+            'bg-orange-500', 'hover:bg-orange-600', 'dark:bg-orange-500', 'dark:hover:bg-orange-600', 'dark:focus:ring-orange-700', 'dark:bg-green-500', 'dark:hover:bg-green-600', 'dark:focus:ring-green-700');
+        document.querySelector('#modalSubmitButton').classList.add(...buttonColor.split(' '));
+
+        document.querySelector('#modalOverlay').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.querySelector('#modalOverlay').classList.add('hidden');
+    }
+</script>
