@@ -36,29 +36,70 @@
                 @else
                     <div class="space-y-4">
                         @foreach ($notifications as $notification)
-                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-800 dark:text-white font-medium flex items-center">
-                                        {{ $notification->messages ?? 'Tidak ada pesan' }}
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        {{ $notification->created_at->diffForHumans() }}
-                                    </p>
-                                </div>
+                            @php
+                                $rawMessage = $notification->messages ?? 'Tidak ada pesan';
 
-                                <div class="flex gap-2">
-                                    <x-button-action color="blue" icon="eye"
-                                        href="{{ route('notifications.show', $notification->id) }}">
-                                        Lihat
-                                    </x-button-action>
-                                    <form action="{{ route('notifications.destroy', $notification->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus notifikasi ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <x-button-action color="red" icon="trash">
-                                            Hapus
-                                        </x-button-action>
-                                    </form>
+                                // Coba decode jika formatnya JSON
+                                if (is_string($rawMessage) && json_decode($rawMessage, true)) {
+                                    $message = json_decode($rawMessage, true);
+                                } else {
+                                    $message = $rawMessage;
+                                }
+
+                                // Jika berbentuk string
+                                if (is_string($message) && str_contains($message, 'Lihat detail:')) {
+                                    $messageParts = explode('Lihat detail:', $message, 2);
+                                    $textMessage = trim($messageParts[0]); // Pesan utama
+                                    $url = isset($messageParts[1]) ? trim($messageParts[1]) : null; // Ambil URL
+
+                                    // Validasi URL
+                                    if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
+                                        $url = null; // Kosongkan jika tidak valid
+                                    }
+                                } else {
+                                    $textMessage = is_string($message) ? $message : 'Tidak ada pesan.';
+                                    $url = null;
+                                }
+                            @endphp
+
+                                <div class="relative p-4 border rounded-lg cursor-pointer transition-colors duration-300 ease-in-out 
+                                {{ $notification->read_at === null ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-200 dark:bg-gray-700' }}"
+                                @click="markAsRead('{{ route('notifications.markAsRead', $notification->id) }}', {{ $notification->id }});"
+                                data-id="{{ $notification->id }}">
+
+                                <!-- Flex Container untuk Memisahkan Kiri & Kanan -->
+                                <div class="flex justify-between items-center">
+                                    <!-- 📌 Kiri: Pesan & Tautan -->
+                                    <div class="w-2/3">
+
+                                        <p class="text-gray-800 dark:text-white font-medium">
+                                            {{ $textMessage }}
+                                        </p>
+
+                                        @if ($url)
+                                            <x-button-action color="violet"
+                                                @click="window.open('{{ $url }}', '_blank')"
+                                                class="px-2 my-3 text-xs w-28">
+                                                Lihat Detail >>
+                                            </x-button-action>
+                                        @endif
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $notification->created_at->diffForHumans() }}
+                                        </p>
+                                    </div>
+
+                                    <!-- 📌 Kanan: Tombol Aksi -->
+                                    <div class="w-1/3 flex justify-end gap-2">
+                                        <form action="{{ route('notifications.destroy', $notification->id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus notifikasi ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <x-button-action color="red">
+                                                Hapus
+                                            </x-button-action>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -73,3 +114,31 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+    function markAsRead(url, notificationId) {
+        fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // 🔥 Pastikan hanya parse jika JSON
+            })
+            .then(data => {
+                console.log('Response dari server:', data);
+                if (data.success) {
+                    setTimeout(() => {
+                        location.reload(); // 🔄 REFRESH halaman setelah notifikasi ditandai sebagai dibaca
+                    }, 500);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
