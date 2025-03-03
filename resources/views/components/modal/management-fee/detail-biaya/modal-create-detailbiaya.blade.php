@@ -51,7 +51,7 @@
             </div>
 
             <div class="flex justify-end items-center mb-3">
-                <x-modal.management-fee.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" />
+                <x-modal.management-fee.detail-biaya.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" />
             </div>
 
             <!-- Tabel Detail Biaya -->
@@ -106,10 +106,10 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <!-- Button View -->
-                                            <x-button-action color="violet" icon="eye"
+                                            {{-- <x-button-action color="violet" icon="eye"
                                                 href="{{ route('management-fee.detail_payments.show', ['id' => $manfeeDoc->id, 'detail_payment_id' => $docdetails->id]) }}">
                                                 View
-                                            </x-button-action>
+                                            </x-button-action> --}}
 
                                             <!-- Button Hapus -->
                                             <x-button-action color="red" icon="trash"

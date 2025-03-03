@@ -5,7 +5,11 @@
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Tambah Detail Biaya
         </h5>
-        <x-modal.management-fee.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" />
+        <div class="flex gap-2 mt-4 sm:mt-0">
+            <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" />
+            <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" />
+        </div>
+
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
         <div class="p-3">
@@ -23,9 +27,9 @@
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-left">Total Jenis Biaya</div>
                             </th>
-                            <th class="p-2 whitespace-nowrap">
+                            {{-- <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">Aksi</div>
-                            </th>
+                            </th> --}}
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
@@ -56,7 +60,7 @@
                                         <div class="text-left">Rp.
                                             {{ number_format($group['total'], 0, ',', '.') }}</div>
                                     </td>
-                                    <td class="p-2 whitespace-nowrap">
+                                    {{-- <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
                                             <!-- Button View -->
                                             <x-button-action color="violet" icon="eye"
@@ -79,7 +83,7 @@
                                                 @method('DELETE')
                                             </form>
                                         </div>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @endforeach
                         @else
