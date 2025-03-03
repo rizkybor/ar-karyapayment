@@ -9,8 +9,8 @@
             {{-- Tombol Kembali --}}
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                    <x-secondary-button onclick="window.location='{{ route('non-management-fee.index') }}'">
-                        History
+                    <x-secondary-button onclick="openHistoryModal({{ $nonManfeeDocument->id }})">
+                        Riwayat Dokumen
                     </x-secondary-button>
                     <x-secondary-button onclick="window.location='{{ route('non-management-fee.index') }}'">
                         Kembali
@@ -22,7 +22,8 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :latestApprover=$latestApprover :document="$nonManfeeDocument" isShowPage="true" />
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :latestApprover=$latestApprover
+            :document="$nonManfeeDocument" isShowPage="true" />
 
 
         <div class="grid grid-cols-1 gap-6 mt-6">
@@ -50,4 +51,6 @@
             @endrole
         </div>
     </div>
+
 </x-app-layout>
+<x-non-management-fee.histories :nonManfeeDocument=$nonManfeeDocument />

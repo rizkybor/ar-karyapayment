@@ -350,7 +350,7 @@ class NonManfeeDocumentController extends Controller
     {
         DB::beginTransaction();
         try {
-
+            dd('PROSES REVISION ON PROGGRESS');
             $document = NonManfeeDocument::findOrFail($id);
             $userRole = Auth::user()->role;
             $currentRole = optional($document->latestApproval)->role ?? 'maker';

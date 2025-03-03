@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\NonManfeeDocument;
 use App\Models\NonManfeeDocHistory;
 
 class NonManfeeHistoryController extends Controller
@@ -23,14 +24,32 @@ class NonManfeeHistoryController extends Controller
     /**
      * Menampilkan detail riwayat berdasarkan ID.
      */
-    public function show($history_id)
+    public function show($id)
     {
-        $history = NonManfeeDocHistory::findOrFail($history_id);
+        try {
+            // ✅ Ambil dokumen dengan relasi histories
+            $document = NonManfeeDocument::with('histories.performedBy')->find($id);
 
-        return response()->json([
-            'message' => 'Detail riwayat ditemukan.',
-            'data' => $history
-        ]);
+            // 🚨 Jika dokumen tidak ditemukan, kirim JSON error
+            if (!$document) {
+                return response()->json(['error' => 'Dokumen tidak ditemukan'], 404);
+            }
+
+            // ✅ Ambil data history berdasarkan dokumen
+            $history = $document->histories
+                ->sortByDesc('created_at')
+                ->map(function ($item) {
+                    return [
+                        'status'    => $item->new_status,
+                        'timestamp' => $item->created_at->format('d M Y, H:i'),
+                        'user'      => optional($item->performedBy)->name ?? 'Unknown User',
+                    ];
+                });
+
+            return response()->json($history);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan server: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
