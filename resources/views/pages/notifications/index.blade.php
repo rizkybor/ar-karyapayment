@@ -39,10 +39,7 @@
                             <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900 flex items-center justify-between">
                                 <div>
                                     <p class="text-gray-800 dark:text-white font-medium flex items-center">
-                                        @if (is_null($notification->read_at))
-                                            <span class="text-yellow-500 text-lg mr-2">⭐</span>
-                                        @endif
-                                        {{ $notification->data['message'] ?? 'Tidak ada pesan' }}
+                                        {{ $notification->messages ?? 'Tidak ada pesan' }}
                                     </p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
                                         {{ $notification->created_at->diffForHumans() }}

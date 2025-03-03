@@ -14,9 +14,11 @@ class DocumentApproval extends Model
 
     protected $fillable = [
         'document_id',
-        'document_type', // Polymorphic
+        'document_type', 
         'approver_id',
-        'role',
+        'approver_role',
+        'submitter_id',
+        'submitter_role',
         'status',
         'comments',
         'approved_at'
@@ -24,7 +26,7 @@ class DocumentApproval extends Model
 
     protected $casts = [
         'approved_at' => 'datetime',
-        'status' => 'string', // Status disimpan sebagai string yang berisi angka
+        'status' => 'string',
     ];
 
     /**
@@ -41,6 +43,14 @@ class DocumentApproval extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    /**
+     * Relasi ke User yang mengajukan approval.
+     */
+    public function submitter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitter_id');
     }
 
     /**
@@ -64,7 +74,7 @@ class DocumentApproval extends Model
      */
     public function scopeByRole($query, $role)
     {
-        return $query->where('role', $role);
+        return $query->where('approver_role', $role);
     }
 
     /**
