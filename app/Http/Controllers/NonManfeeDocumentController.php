@@ -317,6 +317,7 @@ class NonManfeeDocumentController extends Controller
             'pembendaharaan'      => 'manager_anggaran',
             'manager_anggaran'    => 'direktur_keuangan',
             'direktur_keuangan'   => 'pajak',
+            'pajak'               => 'pembendaharaan'
         ];
 
         return $flow[$currentRole] ?? null;
@@ -334,6 +335,7 @@ class NonManfeeDocumentController extends Controller
             '3'   => 'manager_anggaran',
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
+            '6'   => 'pembendaharaan',
             '100' => 'completed',
             '101' => 'canceled',
             '102' => 'revised',
