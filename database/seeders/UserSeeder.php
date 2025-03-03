@@ -33,8 +33,8 @@ class UserSeeder extends Seeder
             // Pajak
             ['name' => 'Pajak User', 'email' => 'pajak@example.com', 'role' => 'pajak', 'department' => 'Departmen Keuangan', 'position' => 'Pajak'],
 
-            // Direktur Anggaran
-            ['name' => 'Direktur Anggaran User', 'email' => 'dirut.anggaran@example.com', 'role' => 'direktur_anggaran', 'department' => 'Departmen Operasi', 'position' => 'Direktur Anggaran'],
+            // Manager Anggaran
+            ['name' => 'Manager Anggaran User', 'email' => 'mgr.anggaran@example.com', 'role' => 'manager_anggaran', 'department' => 'Departmen Operasi', 'position' => 'Manager Anggaran'],
             
             // Direktur Utama
             ['name' => 'Direktur Utama User', 'email' => 'dirut.utama@example.com', 'role' => 'direktur_utama', 'department' => 'Departmen Operasi', 'position' => 'Direktur Utama'],
