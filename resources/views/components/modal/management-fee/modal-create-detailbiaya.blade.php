@@ -5,14 +5,19 @@
     selectedExpenseType: '',
     filterTable() {
         const rows = document.querySelectorAll('#detail-biaya-table tbody tr');
+        console.log('Selected Expense Type:', this.selectedExpenseType); // Debug selected value
         rows.forEach(row => {
             const expenseType = row.querySelector('td:nth-child(4)').textContent.trim();
+            console.log('Row Expense Type:', expenseType); // Debug row value
             if (this.selectedExpenseType === '' || expenseType === this.selectedExpenseType) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
             }
         });
+    },
+    changeSelectedExpenseType() {
+        this.filterTable();
     }
 }">
     <div class="flex justify-between items-center mb-3">
@@ -25,7 +30,7 @@
     <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center" x-show="modalOpen" x-cloak>
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full"
             @click.outside="modalOpen = false">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tambah Detail Biaya</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Informasi Detail Biaya</h3>
 
             <!-- Jenis Biaya -->
             <div class="mb-4">
@@ -33,8 +38,8 @@
                     Biaya</label>
                 <select id="jenis_biaya" name="jenis_biaya"
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
-                    x-model="selectedExpenseType" @change="filterTable">
-                    <option value="">Semua Jenis Biaya</option>
+                    x-model="selectedExpenseType" @change="changeSelectedExpenseType">
+                    <option value="">Pilih Jenis Biaya</option>
                     <option value="biaya_personil">Biaya Personil</option>
                     <option value="biaya_non_personil">Biaya Non Personil</option>
                     <option value="biaya_lembur">Biaya Lembur</option>
@@ -68,6 +73,9 @@
                                 <div class="font-semibold text-left">Jenis Biaya</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
+                                <div class="font-semibold text-left">Nilai Biaya</div>
+                            </th>
+                            <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">Aksi</div>
                             </th>
                         </tr>
@@ -88,7 +96,12 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">
-                                            {{ ucwords(str_replace('_', ' ', $docdetails->expense_type)) }}</div>
+                                            {{ str_replace(' ', '_', strtolower($docdetails->expense_type)) }}
+                                        </div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left">Rp
+                                            {{ number_format($docdetails->nilai_biaya, 0, ',', '.') }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
@@ -117,7 +130,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="5" class="text-center p-4 text-gray-500">
+                                <td colspan="6" class="text-center p-4 text-gray-500">
                                     Belum memiliki Detail Biaya.
                                 </td>
                             </tr>
