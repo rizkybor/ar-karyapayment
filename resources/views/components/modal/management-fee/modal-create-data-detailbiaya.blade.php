@@ -40,7 +40,6 @@
                         <option value="10015">10015</option>
                     </select>
                 </div>
-
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                         for="uraian">Uraian</label>
@@ -48,12 +47,15 @@
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                 </div>
+                <!-- Nilai Biaya -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">Nilai
-                        Biaya</label>
-                    <input type="number" id="nilai_biaya" name="nilai_biaya"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
+                        Nilai Biaya
+                    </label>
+                    <input type="text" id="nilai_biaya" name="formatted_nilai_biaya"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        required>
+                        value="Rp. 0" oninput="formatRupiah(this)" required>
+                    <input type="hidden" id="value_hidden" name="nilai_biaya">
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md"
@@ -64,3 +66,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('value_hidden').value = 0; // Default Rp. 0
+    });
+
+    function formatRupiah(input) {
+        let value = input.value.replace(/\D/g, ''); // Hapus semua karakter kecuali angka
+        let formatted = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+
+        input.value = formatted.replace('Rp', 'Rp.').trim(); // Format dengan Rp. di depan
+        document.getElementById('value_hidden').value = value || 0; // Hidden input untuk kirim data bersih
+    }
+</script>
