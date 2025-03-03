@@ -134,6 +134,7 @@ class NonManfeeDocumentController extends Controller
             ->latest('updated_at') // Ambil hanya yang paling baru
             ->first();
 
+            // dd($latestApprover);
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
             'nonManfeeDocument',
             'latestApprover'

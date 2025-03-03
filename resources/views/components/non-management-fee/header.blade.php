@@ -53,17 +53,17 @@
                         <x-button-action color="teal" icon="paid">Paid</x-button-action>
                     @endif
 
-                    @if (auth()->user()->role === $latestApprover->role)
+                    @if (auth()->user()->role === $latestApprover->approver_role)
                         <x-button-action color="orange" icon="info">Need Info</x-button-action>
                         <x-button-action color="red" icon="reject">Reject</x-button-action>
 
 
-                        <x-button-action color="green" icon="process"
-                            data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
-                            data-title="Approve Document" data-button-text="Approve"
-                            data-button-color="bg-blue-500 hover:bg-blue-600" onclick="openModal(this)">
-                            Approve
-                        </x-button-action>
+                        <x-button-action color="blue" icon="approve"
+                        data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
+                        data-title="Approve Document" data-button-text="Approve"
+                        data-button-color="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700" onclick="openModal(this)">
+                        Approve
+                    </x-button-action>
                     @endif
                 @endif
 
