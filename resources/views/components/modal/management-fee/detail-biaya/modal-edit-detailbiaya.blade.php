@@ -107,7 +107,8 @@
                                                 View
                                             </x-button-action> --}}
                                             <x-modal.management-fee.detail-biaya.modal-edit-data-detailbiaya
-                                                :manfeeDoc="$manfeeDoc" />
+                                                :manfeeDoc="$manfeeDoc" :detailPaymentId="$docdetails" />
+
 
                                             <!-- Button Hapus -->
                                             <x-button-action color="red" icon="trash"

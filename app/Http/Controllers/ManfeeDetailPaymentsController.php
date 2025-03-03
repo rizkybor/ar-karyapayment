@@ -65,7 +65,7 @@ class ManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => $request->nilai_biaya,
         ]);
 
-        return response()->json(['message' => 'Lampiran berhasil diperbarui.', 'data' => $docdetail]);
+        return redirect()->route('management-fee.edit', ['id' => $document_id])->with('success', 'Data berhasil diperbaharui!');
     }
 
     /**
