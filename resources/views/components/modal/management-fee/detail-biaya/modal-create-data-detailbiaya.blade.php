@@ -1,4 +1,4 @@
-@props(['manfeeDoc'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_dummy']);
 
 <!-- Modal for Adding Cost Details -->
 <div x-data="{ modalOpen: false }">
@@ -11,33 +11,23 @@
             <form action="{{ route('management-fee.detail_payments.store', ['id' => $manfeeDoc->id]) }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="expense_type">Jenis
+                    <label for="expense_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis
                         Biaya</label>
                     <select id="expense_type" name="expense_type"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        required>
-                        <option value="" disabled>Pilih Jenis Biaya</option>
-                        <option value="biaya_personil">Biaya Personil</option>
-                        <option value="biaya_non_personil">Biaya Non Personil</option>
-                        <option value="biaya_lembur">Biaya Lembur</option>
-                        <option value="thr">THR</option>
-                        <option value="kompensasi">Kompensasi</option>
-                        <option value="sppd">SPPD</option>
-                        <option value="add_cost">Add Cost</option>
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
+                        @foreach ($jenis_biaya as $jenis_biayas)
+                            <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        for="account">Account</label>
+                    <label for="account"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account</label>
                     <select id="account" name="account"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        required>
-                        <option value="">Pilih Akun</option>
-                        <option value="10011">10011</option>
-                        <option value="10012">10012</option>
-                        <option value="10013">10013</option>
-                        <option value="10014">10014</option>
-                        <option value="10015">10015</option>
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
+                        @foreach ($account_dummy as $account_dummys)
+                            <option value="{{ $account_dummys }}">{{ $account_dummys }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="mb-4">

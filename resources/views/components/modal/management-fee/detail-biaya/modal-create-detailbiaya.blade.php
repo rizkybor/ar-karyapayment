@@ -1,4 +1,4 @@
-@props(['manfeeDoc'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_dummy']);
 
 <div x-data="{
     modalOpen: false,
@@ -34,24 +34,19 @@
 
             <!-- Jenis Biaya -->
             <div class="mb-4">
-                <label for="jenis_biaya" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis
+                <label for="expense_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis
                     Biaya</label>
-                <select id="jenis_biaya" name="jenis_biaya"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
-                    x-model="selectedExpenseType" @change="changeSelectedExpenseType">
-                    <option value="">Pilih Jenis Biaya</option>
-                    <option value="biaya_personil">Biaya Personil</option>
-                    <option value="biaya_non_personil">Biaya Non Personil</option>
-                    <option value="biaya_lembur">Biaya Lembur</option>
-                    <option value="thr">THR</option>
-                    <option value="kompensasi">Kompensasi</option>
-                    <option value="sppd">SPPD</option>
-                    <option value="add_cost">Add Cost</option>
+                <select id="expense_type" name="expense_type"
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
+                    @foreach ($jenis_biaya as $jenis_biayas)
+                        <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}</option>
+                    @endforeach
                 </select>
             </div>
 
             <div class="flex justify-end items-center mb-3">
-                <x-modal.management-fee.detail-biaya.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" />
+                <x-modal.management-fee.detail-biaya.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
+                    :account_dummy="$account_dummy" />
             </div>
 
             <!-- Tabel Detail Biaya -->
