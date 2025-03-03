@@ -62,17 +62,33 @@
                                 }
                             @endphp
 
-                                <div class="relative p-4 border rounded-lg cursor-pointer transition-colors duration-300 ease-in-out 
+                            <div class="relative p-4 border rounded-lg cursor-pointer transition-colors duration-300 ease-in-out 
                                 {{ $notification->read_at === null ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-200 dark:bg-gray-700' }}"
                                 @click="markAsRead('{{ route('notifications.markAsRead', $notification->id) }}', {{ $notification->id }});"
                                 data-id="{{ $notification->id }}">
 
-                                <!-- Flex Container untuk Memisahkan Kiri & Kanan -->
+                                <div class="flex justify-between items-center">
+
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                                    Pengirim : 
+                                    <span class="font-normal">
+                                        ({{ $notification->sender->nip }}) {{ $notification->sender->name }} - {{ $notification->sender->position }}
+                                    </span>
+                                </p>
+
+                                <p class="text-sm text-gray-800 dark:text-gray-300">
+                                    {{ $notification->created_at }}
+                                </p>
+                                </div>
+                                <div class="w-full border-b border-gray-300 dark:border-gray-600 my-3"></div>
+
                                 <div class="flex justify-between items-center">
                                     <!-- 📌 Kiri: Pesan & Tautan -->
                                     <div class="w-2/3">
-
-                                        <p class="text-gray-800 dark:text-white font-medium">
+                                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-300 mt-1">
+                                            Pesan :
+                                        </p>
+                                        <p class="text-sm text-gray-800 dark:text-gray-200">
                                             {{ $textMessage }}
                                         </p>
 
