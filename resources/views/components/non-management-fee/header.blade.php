@@ -71,7 +71,7 @@
 
                     @if ($document_status == 0)
                         <x-button-action color="orange" icon="reply"
-                            data-action="{{ route('non-management-fee.edit', $document['id']) }}"
+                            data-action="{{ route('non-management-fee.processRevision', $document['id']) }}"
                             data-title="Reply Info" data-button-text="Reply Info"
                             data-button-color="bg-orange-500 hover:bg-orange-600" onclick="openModal(this)">
                             Reply Info
