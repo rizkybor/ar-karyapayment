@@ -37,9 +37,12 @@
                 <label for="expense_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis
                     Biaya</label>
                 <select id="expense_type" name="expense_type"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
+                    x-model="selectedExpenseType" @change="changeSelectedExpenseType">
+                    <option value="">Pilih Jenis Biaya</option>
                     @foreach ($jenis_biaya as $jenis_biayas)
-                        <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}</option>
+                        <option value="{{ str_replace(' ', '_', strtolower($jenis_biayas)) }}">{{ $jenis_biayas }}
+                        </option>
                     @endforeach
                 </select>
             </div>
