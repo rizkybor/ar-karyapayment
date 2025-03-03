@@ -59,19 +59,15 @@
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                 </div>
-                <!-- Nilai Biaya -->
+
                 <!-- Nilai Biaya -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
-                        Nilai Biaya
-                    </label>
-                    <input type="text" id="nilai_biaya" name="formatted_nilai_biaya"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">Nilai
+                        Biaya</label>
+                    <input type="text" id="nilai_biaya" name="nilai_biaya"
+                        value="{{ $detailPaymentId->nilai_biaya }}"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        readonly
-                        value="{{ 'Rp. ' . number_format(old('nilai_biaya', $detailPaymentId->nilai_biaya), 0, ',', '.') }}"
-                        oninput="formatRupiah(this)" required>
-                    <input type="hidden" id="value_hidden" name="nilai_biaya"
-                        value="{{ old('nilai_biaya', $detailPaymentId->nilai_biaya) }}">
+                        required>
                 </div>
 
                 <div class="flex justify-end gap-2">
@@ -83,32 +79,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ambil nilai biaya dari hidden input
-        let nilaiBiaya = document.getElementById('value_hidden').value;
-
-        // Format nilai biaya sebagai Rupiah
-        let formatted = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(nilaiBiaya);
-
-        // Set nilai yang diformat ke input nilai biaya
-        document.getElementById('nilai_biaya').value = formatted.replace('Rp', 'Rp.').trim();
-    });
-
-    function formatRupiah(input) {
-        let value = input.value.replace(/\D/g, ''); // Hapus semua karakter kecuali angka
-        let formatted = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(value);
-
-        input.value = formatted.replace('Rp', 'Rp.').trim(); // Format dengan Rp. di depan
-        document.getElementById('value_hidden').value = value || 0; // Hidden input untuk kirim data bersih
-    }
-</script>
