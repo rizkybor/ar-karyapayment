@@ -52,6 +52,8 @@ class ManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => 'required',
         ]);
 
+        $rupiahBiaya = (float) str_replace('.', '', $request->nilai_biaya);
+
         $docdetail = ManfeeDocDetailPayments::where('document_id', $document_id)
             ->where('id', $docdetail_id)
             ->firstOrFail();
@@ -60,7 +62,7 @@ class ManfeeDetailPaymentsController extends Controller
             'expense_type' => $request->expense_type,
             'account' => $request->account,
             'uraian' => $request->uraian,
-            'nilai_biaya' => $request->nilai_biaya,
+            'nilai_biaya' => $rupiahBiaya,
         ]);
 
         return redirect()->route('management-fee.edit', ['id' => $document_id])->with('success', 'Data berhasil diperbaharui!');
