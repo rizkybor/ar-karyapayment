@@ -65,8 +65,6 @@ class ManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => $request->nilai_biaya,
         ]);
 
-        dd($request->nilai_biaya);
-
         return redirect()->route('management-fee.edit', ['id' => $document_id])->with('success', 'Data berhasil diperbaharui!');
     }
 

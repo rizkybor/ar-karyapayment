@@ -59,7 +59,7 @@
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                 </div>
-
+                <!-- Nilai Biaya -->
                 <!-- Nilai Biaya -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
@@ -80,30 +80,6 @@
                     <button type="submit" class="px-4 py-2 bg-violet-500 text-white rounded-md">Simpan</button>
                 </div>
             </form>
-
-            <!-- Pesan konfirmasi -->
-            <script id="pesan-konfirmasi" x-text="'{{ $message }}'"></script>
-
-            <!-- Simpan berhasil atau gagal? -->
-            <script x-show="modalOpen">
-                let submitSuccess = false;
-
-                // Jika proses submit berhasil
-                if (submitSuccess) {
-                    // Format nilai biaya sebagai Rupiah
-                    let formatted = new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }).format(document.getElementById('value_hidden').value);
-
-                    // Set nilai yang diformat ke input nilai biaya
-                    document.getElementById('nilai_biaya').value = formatted.replace('Rp', 'Rp.').trim();
-                } else {
-                    // Tampilkan pesan gagal
-                    alert('Gagal menyimpan data');
-                }
-            </script>
         </div>
     </div>
 </div>
@@ -134,9 +110,5 @@
 
         input.value = formatted.replace('Rp', 'Rp.').trim(); // Format dengan Rp. di depan
         document.getElementById('value_hidden').value = value || 0; // Hidden input untuk kirim data bersih
-
-        // Simpan berhasil!
-        submitSuccess = true;
     }
 </script>
-```
