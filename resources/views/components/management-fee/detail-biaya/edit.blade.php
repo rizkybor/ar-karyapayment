@@ -48,7 +48,9 @@
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $expenseType }}</div>
+                                        <div class="text-left">
+                                            {{ ucwords(str_replace('_', ' ', $expenseType)) }}
+                                        </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">Rp.

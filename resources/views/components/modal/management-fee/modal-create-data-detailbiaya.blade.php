@@ -16,14 +16,14 @@
                     <select id="expense_type" name="expense_type"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
+                        <option value="" disabled>Pilih Jenis Biaya</option>
                         <option value="biaya_personil">Biaya Personil</option>
-                        <option value="lembur">Biaya Lembur</option>
+                        <option value="biaya_non_personil">Biaya Non Personil</option>
+                        <option value="biaya_lembur">Biaya Lembur</option>
                         <option value="thr">THR</option>
                         <option value="kompensasi">Kompensasi</option>
                         <option value="sppd">SPPD</option>
                         <option value="add_cost">Add Cost</option>
-                        <option value="biaya_non_personil">Biaya Non Personil</option>
-
                     </select>
                 </div>
                 <div class="mb-4">
