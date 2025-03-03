@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('document_id')->constrained('manfee_documents')->onDelete('cascade');
             $table->string('expense_type', 255);
-            $table->decimal('total_expense', 15, 2);
+            $table->string('account', 255);
+            $table->string('uraian', 255);
+            $table->decimal('nilai_biaya', 15, 2);
             $table->timestamps();
         });
     }

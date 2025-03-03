@@ -1,10 +1,10 @@
-{{-- @props(['manfeeDoc']) --}}
+@props(['manfeeDoc'])
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Tambah Detail Biaya
         </h5>
-        <x-modal.management-fee.modal-create-detailbiaya />
+        <x-modal.management-fee.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
@@ -28,7 +28,7 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
+                    {{-- <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
                         @if (!empty($ManfeeDocument->attachments) && $ManfeeDocument->attachments->count())
                             @foreach ($ManfeeDocument->attachments as $file)
@@ -67,7 +67,7 @@
                                 </td>
                             </tr>
                         @endif
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
         </div>

@@ -14,7 +14,9 @@ class ManfeeDocDetailPayments extends Model
     protected $fillable = [
         'document_id',
         'expense_type',
-        'total_expense',
+        'account',
+        'uraian',
+        'nilai_biaya',
     ];
 
     public function ManfeeDocument()

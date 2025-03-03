@@ -11,6 +11,7 @@ use App\Http\Controllers\ManfeeDocumentController;
 use App\Http\Controllers\ManfeeAttachmentController;
 use App\Http\Controllers\ManfeeDocumentDataTableController;
 use App\Http\Controllers\ManfeeTaxController;
+use App\Http\Controllers\ManfeeDetailPaymentsController;
 
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\NonManfeeDocumentController;
@@ -115,6 +116,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::put('/{tax_id}/update', [ManfeeTaxController::class, 'update'])->name('update');
             // management-fee.taxs.destroy
             Route::delete('/{tax_id}', [ManfeeTaxController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/detail_payments')->name('detail_payments.')->group(function () {
+            // management-fee.detail_payments.show
+            Route::get('/{detail_payment_id}', [ManfeeDetailPaymentsController::class, 'show'])->name('show');
+            // management-fee.detail_payments.store
+            Route::post('/store', [ManfeeDetailPaymentsController::class, 'store'])->name('store');
+            // management-fee.detail_payments.update
+            Route::put('/{detail_payment_id}/update', [ManfeeDetailPaymentsController::class, 'update'])->name('update');
+            // management-fee.detail_payments.destroy
+            Route::delete('/{detail_payment_id}', [ManfeeDetailPaymentsController::class, 'destroy'])->name('destroy');
         });
     });
 

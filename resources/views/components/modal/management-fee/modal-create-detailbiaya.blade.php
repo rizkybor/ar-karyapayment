@@ -20,31 +20,24 @@
                 <select id="jenis_biaya" name="jenis_biaya"
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
                     <option>Biaya Personil</option>
+                    <option>Biaya Lembur</option>
+                    <option>THR</option>
+                    <option>Kompensasi</option>
+                    <option>SPPD</option>
+                    <option>Add Cost</option>
+                    <option>Biaya Non Personil</option>
                 </select>
             </div>
+
             <!-- Select Manfee -->
 
 
             <div class="flex justify-end items-center mb-3">
-                {{-- <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Manfee</label>
-                    <div class="flex items-center gap-4 mt-1">
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="manfee" value="non" class="form-radio text-blue-500"
-                                disabled>
-                            <span class="ml-2">Non Manfee</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="manfee" value="manfee" class="form-radio text-blue-500"
-                                checked>
-                            <span class="ml-2">Manfee</span>
-                        </label>
-                    </div>
-                </div> --}}
-                <x-modal.management-fee.modal-create-data-detailbiaya />
+
+                <x-modal.management-fee.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" />
             </div>
 
-            <!-- List Detail Biaya Personil -->
+            <!-- Tabel Detail Biaya Personil -->
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

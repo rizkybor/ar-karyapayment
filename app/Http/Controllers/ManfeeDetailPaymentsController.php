@@ -22,18 +22,19 @@ class ManfeeDetailPaymentsController extends Controller
     public function store(Request $request, $id)
     {
         $request->validate([
-            'file_name' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'expense_type' => 'required',
+            'account' => 'required',
+            'uraian' => 'required',
+            'nilai_biaya' => 'required',
         ]);
-
-        // Simpan file dan ambil path-nya
-        $path = $request->file('file')->store('attachments', 'public');
 
         // Simpan ke database
         ManfeeDocDetailPayments::create([
             'document_id' => $id,
-            'file_name' => $request->file_name,
-            'path' => $path,
+            'expense_type' => $request->expense_type,
+            'account' => $request->account,
+            'uraian' => $request->uraian,
+            'nilai_biaya' => $request->nilai_biaya,
         ]);
 
         return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
@@ -45,7 +46,10 @@ class ManfeeDetailPaymentsController extends Controller
     public function update(Request $request, $document_id, $docdetail_id)
     {
         $request->validate([
-            'file_name' => 'required|string|max:255',
+            'expense_type' => 'required',
+            'account' => 'required',
+            'uraian' => 'required',
+            'nilai_biaya' => 'required',
         ]);
 
         $docdetail = ManfeeDocDetailPayments::where('document_id', $document_id)
@@ -53,7 +57,10 @@ class ManfeeDetailPaymentsController extends Controller
             ->firstOrFail();
 
         $docdetail->update([
-            'file_name' => $request->file_name,
+            'expense_type' => $request->expense_type,
+            'account' => $request->account,
+            'uraian' => $request->uraian,
+            'nilai_biaya' => $request->nilai_biaya,
         ]);
 
         return response()->json(['message' => 'Lampiran berhasil diperbarui.', 'data' => $docdetail]);
