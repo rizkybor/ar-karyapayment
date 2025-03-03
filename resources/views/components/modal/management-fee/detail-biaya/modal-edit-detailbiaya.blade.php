@@ -21,7 +21,7 @@
     }
 }">
     <div class="flex justify-between items-center mb-3">
-        <x-button-action class="px-4 py-2  text-white rounded-md " color="yellow" icon="eye" @click="modalOpen = true">
+        <x-button-action class="px-4 py-2  text-white rounded-md " color="yellow" icon="pencil" @click="modalOpen = true">
             Edit
         </x-button-action>
     </div>
