@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('type'); 
             $table->nullableMorphs('notifiable');
-            $table->text('data');
+            $table->text('messages');
+            $table->foreignId('sender_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('sender_role')->nullable()->index();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });

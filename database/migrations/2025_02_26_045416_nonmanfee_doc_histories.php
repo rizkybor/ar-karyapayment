@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('document_id')->constrained('non_manfee_documents')->onDelete('cascade');
             $table->foreignId('performed_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('role', 255);
-            $table->string('previous_status', 255);
-            $table->string('new_status', 255);
-            $table->string('action', 255);
-            $table->text('notes');
+            
+            // 🔹 Menggunakan string, bukan ENUM
+            $table->string('role', 50);
+            $table->string('previous_status', 50)->nullable();
+            $table->string('new_status', 50); 
+            $table->string('action', 50);
+
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -32,8 +35,3 @@ return new class extends Migration
         Schema::dropIfExists('non_manfee_doc_histories');
     }
 };
-
-// $table->enum('role', ['maker', 'kadiv', 'bendahara', 'manager_anggaran', 'direktur_keuangan', 'pajak', 'completed']);
-// $table->enum('previous_status', ['pending', 'approved', 'rejected', 'revisi']);
-// $table->enum('new_status', ['pending', 'approved', 'rejected', 'revisi']);
-// $table->enum('action', ['create', 'approve', 'reject', 'revise', 'update', 'complete']);
