@@ -7,7 +7,7 @@
 <div id="historyModal"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden transition-opacity duration-300 ease-out px-4">
 
-    <div class="relative bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:max-w-lg max-h-[70vh] overflow-auto 
+    <div class="relative bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl w-full sm:max-w-lg max-h-[70vh] overflow-hidden
                 transform transition-all duration-300 scale-95 opacity-0 mx-4 sm:mx-0"
         id="historyModalContent">
 
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Isi History -->
-        <div id="historyContent" class="space-y-2">
+        <div id="historyContent" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
             <p class="text-gray-500 dark:text-gray-400 text-center">Memuat history...</p>
         </div>
 
