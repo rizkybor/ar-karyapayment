@@ -28,30 +28,37 @@
                             </th>
                         </tr>
                     </thead>
-                    {{-- <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
+                    <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
-                        @if (!empty($ManfeeDocument->attachments) && $ManfeeDocument->attachments->count())
-                            @foreach ($ManfeeDocument->attachments as $file)
+                        @if (!empty($manfeeDoc) && $manfeeDoc->detailPayments && $manfeeDoc->detailPayments->count())
+                            @foreach ($manfeeDoc->detailPayments as $docdetails)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $file->file_name }}</div>
+                                        <div class="text-left">{{ $docdetails->account }}</div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left">{{ $docdetails->expense_type }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
+                                            <!-- Button View -->
                                             <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.attachments.view', ['id' => $file->id]) }}">
+                                                href="{{ route('management-fee.detail_payments.show', ['id' => $manfeeDoc->id, 'detail_payment_id' => $docdetails->id]) }}">
                                                 View
                                             </x-button-action>
+
+                                            <!-- Button Hapus -->
                                             <x-button-action color="red" icon="trash"
-                                                onclick="confirm('Apakah Anda yakin ingin menghapus lampiran ini?') 
-                                                && document.getElementById('delete-attachment-{{ $file->id }}').submit()">
+                                                onclick="confirm('Apakah Anda yakin ingin menghapus detail biaya ini?') 
+                                            && document.getElementById('delete-attachment-{{ $docdetails->id }}').submit()">
                                                 Hapus
                                             </x-button-action>
-                                            <form id="delete-attachment-{{ $file->id }}" method="POST"
-                                                action="{{ route('management-fee.attachments.delete', ['id' => $file->id]) }}"
+
+                                            <form id="delete-attachment-{{ $docdetails->id }}" method="POST"
+                                                action="{{ route('management-fee.detail_payments.destroy', ['id' => $docdetails->document_id, 'detail_payment_id' => $docdetails->id]) }}"
                                                 class="hidden">
                                                 @csrf
                                                 @method('DELETE')
@@ -62,12 +69,12 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="3" class="text-center p-4 text-gray-500">
+                                <td colspan="4" class="text-center p-4 text-gray-500">
                                     Belum memiliki Detail Biaya.
                                 </td>
                             </tr>
                         @endif
-                    </tbody> --}}
+                    </tbody>
                 </table>
             </div>
         </div>
