@@ -38,3 +38,18 @@
         </form>
     </div>
 </div>
+
+<script>
+    function clearMessages() {
+        document.getElementById("messages").value = ""; 
+    }
+
+    function closeModal() {
+        document.getElementById("modalOverlay").classList.add("hidden");
+        clearMessages(); 
+    }
+
+    document.getElementById("modalSubmitButton").addEventListener("click", function () {
+        clearMessages();
+    });
+</script>

@@ -73,7 +73,7 @@
                         <x-button-action color="orange" icon="reply"
                             data-action="{{ route('non-management-fee.processRevision', $document['id']) }}"
                             data-title="Reply Info" data-button-text="Reply Info"
-                            data-button-color="bg-orange-500 hover:bg-orange-600" onclick="openModal(this)">
+                            data-button-color="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-700'" onclick="openModal(this)">
                             Reply Info
                         </x-button-action>
                     @endif
@@ -82,7 +82,7 @@
                         <x-button-action color="green" icon="process"
                             data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
-                            data-button-color="bg-green-500 hover:bg-green-600" onclick="openModal(this)">
+                            data-button-color="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700" onclick="openModal(this)">
                             Process
                         </x-button-action>
                     @endif
@@ -98,24 +98,24 @@
 <!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
 <script>
     function openModal(button) {
-        let actionRoute = button.getAttribute('data-action'); // Ambil route dari tombol
-        let modalTitle = button.getAttribute('data-title'); // Ambil title dari tombol
-        let buttonText = button.getAttribute('data-button-text'); // Ambil teks button submit
-        let buttonColor = button.getAttribute('data-button-color'); // Ambil warna tombol submit
+        let actionRoute = button.getAttribute('data-action'); 
+        let modalTitle = button.getAttribute('data-title'); 
+        let buttonText = button.getAttribute('data-button-text'); 
+        let buttonColor = button.getAttribute('data-button-color'); 
 
-        document.querySelector('#modalForm').setAttribute('action', actionRoute); // Set action baru di form
-        document.querySelector('#modalTitle').innerText = modalTitle; // Set title baru di modal
-        document.querySelector('#modalSubmitButton').innerText = buttonText; // Set teks button submit
+        document.querySelector('#modalForm').setAttribute('action', actionRoute); 
+        document.querySelector('#modalTitle').innerText = modalTitle; 
+        document.querySelector('#modalSubmitButton').innerText = buttonText;
         document.querySelector('#modalSubmitButton').setAttribute('data-button-color',
-        buttonColor); // Set warna tombol submit
+        buttonColor); 
         document.querySelector('#modalSubmitButton').classList.remove('bg-green-500', 'hover:bg-green-600',
-            'bg-orange-500', 'hover:bg-orange-600');
-        document.querySelector('#modalSubmitButton').classList.add(...buttonColor.split(' ')); // Ganti warna button
+            'bg-orange-500', 'hover:bg-orange-600', 'dark:bg-orange-500', 'dark:hover:bg-orange-600', 'dark:focus:ring-orange-700', 'dark:bg-green-500', 'dark:hover:bg-green-600', 'dark:focus:ring-green-700');
+        document.querySelector('#modalSubmitButton').classList.add(...buttonColor.split(' '));
 
-        document.querySelector('#modalOverlay').classList.remove('hidden'); // Tampilkan modal
+        document.querySelector('#modalOverlay').classList.remove('hidden');
     }
 
     function closeModal() {
-        document.querySelector('#modalOverlay').classList.add('hidden'); // Sembunyikan modal
+        document.querySelector('#modalOverlay').classList.add('hidden');
     }
 </script>
