@@ -42,7 +42,9 @@ class NonManfeeDocHistory extends Model
      */
     public function performedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'performed_by');
+        return $this->belongsTo(User::class, 'performed_by')->withDefault([
+            'name' => 'User Tidak Diketahui', // Default jika user dihapus
+        ]);
     }
 
     /**
@@ -67,5 +69,21 @@ class NonManfeeDocHistory extends Model
     public function scopeByAction($query, $action)
     {
         return $query->where('action', $action);
+    }
+
+    /**
+     * Atribut custom untuk mendapatkan nama user dengan aman
+     */
+    public function getPerformedByNameAttribute()
+    {
+        return optional($this->performedBy)->name ?? 'User Tidak Diketahui';
+    }
+
+    /**
+     * Atribut custom untuk memformat timestamp dengan baik
+     */
+    public function getFormattedTimestampAttribute()
+    {
+        return $this->created_at ? $this->created_at->format('d M Y, H:i') : '-';
     }
 }

@@ -19,10 +19,10 @@
     // Mapping warna berdasarkan status teks
     $statusColors = [
         'Draft' => 'bg-gray-200 text-gray-800',
-        'Checked by Kepala Divisi' => 'bg-blue-200 text-blue-800',
+        'Checked by Kadiv' => 'bg-blue-200 text-blue-800',
         'Checked by Pembendaharaan' => 'bg-yellow-200 text-yellow-800',
-        'Checked by Manager Keuangan' => 'bg-orange-200 text-orange-800',
-        'Checked by Direktur Keuangan' => 'bg-indigo-200 text-indigo-800',
+        'Checked by Mgr. Keuangan' => 'bg-orange-200 text-orange-800',
+        'Checked by Dir. Keuangan' => 'bg-indigo-200 text-indigo-800',
         'Checked by Pajak' => 'bg-teal-200 text-teal-800',
         'Submit doc to Employer' => 'bg-cyan-200 text-cyan-800',
         'Finished' => 'bg-green-200 text-green-800',
