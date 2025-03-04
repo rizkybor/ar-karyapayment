@@ -25,9 +25,9 @@
                         class="mt-1 block w-full text-gray-900 dark:text-gray-300" required>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md"
-                        @click="modalOpen = false">Batal</button>
-                    <x-button-action color="violet" type="submit">Simpan</x-button>
+                    <x-button-action color="red" class="px-4 py-2 bg-gray-500 text-white rounded-md"
+                        @click="modalOpen = false">Batal</x-button>
+                        <x-button-action color="violet" type="submit">Simpan</x-button>
                 </div>
             </form>
         </div>
