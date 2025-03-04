@@ -75,13 +75,16 @@
                 let notificationsToShow = data.notifications.slice(0, 3); // ✅ Ambil hanya 3 notifikasi terbaru
                 notificationsToShow.forEach(notification => {
                     let icon = getNotificationIcon(notification.type);
+                    let cleanedMessage = notification.message.replace(/Lihat detail:\s*https?:\/\/[^\s]+/g, '').trim();
+                    let displayMessage = cleanedMessage.length > 30 ? cleanedMessage.substring(0, 30) + "..." : cleanedMessage;
+
 
                     content.innerHTML += `
                         <li class="border-b border-gray-200 dark:border-gray-700/60 last:border-0">
                             <a href="${notification.url}" class="block py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700/20">
                                 <span class="block text-sm mb-2">
                                     ${icon} <span class="font-medium text-gray-800 dark:text-gray-100">Notification</span>
-                                    ${notification.message}
+                                    ${displayMessage}
                                 </span>
                                 <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">
                                     ${notification.timestamp}
