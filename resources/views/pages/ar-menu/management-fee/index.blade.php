@@ -69,6 +69,9 @@
                                         <div class="font-semibold text-left">No Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Status</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Nama Pemberi Kerja</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
@@ -76,9 +79,6 @@
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Jangka Waktu</div>
-                                    </th>
-                                    <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Termin Invoice</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Total</div>
@@ -158,6 +158,13 @@
                         }
                     },
                     {
+                        data: 'status',
+                        name: 'status',
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
                         data: 'contract.employee_name',
                         name: 'contract.employee_name',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
@@ -187,20 +194,8 @@
                         name: 'period',
                         className: 'p-2 whitespace-nowrap text-center text-sm',
                         render: function(data) {
-                            return `<div>${data ?? '-'} day</div>`;
-                        }
-                    },
-                    {
-                        data: 'termin_invoice',
-                        name: 'termin_invoice',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            let detailUrl =
-                                "{{ route('management-fee.show', ['id' => ':id']) }}"
-                                .replace(':id', row.id);
-                            return `<x-button-action-detail-termin class="bg-violet-500 text-white px-4 py-2 rounded-lg hover:bg-violet-700" 
-                            onclick="window.location.href='${detailUrl}'">
-                            Detail Termin</x-button-action-detail-termin>`;
+                            return `<div>${data ?? '-'} hari</div>`;
+
                         }
                     },
                     {
@@ -216,23 +211,60 @@
                         searchable: false,
                         className: 'p-2 whitespace-nowrap text-center',
                         render: function(data, type, row) {
-                            let editUrl =
-                                "{{ route('management-fee.edit', ['id' => ':id']) }}"
+                            let detailUrl =
+                                "{{ route('management-fee.show', ['id' => ':id']) }}"
                                 .replace(':id', row.id);
+
+                            let editUrl = "{{ route('management-fee.edit', ['id' => ':id']) }}"
+                                .replace(':id', row.id);
+
                             let deleteUrl = "{{ route('management-fee.destroy', ':id') }}"
                                 .replace(':id', row.id);
 
-                            return `
+                            let buttons = `
                             <div class="text-center flex items-center justify-center gap-2">
-                                <!-- Tombol Edit -->
+                                <!-- Tombol View -->
+                                <div class="relative group">
+                                    <button class="bg-violet-500 text-white p-2 rounded-lg hover:bg-violet-600 transition-all duration-200"
+                                            onclick="window.location.href='${detailUrl}'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 12s-3-4-7-4-7 4-7 4 3 4 7 4 7-4 7-4z"/>
+                                        <circle cx="12" cy="12" r="2"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Tooltip -->
+                                    <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                                opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                        Lihat Detail
+                                    </span>
+                                </div>`;
+
+                            // ✅ Ambil teks status tanpa elemen HTML
+                            let statusText = $("<div>").html(row.status).text().trim();
+
+                            // ✅ Jika status adalah "Draft", tampilkan tombol Edit & Delete
+                            if (statusText === "Draft") {
+                                buttons += `
+                            <!-- Tombol Edit -->
+                            <div class="relative group">
                                 <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
                                         onclick="window.location.href='${editUrl}'">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
                                     </svg>
                                 </button>
 
-                                <!-- Tombol Delete -->
+                                <!-- Tooltip -->
+                                <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                    Edit Data
+                                </span>
+                            </div>
+
+                            <!-- Tombol Delete -->
+                            <div class="relative group">
                                 <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="_method" value="DELETE">
@@ -243,8 +275,17 @@
                                         </svg>
                                     </button>
                                 </form>
-                            </div>
-                        `;
+
+                                <!-- Tooltip -->
+                                <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                    Hapus Data
+                                </span>
+                            </div>`;
+                            }
+
+                            buttons += `</div>`;
+                            return buttons;
                         }
                     }
                 ],
@@ -267,19 +308,19 @@
                             <nav class="flex" role="navigation" aria-label="Navigation">
                                 <div class="mr-2">
                                     ${currentPage > 1 ? `
-                                                                                <button onclick="table.page(${currentPage - 2}).draw(false)" 
-                                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                    </svg>
-                                                                                </button>` : `
-                                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                    </svg>
-                                                                                </span>`}
+                                                                        <button onclick="table.page(${currentPage - 2}).draw(false)" 
+                                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                            </svg>
+                                                                        </button>` : `
+                                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                            </svg>
+                                                                        </span>`}
                                 </div>
                                 <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -309,19 +350,19 @@
                                 </ul>
                                 <div class="ml-2">
                                     ${currentPage < totalPages ? `
-                                                                                <button onclick="table.page(${currentPage}).draw(false)" 
-                                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                    </svg>
-                                                                                </button>` : `
-                                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                    </svg>
-                                                                                </span>`}
+                                                                        <button onclick="table.page(${currentPage}).draw(false)" 
+                                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                            </svg>
+                                                                        </button>` : `
+                                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                            </svg>
+                                                                        </span>`}
                                 </div>
                             </nav>
                         </div>`;
