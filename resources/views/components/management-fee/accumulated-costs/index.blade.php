@@ -166,17 +166,19 @@
     function calculateDpp(nilaiManfee) {
         const dpp = nilaiManfee + subtotalBiayaNonPersonil;
         document.getElementById('dpp').value = formatRupiah(dpp);
-        calculatePPN(dpp); // Hitung PPN setelah DPP diperbarui
+
+        // Hitung PPN menggunakan DPP yang sudah di-unformat
+        calculatePPN(dpp);
         calculateTotal(); // Hitung total setelah DPP diperbarui
     }
 
     // Hitung Nilai PPN
     function calculatePPN(dpp) {
         const ratePpn = parseFloat(document.getElementById('rate_ppn').value) || 0;
-        const nilaiPpn = dpp * (ratePpn / 100);
+        const nilaiPpn = dpp * (ratePpn / 100); // Hitung Nilai PPN
 
+        // Tampilkan Nilai PPN yang sudah diformat
         document.getElementById('nilai_ppn').value = formatRupiah(nilaiPpn);
-        calculateTotal(); // Hitung total setelah PPN diperbarui
     }
 
     // Hitung Nilai Manfee
@@ -194,7 +196,7 @@
         const nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value) || 0;
 
         // Total = Nilai Manfee + Nilai PPN + Subtotal Biaya Non Personil
-        const total = nilaiManfee + nilaiPpn + subtotalBiayaNonPersonil;
+        const total = subtotals + nilaiManfee + nilaiPpn;
         document.getElementById('total').value = formatRupiah(total);
     }
 
@@ -209,9 +211,10 @@
     // Panggil fungsi calculateManfee saat rate manfee berubah
     document.getElementById('total_expense_manfee').addEventListener('change', calculateManfee);
 
-    // Panggil fungsi calculatePPN saat rate ppn berubah
+    // Panggil fungsi calculateTotal setelah menghitung PPN
     document.getElementById('rate_ppn').addEventListener('input', function() {
         const dpp = unformatRupiah(document.getElementById('dpp').value);
         calculatePPN(dpp);
+        calculateTotal(); // Perbarui total setelah PPN dihitung
     });
 </script>
