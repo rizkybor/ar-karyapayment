@@ -2,8 +2,8 @@
 
 <!-- Modal for Editing Cost Details -->
 <div x-data="{ modalOpen: false }">
-    <x-button-action class="px-4 py-2 bg-yellow-500 text-white rounded-md"
-        @click="modalOpen = true">Edit</x-button-action>
+    <x-button-action class="px-4 py-2 text-white rounded-md" @click="modalOpen = true" color="yellow"
+        icon="pencil">Edit</x-button-action>
 
     <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-30 z-50 flex justify-center items-start pt-20"
         x-show="modalOpen" x-cloak>
