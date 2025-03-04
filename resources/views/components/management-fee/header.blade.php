@@ -44,7 +44,7 @@
         <!-- Tombol Action -->
         @if ($isEditable)
             <x-button-action color="blue" icon="eye"
-                onclick="window.location.href='{{ route('non-management-fee.show', $document->id) }}'">
+                onclick="window.location.href='{{ route('management-fee.show', $document->id) }}'">
                 Process Document
             </x-button-action>
         @endif
