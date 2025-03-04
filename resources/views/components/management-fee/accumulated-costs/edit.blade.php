@@ -1,19 +1,12 @@
-{{-- <form method="POST" action="{{ route('management-fee.update', $ManfeeDocument->id) }}"> --}}
-<form method="POST" action="">
+@props(['manfeeDoc', 'account_dummy'])
+
+<form
+    action="{{ route('management-fee.accumulated.update', ['id' => $manfeeDoc->id, 'accumulated_id' => $accumulatedCost->id ?? 'new']) }}"
+    method="POST">
     @csrf
     @method('PUT')
 
-    <x-management-fee.accumulated-costs.index :isEdit="true" />
-    {{-- <x-management-fee.accumulated-costs.index :ManfeeDocument="$ManfeeDocument" :isEdit="true" /> --}}
+    <x-validation-errors :attributes="$manfeeDoc" :errors="$errors" />
 
-    {{-- Submit Button --}}
-    <div class="flex justify-end mt-6">
-        {{-- <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'"> --}}
-        {{-- <x-secondary-button onclick="window.location=''">
-            Cancel
-        </x-secondary-button>
-        <x-button-action color="blue" type="submit">
-            Update
-        </x-button-action> --}}
-    </div>
+    <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :account_dummy="$account_dummy" :isEdit="true" />
 </form>

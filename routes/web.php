@@ -12,6 +12,7 @@ use App\Http\Controllers\ManfeeAttachmentController;
 use App\Http\Controllers\ManfeeDocumentDataTableController;
 use App\Http\Controllers\ManfeeTaxController;
 use App\Http\Controllers\ManfeeDetailPaymentsController;
+use App\Http\Controllers\ManfeeAccumulatedCostController;
 
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\NonManfeeDocumentController;
@@ -46,7 +47,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
     Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])
-    ->name('notifications.markAsRead');
+        ->name('notifications.markAsRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
@@ -129,6 +130,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::put('/{detail_payment_id}/update', [ManfeeDetailPaymentsController::class, 'update'])->name('update');
             // management-fee.detail_payments.destroy
             Route::delete('/{detail_payment_id}', [ManfeeDetailPaymentsController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
+            // management-fee.accumulated.show
+            Route::get('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'show'])->name('show');
+            // management-fee.accumulated.update
+            Route::put('/{accumulated_id}/update', [ManfeeAccumulatedCostController::class, 'update'])->name('update');
+            // management-fee.accumulated.destroy 
+            Route::delete('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
         });
     });
 

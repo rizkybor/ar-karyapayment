@@ -22,7 +22,7 @@
 
 
         {{-- AKUMULASI BIAYA --}}
-        {{-- <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
+        <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :account_dummy="$account_dummy" :isEdit="false" />
 
         {{-- LAMPIRAN --}}
         <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
