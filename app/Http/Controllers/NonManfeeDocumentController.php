@@ -204,14 +204,11 @@ class NonManfeeDocumentController extends Controller
             $nextRole = null;
             $nextApprovers = collect();
             if ($isRevised) {
-                // 🔹 4️⃣ Jika revisi, ambil APPROVER TERAKHIR sebelum revisi
+                // 🔹 4️⃣ Ambil APPROVER TERAKHIR secara keseluruhan
                 $lastApprover = DocumentApproval::where('document_id', $document->id)
                     ->where('document_type', NonManfeeDocument::class)
-                    ->where('approver_role', '!=', $currentRole)
-                    ->latest('approved_at')
+                    ->latest('approved_at') // Urutkan berdasarkan waktu approval terbaru
                     ->first();
-
-                dd($lastApprover);
 
                 if (!$lastApprover) {
                     return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
@@ -242,7 +239,7 @@ class NonManfeeDocumentController extends Controller
 
             // 🔹 7️⃣ Ambil status dokumen berdasarkan nextRole
             $statusCode = array_search($nextRole, $this->approvalStatusMap());
-
+            
             if ($statusCode === false) {
                 Log::warning("Approval Status Map tidak mengenali role: {$nextRole}");
                 $statusCode = 'unknown';
