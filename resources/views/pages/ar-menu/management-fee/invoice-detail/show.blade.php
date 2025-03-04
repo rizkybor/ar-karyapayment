@@ -23,7 +23,8 @@
         <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
 
         {{-- AKUMULASI BIAYA --}}
-        <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :isEdit="false" />
+        <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :isEdit="false" :subtotals="$subtotals"
+            :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" />
 
         {{-- LAMPIRAN --}}
         <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />

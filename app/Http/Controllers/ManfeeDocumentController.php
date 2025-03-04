@@ -125,6 +125,14 @@ class ManfeeDocumentController extends Controller
             'approvals.approver'
         ])->findOrFail($id);
 
+        $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
+            return $items->sum('nilai_biaya');
+        });
+
+        $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
+            ->where('expense_type', 'biaya_non_personil')
+            ->sum('nilai_biaya');
+
         $latestApprover = DocumentApproval::where('document_id', $id)
             ->with('approver')
             ->latest('updated_at') // Ambil hanya yang paling baru
@@ -132,7 +140,7 @@ class ManfeeDocumentController extends Controller
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil'));
     }
 
 

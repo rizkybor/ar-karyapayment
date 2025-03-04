@@ -55,13 +55,9 @@ class ManfeeAccumulatedCostController extends Controller
             'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
 
-        $nilai_manfee = $subtotals * $total_expense_manfee;
-        $dpp = $nilai_manfee + $subtotalBiayaNonPersonil;
-        $nilai_ppn =
-            jumlah =
 
-            // **Konversi format angka untuk penyimpanan ke database**
-            $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
+        // **Konversi format angka untuk penyimpanan ke database**
+        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
         $ratePpn = (float) str_replace(',', '.', $request->rate_ppn); // Ubah koma menjadi titik untuk desimal
         $nilaiPpn = round(($dppPekerjaan * $ratePpn) / 100, 2); // Hitung nilai PPN
         $jumlah = $dppPekerjaan + $nilaiPpn; // Total nilai
