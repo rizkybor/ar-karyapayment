@@ -34,12 +34,12 @@ class NonManfeeHistoryController extends Controller
             if (!$document) {
                 return response()->json(['error' => 'Dokumen tidak ditemukan'], 404);
             }
-
             // ✅ Ambil data history berdasarkan dokumen
             $history = $document->histories
                 ->sortByDesc('created_at')
                 ->map(function ($item) {
                     return [
+                        'notes'     => $item->notes,
                         'status'    => $item->new_status,
                         'timestamp' => $item->created_at->format('d M Y, H:i'),
                         'user'      => optional($item->performedBy)->name ?? 'Unknown User',

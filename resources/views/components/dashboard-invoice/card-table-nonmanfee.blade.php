@@ -46,7 +46,7 @@
                             <td class="p-2 whitespace-nowrap">
                                 <div class="text-center">
                                     <x-label-status-table :status="$invoice->status">
-                                        Detail Termin
+                                        Status
                                     </x-label-status-table>
                                 </div>
                             </td>
