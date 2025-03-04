@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy']);
+@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
 
 <div x-data="{
     modalOpen: false,
