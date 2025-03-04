@@ -27,7 +27,7 @@
         'Submit doc to Employer' => 'bg-cyan-200 text-cyan-800',
         'Finished' => 'bg-green-200 text-green-800',
         'Rejected' => 'bg-red-200 text-red-800',
-        'Revised' => 'bg-yellow-300 text-yellow-900',
+        'Revised' => 'bg-orange-300 text-orange-900',
     ];
 
     // Konversi status angka menjadi teks
