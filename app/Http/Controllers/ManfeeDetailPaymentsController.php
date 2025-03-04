@@ -28,13 +28,17 @@ class ManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => 'required',
         ]);
 
+        // dd($request->all());
+
+        $rupiahBiaya = (float) str_replace('.', '', $request->nilai_biaya);
+
         // Simpan ke database
         ManfeeDocDetailPayments::create([
             'document_id' => $id,
             'expense_type' => $request->expense_type,
             'account' => $request->account,
             'uraian' => $request->uraian,
-            'nilai_biaya' => $request->nilai_biaya,
+            'nilai_biaya' => $rupiahBiaya,
         ]);
 
         return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
