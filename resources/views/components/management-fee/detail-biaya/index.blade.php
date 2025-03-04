@@ -26,9 +26,6 @@
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-left">Total Jenis Biaya</div>
                             </th>
-                            {{-- <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-center">Aksi</div>
-                            </th> --}}
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
