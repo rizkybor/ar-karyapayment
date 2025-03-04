@@ -73,6 +73,7 @@
 
                 let unreadCount = 0;
                 let notificationsToShow = data.notifications.slice(0, 3); // ✅ Ambil hanya 3 notifikasi terbaru
+
                 notificationsToShow.forEach(notification => {
                     let icon = getNotificationIcon(notification.type);
                     let cleanedMessage = notification.message.replace(/Lihat detail:\s*https?:\/\/[^\s]+/g,
@@ -81,12 +82,13 @@
                         "..." : cleanedMessage;
 
                     // ✅ Cek apakah notifikasi belum terbaca
-                    if (!notification.read_at) {
+                    let isUnread = !notification.read_at;
+                    if (isUnread) {
                         unreadCount++;
                     }
 
                     content.innerHTML += `
-                <li class="border-b border-gray-200 dark:border-gray-700/60 last:border-0">
+                <li class="border-b border-gray-200 dark:border-gray-700/60 last:border-0 ${isUnread ? 'bg-gray-200 dark:bg-gray-700' : 'bg-white dark:bg-gray-800'}">
                     <a href="${notification.url}" class="block py-2 px-4 hover:bg-gray-50 dark:hover:bg-gray-700/20" onclick="markAsRead(${notification.id})">
                         <span class="block text-sm mb-2">
                             ${icon} <span class="font-medium text-gray-800 dark:text-gray-100">Notification</span>
@@ -117,12 +119,6 @@
             });
     }
 
-    // ✅ Fungsi untuk memperbarui badge
-    function updateNotificationBadge(count) {
-        let badge = document.getElementById("notificationBadge");
-        badge.style.display = count > 0 ? "inline-flex" : "none";
-    }
-
     // ✅ Fungsi untuk menandai notifikasi sebagai telah dibaca
     function markAsRead(notificationId) {
         fetch(`http://127.0.0.1:8000/notifications/${notificationId}/mark-as-read`, {
@@ -135,7 +131,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    fetchNotifications(); // Refresh daftar notifikasi
+                    fetchNotifications(); // Refresh daftar notifikasi agar warna berubah
                 }
             })
             .catch(error => console.error("Gagal menandai notifikasi sebagai dibaca:", error));
@@ -143,13 +139,14 @@
 
     // ✅ Fetch jumlah notifikasi belum dibaca saat halaman dimuat
     document.addEventListener("DOMContentLoaded", function() {
-        fetch("http://127.0.0.1:8000/notifications/unread-count")
-            .then(response => response.json())
-            .then(data => {
-                updateNotificationBadge(data.unread_count);
-            })
-            .catch(error => console.error('Gagal mendapatkan jumlah notifikasi belum dibaca:', error));
+        fetchNotifications(); // ✅ Panggil saat halaman pertama kali dimuat
     });
+
+    // ✅ Fungsi untuk memperbarui badge
+    function updateNotificationBadge(count) {
+        let badge = document.getElementById("notificationBadge");
+        badge.style.display = count > 0 ? "inline-flex" : "none";
+    }
 
     // ✅ Fungsi untuk menampilkan ikon notifikasi berdasarkan tipe
     function getNotificationIcon(type) {
