@@ -42,18 +42,21 @@
                 </x-button-action>
             @endif
 
-            <!-- Tampilkan link ke dokumen jika ada -->
-            @if (!empty($notification->data['document_id']))
-                <div class="mb-4">
-                    <x-button-action color="blue" icon="eye"
-                        href="{{ route('non-management-fee.show', $notification->data['document_id']) }}">
-                        Lihat Dokumen
-                    </x-button-action>
-                </div>
-            @endif
+            <!-- FOOTER CARD: Grid Layout -->
+            <div class="grid grid-cols-2 items-center mt-5">
+                <!-- KIRI BAWAH: Tampilkan link ke dokumen jika ada -->
+                @if (!empty($notification->data['document_id']))
+                    <div>
+                        <x-button-action color="blue" icon="eye"
+                            href="{{ route('non-management-fee.show', $notification->data['document_id']) }}">
+                            Lihat Dokumen
+                        </x-button-action>
+                    </div>
+                @endif
 
-            <!-- Tombol Kembali -->
-            <div class="mt-5 flex gap-2">
+            </div>
+            <!-- KANAN BAWAH: Tombol Kembali & Hapus -->
+            <div class="flex justify-end gap-2 ml-auto">
                 <x-secondary-button onclick="window.location='{{ route('notifications.index') }}'">
                     Kembali
                 </x-secondary-button>
