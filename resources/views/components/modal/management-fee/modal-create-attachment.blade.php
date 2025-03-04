@@ -2,7 +2,7 @@
 
 <!-- Modal for File Upload -->
 <div x-data="{ modalOpen: false }">
-    <x-button-action class="px-4 py-2 bg-violet-500 text-white rounded-md" @click="modalOpen = true">Tambah
+    <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" @click="modalOpen = true">Tambah
         Lampiran</x-button-action>
     <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center" x-show="modalOpen" x-cloak>
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full"
@@ -25,9 +25,9 @@
                         class="mt-1 block w-full text-gray-900 dark:text-gray-300" required>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md"
-                        @click="modalOpen = false">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-violet-500 text-white rounded-md">Simpan</button>
+                    <x-button-action color="red" class="px-4 py-2 bg-gray-500 text-white rounded-md"
+                        @click="modalOpen = false">Batal</x-button>
+                        <x-button-action color="violet" type="submit">Simpan</x-button>
                 </div>
             </form>
         </div>

@@ -13,16 +13,21 @@
                 </div>
             </div>
         </div>
+        {{-- 
+        @php
+            dd($manfeeDoc);
+        @endphp --}}
 
         {{-- HEADER --}}
-        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" isEditable="true" />
+        <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :document_status="$manfeeDoc['status']" isEditable="true" />
 
         {{-- DETAIL BIAYA --}}
         <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy" />
 
 
         {{-- AKUMULASI BIAYA --}}
-        {{-- <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :isEdit="false" /> --}}
+        <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" :rate_manfee="$rate_manfee"
+            :account_dummy="$account_dummy" :isEdit="false" />
 
         {{-- LAMPIRAN --}}
         <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />

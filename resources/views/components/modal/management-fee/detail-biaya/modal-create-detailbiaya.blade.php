@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy']);
+@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
 
 <div x-data="{
     modalOpen: false,
@@ -21,7 +21,7 @@
     }
 }">
     <div class="flex justify-between items-center mb-3">
-        <x-button-action class="px-4 py-2 bg-violet-500 text-white rounded-md" @click="modalOpen = true">
+        <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" @click="modalOpen = true">
             Tambah Detail Biaya
         </x-button-action>
     </div>
@@ -94,7 +94,7 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">
-                                            {{ str_replace(' ', '_', strtolower($docdetails->expense_type)) }}
+                                            {{ $docdetails->expense_type }}
                                         </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">

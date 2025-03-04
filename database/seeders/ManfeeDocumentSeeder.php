@@ -2,61 +2,62 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\ManfeeDocument;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Contracts;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ManfeeDocumentSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $faker = Faker::create();
-        $contracts = Contracts::pluck('id')->toArray();
-        $monthRoman = [
-            1 => 'I',
-            2 => 'II',
-            3 => 'III',
-            4 => 'IV',
-            5 => 'V',
-            6 => 'VI',
-            7 => 'VII',
-            8 => 'VIII',
-            9 => 'IX',
-            10 => 'X',
-            11 => 'XI',
-            12 => 'XII'
-        ];
-        $year = date('Y');
+        // Ambil semua kontrak yang bertipe 'management_fee'
+        $contracts = Contracts::where('type', 'management_fee')->pluck('id');
 
-        $lastNumber = ManfeeDocument::max('letter_number');
-        preg_match('/^(\d{6})/', $lastNumber, $matches);
-        $lastNumeric = $matches[1] ?? '000100';
-
-        for ($i = 0; $i < 10; $i++) {
-            $nextNumber = intval($lastNumeric) + (($i + 1) * 10);
-            $month = $monthRoman[rand(1, 12)];
-
-            $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $month, $year);
-            $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $month, $year);
-            $receiptNumber = sprintf("%06d/MF/INV/KPU/SOL/%s/%s", $nextNumber, $month, $year);
-
-            ManfeeDocument::create([
-                'contract_id' => $faker->randomElement($contracts),
-                'invoice_number' => $invoiceNumber,
-                'receipt_number' => $receiptNumber,
-                'letter_number' => $letterNumber,
-                'manfee_bill' => $faker->randomFloat(2, 1000, 10000),
-                'period' => '14',
-                'letter_subject' => $faker->sentence(3),
-                'category' => 'management_fee',
-                'status' => 0,
-                'last_reviewers' => $faker->name,
-                'is_active' => true,
-                'created_by' => 1,
-            ]);
+        if ($contracts->isEmpty()) {
+            $this->command->warn("⚠️ Tidak ada data kontrak dengan tipe 'management_fee'. Seeder dihentikan.");
+            return;
         }
 
-        $this->command->info("✅ Berhasil menambahkan 10 data Management Fee.");
+        // Ambil semua user dengan role 'maker'
+        $makers = User::where('role', 'maker')->pluck('id');
+
+        if ($makers->isEmpty()) {
+            $this->command->warn("⚠️ Tidak ada user dengan role 'maker'. Seeder dihentikan.");
+            return;
+        }
+
+        $data = [];
+        $faker = Faker::create();
+
+        // Loop setiap contract dan buat satu manfee document per contract
+        foreach ($contracts as $contract_id) {
+            $created_by = $makers->random();
+
+            $data[] = [
+                'contract_id'    => $contract_id,
+                'invoice_number' => 'INV-' . Str::upper(Str::random(10)),
+                'receipt_number' => 'REC-' . Str::upper(Str::random(10)),
+                'letter_number'  => 'LTR-' . Str::upper(Str::random(10)),
+                'manfee_bill'    => $faker->randomFloat(2, 1000, 10000),
+                'period'         => '14',
+                'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
+                'category'       => 'management_fee',
+                'status'         => 0,
+                'last_reviewers' => null,
+                'is_active'      => true,
+                'created_by'     => $created_by,
+                'created_at'     => Carbon::now(),
+                'updated_at'     => Carbon::now(),
+            ];
+        }
+
+        // Insert data ke database
+        DB::table('manfee_documents')->insert($data);
+
+        $this->command->info("✅ Berhasil menambahkan " . count($data) . " data Management Fee.");
     }
 }
