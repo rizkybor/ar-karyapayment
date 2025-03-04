@@ -145,13 +145,23 @@ class ManfeeDocumentController extends Controller
             'accumulatedCosts',
             'attachments',
             'descriptions',
-            'taxFiles'
+            'taxFiles',
+            'detailPayments'
         ])->findOrFail($id);
 
+        $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
+            return $items->sum('nilai_biaya');
+        });
+
+        $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
+            ->where('expense_type', 'Biaya Non Personil')
+            ->sum('nilai_biaya');
+
+        $rate_manfee = ['9%', '10%', '11%', '12%', '13%'];
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
         $account_dummy = ['10011', '10012', '10013', '10014', '10015'];
 
-        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_dummy'));
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_dummy', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee'));
     }
 
     /**

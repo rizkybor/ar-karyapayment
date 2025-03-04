@@ -1,8 +1,18 @@
-@props(['manfeeDoc', 'account_dummy' => [], 'isEdit' => false])
+@props([
+    'manfeeDoc',
+    'subtotals',
+    'subtotalBiayaNonPersonil',
+    'rate_manfee' => [],
+    'account_dummy' => [],
+    'isEdit' => false,
+])
 
 @php
+    // dd(number_format($subtotals->sum()));
     $firstAccumulatedCost = $manfeeDoc->accumulatedCosts->first();
 @endphp
+
+
 
 {{-- Akumulasi Biaya --}}
 
@@ -50,13 +60,22 @@
             <div class="col-span-1 sm:col-span-2 lg:col-span-2 lg:col-start-4">
                 <x-label for="total_expense_manfee" value="{{ __('Rate Manfee') }}" />
                 @if ($isEdit)
-                    <x-input id="total_expense_manfee" class="block mt-1 w-full" type="text"
-                        name="total_expense_manfee"
-                        value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfe ?? 0, 2, '.', '')) }}"
-                        oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
+                    <select id="total_expense_manfee" name="total_expense_manfee"
+                        class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                        text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+                        focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                        onchange="checkChanges()">
+                        <option value="">Rate Manfee</option>
+                        @foreach ($rate_manfee as $rate_manfees)
+                            <option value="{{ $rate_manfees }}"
+                                {{ old('rate_manfees', $firstAccumulatedCost->rate_manfees ?? '') == $rate_manfees ? 'selected' : '' }}>
+                                {{ $rate_manfees }}
+                            </option>
+                        @endforeach
+                    </select>
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 2, '.', '') }}%
+                        {{ $firstAccumulatedCost->rate_manfees ?? 'Belum memilih akun' }}
                     </p>
                 @endif
             </div>
