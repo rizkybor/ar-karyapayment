@@ -16,9 +16,8 @@
         </div>
 
         {{-- HEADER --}}
-        <x-management-fee.header :transaction_status="$transaction_status" :document_status="$document_status" :category="$category" :document="$manfeeDoc"
-            isShowPage="true" />
-
+        <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document_status="$manfeeDoc['status']" :document="$manfeeDoc" isShowPage="true" />
+        {{-- :latestApprover=$latestApprover --}}
         {{-- DETAIL BIAYA --}}
         <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
 
