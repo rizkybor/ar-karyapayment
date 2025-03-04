@@ -163,4 +163,32 @@ class NotificationController extends Controller
 
         return response()->json(['unread_count' => $count]);
     }
+
+    public function getNotificationsJson()
+    {
+        $userId = auth()->id();
+    
+        // Ambil notifikasi berdasarkan penerima yang sedang login
+        $notifications = Notification::with('sender')
+            ->whereHas('recipients', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->orderByRaw('read_at IS NULL DESC, created_at DESC')
+            ->take(10)
+            ->get();
+    
+        return response()->json([
+            'notifications' => $notifications->map(function ($notification) {
+                return [
+                    'id'         => $notification->id,
+                    'title'      => $notification->type ?? 'Notifikasi Baru', // Bisa diganti sesuai tipe
+                    'message'    => $notification->messages ?? 'Ada pembaruan di sistem.',
+                    'timestamp'  => $notification->created_at->format('d M Y, H:i'),
+                    'url'        => route('notifications.show', $notification->id),
+                    'sender'     => $notification->sender ? $notification->sender->name : 'Sistem',
+                    'read_at'    => $notification->read_at ? $notification->read_at->format('d M Y, H:i') : null,
+                ];
+            })
+        ]);
+    }
 }
