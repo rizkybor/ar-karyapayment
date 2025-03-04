@@ -17,14 +17,36 @@
             </div>
 
             <!-- Isi Notifikasi -->
-            <p class="text-gray-700 dark:text-gray-300 mb-4">
-                {{ $notification->data['message'] ?? 'Tidak ada pesan' }}
+            @php
+                // Ambil pesan dari notifikasi
+                $textMessage = $notification->messages ?? 'Tidak ada pesan';
+
+                // Cari URL dalam pesan menggunakan regex
+                preg_match('/https?:\/\/[^\s]+/', $textMessage, $matches);
+                $url = $matches[0] ?? null;
+
+                // Jika ada URL, hapus dari teks agar tidak tampil dua kali
+                if ($url) {
+                    $textMessage = str_replace($url, '', $textMessage);
+                }
+            @endphp
+
+            <p class="text-sm text-gray-800 dark:text-gray-200">
+                {{ trim($textMessage) }}
             </p>
+
+            @if ($url)
+                <x-button-action color="violet" @click="window.open('{{ $url }}', '_blank')"
+                    class="px-2 my-3 text-xs w-28">
+                    Lihat Detail >>
+                </x-button-action>
+            @endif
 
             <!-- Tampilkan link ke dokumen jika ada -->
             @if (!empty($notification->data['document_id']))
                 <div class="mb-4">
-                    <x-button-action color="blue" icon="eye" href="{{ route('non-management-fee.show', $notification->data['document_id']) }}">
+                    <x-button-action color="blue" icon="eye"
+                        href="{{ route('non-management-fee.show', $notification->data['document_id']) }}">
                         Lihat Dokumen
                     </x-button-action>
                 </div>
