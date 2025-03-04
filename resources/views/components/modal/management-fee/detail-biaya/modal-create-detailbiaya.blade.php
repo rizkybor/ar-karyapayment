@@ -94,7 +94,7 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">
-                                            {{ str_replace(' ', '_', strtolower($docdetails->expense_type)) }}
+                                            {{ $docdetails->expense_type }}
                                         </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
