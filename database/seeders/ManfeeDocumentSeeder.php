@@ -18,23 +18,23 @@ class ManfeeDocumentSeeder extends Seeder
         $contracts = Contracts::where('type', 'management_fee')->pluck('id');
 
         if ($contracts->isEmpty()) {
-            $this->command->warn("Tidak ada data kontrak dengan tipe 'management_fee'. Seeder dihentikan.");
+            $this->command->warn("⚠️ Tidak ada data kontrak dengan tipe 'management_fee'. Seeder dihentikan.");
             return;
         }
 
-        // Ambil semua user yang memiliki role 'maker'
+        // Ambil semua user dengan role 'maker'
         $makers = User::where('role', 'maker')->pluck('id');
 
         if ($makers->isEmpty()) {
-            $this->command->warn("Tidak ada user dengan role 'maker'. Seeder dihentikan.");
+            $this->command->warn("⚠️ Tidak ada user dengan role 'maker'. Seeder dihentikan.");
             return;
         }
 
         $data = [];
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 10; $i++) {
-            $contract_id = $contracts->random();
+        // Loop setiap contract dan buat satu manfee document per contract
+        foreach ($contracts as $contract_id) {
             $created_by = $makers->random();
 
             $data[] = [
@@ -42,7 +42,7 @@ class ManfeeDocumentSeeder extends Seeder
                 'invoice_number' => 'INV-' . Str::upper(Str::random(10)),
                 'receipt_number' => 'REC-' . Str::upper(Str::random(10)),
                 'letter_number'  => 'LTR-' . Str::upper(Str::random(10)),
-                'manfee_bill' => $faker->randomFloat(2, 1000, 10000),
+                'manfee_bill'    => $faker->randomFloat(2, 1000, 10000),
                 'period'         => '14',
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_fee',
@@ -55,9 +55,9 @@ class ManfeeDocumentSeeder extends Seeder
             ];
         }
 
-        // Insert data ke database dengan batch untuk performa lebih baik
+        // Insert data ke database
         DB::table('manfee_documents')->insert($data);
 
-        $this->command->info("✅ Berhasil menambahkan 4 data Management Fee.");
+        $this->command->info("✅ Berhasil menambahkan " . count($data) . " data Management Fee.");
     }
 }
