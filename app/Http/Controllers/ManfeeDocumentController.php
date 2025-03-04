@@ -154,10 +154,10 @@ class ManfeeDocumentController extends Controller
         });
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
-            ->where('expense_type', 'Biaya Non Personil')
+            ->where('expense_type', 'biaya_non_personil')
             ->sum('nilai_biaya');
 
-        $rate_manfee = ['9%', '10%', '11%', '12%', '13%'];
+        $rate_manfee = ['9', '10', '11', '12', '13'];
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
         $account_dummy = ['10011', '10012', '10013', '10014', '10015'];
 

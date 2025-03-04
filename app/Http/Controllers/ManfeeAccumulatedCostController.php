@@ -17,11 +17,13 @@ class ManfeeAccumulatedCostController extends Controller
         $accumulatedCost = ManfeeDocAccumulatedCost::where('document_id', $id)->first();
 
         return response()->json([
-            'akun' => $accumulatedCost->account ?? null,
-            'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,
+            'account' => $accumulatedCost->account ?? null,
+            'dpp' => $accumulatedCost->dpp ?? 0,
             'rate_ppn' => $accumulatedCost->rate_ppn ?? 0,
+            'nilai_manfee' => $accumulatedCost->nilai_manfee ?? 0,
+            'total_expense_manfee'  => $accumulatedCost->total_expense_manfee ?? 0,
             'nilai_ppn' => $accumulatedCost->nilai_ppn ?? 0,
-            'jumlah' => $accumulatedCost->total ?? 0,
+            'total' => $accumulatedCost->total ?? 0,
         ]);
     }
 
@@ -36,15 +38,16 @@ class ManfeeAccumulatedCostController extends Controller
         // Validasi input dengan custom messages
         $request->validate([
             'akun' => 'required|string|max:255',
-            'dpp_pekerjaan' => 'required|string|min:1', // String karena ada format angka dengan titik
+            'total_expense_manfee' => 'required|string|max:255',
             'rate_ppn' => 'required|numeric|min:0|max:999.99',
+
         ], [
             'akun.required' => 'Akun wajib diisi.',
             'akun.string' => 'Akun harus berupa teks.',
             'akun.max' => 'Akun tidak boleh lebih dari 255 karakter.',
 
-            'dpp_pekerjaan.required' => 'DPP Pekerjaan harus diisi.',
-            'dpp_pekerjaan.min' => 'DPP Pekerjaan tidak boleh kurang dari 0.',
+            'expense_manfee.required' => 'Rate Manfee harus diisi.',
+            'expense_manfee.min' => 'Rate Manfee tidak boleh kurang dari 0.',
 
             'rate_ppn.required' => 'Rate PPN harus diisi.',
             'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
@@ -52,8 +55,13 @@ class ManfeeAccumulatedCostController extends Controller
             'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
 
-        // **Konversi format angka untuk penyimpanan ke database**
-        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
+        $nilai_manfee = $subtotals * $total_expense_manfee;
+        $dpp = $nilai_manfee + $subtotalBiayaNonPersonil;
+        $nilai_ppn =
+            jumlah =
+
+            // **Konversi format angka untuk penyimpanan ke database**
+            $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
         $ratePpn = (float) str_replace(',', '.', $request->rate_ppn); // Ubah koma menjadi titik untuk desimal
         $nilaiPpn = round(($dppPekerjaan * $ratePpn) / 100, 2); // Hitung nilai PPN
         $jumlah = $dppPekerjaan + $nilaiPpn; // Total nilai
