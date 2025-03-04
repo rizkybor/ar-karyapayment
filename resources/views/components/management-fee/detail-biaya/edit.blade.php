@@ -12,7 +12,6 @@
                 <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
                     :account_dummy="$account_dummy" />
             @endif
-
         </div>
 
     </div>
@@ -32,9 +31,6 @@
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-left">Total Jenis Biaya</div>
                             </th>
-                            {{-- <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-center">Aksi</div>
-                            </th> --}}
                         </tr>
                     </thead>
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
@@ -65,30 +61,6 @@
                                         <div class="text-left">Rp.
                                             {{ number_format($group['total'], 0, ',', '.') }}</div>
                                     </td>
-                                    {{-- <td class="p-2 whitespace-nowrap">
-                                        <div class="text-center flex items-center justify-center gap-2">
-                                            <!-- Button View -->
-                                            <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.detail_payments.show', ['id' => $manfeeDoc->id, 'detail_payment_id' => $group['details']->first()->id]) }}">
-                                                View
-                                            </x-button-action>
-
-                                            <!-- Button Hapus -->
-                                            <x-button-action color="red" icon="trash"
-                                                onclick="confirm('Apakah Anda yakin ingin menghapus detail biaya ini?') 
-                                            && document.getElementById('delete-attachment-{{ $group['details']->first()->id }}').submit()">
-                                                Hapus
-                                            </x-button-action>
-
-                                            <form id="delete-attachment-{{ $group['details']->first()->id }}"
-                                                method="POST"
-                                                action="{{ route('management-fee.detail_payments.destroy', ['id' => $group['details']->first()->document_id, 'detail_payment_id' => $group['details']->first()->id]) }}"
-                                                class="hidden">
-                                                @csrf
-                                                @method('DELETE')
-                                            </form>
-                                        </div>
-                                    </td> --}}
                                 </tr>
                             @endforeach
                         @else

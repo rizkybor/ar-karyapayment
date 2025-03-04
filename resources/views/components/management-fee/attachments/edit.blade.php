@@ -44,16 +44,14 @@
                                                 href="{{ route('management-fee.attachments.show', ['id' => $manfeeDoc->id, 'attachment_id' => $file->id]) }}">
                                                 View
                                             </x-button-action>
-                                            <x-button-action color="red" icon="trash"
-                                                onclick="confirm('Apakah Anda yakin ingin menghapus lampiran ini?') 
-                                                && document.getElementById('delete-attachment-{{ $file->id }}').submit()">
-                                                Hapus
-                                            </x-button-action>
-                                            <form id="delete-attachment-{{ $file->id }}" method="POST"
+                                            <form
                                                 action="{{ route('management-fee.attachments.destroy', ['id' => $manfeeDoc->id, 'attachment_id' => $file->id]) }}"
-                                                class="hidden">
+                                                method="POST"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
                                                 @csrf
                                                 @method('DELETE')
+                                                <x-button-action color="red" icon="trash" type="submit"> Hapus
+                                                </x-button-action>
                                             </form>
                                         </div>
                                     </td>
