@@ -13,6 +13,7 @@ use App\Http\Controllers\ManfeeDocumentDataTableController;
 use App\Http\Controllers\ManfeeTaxController;
 use App\Http\Controllers\ManfeeDetailPaymentsController;
 use App\Http\Controllers\ManfeeAccumulatedCostController;
+use App\Http\Controllers\ManfeeHistoryController;
 
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\NonManfeeDocumentController;
@@ -71,6 +72,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
 
         Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/revision/{id}', [ManfeeDocumentController::class, 'processRevision'])->name('processRevision');
 
 
         Route::resource('/', ManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
@@ -140,6 +142,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::put('/{accumulated_id}/update', [ManfeeAccumulatedCostController::class, 'update'])->name('update');
             // management-fee.accumulated.destroy 
             Route::delete('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('histories')->name('histories.')->group(function () {
+            Route::get('/', [ManfeeHistoryController::class, 'index'])->name('index');
+            Route::get('/{history_id}', [ManfeeHistoryController::class, 'show'])->name('show');
+            Route::post('/store', [ManfeeHistoryController::class, 'store'])->name('store');
+            Route::delete('/{history_id}', [ManfeeHistoryController::class, 'destroy'])->name('destroy');
         });
     });
 

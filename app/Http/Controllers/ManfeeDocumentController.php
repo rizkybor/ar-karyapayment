@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\ManfeeDocHistories;
 
 class ManfeeDocumentController extends Controller
 {
@@ -194,108 +195,141 @@ class ManfeeDocumentController extends Controller
         return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
-
-    private function convertToRoman($month)
+    /**
+     * Proses Document with Approval Level
+     */
+    public function processApproval(Request $request, $id)
     {
-        $romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-        return $romans[$month - 1];
-    }
-
-    // Button Approval
-    public function processApproval($documentId)
-    {
-        DB::beginTransaction(); // Memulai transaksi database
-
+        DB::beginTransaction();
         try {
-            $document = ManfeeDocument::findOrFail($documentId);
-            $currentRole = optional($document->latestApproval)->role ?? 'maker';
+            $document = ManfeeDocument::findOrFail($id);
+            $user = Auth::user();
+            $userRole = $user->role;
+            $department = $user->department;
+            $previousStatus = $document->status;
+            $currentRole = optional($document->latestApproval)->approver_role ?? 'maker';
+            $message = $request->input('messages');
 
             // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?
             if ($document->last_reviewers === 'pajak') {
                 return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
             }
 
-            // 🔹 2️⃣ Validasi: Apakah user memiliki role yang diizinkan?
-            $userRole = Auth::user()->role;
+            // 🔹 2️⃣ Cek apakah dokumen dalam status revisi
+            $isRevised = $document->status === '102';
 
-            if (!$userRole || $userRole !== $currentRole) {
+            // 🔹 3️⃣  Jika revisi, lewati validasi karena `userRole` dan `currentRole` pasti berbeda
+            if (!$isRevised && (!$userRole || $userRole !== $currentRole)) {
                 return back()->with('error', "Anda tidak memiliki izin untuk menyetujui dokumen ini.");
             }
 
-            // 🔹 3️⃣ Validasi: Apakah user sudah pernah approve dokumen ini sebelumnya?
-            $alreadyApproved = DocumentApproval::where([
-                'document_id'   => $document->id,
-                'document_type' => ManfeeDocument::class,
-                'approver_id'   => Auth::id(),
-            ])->exists();
+            $nextRole = null;
+            $nextApprovers = collect();
+            if ($isRevised) {
+                // 🔹 4️⃣ Ambil APPROVER TERAKHIR secara keseluruhan
+                $lastApprover = DocumentApproval::where('document_id', $document->id)
+                    ->where('document_type', ManfeeDocument::class)
+                    ->latest('approved_at') // Urutkan berdasarkan waktu approval terbaru
+                    ->first();
 
-            if ($alreadyApproved) {
-                return back()->with('error', "Anda sudah menyetujui dokumen ini sebelumnya.");
+                if (!$lastApprover) {
+                    return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
+                }
+
+                $nextRole = $lastApprover->approver_role;
+                $nextApprovers = User::where('role', $nextRole)->get();
+            } else {
+                // 🔹 5️⃣ Jika bukan revisi, tentukan ROLE BERIKUTNYA seperti biasa
+                $nextRole = $this->getNextApprovalRole($currentRole, $department, $isRevised);
+                if (!$nextRole) {
+                    return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
+                }
+
+                // 🔹 6️⃣ Ambil user dengan role berikutnya
+                $nextApprovers = User::where('role', $nextRole)
+                    ->when($nextRole === 'kadiv', function ($query) use ($department) {
+                        return $query->whereRaw("LOWER(department) = ?", [strtolower($department)]);
+                    })
+                    ->get();
             }
-
-            // 🔹 4️⃣ Dapatkan role approval berikutnya
-            $nextRole = $this->getNextApprovalRole($currentRole);
-
-            if (!$nextRole) {
-                return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
-            }
-
-            // 🔹 5️⃣ Ambil user dengan role berikutnya
-            $nextApprovers = User::where('role', $nextRole)->get();
 
             if ($nextApprovers->isEmpty()) {
-                return back()->with('error', "Tidak ada user dengan role {$nextRole} yang bisa menyetujui dokumen ini.");
+                Log::warning("Approval gagal: Tidak ada user dengan role {$nextRole} untuk dokumen ID {$document->id}");
+                return back()->with('error', "Tidak ada user dengan role {$nextRole}" .
+                    ($nextRole === 'kadiv' ? " di departemen {$department}." : "."));
             }
 
-            // 🔹 6️⃣ Simpan approval ke tabel `document_approvals`
-            DocumentApproval::create([
-                'document_id'   => $document->id,
-                'document_type' => ManfeeDocument::class,
-                'approver_id'   => Auth::id(),
-                'role'          => $currentRole,
-                'status'        => (string) array_search($currentRole, $this->approvalStatusMap()), // Sesuaikan status berdasarkan role
-                'approved_at'   => now(),
-            ]);
+            // 🔹 7️⃣ Ambil status dokumen berdasarkan nextRole
+            $statusCode = array_search($nextRole, $this->approvalStatusMap());
 
-            // 🔹 7️⃣ Perbarui reviewer terakhir di dokumen
+            if ($statusCode === false) {
+                Log::warning("Approval Status Map tidak mengenali role: {$nextRole}");
+                $statusCode = 'unknown';
+            }
+
+            // 🔹 8️⃣ Simpan approval untuk user berikutnya
+            foreach ($nextApprovers as $nextApprover) {
+                DocumentApproval::create([
+                    'document_id'    => $document->id,
+                    'document_type'  => ManfeeDocument::class,
+                    'approver_id'    => $nextApprover->id,
+                    'approver_role'  => $nextRole,
+                    'submitter_id'   => $document->created_by,
+                    'submitter_role' => $userRole,
+                    'status'         => (string) $statusCode,
+                    'approved_at'    => now(),
+                ]);
+            }
+
+            // 🔹 9️⃣ Perbarui status dokumen
             $document->update([
                 'last_reviewers' => $nextRole,
-                'status'         => (string) array_search($nextRole, $this->approvalStatusMap()), // Update status berdasarkan role
+                'status'         => (string) $statusCode,
             ]);
 
-            // 🔹 8️⃣ Kirim Notifikasi ke Role Berikutnya
+            // 🔹 🔟 Simpan ke History
+            ManfeeDocHistories::create([
+                'document_id'     => $document->id,
+                'performed_by'    => $user->id,
+                'role'            => $userRole,
+                'previous_status' => $previousStatus,
+                'new_status'      => (string) $statusCode,
+                'action'          => $isRevised ? 'Revised Approval' : 'Approved',
+                'notes'           => $message ? "{$message}." : "Dokumen diproses oleh {$user->name}.",
+            ]);
+
+            // 🔹 🔟 Kirim Notifikasi
             $notification = Notification::create([
                 'type'            => InvoiceApprovalNotification::class,
                 'notifiable_type' => ManfeeDocument::class,
                 'notifiable_id'   => $document->id,
-                'data'            => json_encode([
-                    'document_id'    => $document->id,
-                    'invoice_number' => $document->invoice_number,
-                    'action'         => 'approved',
-                    'message'        => "Invoice #{$document->invoice_number} membutuhkan persetujuan dari {$nextRole}.",
-                    'url'            => route('non-management-fee.show', $document->id),
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'messages'        => $message
+                    ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
+                    : "Dokumen diproses oleh {$user->name}.",
+                'sender_id'       => $user->id,
+                'sender_role'     => $userRole,
+                'read_at'         => null,
+                'created_at'      => now(),
+                'updated_at'      => now(),
             ]);
 
-            // 🔹 9️⃣ Kirim notifikasi ke setiap user dengan role berikutnya
-            foreach ($nextApprovers as $user) {
+            // 🔹 🔟 Kirim notifikasi ke setiap user dengan role berikutnya
+            foreach ($nextApprovers as $nextApprover) {
                 NotificationRecipient::create([
                     'notification_id' => $notification->id,
-                    'user_id'         => $user->id,
+                    'user_id'         => $nextApprover->id,
                     'read_at'         => null,
                     'created_at'      => now(),
                     'updated_at'      => now(),
                 ]);
             }
 
-            DB::commit(); // Simpan semua perubahan dalam transaksi
+            DB::commit();
 
-            return back()->with('success', "Dokumen telah disetujui dan diteruskan ke {$nextRole}.");
+            return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
         } catch (\Exception $e) {
-            DB::rollBack(); // Jika ada error, batalkan semua perubahan
-            Log::error("Error saat approval dokumen: " . $e->getMessage());
+            DB::rollBack();
+            Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat memproses approval.");
         }
     }
@@ -303,14 +337,24 @@ class ManfeeDocumentController extends Controller
     /**
      * Fungsi untuk mendapatkan role berikutnya dalam flowchart.
      */
-    private function getNextApprovalRole($currentRole)
+    private function getNextApprovalRole($currentRole, $department = null, $isRevised = false)
     {
+        // Jika dokumen direvisi, kembalikan ke role sebelumnya
+        if ($isRevised) {
+            return $currentRole; // Kembali ke atasan yang meminta revisi
+        }
+
+        // Alur approval normal
+        if ($currentRole === 'maker' && $department) {
+            return 'kadiv';
+        }
+
         $flow = [
-            'maker'           => 'kadiv',
-            'kadiv'           => 'bendahara',
-            'bendahara'       => 'manager_anggaran',
-            'manager_anggaran' => 'direktur_keuangan',
-            'direktur_keuangan' => 'pajak',
+            'kadiv'               => 'pembendaharaan',
+            'pembendaharaan'      => 'manager_anggaran',
+            'manager_anggaran'    => 'direktur_keuangan',
+            'direktur_keuangan'   => 'pajak',
+            'pajak'               => 'pembendaharaan'
         ];
 
         return $flow[$currentRole] ?? null;
@@ -322,15 +366,119 @@ class ManfeeDocumentController extends Controller
     private function approvalStatusMap()
     {
         return [
-            '0' => 'draft',
-            '1' => 'kadiv',
-            '2' => 'bendahara',
-            '3' => 'manager_anggaran',
-            '4' => 'direktur_keuangan',
-            '5' => 'pajak',
-            '9' => 'need_info',
-            '99' => 'rejected',
+            '0'   => 'draft',
+            '1'   => 'kadiv',
+            '2'   => 'pembendaharaan',
+            '3'   => 'manager_anggaran',
+            '4'   => 'direktur_keuangan',
+            '5'   => 'pajak',
+            '6'   => 'submit_doc_to_employer',
+            '100' => 'finished',
+            '101' => 'canceled',
+            '102' => 'revised',
+            '103'  => 'rejected',
         ];
+    }
+
+    /**
+     * Untuk button revision
+     */
+    public function processRevision(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $document = ManfeeDocument::findOrFail($id);
+            $user = Auth::user();
+            $userRole = $user->role;
+            $currentRole = $document->latestApproval->approver_role ?? 'maker';
+            $message = $request->input('messages');
+
+            // 🔹 1️⃣ Validasi: Pastikan user memiliki hak revisi
+            if ($userRole !== $currentRole) {
+                return back()->with('error', "Anda tidak memiliki izin untuk merevisi dokumen ini.");
+            }
+
+            // 🔹 2️⃣ Ambil Approver Terakhir yang Merevisi Sebagai Target Approver
+            $lastReviser = DocumentApproval::where('document_id', $document->id)
+                ->where('document_type', ManfeeDocument::class)
+                ->where('status', '102') // Ambil approval yang terakhir kali merevisi
+                ->latest('approved_at')
+                ->first();
+
+            $targetApproverId = $lastReviser->approver_id ?? $document->created_by;
+            $targetApprover = User::find($targetApproverId);
+            $targetApproverRole = $targetApprover->role ?? 'maker';
+
+            // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (101)" dan set approver terakhir
+            $document->update([
+                'status'         => '102',
+                'last_reviewers' => $targetApproverRole, // Kembali ke yang terakhir merevisi
+            ]);
+
+            // 🔹 4️⃣ Simpan revisi ke dalam log approval (Pastikan tidak ada duplikasi)
+            DocumentApproval::updateOrCreate(
+                [
+                    'document_id'   => $document->id,
+                    'document_type' => ManfeeDocument::class,
+                    'approver_id'   => $user->id,
+                ],
+                [
+                    'role'         => $userRole,
+                    'status'       => '102', // Revised Completed
+                    'approved_at'  => now(),
+                ]
+            );
+
+            // 🔹 5️⃣ Simpan riwayat revisi di `ManfeeDocHistories`
+            ManfeeDocHistories::create([
+                'document_id'     => $document->id,
+                'performed_by'    => $user->id,
+                'role'            => $userRole,
+                'previous_status' => $document->status,
+                'new_status'      => '102',
+                'action'          => 'Revised',
+                'notes'           => "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
+            ]);
+
+            // 🔹 6️⃣ Kirim Notifikasi ke Approver yang Merevisi Sebelumnya
+            if ($targetApprover) {
+                $notification = Notification::create([
+                    'type'            => InvoiceApprovalNotification::class,
+                    'notifiable_type' => ManfeeDocument::class,
+                    'notifiable_id'   => $document->id,
+                    'messages'        =>  $message
+                        ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
+                        : "Dokumen diproses oleh {$user->name}.",
+                    'sender_id'       => $user->id,
+                    'sender_role'     => $userRole,
+                    'read_at'         => null,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+
+                // 🔹 7️⃣ Tambahkan ke Notifikasi Recipient
+                NotificationRecipient::create([
+                    'notification_id' => $notification->id,
+                    'user_id'         => $targetApprover->id,
+                    'read_at'         => null,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+            }
+
+            DB::commit();
+            return back()->with('success', "Dokumen telah dikembalikan ke {$targetApprover->name} untuk pengecekan ulang.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
+            return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
+        }
+    }
+
+    private function convertToRoman($month)
+    {
+        $romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+        return $romans[$month - 1];
     }
 
     // excel
