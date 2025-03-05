@@ -8,21 +8,24 @@
 ])
 
 @php
-    // dd(number_format($subtotals->sum()));
     $firstAccumulatedCost = $manfeeDoc->accumulatedCosts->first();
 @endphp
-
-
 
 {{-- Akumulasi Biaya --}}
 
 {{-- Tittle Akumulasi Biaya --}}
-<div class="sm:flex sm:justify-between sm:items-center mb-4">
+<div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <!-- Left: Title -->
-    <div class="mb-4 sm:mb-0">
+    <div class="flex justify-between items-center mb-3">
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Akumulasi Biaya
         </h5>
+        @if ($isEdit)
+            <x-button-action icon="save" id="saveButton" disabled="true"
+                onclick="document.getElementById('accumulatedForm').submit()">
+                Simpan Akumulasi Biaya
+            </x-button-action>
+        @endif
     </div>
 </div>
 
@@ -145,76 +148,143 @@
 
 {{-- Akumulasi Biaya End --}}
 <script>
-    // Format angka ke Rupiah
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR'
-        }).format(angka);
+    function confirmSubmit(event) {
+        event.preventDefault(); // Cegah form terkirim langsung
+
+        let saveButton = document.getElementById("saveButton");
+        if (saveButton.disabled) return; // Cegah jika tombol masih disabled
+
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Data yang telah diperbarui akan tersimpan.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, Simpan!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("accumulatedForm").submit(); // Submit form
+            }
+        });
     }
 
-    // Hapus format Rupiah
-    function unformatRupiah(rupiah) {
-        return parseFloat(rupiah.replace(/[^0-9,-]/g, '').replace(',', '.'));
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        let saveButton = document.getElementById("saveButton");
 
-    // Ambil nilai
-    const subtotals = {{ $subtotals->sum() }};
-    const subtotalBiayaNonPersonil = {{ $subtotalBiayaNonPersonil }};
-
-    // Hitung DPP
-    function calculateDpp(nilaiManfee) {
-        const dpp = nilaiManfee + subtotalBiayaNonPersonil;
-        document.getElementById('dpp').value = formatRupiah(dpp);
-
-        // Hitung PPN menggunakan DPP yang sudah di-unformat
-        calculatePPN(dpp);
-        calculateTotal(); // Hitung total setelah DPP diperbarui
-    }
-
-    // Hitung Nilai PPN
-    function calculatePPN(dpp) {
-        const ratePpn = parseFloat(document.getElementById('rate_ppn').value) || 0;
-        const nilaiPpn = dpp * (ratePpn / 100); // Hitung Nilai PPN
-
-        // Tampilkan Nilai PPN yang sudah diformat
-        document.getElementById('nilai_ppn').value = formatRupiah(nilaiPpn);
-    }
-
-    // Hitung Nilai Manfee
-    function calculateManfee() {
-        const rateManfee = parseFloat(document.getElementById('total_expense_manfee').value) || 0;
-        const nilaiManfee = subtotals * (rateManfee / 100);
-
-        document.getElementById('nilai_manfee').value = formatRupiah(nilaiManfee);
-        calculateDpp(nilaiManfee); // Hitung DPP setelah nilai manfee diperbarui
-    }
-
-    // Hitung Total Seluruh Jenis Biaya
-    function calculateTotal() {
-        const nilaiManfee = unformatRupiah(document.getElementById('nilai_manfee').value) || 0;
-        const nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value) || 0;
-
-        // Total = Nilai Manfee + Nilai PPN + Subtotal Biaya Non Personil
-        const total = subtotals + nilaiManfee + nilaiPpn;
-        document.getElementById('total').value = formatRupiah(total);
-    }
-
-    // Validasi input rate PPN
-    function validateRatePPN(input) {
-        input.value = input.value.replace(/[^0-9.]/g, ''); // Hanya angka dan titik desimal
-        if (input.value.split('.').length > 2) {
-            input.value = input.value.slice(0, -1); // Hapus karakter terakhir jika ada lebih dari satu titik
+        if (saveButton) {
+            saveButton.disabled = true; // Nonaktifkan tombol simpan secara default
         }
-    }
 
-    // Panggil fungsi calculateManfee saat rate manfee berubah
-    document.getElementById('total_expense_manfee').addEventListener('change', calculateManfee);
+        // Format angka ke Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(angka);
+        }
 
-    // Panggil fungsi calculateTotal setelah menghitung PPN
-    document.getElementById('rate_ppn').addEventListener('input', function() {
-        const dpp = unformatRupiah(document.getElementById('dpp').value);
-        calculatePPN(dpp);
-        calculateTotal(); // Perbarui total setelah PPN dihitung
+        // Hapus format Rupiah
+        function unformatRupiah(rupiah) {
+            return parseFloat(rupiah.replace(/[^0-9,-]/g, '').replace(',', '.'));
+        }
+
+        // Ambil nilai
+        const subtotals = {{ $subtotals->sum() }};
+        const subtotalBiayaNonPersonil = {{ $subtotalBiayaNonPersonil }};
+
+        // Hitung DPP
+        function calculateDpp(nilaiManfee) {
+            const dpp = nilaiManfee + subtotalBiayaNonPersonil;
+            document.getElementById('dpp').value = formatRupiah(dpp);
+
+            // Hitung PPN menggunakan DPP yang sudah di-unformat
+            calculatePPN(dpp);
+            calculateTotal(); // Hitung total setelah DPP diperbarui
+        }
+
+        // Hitung Nilai PPN
+        function calculatePPN(dpp) {
+            const ratePpn = parseFloat(document.getElementById('rate_ppn').value) || 0;
+            const nilaiPpn = dpp * (ratePpn / 100); // Hitung Nilai PPN
+
+            // Tampilkan Nilai PPN yang sudah diformat
+            document.getElementById('nilai_ppn').value = formatRupiah(nilaiPpn);
+        }
+
+        // Hitung Nilai Manfee
+        function calculateManfee() {
+            const rateManfee = parseFloat(document.getElementById('total_expense_manfee').value) || 0;
+            const nilaiManfee = subtotals * (rateManfee / 100);
+
+            document.getElementById('nilai_manfee').value = formatRupiah(nilaiManfee);
+            calculateDpp(nilaiManfee); // Hitung DPP setelah nilai manfee diperbarui
+        }
+
+        // Hitung Total Seluruh Jenis Biaya
+        function calculateTotal() {
+            const nilaiManfee = unformatRupiah(document.getElementById('nilai_manfee').value) || 0;
+            const nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value) || 0;
+
+            // Total = Nilai Manfee + Nilai PPN + Subtotal Biaya Non Personil
+            const total = subtotals + nilaiManfee + nilaiPpn;
+            document.getElementById('total').value = formatRupiah(total);
+        }
+
+        // Validasi input rate PPN
+        function validateRatePPN(input) {
+            input.value = input.value.replace(/[^0-9.]/g, ''); // Hanya angka dan titik desimal
+            if (input.value.split('.').length > 2) {
+                input.value = input.value.slice(0, -
+                    1); // Hapus karakter terakhir jika ada lebih dari satu titik
+            }
+        }
+
+        // Fungsi untuk memeriksa perubahan data
+        function checkChanges() {
+            let accountValue = document.getElementById('account').value;
+            let totalExpenseManfeeValue = document.getElementById('total_expense_manfee').value;
+            let dppValue = document.getElementById('dpp').value;
+            let ratePpnValue = document.getElementById('rate_ppn').value;
+
+            // Cek apakah ada perubahan pada input
+            if (accountValue || totalExpenseManfeeValue || dppValue || ratePpnValue) {
+                saveButton.disabled = false; // Aktifkan tombol simpan
+            } else {
+                saveButton.disabled = true; // Nonaktifkan tombol simpan
+            }
+        }
+
+        // Panggil fungsi calculateManfee saat rate manfee berubah
+        document.getElementById('total_expense_manfee').addEventListener('change', function() {
+            calculateManfee();
+            checkChanges(); // Periksa perubahan data
+        });
+
+        // Panggil fungsi calculateTotal setelah menghitung PPN
+        document.getElementById('rate_ppn').addEventListener('input', function() {
+            const dpp = unformatRupiah(document.getElementById('dpp').value);
+            calculatePPN(dpp);
+            calculateTotal();
+            checkChanges(); // Periksa perubahan data
+        });
+
+        // Panggil checkChanges saat input lainnya berubah
+        document.getElementById('account').addEventListener('change', checkChanges);
+        document.getElementById('dpp').addEventListener('input', checkChanges);
+
+        // Panggil checkChanges saat halaman dimuat untuk memeriksa nilai awal
+        checkChanges();
+    });
+
+    document.getElementById('accumulatedForm').addEventListener('submit', function(e) {
+        // Hapus semua karakter non-angka dari field numerik sebelum submit
+        document.getElementById('nilai_manfee').value = document.getElementById('nilai_manfee').value.replace(
+            /[^\d]/g, '');
+        document.getElementById('dpp').value = document.getElementById('dpp').value.replace(/[^\d]/g, '');
+        document.getElementById('nilai_ppn').value = document.getElementById('nilai_ppn').value.replace(
+            /[^\d]/g, '');
+        document.getElementById('total').value = document.getElementById('total').value.replace(/[^\d]/g, '');
     });
 </script>

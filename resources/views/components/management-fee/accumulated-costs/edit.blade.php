@@ -1,8 +1,15 @@
 @props(['manfeeDoc', 'account_dummy', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee'])
 
-<form
-    action="{{ route('management-fee.accumulated.update', ['id' => $manfeeDoc->id, 'accumulated_id' => $accumulatedCost->id ?? 'new']) }}"
-    method="POST">
+@php
+    $accumulated_id = optional($manfeeDoc->accumulatedCosts->first())->id ?? 'new';
+@endphp
+
+<form method="POST"
+    action="{{ route('management-fee.accumulated.update', [
+        'id' => $manfeeDoc->id,
+        'accumulated_id' => $accumulated_id,
+    ]) }}"
+    id="accumulatedForm">
     @csrf
     @method('PUT')
 

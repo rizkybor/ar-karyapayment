@@ -32,35 +32,33 @@ class ManfeeAccumulatedCostController extends Controller
      */
     public function update(Request $request, $id, $accumulated_id = null)
     {
-        // Debugging untuk melihat data yang dikirim
-        // dd($request->all());
+        // Hapus karakter non-angka dari field numerik sebelum validasi
+        $request->merge([
+            'nilai_manfee' => (float) preg_replace('/[^\d]/', '', $request->nilai_manfee),
+            'dpp' => (float) preg_replace('/[^\d]/', '', $request->dpp),
+            'nilai_ppn' => (float) preg_replace('/[^\d]/', '', $request->nilai_ppn),
+            'total' => (float) preg_replace('/[^\d]/', '', $request->total),
+        ]);
 
         // Validasi input dengan custom messages
         $request->validate([
-            'akun' => 'required|string|max:255',
+            'account' => 'required|string|max:255',
             'total_expense_manfee' => 'required|string|max:255',
-            'rate_ppn' => 'required|numeric|min:0|max:999.99',
-
-        ], [
-            'akun.required' => 'Akun wajib diisi.',
-            'akun.string' => 'Akun harus berupa teks.',
-            'akun.max' => 'Akun tidak boleh lebih dari 255 karakter.',
-
-            'expense_manfee.required' => 'Rate Manfee harus diisi.',
-            'expense_manfee.min' => 'Rate Manfee tidak boleh kurang dari 0.',
-
-            'rate_ppn.required' => 'Rate PPN harus diisi.',
-            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
-            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 0.',
-            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
+            'nilai_manfee' => 'required|numeric', // Validasi untuk nilai manfee
+            'dpp' => 'required|numeric', // Validasi untuk dpp
+            'rate_ppn' => 'required|numeric|min:0|max:999.99', // Validasi untuk rate PPN
+            'nilai_ppn' => 'required|numeric', // Validasi untuk nilai PPN
+            'total' => 'required|numeric', // Validasi untuk total
         ]);
 
-
-        // **Konversi format angka untuk penyimpanan ke database**
-        $dppPekerjaan = (float) str_replace('.', '', $request->dpp_pekerjaan); // Hilangkan titik dari format rupiah
-        $ratePpn = (float) str_replace(',', '.', $request->rate_ppn); // Ubah koma menjadi titik untuk desimal
-        $nilaiPpn = round(($dppPekerjaan * $ratePpn) / 100, 2); // Hitung nilai PPN
-        $jumlah = $dppPekerjaan + $nilaiPpn; // Total nilai
+        // Ambil nilai dari request
+        $account = $request->input('account');
+        $totalExpenseManfee = $request->input('total_expense_manfee');
+        $nilaiManfee = $request->input('nilai_manfee');
+        $dpp = $request->input('dpp');
+        $ratePpn = $request->input('rate_ppn');
+        $nilaiPpn = $request->input('nilai_ppn');
+        $total = $request->input('total');
 
         // Cek apakah `accumulated_id` ada, jika ada update, jika tidak buat baru
         $accumulatedCost = ManfeeDocAccumulatedCost::updateOrCreate(
@@ -69,11 +67,13 @@ class ManfeeAccumulatedCostController extends Controller
                 'document_id' => $id
             ],
             [
-                'account' => $request->akun,
-                'dpp' => $dppPekerjaan,
+                'account' => $account,
+                'total_expense_manfee' => $totalExpenseManfee,
+                'nilai_manfee' => $nilaiManfee,
+                'dpp' => $dpp,
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,
-                'total' => $jumlah,
+                'total' => $total,
             ]
         );
 
