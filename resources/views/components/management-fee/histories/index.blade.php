@@ -101,7 +101,7 @@
                     '0': 'Draft',
                     '1': 'Checked by Kadiv',
                     '2': 'Checked by Pembendaharaan',
-                    '3': 'Checked by Mgr. Keuangan',
+                    '3': 'Checked by Mgr. Anggaran',
                     '4': 'Checked by Dir. Keuangan',
                     '5': 'Checked by Pajak',
                     '6': 'Submit doc to Employer',
