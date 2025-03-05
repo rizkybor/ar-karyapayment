@@ -24,6 +24,7 @@ use App\Http\Controllers\NonManfeeTaxController;
 use App\Http\Controllers\NonManfeeHistoryController;
 
 use App\Http\Controllers\NotificationController;
+use Laravel\Fortify\Http\Controllers\NewPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,9 @@ use App\Http\Controllers\NotificationController;
 
 Route::redirect('/', 'login');
 Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
+
+Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
+Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
