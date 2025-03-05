@@ -32,7 +32,7 @@ class ManfeeAccumulatedCostController extends Controller
      */
     public function update(Request $request, $id, $accumulated_id = null)
     {
-        // Hapus karakter non-angka dari field numerik sebelum validasi
+        // Hapus karakter non-angka
         $request->merge([
             'nilai_manfee' => (float) preg_replace('/[^\d]/', '', $request->nilai_manfee),
             'dpp' => (float) preg_replace('/[^\d]/', '', $request->dpp),
@@ -44,11 +44,11 @@ class ManfeeAccumulatedCostController extends Controller
         $request->validate([
             'account' => 'required|string|max:255',
             'total_expense_manfee' => 'required|string|max:255',
-            'nilai_manfee' => 'required|numeric', // Validasi untuk nilai manfee
-            'dpp' => 'required|numeric', // Validasi untuk dpp
-            'rate_ppn' => 'required|numeric|min:0|max:999.99', // Validasi untuk rate PPN
-            'nilai_ppn' => 'required|numeric', // Validasi untuk nilai PPN
-            'total' => 'required|numeric', // Validasi untuk total
+            'nilai_manfee' => 'required|numeric',
+            'dpp' => 'required|numeric',
+            'rate_ppn' => 'required|numeric|min:0|max:999.99',
+            'nilai_ppn' => 'required|numeric',
+            'total' => 'required|numeric',
         ]);
 
         // Ambil nilai dari request
