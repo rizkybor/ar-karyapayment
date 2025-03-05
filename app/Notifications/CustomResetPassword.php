@@ -40,15 +40,16 @@ class CustomResetPassword extends Notification
     //         ->line('<strong>Terima kasih telah menggunakan layanan kami!</strong>')
     //         ->salutation('Salam, Tim Support');
     // }
-    public function toMail($notifiable)
-{
     
-    return (new MailMessage)
-        ->subject('Reset Password - Karya Invoice Application')
-        ->view('emails.reset-password', [
-            'token' => $this->token,
-            'notifiable' => $notifiable,
-            'logo_url' => 'https://lh3.googleusercontent.com/proxy/-AksYFOPP1Xz85_TSkklmUYBIqSy97KfcDVIkM3ZLFf2rto5JlfbwvWVnLdL18hEoAkoU2Y5ZnFE5SsNZOwBQuMlVmmNE0o32r90WrYdGNx-bThwFTMKxi-4g60Po-UMxDhzTTSk8MlUaHFp_8pi'
-        ]);
-}
+    public function toMail($notifiable)
+    {
+
+        return (new MailMessage)
+            ->subject('Reset Password - Karya Invoice Application')
+            ->view('emails.reset-password', [
+                'token' => $this->token,
+                'notifiable' => $notifiable,
+                'logo_url' => 'https://lh3.googleusercontent.com/proxy/-AksYFOPP1Xz85_TSkklmUYBIqSy97KfcDVIkM3ZLFf2rto5JlfbwvWVnLdL18hEoAkoU2Y5ZnFE5SsNZOwBQuMlVmmNE0o32r90WrYdGNx-bThwFTMKxi-4g60Po-UMxDhzTTSk8MlUaHFp_8pi'
+            ]);
+    }
 }
