@@ -66,6 +66,9 @@
                                         <div class="font-semibold text-center">No</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-left">No Invoice</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-left">No Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
@@ -148,6 +151,14 @@
                         orderable: false,
                         searchable: false,
                         className: 'p-2 whitespace-nowrap text-sm',
+                    },
+                    {
+                        data: 'invoice_number',
+                        name: 'invoice_number',
+                        className: 'p-2 whitespace-nowrap text-left text-sm',
+                        render: function(data) {
+                            return `<div>${data ?? '-'}</div>`;
+                        }
                     },
                     {
                         data: 'contract.contract_number',
