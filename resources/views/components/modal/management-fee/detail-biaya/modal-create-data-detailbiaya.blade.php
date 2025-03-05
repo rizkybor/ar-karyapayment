@@ -42,7 +42,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
                         Nilai Biaya
                     </label>
-                    <input type="text" id="nilai_biaya" name="nilai_biaya"
+                    <input type="number" id="nilai_biaya" name="nilai_biaya"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                 </div>
