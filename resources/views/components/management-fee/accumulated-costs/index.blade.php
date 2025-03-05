@@ -88,7 +88,8 @@
                 @if ($isEdit)
                     <x-input id="nilai_manfee" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
                         name="nilai_manfee"
-                        value="{{ old('nilai_manfee', $firstAccumulatedCost->nilai_manfee ?? '') }}" readonly />
+                        value="Rp. {{ old('nilai_manfee', number_format($firstAccumulatedCost->nilai_manfee ?? '-', 0, ',', '.')) }}"
+                        readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
                         {{ number_format($firstAccumulatedCost->nilai_manfee ?? '-', 0, ',', '.') }}</p>
@@ -100,7 +101,8 @@
                 <x-label for="dpp" value="{{ __('DPP') }}" />
                 @if ($isEdit)
                     <x-input id="dpp" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                        name="dpp" value="{{ old('dpp', $firstAccumulatedCost->dpp ?? '') }}"
+                        name="dpp"
+                        value="Rp. {{ old('dpp', number_format($firstAccumulatedCost->dpp ?? '-', 0, ',', '.')) }}"
                         onchange="calculateDpp()" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
@@ -114,7 +116,7 @@
                 <x-label for="rate_ppn" value="{{ __('Rate PPN (%)') }}" />
                 @if ($isEdit)
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
-                        value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '')) }}"
+                        value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? '-', 0, ',', '.')) }}"
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
@@ -128,7 +130,9 @@
                 <x-label for="total" value="{{ __('Jumlah') }}" />
                 @if ($isEdit)
                     <x-input id="total" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                        name="total" value="{{ old('total', $firstAccumulatedCost->total ?? '') }}" readonly />
+                        name="total"
+                        value="Rp. {{ old('total', number_format($firstAccumulatedCost->total ?? '-', 0, ',', '.')) }}"
+                        readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
                         {{ number_format($firstAccumulatedCost->total ?? '-', 0, ',', '.') }}</p>
@@ -141,7 +145,8 @@
                 <x-label for="nilai_ppn" value="{{ __('NILAI PPN') }}" />
                 @if ($isEdit)
                     <x-input id="nilai_ppn" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
-                        name="nilai_ppn" value="{{ old('nilai_ppn', $firstAccumulatedCost->nilai_ppn ?? '') }}"
+                        name="nilai_ppn"
+                        value="Rp. {{ old('nilai_ppn', number_format($firstAccumulatedCost->nilai_ppn ?? '-', 0, ',', '.')) }}"
                         readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
