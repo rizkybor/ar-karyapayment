@@ -69,14 +69,14 @@
                         <option value="">Rate Manfee</option>
                         @foreach ($rate_manfee as $rate_manfees)
                             <option value="{{ $rate_manfees }}"
-                                {{ old('rate_manfees', $firstAccumulatedCost->rate_manfees ?? '') == $rate_manfees ? 'selected' : '' }}>
+                                {{ old('rate_manfees', $firstAccumulatedCost->total_expense_manfee ?? '') == $rate_manfees ? 'selected' : '' }}>
                                 {{ $rate_manfees }}
                             </option>
                         @endforeach
                     </select>
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ $firstAccumulatedCost->rate_manfees ?? 'Belum memilih akun' }}
+                        {{ $firstAccumulatedCost->total_expense_manfee ?? 'Belum memilih akun' }}
                     </p>
                 @endif
             </div>

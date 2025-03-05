@@ -130,8 +130,9 @@ class ManfeeDocumentController extends Controller
         });
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
-            ->where('expense_type', 'Biaya Non Personil')
+            ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
+
 
         $latestApprover = DocumentApproval::where('document_id', $id)
             ->with('approver')
@@ -162,8 +163,9 @@ class ManfeeDocumentController extends Controller
         });
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
-            ->where('expense_type', 'Biaya Non Personil')
+            ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
+
 
         $rate_manfee = ['9', '10', '11', '12', '13'];
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
