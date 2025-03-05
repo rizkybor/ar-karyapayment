@@ -8,6 +8,9 @@
             {{-- Tombol Kembali --}}
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                    <x-secondary-button onclick="openHistoryModal({{ $manfeeDoc->id }})">
+                        Riwayat Dokumen
+                    </x-secondary-button>
                     <x-secondary-button onclick="window.location='{{ route('management-fee.index') }}'">
                         Kembali
                     </x-secondary-button>
@@ -38,3 +41,4 @@
 
     </div>
 </x-app-layout>
+<x-management-fee.histories :manfeeDoc="$manfeeDoc" />
