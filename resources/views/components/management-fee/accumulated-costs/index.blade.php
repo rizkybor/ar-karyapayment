@@ -21,8 +21,7 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-            <x-button-action icon="save" id="saveButton" disabled="true"
-                onclick="document.getElementById('accumulatedForm').submit()">
+            <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
                 Simpan Akumulasi Biaya
             </x-button-action>
         @endif
@@ -157,6 +156,7 @@
         {{-- Akumulasi Biaya Form End --}}
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {{-- Akumulasi Biaya End --}}
 <script>
@@ -177,7 +177,7 @@
             cancelButtonText: "Batal"
         }).then((result) => {
             if (result.isConfirmed) {
-                document.getElementById("accumulatedForm").submit(); // Submit form
+                document.getElementById('accumulatedForm').submit();
             }
         });
     }
@@ -186,7 +186,7 @@
         let saveButton = document.getElementById("saveButton");
 
         if (saveButton) {
-            saveButton.disabled = true; // Nonaktifkan tombol simpan secara default
+            saveButton.disabled = true;
         }
 
         // Format angka ke Rupiah
@@ -291,7 +291,6 @@
     });
 
     document.getElementById('accumulatedForm').addEventListener('submit', function(e) {
-        // Hapus semua karakter non-angka dari field numerik sebelum submit
         document.getElementById('nilai_manfee').value = document.getElementById('nilai_manfee').value.replace(
             /[^\d]/g, '');
         document.getElementById('dpp').value = document.getElementById('dpp').value.replace(/[^\d]/g, '');
