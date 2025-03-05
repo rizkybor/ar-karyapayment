@@ -9,6 +9,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\Notifications\CustomResetPassword;
 
 class User extends Authenticatable
 {
@@ -71,4 +72,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class, 'sender_id');
     }
+
+    public function sendPasswordResetNotification($token)
+{
+    $this->notify(new CustomResetPassword($token));
+}
 }
