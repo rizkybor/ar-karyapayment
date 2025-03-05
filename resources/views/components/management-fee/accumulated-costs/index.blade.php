@@ -75,7 +75,7 @@
                     </select>
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? '-', 0, ',', '.') }}%
+                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? null, 0, ',', '.') }}%
                     </p>
                 @endif
 
@@ -91,7 +91,7 @@
                         readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
-                        {{ number_format($firstAccumulatedCost->nilai_manfee ?? '-', 0, ',', '.') }}</p>
+                        {{ number_format($firstAccumulatedCost->nilai_manfee ?? null, 0, ',', '.') }}</p>
                 @endif
             </div>
 
@@ -105,7 +105,7 @@
                         onchange="calculateDpp()" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        Rp. {{ number_format($firstAccumulatedCost->dpp ?? '-', 0, ',', '.') }}</p>
+                        Rp. {{ number_format($firstAccumulatedCost->dpp ?? null, 0, ',', '.') }}</p>
                 @endif
 
             </div>
@@ -119,7 +119,7 @@
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->rate_ppn ?? '-', 0, ',', '.') }} %
+                        {{ number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.') }} %
                     </p>
                 @endif
             </div>
@@ -134,7 +134,7 @@
                         readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
-                        {{ number_format($firstAccumulatedCost->total ?? '-', 0, ',', '.') }}</p>
+                        {{ number_format($firstAccumulatedCost->total ?? null, 0, ',', '.') }}</p>
                 @endif
 
             </div>
@@ -149,7 +149,7 @@
                         readonly />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
-                        {{ number_format($firstAccumulatedCost->nilai_ppn ?? '-', 0, ',', '.') }}</p>
+                        {{ number_format($firstAccumulatedCost->nilai_ppn ?? null, 0, ',', '.') }}</p>
                 @endif
             </div>
         </div>
