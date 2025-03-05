@@ -76,9 +76,10 @@
                     </select>
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ $firstAccumulatedCost->total_expense_manfee ?? 'Belum memilih akun' }}
+                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? '-', 0, ',', '.') }}%
                     </p>
                 @endif
+
             </div>
 
             {{-- Nilai Manfee (Disabled) --}}
@@ -89,7 +90,8 @@
                         name="nilai_manfee"
                         value="{{ old('nilai_manfee', $firstAccumulatedCost->nilai_manfee ?? '') }}" readonly />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">{{ $firstAccumulatedCost->nilai_manfee ?? '-' }}</p>
+                    <p class="text-gray-800 dark:text-gray-200">Rp.
+                        {{ number_format($firstAccumulatedCost->nilai_manfee ?? '-', 0, ',', '.') }}</p>
                 @endif
             </div>
 
@@ -101,8 +103,10 @@
                         name="dpp" value="{{ old('dpp', $firstAccumulatedCost->dpp ?? '') }}"
                         onchange="calculateDpp()" />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">{{ $firstAccumulatedCost->dpp ?? '-' }}</p>
+                    <p class="text-gray-800 dark:text-gray-200">
+                        Rp. {{ number_format($firstAccumulatedCost->dpp ?? '-', 0, ',', '.') }}</p>
                 @endif
+
             </div>
 
             {{-- Rate PPN --}}
@@ -114,7 +118,7 @@
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '') }}%
+                        {{ number_format($firstAccumulatedCost->rate_ppn ?? '-', 0, ',', '.') }} %
                     </p>
                 @endif
             </div>
@@ -126,8 +130,10 @@
                     <x-input id="total" class="block mt-1 w-full bg-gray-200 dark:bg-gray-700" type="text"
                         name="total" value="{{ old('total', $firstAccumulatedCost->total ?? '') }}" readonly />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">{{ $firstAccumulatedCost->total ?? '-' }}</p>
+                    <p class="text-gray-800 dark:text-gray-200">Rp.
+                        {{ number_format($firstAccumulatedCost->total ?? '-', 0, ',', '.') }}</p>
                 @endif
+
             </div>
 
             {{-- Nilai PPN (Disabled) --}}
@@ -138,7 +144,8 @@
                         name="nilai_ppn" value="{{ old('nilai_ppn', $firstAccumulatedCost->nilai_ppn ?? '') }}"
                         readonly />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">{{ $firstAccumulatedCost->nilai_ppn ?? '-' }}</p>
+                    <p class="text-gray-800 dark:text-gray-200">Rp.
+                        {{ number_format($firstAccumulatedCost->nilai_ppn ?? '-', 0, ',', '.') }}</p>
                 @endif
             </div>
         </div>
