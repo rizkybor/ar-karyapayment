@@ -32,13 +32,15 @@ class ManfeeAccumulatedCostController extends Controller
      */
     public function update(Request $request, $id, $accumulated_id = null)
     {
-        // Hapus karakter non-angka
+
         $request->merge([
-            'nilai_manfee' => (float) preg_replace('/[^\d]/', '', $request->nilai_manfee),
-            'dpp' => (float) preg_replace('/[^\d]/', '', $request->dpp),
-            'nilai_ppn' => (float) preg_replace('/[^\d]/', '', $request->nilai_ppn),
-            'total' => (float) preg_replace('/[^\d]/', '', $request->total),
+            'nilai_manfee' => (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->nilai_manfee)),
+            'dpp' => (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->dpp)),
+            'nilai_ppn' => (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->nilai_ppn)),
+            'total' => (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->total)),
         ]);
+
+        // dd($request->all());
 
         // Validasi input dengan custom messages
         $request->validate([
