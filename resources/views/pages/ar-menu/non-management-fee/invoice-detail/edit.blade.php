@@ -19,24 +19,26 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :document_status="$nonManfeeDocument['status']"
-            isEditable="true" />
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :document_status="$nonManfeeDocument['status']" isEditable="true" />
 
         <div class="grid grid-cols-1 gap-6 mt-6">
             {{-- AKUMULASI BIAYA --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-non-management-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions" :isEdit="false" />
-            </div>
+            @if ($nonManfeeDocument->status == 0 || $nonManfeeDocument->status == 102)
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-non-management-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions"
+                        :isEdit="false" />
+                </div>
 
-            {{-- LAMPIRAN --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-non-management-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
-            </div>
+                {{-- LAMPIRAN --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-non-management-fee.attachments.edit :nonManfeeDocument="$nonManfeeDocument" />
+                </div>
 
-            {{-- DESKRIPSI --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-non-management-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
-            </div>
+                {{-- DESKRIPSI --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-non-management-fee.descriptions.edit :nonManfeeDocument="$nonManfeeDocument" />
+                </div>
+            @endif
 
             {{-- FAKTUR PAJAK --}}
             @role('pajak')

@@ -243,45 +243,51 @@
                             // ✅ Ambil teks status tanpa elemen HTML
                             let statusText = $("<div>").html(row.status).text().trim();
 
-                            // ✅ Jika status adalah "Draft", tampilkan tombol Edit & Delete
+                            // ✅ Jika status adalah "Draft" & "Checked by Pajak", tampilkan tombol Edit
+                            if (statusText === "Draft" || statusText === "Checked by Pajak") {
+                                buttons += `
+                                    <!-- Tombol Edit -->
+                                    <div class="relative group">
+                                        <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
+                                                onclick="window.location.href='${editUrl}'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                    d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
+                                            </svg>
+                                        </button>
+
+                                        <!-- Tooltip -->
+                                        <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                                    opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                            Edit Data
+                                        </span>
+                                    </div>
+                                    `;
+                            }
+
+                            // ✅ Jika status adalah "Draft", tampilkan tombol Delete
                             if (statusText === "Draft") {
                                 buttons += `
-                            <!-- Tombol Edit -->
-                            <div class="relative group">
-                                <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
-                                        onclick="window.location.href='${editUrl}'">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                            d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
-                                    </svg>
-                                </button>
+                                    <!-- Tombol Delete -->
+                                    <div class="relative group">
+                                        <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-200"
+                                                    type="submit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </form>
 
-                                <!-- Tooltip -->
-                                <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
-                                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
-                                    Edit Data
-                                </span>
-                            </div>
-
-                            <!-- Tombol Delete -->
-                            <div class="relative group">
-                                <form action="${deleteUrl}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button class="bg-red-500 text-white p-2 rounded-lg hover:bg-red-700 transition-all duration-200"
-                                            type="submit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </form>
-
-                                <!-- Tooltip -->
-                                <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
-                                            opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
-                                    Hapus Data
-                                </span>
-                            </div>`;
+                                        <!-- Tooltip -->
+                                        <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                                    opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                            Hapus Data
+                                        </span>
+                                    </div>
+                                `;
                             }
 
                             buttons += `</div>`;
@@ -308,19 +314,19 @@
                             <nav class="flex" role="navigation" aria-label="Navigation">
                                 <div class="mr-2">
                                     ${currentPage > 1 ? `
-                                                    <button onclick="table.page(${currentPage - 2}).draw(false)" 
-                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                        </svg>
-                                                    </button>` : `
-                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                        </svg>
-                                                    </span>`}
+                                                        <button onclick="table.page(${currentPage - 2}).draw(false)" 
+                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                            </svg>
+                                                        </button>` : `
+                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                            </svg>
+                                                        </span>`}
                                 </div>
                                 <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -350,19 +356,19 @@
                                 </ul>
                                 <div class="ml-2">
                                     ${currentPage < totalPages ? `
-                                                    <button onclick="table.page(${currentPage}).draw(false)" 
-                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                        </svg>
-                                                    </button>` : `
-                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                        </svg>
-                                                    </span>`}
+                                                        <button onclick="table.page(${currentPage}).draw(false)" 
+                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                            </svg>
+                                                        </button>` : `
+                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                            </svg>
+                                                        </span>`}
                                 </div>
                             </nav>
                         </div>`;

@@ -283,7 +283,7 @@ class NonManfeeDocumentController extends Controller
                 'notifiable_id'   => $document->id,
                 'messages'        => $message
                     ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
-                    : "Dokumen diproses oleh {$user->name}.",
+                    : "Dokumen telah disetujui oleh {$user->name}. Lihat detail: " . route('non-management-fee.show', $document->id),
                 'sender_id'       => $user->id,
                 'sender_role'     => $userRole,
                 'read_at'         => null,

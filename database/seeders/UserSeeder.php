@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
             ['name' => 'Manager Anggaran User', 'email' => 'mgr.anggaran@example.com', 'role' => 'manager_anggaran', 'department' => 'Departmen Operasi', 'position' => 'Manager Anggaran'],
             
             // Direktur Utama
-            ['name' => 'Direktur Utama User', 'email' => 'dirut.utama@example.com', 'role' => 'direktur_utama', 'department' => 'Departmen Operasi', 'position' => 'Direktur Utama'],
+            ['name' => 'Direktur Keuangan User', 'email' => 'dirut.keuangan@example.com', 'role' => 'direktur_keuangan', 'department' => 'Departmen Operasi', 'position' => 'Direktur Keuangan'],
 
         ];
 
