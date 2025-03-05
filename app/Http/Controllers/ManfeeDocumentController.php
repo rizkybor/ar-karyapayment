@@ -304,7 +304,7 @@ class ManfeeDocumentController extends Controller
                 'notifiable_type' => ManfeeDocument::class,
                 'notifiable_id'   => $document->id,
                 'messages'        => $message
-                    ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
+                    ? "{$message}. Lihat detail: " . route('management-fee.show', $document->id)
                     : "Dokumen diproses oleh {$user->name}.",
                 'sender_id'       => $user->id,
                 'sender_role'     => $userRole,
@@ -447,7 +447,7 @@ class ManfeeDocumentController extends Controller
                     'notifiable_type' => ManfeeDocument::class,
                     'notifiable_id'   => $document->id,
                     'messages'        =>  $message
-                        ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
+                        ? "{$message}. Lihat detail: " . route('management-fee.show', $document->id)
                         : "Dokumen diproses oleh {$user->name}.",
                     'sender_id'       => $user->id,
                     'sender_role'     => $userRole,

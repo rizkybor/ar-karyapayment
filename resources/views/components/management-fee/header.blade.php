@@ -58,10 +58,28 @@
                         <x-button-action color="teal" icon="paid">Paid</x-button-action>
                     @endif
 
-                    @if (auth()->user()->role === optional($latestApprover)->approver_role && !$document->latestApproval)
-                        <x-button-action color="orange" icon="info">Need Info</x-button-action>
-                        <x-button-action color="red" icon="reject">Reject</x-button-action>
+                    @if (auth()->user()->role === optional($latestApprover)->approver_role &&
+                            !in_array($document_status, [102, 'approved', 'finalized']) &&
+                            $document['last_reviewers'] !== 'pajak')
+                        <!-- Need Info Button -->
+                        <x-button-action color="orange" icon="info"
+                            data-action="{{ route('management-fee.processRevision', $document['id']) }}"
+                            data-title="Need Info" data-button-text="Send"
+                            data-button-color="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:focus:ring-yellow-700"
+                            onclick="openModal(this)">
+                            Need Info
+                        </x-button-action>
 
+                        <!-- Reject Button -->
+                        {{-- <x-button-action color="red" icon="reject"
+                        data-action="{{ route('management-fee.reject', $document['id']) }}"
+                        data-title="Reject Document" data-button-text="Reject"
+                        data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
+                        onclick="openModal(this)">
+                        Reject
+                    </x-button-action> --}}
+
+                        <!-- Approve Button -->
                         <x-button-action color="blue" icon="approve"
                             data-action="{{ route('management-fee.processApproval', $document['id']) }}"
                             data-title="Approve Document" data-button-text="Approve"
@@ -74,9 +92,9 @@
 
                 @if (auth()->user()->role === 'maker')
 
-                    @if ($document_status == 0)
+                    @if ($document_status == 102)
                         <x-button-action color="orange" icon="reply"
-                            data-action="{{ route('management-fee.processRevision', $document['id']) }}"
+                            data-action="{{ route('management-fee.processApproval', $document['id']) }}"
                             data-title="Reply Info" data-button-text="Reply Info"
                             data-button-color="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 dark:focus:ring-orange-700'"
                             onclick="openModal(this)">
