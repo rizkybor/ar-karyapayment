@@ -133,7 +133,7 @@
                         value="Rp. {{ old('total', number_format($firstAccumulatedCost->total ?? null, 0, ',', '.')) }}"
                         readonly />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">Rp.
+                    <p class="text-gray-800 dark:text-gray-200 text-2xl font-bold">Rp.
                         {{ number_format($firstAccumulatedCost->total ?? null, 0, ',', '.') }}</p>
                 @endif
 
