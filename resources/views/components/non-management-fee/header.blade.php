@@ -55,9 +55,9 @@
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if (auth()->user()->role !== 'maker')
-                    @if ($document_status == 6)
-                        <x-button-action color="blue" icon="print">Print</x-button-action>
-                        <x-button-action color="teal" icon="paid">Closed Document</x-button-action>
+                    @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
+                        <x-button-action color="blue" icon="print">Cetak</x-button-action>
+                        <x-button-action color="teal" icon="paid">Tutup Dokumen</x-button-action>
                         <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
                     @endif
 
