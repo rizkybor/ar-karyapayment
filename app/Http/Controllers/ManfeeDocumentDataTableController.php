@@ -29,6 +29,10 @@ class ManfeeDocumentDataTableController extends Controller
     return DataTables::eloquent($query)
       ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
 
+      ->addColumn('invoice_number', function ($row) {
+        return $row->invoice_number ? $row->invoice_number : '-';
+      })
+
       ->addColumn('termin_invoice', function ($row) {
         return $row->contract ? $row->contract->termin_invoice : '-';
       })
@@ -46,6 +50,11 @@ class ManfeeDocumentDataTableController extends Controller
         return $firstAccumulatedCost
           ? 'Rp ' . number_format($firstAccumulatedCost->total, 2, ',', '.')
           : 'Rp 0,00';
+      })
+
+      // 🔍 FILTER SEARCH untuk `invoice_number`
+      ->filterColumn('invoice_number', function ($query, $keyword) {
+        $query->whereRaw('LOWER(invoice_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
       })
 
       // FILTER SEARCH untuk `contract.contract_number`
