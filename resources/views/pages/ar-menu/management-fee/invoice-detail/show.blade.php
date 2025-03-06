@@ -22,25 +22,36 @@
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document_status="$manfeeDoc['status']" :latestApprover=$latestApprover :document="$manfeeDoc"
             isShowPage="true" />
 
-        {{-- DETAIL BIAYA --}}
-        <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
+        <div class="grid grid-cols-1 gap-6 mt-6">
 
-        {{-- AKUMULASI BIAYA --}}
-        <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :isEdit="false" :subtotals="$subtotals"
-            :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" />
+            {{-- DETAIL BIAYA --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
+            </div>
 
-        {{-- LAMPIRAN --}}
-        <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />
+            {{-- AKUMULASI BIAYA --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :isEdit="false" :subtotals="$subtotals"
+                    :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" />
+            </div>
 
-        {{-- DESKRIPSI --}}
-        <x-management-fee.descriptions.index :manfeeDoc="$manfeeDoc" />
+            {{-- LAMPIRAN --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-fee.attachments.index :manfeeDoc="$manfeeDoc" />
+            </div>
 
-        {{-- FAKTUR PAJAK --}}
-        @if (!empty($manfeeDoc->taxFiles))
-            <x-management-fee.tax-files.index :manfeeDoc="$manfeeDoc" />
-        @endif
+            {{-- DESKRIPSI --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-management-fee.descriptions.index :manfeeDoc="$manfeeDoc" />
+            </div>
 
-
+            {{-- FAKTUR PAJAK --}}
+            @if (!empty($manfeeDoc->taxFiles))
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.tax-files.index :manfeeDoc="$manfeeDoc" />
+                </div>
+            @endif
+        </div>
     </div>
 </x-app-layout>
 <x-management-fee.histories :manfeeDoc="$manfeeDoc" />

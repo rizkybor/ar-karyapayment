@@ -17,27 +17,37 @@
         {{-- HEADER --}}
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :document_status="$manfeeDoc['status']" isEditable="true" />
 
-        @if ($manfeeDoc->status == 0 || $manfeeDoc->status == 102)
-            {{-- DETAIL BIAYA --}}
-            <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy" />
+        <div class="grid grid-cols-1 gap-6 mt-6">
+            @if ($manfeeDoc->status == 0 || $manfeeDoc->status == 102)
+                {{-- DETAIL BIAYA --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy" />
+                </div>
 
+                {{-- AKUMULASI BIAYA --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil"
+                        :rate_manfee="$rate_manfee" :account_dummy="$account_dummy" :isEdit="false" />
+                </div>
 
-            {{-- AKUMULASI BIAYA --}}
-            <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil"
-                :rate_manfee="$rate_manfee" :account_dummy="$account_dummy" :isEdit="false" />
+                {{-- LAMPIRAN --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
+                </div>
 
-            {{-- LAMPIRAN --}}
-            <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
+                {{-- DESKRIPSI --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
+                </div>
+            @endif
 
-            {{-- DESKRIPSI --}}
-            <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
-        @endif
-
-        {{-- FAKTUR PAJAK --}}
-        @role('pajak')
-            <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" />
-        @endrole
-
+            {{-- FAKTUR PAJAK --}}
+            @role('pajak')
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" />
+                </div>
+            @endrole
+        </div>
     </div>
     <script></script>
 </x-app-layout>
