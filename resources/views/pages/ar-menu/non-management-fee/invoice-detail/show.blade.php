@@ -44,11 +44,14 @@
             </div>
 
             {{-- FAKTUR PAJAK --}}
-            @role('pajak')
+            {{-- @role('pajak') --}}
+            @if (!empty($nonManfeeDocument->taxFiles))
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                     <x-non-management-fee.tax-files.index :nonManfeeDocument="$nonManfeeDocument" />
                 </div>
-            @endrole
+            @endif
+
+            {{-- @endrole --}}
         </div>
     </div>
 
