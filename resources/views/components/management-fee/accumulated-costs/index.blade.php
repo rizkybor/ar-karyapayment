@@ -156,9 +156,9 @@
         {{-- Akumulasi Biaya Form End --}}
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- Akumulasi Biaya End --}}
 <script>
     function confirmSubmit(event) {
         event.preventDefault(); // Cegah form terkirim langsung
@@ -182,12 +182,29 @@
         });
     }
 
+    // Fungsi untuk memeriksa perubahan data
+    function checkChanges() {
+        let accountValue = document.getElementById('account').value;
+        let totalExpenseManfeeValue = document.getElementById('total_expense_manfee').value;
+        let dppValue = document.getElementById('dpp').value;
+        let ratePpnValue = document.getElementById('rate_ppn').value;
+
+        // Cek apakah semua input yang diperlukan telah diisi
+        if (accountValue && totalExpenseManfeeValue && dppValue && ratePpnValue) {
+            saveButton.disabled = false; // Aktifkan tombol simpan
+        } else {
+            saveButton.disabled = true; // Nonaktifkan tombol simpan
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         let saveButton = document.getElementById("saveButton");
 
         if (saveButton) {
             saveButton.disabled = true;
         }
+
+        checkChanges();
 
         // Format angka ke Rupiah
         function formatRupiah(angka) {
@@ -253,21 +270,6 @@
             }
         }
 
-        // Fungsi untuk memeriksa perubahan data
-        function checkChanges() {
-            let accountValue = document.getElementById('account').value;
-            let totalExpenseManfeeValue = document.getElementById('total_expense_manfee').value;
-            let dppValue = document.getElementById('dpp').value;
-            let ratePpnValue = document.getElementById('rate_ppn').value;
-
-            // Cek apakah ada perubahan pada input
-            if (accountValue || totalExpenseManfeeValue || dppValue || ratePpnValue) {
-                saveButton.disabled = false; // Aktifkan tombol simpan
-            } else {
-                saveButton.disabled = true; // Nonaktifkan tombol simpan
-            }
-        }
-
         // Panggil fungsi calculateManfee saat rate manfee berubah
         document.getElementById('total_expense_manfee').addEventListener('change', function() {
             calculateManfee();
@@ -286,8 +288,6 @@
         document.getElementById('account').addEventListener('change', checkChanges);
         document.getElementById('dpp').addEventListener('input', checkChanges);
 
-        // Panggil checkChanges saat halaman dimuat untuk memeriksa nilai awal
-        checkChanges();
     });
 
     document.getElementById('accumulatedForm').addEventListener('submit', function(e) {

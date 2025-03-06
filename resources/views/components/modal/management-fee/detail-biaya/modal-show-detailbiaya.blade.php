@@ -45,7 +45,7 @@
                     x-model="selectedExpenseType" @change="changeSelectedExpenseType">
                     <option value="">Pilih Jenis Biaya</option>
                     @foreach ($jenis_biaya as $jenis_biayas)
-                        <option value="{{ str_replace(' ', '_', strtolower($jenis_biayas)) }}">{{ $jenis_biayas }}
+                        <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}
                         </option>
                     @endforeach
                 </select>

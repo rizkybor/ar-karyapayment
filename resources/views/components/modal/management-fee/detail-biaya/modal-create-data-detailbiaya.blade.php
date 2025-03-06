@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy']);
+@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
 
 <!-- Modal for Adding Cost Details -->
 <div x-data="{ modalOpen: false }">
@@ -42,9 +42,8 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
                         Nilai Biaya
                     </label>
-                    <input type="number" id="nilai_biaya" name="nilai_biaya"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        required>
+                    <x-input id="nilai_biaya" class="block mt-1 w-full" type="text" name="nilai_biaya"
+                        oninput="formatCurrency(this);" inputmode="numeric" />
                 </div>
                 <div class="flex justify-end gap-2">
                     <x-button-action color="red" class="px-4 py-2 bg-gray-500 text-white rounded-md"
@@ -55,3 +54,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        window.formatCurrency = function(input) {
+            let value = input.value.replace(/\D/g, ''); // Hanya angka
+            if (value === '') return;
+            input.value = new Intl.NumberFormat("id-ID").format(value);
+            checkChanges();
+        };
+    });
+</script>

@@ -26,8 +26,8 @@
                         required>
                         <option value="" disabled>Pilih Jenis Biaya</option>
                         @foreach ($jenis_biaya as $jenis)
-                            <option value="{{ str_replace(' ', '_', strtolower($jenis)) }}"
-                                {{ $detailPaymentId->expense_type == str_replace(' ', '_', strtolower($jenis)) ? 'selected' : '' }}>
+                            <option value="{{ $jenis }}"
+                                {{ $detailPaymentId->expense_type == $jenis ? 'selected' : '' }}>
                                 {{ $jenis }}
                             </option>
                         @endforeach
