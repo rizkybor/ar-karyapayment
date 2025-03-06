@@ -13,30 +13,30 @@
                 </div>
             </div>
         </div>
-        {{-- 
-        @php
-            dd($manfeeDoc);
-        @endphp --}}
 
         {{-- HEADER --}}
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :document_status="$manfeeDoc['status']" isEditable="true" />
 
-        {{-- DETAIL BIAYA --}}
-        <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy" />
+        @if ($manfeeDoc->status == 0 || $manfeeDoc->status == 102)
+            {{-- DETAIL BIAYA --}}
+            <x-management-fee.detail-biaya.edit :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy" />
 
 
-        {{-- AKUMULASI BIAYA --}}
-        <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" :rate_manfee="$rate_manfee"
-            :account_dummy="$account_dummy" :isEdit="false" />
+            {{-- AKUMULASI BIAYA --}}
+            <x-management-fee.accumulated-costs.edit :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil"
+                :rate_manfee="$rate_manfee" :account_dummy="$account_dummy" :isEdit="false" />
 
-        {{-- LAMPIRAN --}}
-        <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
+            {{-- LAMPIRAN --}}
+            <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />
 
-        {{-- DESKRIPSI --}}
-        <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
+            {{-- DESKRIPSI --}}
+            <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
+        @endif
 
         {{-- FAKTUR PAJAK --}}
-        <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" />
+        @role('pajak')
+            <x-management-fee.tax-files.edit :manfeeDoc="$manfeeDoc" />
+        @endrole
 
     </div>
     <script></script>
