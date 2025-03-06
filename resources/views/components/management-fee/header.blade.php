@@ -53,14 +53,14 @@
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if (auth()->user()->role !== 'maker')
-                    @if ($document_status == 0)
-                        <x-button-action color="blue" icon="print">Print</x-button-action>
-                        <x-button-action color="teal" icon="paid">Paid</x-button-action>
+                    @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
+                        <x-button-action color="blue" icon="print">Cetak</x-button-action>
+                        <x-button-action color="teal" icon="paid">Tutup Dokumen</x-button-action>
+                        <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
-                            !in_array($document_status, [102, 'approved', 'finalized']) &&
-                            $document['last_reviewers'] !== 'pajak')
+                            !in_array($document_status, [102, 6, 'approved', 'finalized']))
                         <!-- Need Info Button -->
                         <x-button-action color="orange" icon="info"
                             data-action="{{ route('management-fee.processRevision', $document['id']) }}"
