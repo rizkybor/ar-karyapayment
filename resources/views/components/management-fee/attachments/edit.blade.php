@@ -29,9 +29,8 @@
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php $i = 1; @endphp
                         @if (!empty($manfeeDoc) && $manfeeDoc->attachments && $manfeeDoc->attachments->count())
-
                             @foreach ($manfeeDoc->attachments as $file)
-                                <tr>
+                                <tr x-data="{ modalOpen: false }">
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
@@ -40,10 +39,12 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
-                                            <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.attachments.show', ['id' => $manfeeDoc->id, 'attachment_id' => $file->id]) }}">
+                                            {{-- modal view --}}
+                                            <x-button-action color="violet" icon="eye" @click="modalOpen = true">
                                                 View
                                             </x-button-action>
+                                            <x-modal.global.modal-view-global-file :file="$file"
+                                                :manfeeDoc="$manfeeDoc" />
                                             <form
                                                 action="{{ route('management-fee.attachments.destroy', ['id' => $manfeeDoc->id, 'attachment_id' => $file->id]) }}"
                                                 method="POST"

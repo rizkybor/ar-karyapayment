@@ -30,7 +30,7 @@
                         @php $i = 1; @endphp
                         @if (!empty($manfeeDoc->taxFiles) && $manfeeDoc->taxFiles->count())
                             @foreach ($manfeeDoc->taxFiles as $file)
-                                <tr>
+                                <tr x-data="{ modalOpen: false }">
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $loop->iteration }}</div>
                                     </td>
@@ -39,10 +39,12 @@
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-center gap-2">
-                                            <x-button-action color="violet" icon="eye"
-                                                href="{{ route('management-fee.taxs.show', ['id' => $manfeeDoc->id, 'tax_id' => $file->id]) }}">
+                                            {{-- modal view --}}
+                                            <x-button-action color="violet" icon="eye" @click="modalOpen = true">
                                                 View
                                             </x-button-action>
+                                            <x-modal.global.modal-view-global-file :file="$file"
+                                                :manfeeDoc="$manfeeDoc" />
                                             <x-button-action color="red" icon="trash"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus faktur pajak ini?') 
                                                 && document.getElementById('delete-taxfile-{{ $file->id }}').submit()">

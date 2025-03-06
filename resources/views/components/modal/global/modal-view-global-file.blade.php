@@ -1,4 +1,4 @@
-@props(['file', 'nonManfeeDocument'])
+@props(['file', 'nonManfeeDocument', 'manfeeDoc'])
 
 @php
     $filePath = asset('storage/' . $file->path);
@@ -7,10 +7,11 @@
     $isPdf = $extension === 'pdf';
 @endphp
 
-<div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center px-4"
-    x-show="modalOpen" x-cloak>
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl sm:max-w-md sm:h-auto sm:max-h-[90vh] sm:overflow-auto flex flex-col items-center justify-center">
-        
+<div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center px-4" x-show="modalOpen"
+    x-cloak>
+    <div
+        class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl sm:max-w-md sm:h-auto sm:max-h-[90vh] sm:overflow-auto flex flex-col items-center justify-center">
+
         <!-- Header Modal -->
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 text-center">
             Lihat Lampiran
@@ -29,16 +30,19 @@
             @elseif ($isPdf)
                 <!-- Tampilkan PDF di Desktop -->
                 <div class="w-full flex items-center justify-center">
-                    <embed src="{{ $filePath }}" type="application/pdf" class="w-full max-w-xl h-96 border rounded-lg shadow sm:block" />
+                    <embed src="{{ $filePath }}" type="application/pdf"
+                        class="w-full max-w-xl h-96 border rounded-lg shadow sm:block" />
                 </div>
                 <!-- Tampilkan Link PDF di Mobile -->
                 <p class="sm:hidden text-sm text-gray-500 text-center">
-                    <a href="{{ $filePath }}" target="_blank" class="text-blue-500 underline">Klik di sini</a> untuk melihat PDF di tab baru.
+                    <a href="{{ $filePath }}" target="_blank" class="text-blue-500 underline">Klik di sini</a> untuk
+                    melihat PDF di tab baru.
                 </p>
             @else
                 <!-- Tampilkan File Lain dalam Iframe -->
                 <div class="w-full flex items-center justify-center">
-                    <iframe src="{{ $filePath }}" class="pt-16 w-full max-w-xl h-96 border rounded-lg shadow"></iframe>
+                    <iframe src="{{ $filePath }}"
+                        class="pt-16 w-full max-w-xl h-96 border rounded-lg shadow"></iframe>
                 </div>
             @endif
         </div>
