@@ -173,6 +173,7 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
+        App\Providers\DropboxServiceProvider::class,
     ])->toArray(),
 
     /*

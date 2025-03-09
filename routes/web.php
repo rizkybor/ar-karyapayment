@@ -25,6 +25,7 @@ use App\Http\Controllers\NonManfeeHistoryController;
 
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\DropboxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,21 @@ Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
 
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+
+
+Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
+
+Route::post('/upload-to-dropbox', [DropboxController::class, 'upload'])->name('dropbox.upload');
+
+Route::get('/view-file/{filePath}', [DropboxController::class, 'getFileUrl'])
+    ->where('filePath', '.*')
+    ->name('dropbox.view');
+
+Route::get('/file/{filePath}', [DropboxController::class, 'viewFile'])
+    ->where('filePath', '.*')
+    ->name('dropbox.file.view');
+
+Route::get('/list-dropbox-uploads', [DropboxController::class, 'listDropboxUploads'])->name('dropbox.uploads.list');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
