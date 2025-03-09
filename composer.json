@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "maatwebsite/excel": "*",
+        "spatie/flysystem-dropbox": "^3.0",
         "spatie/laravel-permission": "^6.10",
         "yajra/laravel-datatables-oracle": "^10.11"
     },
