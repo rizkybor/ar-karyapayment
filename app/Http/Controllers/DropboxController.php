@@ -32,99 +32,35 @@ class DropboxController extends Controller
         ]);
     }
 
-    // public function getFileUrl($filePath)
-    // {
-    //     $filePath = '/uploads/' . ltrim($filePath, '/');
-
-    //     try {
-    //         Log::info("Mengakses file dari Dropbox: " . $filePath);
-
-    //         $client = new Client(config('filesystems.disks.dropbox.access_token'));
-
-    //         // 🔥 Log daftar file untuk debugging
-    //         $list = $client->listFolder('/uploads');
-    //         Log::info("Isi folder /uploads:", $list['entries']);
-
-    //         // Cek apakah file memiliki shared link
-    //         Log::info("Mengecek apakah file memiliki shared link: " . $filePath);
-    //         $sharedLinks = $client->listSharedLinks($filePath);
-
-    //         if (!empty($sharedLinks['links'])) {
-    //             $sharedLink = $sharedLinks['links'][0]['url'];
-    //             Log::info("File sudah memiliki shared link: " . $sharedLink);
-    //         } else {
-    //             Log::info("File belum memiliki shared link, membuat baru...");
-    //             $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
-    //             Log::info("Shared link baru dibuat: " . $sharedLink);
-    //         }
-
-    //         // Konversi link agar bisa langsung diakses
-    //         $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
-    //         Log::info("URL file yang dikembalikan: " . $fileUrl);
-
-    //         return response()->json([
-    //             'message' => 'URL berhasil didapatkan',
-    //             'file_url' => $fileUrl,
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         // 🔥 Logging error detail
-    //         Log::error("Gagal mendapatkan URL file dari Dropbox: " . $e->getMessage());
-
-    //         return response()->json([
-    //             'error' => 'Gagal mendapatkan URL: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
-
     public function getFileUrl($filePath)
     {
-        // Pastikan path benar & selalu dalam huruf kecil
         $filePath = '/uploads/' . ltrim($filePath, '/');
-        $filePathLower = strtolower($filePath); // Pastikan lowercase
 
         try {
             Log::info("Mengakses file dari Dropbox: " . $filePath);
 
-            $client = new \Spatie\Dropbox\Client(config('filesystems.disks.dropbox.access_token'));
+            $client = new Client(config('filesystems.disks.dropbox.access_token'));
 
-            // 🔍 **Cek apakah file ada di Dropbox dengan path yang benar**
+            // 🔥 Log daftar file untuk debugging
             $list = $client->listFolder('/uploads');
             Log::info("Isi folder /uploads:", $list['entries']);
 
-            $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
-            if (!$fileExists) {
-                Log::error("File tidak ditemukan di Dropbox: " . $filePath);
-                return response()->json([
-                    'error' => 'File tidak ditemukan di Dropbox.',
-                ], 404);
-            }
-
-            // 🔍 **Ambil semua shared links dari Dropbox**
-            Log::info("Mengecek shared links yang sudah ada...");
-            $allSharedLinks = $client->listSharedLinks();
-            dd($allSharedLinks);
-            // 🔎 **Cari apakah file ini sudah memiliki shared link**
-            $sharedLink = collect($allSharedLinks['links'] ?? [])
-                ->firstWhere('path_lower', $filePathLower)['url'] ?? null;
-
-            if ($sharedLink) {
+            // Cek apakah file memiliki shared link
+            Log::info("Mengecek apakah file memiliki shared link: " . $filePath);
+            $sharedLinks = $client->listSharedLinks($filePath);
+            if (!empty($sharedLinks['links'])) {
+                $sharedLink = $sharedLinks['links'][0]['url'];
+                // dd($sharedLinks,'<<<< cek');
                 Log::info("File sudah memiliki shared link: " . $sharedLink);
             } else {
-                // 🔥 **Buat shared link baru hanya jika belum ada**
                 Log::info("File belum memiliki shared link, membuat baru...");
-                try {
-                    $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
-                    Log::info("Shared link baru dibuat: " . $sharedLink);
-                } catch (\Exception $e) {
-                    Log::error("Gagal membuat shared link baru: " . $e->getMessage());
-                    return response()->json([
-                        'error' => 'Gagal membuat shared link baru: ' . $e->getMessage(),
-                    ], 500);
-                }
+                $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
+                // dd($sharedLinks,'<<<< tes');
+
+                Log::info("Shared link baru dibuat: " . $sharedLink);
             }
 
-            // 🔗 **Ubah link agar bisa langsung diakses**
+            // Konversi link agar bisa langsung diakses
             $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
             Log::info("URL file yang dikembalikan: " . $fileUrl);
 
@@ -132,8 +68,9 @@ class DropboxController extends Controller
                 'message' => 'URL berhasil didapatkan',
                 'file_url' => $fileUrl,
             ]);
+
         } catch (\Exception $e) {
-            // 🚨 **Logging error detail**
+            // 🔥 Logging error detail
             Log::error("Gagal mendapatkan URL file dari Dropbox: " . $e->getMessage());
 
             return response()->json([
@@ -141,6 +78,71 @@ class DropboxController extends Controller
             ], 500);
         }
     }
+
+    // public function getFileUrl($filePath)
+    // {
+    //     // Pastikan path benar & selalu dalam huruf kecil
+    //     $filePath = '/uploads/' . ltrim($filePath, '/');
+    //     $filePathLower = strtolower($filePath); // Pastikan lowercase
+
+    //     try {
+    //         Log::info("Mengakses file dari Dropbox: " . $filePath);
+
+    //         $client = new \Spatie\Dropbox\Client(config('filesystems.disks.dropbox.access_token'));
+
+    //         // 🔍 **Cek apakah file ada di Dropbox dengan path yang benar**
+    //         $list = $client->listFolder('/uploads');
+    //         Log::info("Isi folder /uploads:", $list['entries']);
+
+    //         $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
+    //         if (!$fileExists) {
+    //             Log::error("File tidak ditemukan di Dropbox: " . $filePath);
+    //             return response()->json([
+    //                 'error' => 'File tidak ditemukan di Dropbox.',
+    //             ], 404);
+    //         }
+
+    //         // 🔍 **Ambil semua shared links dari Dropbox**
+    //         Log::info("Mengecek shared links yang sudah ada...");
+    //         $allSharedLinks = $client->listSharedLinks();
+    //         dd($allSharedLinks);
+    //         // 🔎 **Cari apakah file ini sudah memiliki shared link**
+    //         $sharedLink = collect($allSharedLinks['links'] ?? [])
+    //             ->firstWhere('path_lower', $filePathLower)['url'] ?? null;
+
+    //         if ($sharedLink) {
+    //             Log::info("File sudah memiliki shared link: " . $sharedLink);
+    //         } else {
+    //             // 🔥 **Buat shared link baru hanya jika belum ada**
+    //             Log::info("File belum memiliki shared link, membuat baru...");
+    //             try {
+    //                 $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
+    //                 Log::info("Shared link baru dibuat: " . $sharedLink);
+    //             } catch (\Exception $e) {
+    //                 Log::error("Gagal membuat shared link baru: " . $e->getMessage());
+    //                 return response()->json([
+    //                     'error' => 'Gagal membuat shared link baru: ' . $e->getMessage(),
+    //                 ], 500);
+    //             }
+    //         }
+
+    //         // 🔗 **Ubah link agar bisa langsung diakses**
+    //         $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
+    //         Log::info("URL file yang dikembalikan: " . $fileUrl);
+
+    //         return response()->json([
+    //             'message' => 'URL berhasil didapatkan',
+    //             'file_url' => $fileUrl,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         // 🚨 **Logging error detail**
+    //         Log::error("Gagal mendapatkan URL file dari Dropbox: " . $e->getMessage());
+
+    //         return response()->json([
+    //             'error' => 'Gagal mendapatkan URL: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
 
     public function viewFile($filePath)

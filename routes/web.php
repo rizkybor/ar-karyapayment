@@ -49,11 +49,7 @@ Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.
 
 Route::post('/upload-to-dropbox', [DropboxController::class, 'upload'])->name('dropbox.upload');
 
-Route::get('/view-file/{filePath}', [DropboxController::class, 'getFileUrl'])
-    ->where('filePath', '.*')
-    ->name('dropbox.view');
-
-Route::get('/file/{filePath}', [DropboxController::class, 'viewFile'])
+Route::get('/view/{filePath}', [DropboxController::class, 'viewFile'])
     ->where('filePath', '.*')
     ->name('dropbox.file.view');
 
