@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->string('contract_number', 255);
+            $table->string('title', 255);
+            $table->string('category', 255);
             $table->string('employee_name', 255);
             $table->decimal('value', 15, 2);
             $table->date('start_date');

@@ -26,6 +26,7 @@ use App\Http\Controllers\NonManfeeHistoryController;
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\DropboxController;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,10 @@ Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
+
+Route::get('/generate-letter', [PDFController::class, 'generateLetter']);
+Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
+Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
 
 Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
 

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Contracts;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ContractInvoiceSeeder extends Seeder
@@ -14,6 +13,8 @@ class ContractInvoiceSeeder extends Seeder
      */
     public function run(): void
     {
+        $categories = ['SPK', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
+        
         Contracts::insert([
             [
                 'contract_number' => 'ADSAKDSA23',
@@ -26,6 +27,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Merdeka No. 10, Jakarta',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Pekerjaan Revitalisasi Area Taman Belakang Kantor PT PGAS Solution Area Head Cirebon',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -40,6 +43,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Sudirman No. 20, Bandung',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Pekerjaan Pengadaan Jaringan Fiber Optik PT Telkom',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -54,6 +59,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Diponegoro No. 15, Surabaya',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Proyek Pembangunan Gedung Kantor PT Indo Jaya',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -68,6 +75,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Ansaman Raya No. 15, Surabaya',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Pengadaan Peralatan Kantor PT Pasific',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -82,6 +91,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Rohaya, No 12',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Kontrak Pengerjaan Kapal PT Indo Jaya Maritim',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -96,6 +107,8 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Jaya Energi, No 37',
                 'work_unit' => 'keuangan',
                 'status' => null,
+                'title' => 'Penyediaan Alat Elektronik PT Taffware Indo',
+                'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
