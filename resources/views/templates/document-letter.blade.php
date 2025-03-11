@@ -28,25 +28,25 @@
 
     <!-- Surat Detail -->
     <div class="mt-2 text-smaller">
-        <p><strong>Nomor:</strong> 008070/TEK/SOL/III/2025</p>
+        <p><strong>Nomor:</strong> NO Surat</p>
         <p><strong>Sifat:</strong> Penting</p>
         <p><strong>Lampiran:</strong> 1 (Satu) Set</p>
-        <p><strong>Perihal:</strong> <span class="font-semibold">Permohonan Pembayaran Masa Pemeliharaan dan Progres Akhir Pekerjaan Revitalisasi Area Taman Belakang Kantor PT PGAS Solution Area Head Cirebon</span></p>
+        <p><strong>Perihal:</strong> <span class="font-semibold">Permohonan Pembayaran Masa Pemeliharaan dan Progres Akhir Pekerjaan Revitalisasi Area Taman Belakang Kantor PT Jendela Kode Area Head Cirebon</span></p>
     </div>
 
     <div class="mt-4 text-smaller">
-        <p>Jakarta, 11 Februari 2025</p>
+        <p>Jakarta, 00 Februari 0000</p>
         <p class="mt-3 font-bold">Kepada Yth:</p>
-        <p class="font-bold">PT PGAS Solution</p>
+        <p class="font-bold">PT Jendela Kode</p>
         <p>Gedung C Lantai 4</p>
-        <p>Jl. K.H. Zainul Arifin No. 20</p>
-        <p>Jakarta Barat 11140</p>
+        <p>ALAMAT</p>
+        <p>KOTA - KODE POS</p>
     </div>
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller text-justify leading-relaxed">
         <p>
-            Berdasarkan Surat Perintah Kerja (SPK) antara PT PGAS Solution dengan PT Karya Prima Usahatama No. 000100.SPK/LG.01/PLUP/PGAS/XII/2024 tanggal 03 Desember 2024 tentang Pekerjaan Revitalisasi Area Taman Belakang Kantor PT PGAS Solution Area Head Cirebon, dengan ini kami mengajukan permohonan pembayaran masa pemeliharaan dan progres akhir pekerjaan tersebut, dengan bukti perincian terlampir.
+            Berdasarkan Surat Perintah Kerja (SPK) antara PT Jendela Kode dengan PT Karya Prima Usahatama No. *********/INV/SOL/III/2025 tanggal 00 Desember 0000 tentang Pekerjaan Revitalisasi Area Taman Belakang Kantor PT Jendela Kode Area Head Cirebon, dengan ini kami mengajukan permohonan pembayaran masa pemeliharaan dan progres akhir pekerjaan tersebut, dengan bukti perincian terlampir.
         </p>
     </div>
 
@@ -59,16 +59,16 @@
             <td class="w-[220px]">No. 002260/KW/KPU/SOL/III/2025</td>
             <td class="w-16 text-right">Sebesar</td>
             <td class="w-10 text-right">Rp</td>
-            <td class="w-24 text-right">10.545.000</td>
+            <td class="w-24 text-right">NILAI RUPIAH</td>
         </tr>
         <tr>
             <td class="w-6">2.</td>
             <td class="w-32">Invoice</td>
             <td class="w-2">:</td>
-            <td class="w-[220px]">No. 002260/INV/SOL/III/2025</td>
+            <td class="w-[220px]">No. *********/INV/SOL/III/2025</td>
             <td class="w-16 text-right">Sebesar</td>
             <td class="w-10 text-right">Rp</td>
-            <td class="w-24 text-right">10.545.000</td>
+            <td class="w-24 text-right">NILAI RUPIAH</td>
         </tr>
     </table>
 

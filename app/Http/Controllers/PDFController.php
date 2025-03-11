@@ -12,7 +12,7 @@ class PDFController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function generatePDF()
+    public function generateLetter()
     {
         $data = [
             'title' => 'Contoh PDF',
@@ -24,5 +24,33 @@ class PDFController extends Controller
 
         // Download file PDF dengan nama document-letter.pdf
         return $pdf->download('document-letter.pdf');
+    }
+
+    public function generateKwitansi()
+    {
+        $data = [
+            'title' => 'Contoh PDF',
+            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
+        ];
+
+        // Load Blade view dari folder templates
+        $pdf = Pdf::loadView('templates.document-kwitansi', $data);
+
+        // Download file PDF dengan nama document-letter.pdf
+        return $pdf->download('document-kwitansi.pdf');
+    }
+
+    public function generateInvoice()
+    {
+        $data = [
+            'title' => 'Contoh PDF',
+            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
+        ];
+
+        // Load Blade view dari folder templates
+        $pdf = Pdf::loadView('templates.document-invoice', $data);
+
+        // Download file PDF dengan nama document-letter.pdf
+        return $pdf->download('document-invoice.pdf');
     }
 }
