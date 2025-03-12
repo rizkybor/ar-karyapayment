@@ -36,7 +36,11 @@ class NonManfeeDocumentSeeder extends Seeder
 
         for ($i = 1; $i <= 10; $i++) {
             $contract_id = $contracts->random();
-            $created_by = $makers->random(); 
+            $created_by = $makers->random();
+            $created_at = Carbon::now();
+
+            // ✅ Set expired_at H+30 dengan waktu tetap 00:01:00
+            $expired_at = $created_at->copy()->addDays(30)->setTime(0, 1, 0);
 
             $data[] = [
                 'contract_id'    => $contract_id,
@@ -50,14 +54,15 @@ class NonManfeeDocumentSeeder extends Seeder
                 'last_reviewers' => null,
                 'is_active'      => true,
                 'created_by'     => $created_by,
-                'created_at'     => Carbon::now(),
-                'updated_at'     => Carbon::now(),
+                'created_at'     => $created_at,
+                'updated_at'     => $created_at,
+                'expired_at'     => $expired_at, // ✅ Waktu 00:01:00
             ];
         }
 
         // Insert data ke database dengan batch untuk performa lebih baik
         DB::table('non_manfee_documents')->insert($data);
 
-        $this->command->info("✅ Berhasil menambahkan 10 data Non Management Fee.");
+        $this->command->info("✅ Berhasil menambahkan 10 data Non Management Fee dengan expired_at (H+30 pukul 00:01:00).");
     }
 }

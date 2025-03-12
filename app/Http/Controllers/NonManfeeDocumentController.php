@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Contracts;
-// use Yajra\DataTables\DataTables;
-use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 use App\Models\NonManfeeDocument;
 use App\Models\NonManfeeDocAccumulatedCost;
 use App\Models\NonManfeeDocHistory;
@@ -97,6 +96,7 @@ class NonManfeeDocumentController extends Controller
         $input['status'] = $input['status'] ?? 0;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
+        $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
         try {
             // Simpan dokumen baru
