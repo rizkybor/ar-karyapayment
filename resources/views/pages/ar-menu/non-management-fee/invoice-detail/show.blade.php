@@ -39,9 +39,9 @@
             </div>
 
             {{-- DESKRIPSI --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+            {{-- <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                 <x-non-management-fee.descriptions.index :nonManfeeDocument="$nonManfeeDocument" />
-            </div>
+            </div> --}}
 
             {{-- FAKTUR PAJAK --}}
             {{-- @role('pajak') --}}

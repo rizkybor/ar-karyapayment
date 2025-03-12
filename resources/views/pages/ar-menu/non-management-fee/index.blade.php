@@ -129,8 +129,12 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js"></script>
+    <script>
+        moment.locale('id'); // Setel bahasa ke Bahasa Indonesia
+    </script>
 
     <script>
         $(document).ready(function() {
@@ -231,8 +235,10 @@
                         name: 'expired_at',
                         className: 'p-2 whitespace-nowrap text-left text-sm',
                         render: function(data) {
+                            // if (!data) return '<div>-</div>';
+                            // return `<div>${moment(data).format('DD-MM-YYYY')}</div>`; // Format menjadi DD-MM-YYYY
                             if (!data) return '<div>-</div>';
-                            return `<div>${moment(data).format('DD-MM-YYYY')}</div>`; // Format menjadi DD-MM-YYYY
+                            return `<div>${moment(data).fromNow(true)}</div>`;
                         }
                     },
                     {
