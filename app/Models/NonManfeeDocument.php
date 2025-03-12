@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class NonManfeeDocument extends Model
 {
@@ -23,7 +24,18 @@ class NonManfeeDocument extends Model
         'last_reviewers',
         'is_active',
         'created_by',
+        'expired_at',
     ];
+
+    // ✅ Set Default Expired Date H+30 dengan Waktu 00:01:00
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($document) {
+            $document->expired_at = Carbon::now()->addDays(30)->setTime(0, 1, 0);
+        });
+    }
 
     // Relasi ke Contracts
     public function contract()

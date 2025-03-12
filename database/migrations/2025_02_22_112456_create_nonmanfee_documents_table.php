@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 return new class extends Migration
 {
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->string('last_reviewers', 255)->nullable();
             $table->boolean('is_active')->nullable()->default(null);
             $table->integer('created_by')->unsigned()->nullable();
+            $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });
     }
