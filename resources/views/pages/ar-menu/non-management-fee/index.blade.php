@@ -234,16 +234,23 @@
                         }
                     },
                     {
-                        data: 'expired_at',
-                        name: 'expired_at',
-                        className: 'p-2 whitespace-nowrap text-center text-sm',
-                        render: function(data) {
-                            // if (!data) return '<div>-</div>';
-                            // return `<div>${moment(data).format('DD-MM-YYYY')}</div>`; // Format menjadi DD-MM-YYYY
-                            if (!data) return '<div>-</div>';
-                            return `<div>${moment(data).fromNow(true)} lagi</div>`;
-                        }
-                    },
+    data: 'expired_at',
+    name: 'expired_at',
+    className: 'p-2 whitespace-nowrap text-center text-sm',
+    render: function(data) {
+        if (!data) return '<div>-</div>';
+
+        let expiredTime = moment(data);
+        let now = moment();
+
+        // Cek apakah sudah lewat dari waktu saat ini
+        if (expiredTime.isBefore(now)) {
+            return `<div class="text-red-500">expired ${expiredTime.fromNow(true)} yang lalu</div>`;
+        } else {
+            return `<div class="text-green-500">tersisa ${expiredTime.fromNow(true)} lagi</div>`;
+        }
+    }
+},
                     {
                         data: 'expired_at',
                         name: 'expired_at',
@@ -369,19 +376,19 @@
                             <nav class="flex" role="navigation" aria-label="Navigation">
                                 <div class="mr-2">
                                     ${currentPage > 1 ? `
-                                                                <button onclick="table.page(${currentPage - 2}).draw(false)" 
-                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                    </svg>
-                                                                </button>` : `
-                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                    </svg>
-                                                                </span>`}
+                                                                    <button onclick="table.page(${currentPage - 2}).draw(false)" 
+                                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                        </svg>
+                                                                    </button>` : `
+                                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                        </svg>
+                                                                    </span>`}
                                 </div>
                                 <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -411,19 +418,19 @@
                                 </ul>
                                 <div class="ml-2">
                                     ${currentPage < totalPages ? `
-                                                                <button onclick="table.page(${currentPage}).draw(false)" 
-                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                    </svg>
-                                                                </button>` : `
-                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                    </svg>
-                                                                </span>`}
+                                                                    <button onclick="table.page(${currentPage}).draw(false)" 
+                                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                        </svg>
+                                                                    </button>` : `
+                                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                        </svg>
+                                                                    </span>`}
                                 </div>
                             </nav>
                         </div>`;
