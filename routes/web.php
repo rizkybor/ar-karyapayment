@@ -233,6 +233,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::delete('/{taxes_id}', [NonManfeeTaxController::class, 'destroy'])->name('destroy');
         });
 
+        // Route Print PDF Surat Permohonan, Kwitansi, Invoice
         Route::get('/{id}/print-surat', [PDFController::class, 'generateLetter'])->name('print-surat');;
         Route::get('/{id}/print-kwitansi', [PDFController::class, 'generateInvoice'])->name('print-kwitansi');;
         Route::get('/{id}/print-invoice', [PDFController::class, 'generateKwitansi'])->name('print-invoice');;
