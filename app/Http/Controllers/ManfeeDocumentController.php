@@ -33,25 +33,30 @@ class ManfeeDocumentController extends Controller
      */
     public function create()
     {
-        // Ambil kontrak yang memiliki type 'management_fee' dan belum memiliki dokumen
-        $contracts = Contracts::where('type', 'management_fee')
-            ->whereDoesntHave('manfeeDocuments')
-            ->with('billTypes')
-            ->get();
+        $contracts = Contracts::where('type', 'management_fee')->get();
 
-        // dd($contracts);
-
-        // Format Romawi untuk bulan
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil nomor terakhir dan tambahkan 10
-        $lastNumber = ManfeeDocument::max('letter_number');
-        preg_match('/^(\d{6})/', $lastNumber, $matches);
-        $lastNumeric = $matches[1] ?? '000100';
-        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
+        $lastNumber = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-        // Format nomor surat, invoice, dan kwitansi
+
+        if (!$lastNumber) {
+            $lastNumeric = 100;
+        } else {
+
+            preg_match('/^(\d{6})/', $lastNumber, $matches);
+            $lastNumeric = $matches[1] ?? '000100';
+            $lastNumeric = intval($lastNumeric);
+
+            if ($lastNumeric % 10 !== 0) {
+                $lastNumeric = ceil($lastNumeric / 10) * 10;
+            }
+        }
+
+        $nextNumber = $lastNumeric + 10;
+
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $receiptNumber = sprintf("%06d/MF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
@@ -73,26 +78,31 @@ class ManfeeDocumentController extends Controller
             'manfee_bill' => 'required',
         ]);
 
-        // Cek apakah contract_id sudah memiliki dokumen management_fee
-        $existingDocument = ManfeeDocument::where('contract_id', $request->contract_id)->first();
-        if ($existingDocument) {
-            return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
-        }
-
-
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil nomor terakhir dan tambahkan 10
-        $lastNumber = ManfeeDocument::max('letter_number');
-        preg_match('/^(\d{6})/', $lastNumber, $matches);
-        $lastNumeric = $matches[1] ?? '000100';
-        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
+        $lastNumber = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+
+
+        if (!$lastNumber) {
+            $lastNumeric = 100;
+        } else {
+
+            preg_match('/^(\d{6})/', $lastNumber, $matches);
+            $lastNumeric = $matches[1] ?? '000100';
+            $lastNumeric = intval($lastNumeric);
+
+            if ($lastNumeric % 10 !== 0) {
+                $lastNumeric = ceil($lastNumeric / 10) * 10;
+            }
+        }
+
+        $nextNumber = $lastNumeric + 10;
 
         $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
         $receiptNumber = sprintf("%06d/MF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-
 
         $input = $request->only(['contract_id', 'period', 'letter_subject', 'manfee_bill']);
         $input['letter_number'] = $letterNumber;
