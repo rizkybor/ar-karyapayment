@@ -36,6 +36,7 @@
                                     autocomplete="title" />
                                 <x-input-error for="title" class="mt-2" />
                             </div>
+
                             <div>
                                 <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
                                 <select name="category" value="{{ old('category', $contract->category) }}"

@@ -24,6 +24,12 @@
                         {{-- Nama Perusahaan --}}
                         <div><strong>Nama Perusahaan:</strong> {{ $contract->employee_name }}</div>
 
+                        {{-- Judul Perusahaan --}}
+                        <div><strong>Judul Kontrak:</strong> {{ $contract->title }}</div>
+
+                        {{-- Kategori Kontrak --}}
+                        <div><strong>Kategori Kontrak:</strong> {{ $contract->category }}</div>
+
                         {{-- Nilai Kontrak --}}
                         <div><strong>Nilai Kontrak:</strong> Rp {{ number_format($contract->value, 0, ',', '.') }}</div>
 
