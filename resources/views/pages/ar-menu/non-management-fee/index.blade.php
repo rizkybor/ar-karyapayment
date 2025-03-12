@@ -89,7 +89,10 @@
                                         <div class="font-semibold text-center">Nama Kontrak</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Expired</div>
+                                        <div class="font-semibold text-center">Expired Status</div>
+                                    </th>
+                                    <th class="p-2 whitespace-nowrap">
+                                        <div class="font-semibold text-center">Expired Date</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Total</div>
@@ -233,12 +236,21 @@
                     {
                         data: 'expired_at',
                         name: 'expired_at',
-                        className: 'p-2 whitespace-nowrap text-left text-sm',
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
                         render: function(data) {
                             // if (!data) return '<div>-</div>';
                             // return `<div>${moment(data).format('DD-MM-YYYY')}</div>`; // Format menjadi DD-MM-YYYY
                             if (!data) return '<div>-</div>';
-                            return `<div>${moment(data).fromNow(true)}</div>`;
+                            return `<div>${moment(data).fromNow(true)} lagi</div>`;
+                        }
+                    },
+                    {
+                        data: 'expired_at',
+                        name: 'expired_at',
+                        className: 'p-2 whitespace-nowrap text-center text-sm',
+                        render: function(data) {
+                            if (!data) return '<div>-</div>';
+                            return `<div>${moment(data).format('DD-MM-YYYY')}</div>`; // Format menjadi DD-MM-YYYY
                         }
                     },
                     {
