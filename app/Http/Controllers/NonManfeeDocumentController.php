@@ -69,10 +69,10 @@ class NonManfeeDocumentController extends Controller
         ]);
 
         // Cek apakah contract_id sudah memiliki dokumen non_manfee
-        $existingDocument = NonManfeeDocument::where('contract_id', $request->contract_id)->first();
-        if ($existingDocument) {
-            return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
-        }
+        // $existingDocument = NonManfeeDocument::where('contract_id', $request->contract_id)->first();
+        // if ($existingDocument) {
+        //     return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
+        // }
 
         // Generate nomor surat, invoice, dan kwitansi
         $monthRoman = $this->convertToRoman(date('n'));
@@ -105,6 +105,7 @@ class NonManfeeDocumentController extends Controller
             // **Buat data di NonManfeeDocAccumulatedCost dengan hanya document_id**
             NonManfeeDocAccumulatedCost::create([
                 'document_id' => $document->id,
+                'dpp' => '0'
             ]);
 
             // Redirect ke halaman detail dengan ID yang benar
@@ -341,7 +342,7 @@ class NonManfeeDocumentController extends Controller
             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
             if ($document->last_reviewers === 'pajak') {
                 $nextRole = 'pembendaharaan';
-                $statusCode = '6'; // submit_doc_to_employer
+                $statusCode = '6'; // done
                 $nextApprovers = User::where('role', $nextRole)->get();
             }
             // 🔹 4️⃣ Jika revisi, kembalikan ke approver sebelumnya
@@ -491,7 +492,7 @@ class NonManfeeDocumentController extends Controller
             '3'   => 'manager_anggaran',
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
-            '6'   => 'submit_doc_to_employer',
+            '6'   => 'done',
             '100' => 'finished',
             '101' => 'canceled',
             '102' => 'revised',

@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('non_manfee_doc_accumulated_costs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained('non_manfee_documents')->onDelete('cascade');
-            $table->string('account', 255);
+            $table->string('account', 255)->nullable();
             $table->string('dpp', 255);
-            $table->decimal('rate_ppn', 5, 2);
-            $table->decimal('nilai_ppn', 15, 2);
-            $table->decimal('total', 15, 2);
+            $table->decimal('rate_ppn', 5, 2)->default(0.00);;
+            $table->decimal('nilai_ppn', 15, 2)->default(0.00);;
+            $table->decimal('total', 15, 2)->default(0.00);;
             $table->timestamps();
         });
     }
