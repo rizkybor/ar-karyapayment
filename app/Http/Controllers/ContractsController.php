@@ -40,7 +40,16 @@ class ContractsController extends Controller
     {
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
-        return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit'));
+
+        // data dummy category
+        $category = [
+            'Surat Perintah Kerja (SPK)',
+            'Perjanjian',
+            'Purchase Order',
+            'Berita Acara Kesepakatan',
+        ];
+
+        return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit', 'category'));
     }
 
     /**
@@ -51,6 +60,8 @@ class ContractsController extends Controller
         // Validasi input
         $request->validate([
             'contract_number' => 'required',
+            'title' => 'required',
+            'category' => 'required',
             'employee_name' => 'required',
             'value' => 'required',
             'start_date' => 'required',
@@ -139,6 +150,8 @@ class ContractsController extends Controller
     {
         $request->validate([
             'contract_number' => 'required',
+            'title' => 'required',
+            'category' => 'required',
             'employee_name' => 'required',
             'value' => 'required',
             'start_date' => 'required',

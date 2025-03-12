@@ -30,6 +30,25 @@
                             </div>
 
                             <div>
+                                <x-label for="title" value="{{ __('Judul Kontrak') }}" />
+                                <x-input id="title" type="text" name="title"
+                                    class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan nomer kontrak"
+                                    wire:model.live="state.title" required autocomplete="title" />
+                                <x-input-error for="title" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
+                                <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
+                                    @foreach ($category as $item)
+                                        <option value="{{ $item }}">{{ $item }}</option>
+                                    @endforeach
+                                </select>
+
+                                <x-input-error for="category" class="mt-2" />
+                            </div>
+
+                            <div>
                                 <x-label for="employee_name" value="{{ __('Nama Perusahaan') }}" />
                                 <x-input id="employee_name" type="text" name="employee_name"
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan nama perusahaan"
