@@ -66,6 +66,13 @@ class NonManfeeDocumentDataTableController extends Controller
                 });
             })
 
+            // FILTER SEARCH untuk `contract.title`
+            ->filterColumn('contract.title', function ($query, $keyword) {
+                $query->whereHas('contract', function ($q) use ($keyword) {
+                    $q->whereRaw('LOWER(title) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+                });
+            })
+
             // 🔍 FILTER SEARCH hanya untuk `contract.employee_name`
             ->filterColumn('contract.employee_name', function ($query, $keyword) {
                 $query->whereHas('contract', function ($q) use ($keyword) {
