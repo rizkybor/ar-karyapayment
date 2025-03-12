@@ -140,7 +140,14 @@ class ContractsController extends Controller
         $mstBillType = MasterBillType::where('contract_id', $contract->id)->get();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
-        return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit'));
+        // data dummy category
+        $category = [
+            'Surat Perintah Kerja (SPK)',
+            'Perjanjian',
+            'Purchase Order',
+            'Berita Acara Kesepakatan',
+        ];
+        return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit', 'category'));
     }
 
     /**
