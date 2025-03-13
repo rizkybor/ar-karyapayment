@@ -17,21 +17,21 @@
 
 @php
     // Hitung jumlah invoice berdasarkan kategori status
-    $draftCount = $dataInvoices->where('status', 0)->count();
-    $onProgressCount = $dataInvoices->whereIn('status', [1, 2, 3, 4, 5, 6, 9])->count();
+    $activeCount = $dataInvoices->where('status', 0)->count();
+    $notActiveCount = $dataInvoices->whereIn('status', [1, 2, 3, 4, 5, 6, 9])->count();
     $rejectedCount = $dataInvoices->where('status', 99)->count();
     $completedCount = $dataInvoices->where('status', 100)->count();
 
     // Hitung total semua invoice
-    $totalInvoices = $draftCount + $onProgressCount + $rejectedCount + $completedCount;
+    $totalInvoices = $activeCount + $notActiveCount + $rejectedCount + $completedCount;
 
     // Menghindari error jika total 0
     if ($totalInvoices === 0) {
         $chartData = [0, 0, 0, 0];
     } else {
         $chartData = [
-            round(($draftCount / $totalInvoices) * 100),
-            round(($onProgressCount / $totalInvoices) * 100),
+            round(($activeCount / $totalInvoices) * 100),
+            round(($notActiveCount / $totalInvoices) * 100),
             round(($rejectedCount / $totalInvoices) * 100),
             round(($completedCount / $totalInvoices) * 100),
         ];
@@ -49,7 +49,7 @@
     function renderChart() {
         const isDarkMode = localStorage.getItem("dark-mode") === "true";
         const chartData = {!! json_encode($chartData) !!}; // Encode data sebagai array numerik
-        const chartLabels = ["Draft", "On Progress", "Rejected", "Completed"]; // Tambahkan label Completed
+        const chartLabels = ["Active", "Not Active", "Rejected", "Completed"]; // Tambahkan label Completed
 
         console.log("Chart Data:", chartData); // Debugging
 
