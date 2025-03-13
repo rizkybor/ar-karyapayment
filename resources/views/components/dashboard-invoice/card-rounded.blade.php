@@ -10,24 +10,28 @@
             </h6>
         </header>
         <div class="mt-2 flex justify-center items-center md:h-64 h-74">
-            <div id="pie-chart"></div>
+            <div id="pie-chart">
+                <p id="no-data-message" class="text-gray-500 dark:text-gray-400 hidden">Belum ada data tagihan invoice.
+                </p>
+            </div>
         </div>
     </div>
 </div>
 
 @php
     // Hitung jumlah invoice berdasarkan kategori status
-    $activeCount = $dataInvoices->where('status', 0)->count();
-    $notActiveCount = $dataInvoices->whereIn('status', [1, 2, 3, 4, 5, 6, 9])->count();
-    $rejectedCount = $dataInvoices->where('status', 99)->count();
+    $activeCount = $dataInvoices->where('is_active', 1)->count();
+    $notActiveCount = $dataInvoices->where('is_active', 0)->count();
+    $rejectedCount = $dataInvoices->where('status', 103)->count();
     $completedCount = $dataInvoices->where('status', 100)->count();
 
     // Hitung total semua invoice
     $totalInvoices = $activeCount + $notActiveCount + $rejectedCount + $completedCount;
 
-    // Menghindari error jika total 0
+    // Jika semua data kosong, berikan default nilai 0
     if ($totalInvoices === 0) {
         $chartData = [0, 0, 0, 0];
+        $chartLabels = ['Active', 'Not Active', 'Rejected', 'Completed'];
     } else {
         $chartData = [
             round(($activeCount / $totalInvoices) * 100),
@@ -42,20 +46,29 @@
 
         // Tambahkan atau kurangi dari kategori terakhir agar total tetap 100%
         $chartData[count($chartData) - 1] += $difference;
+
+        $chartLabels = ['Active', 'Not Active', 'Rejected', 'Completed'];
     }
 @endphp
 
 <script>
     function renderChart() {
         const isDarkMode = localStorage.getItem("dark-mode") === "true";
-        const chartData = {!! json_encode($chartData) !!}; // Encode data sebagai array numerik
-        const chartLabels = ["Active", "Not Active", "Rejected", "Completed"]; // Tambahkan label Completed
+        const chartData = {!! json_encode($chartData) !!};
+        const chartLabels = {!! json_encode($chartLabels) !!};
+        const totalInvoices = {!! json_encode($totalInvoices) !!};
 
         console.log("Chart Data:", chartData); // Debugging
 
+        // Cek jika semua data 0, maka tampilkan pesan "Belum ada data"
+        if (totalInvoices === 0) {
+            document.getElementById("no-data-message").classList.remove("hidden");
+            return;
+        }
+
         const chartConfig2 = {
-            series: chartData, // Persentase data
-            labels: chartLabels, // Label kategori
+            series: chartData,
+            labels: chartLabels,
             chart: {
                 type: "pie",
                 width: 280,
@@ -68,8 +81,8 @@
             dataLabels: {
                 enabled: true,
                 formatter: function(val, opts) {
-                    let count = Math.round((val / 100) * {!! json_encode($totalInvoices) !!}); // Hitung jumlah dokumen asli
-                    return `${count} Invoices (${Math.round(val)}%)`; // Format tanpa desimal
+                    let count = Math.round((val / 100) * totalInvoices);
+                    return `${count} Invoices (${Math.round(val)}%)`;
                 },
                 style: {
                     fontSize: "12px",
@@ -77,8 +90,9 @@
                     fontWeight: "400"
                 }
             },
-            colors: isDarkMode ? ["#6366F1", "#FBBF24", "#EF4444", "#22C55E"] : ["#6366F1", "#F59E0B", "#DC2626", "#10B981"], 
-            // Warna tambahan untuk Completed
+            colors: isDarkMode ? ["#6366F1", "#FBBF24", "#EF4444", "#22C55E"] : ["#6366F1", "#F59E0B", "#DC2626",
+                "#10B981"
+            ],
             legend: {
                 show: true,
                 position: "bottom",
@@ -92,7 +106,7 @@
             tooltip: {
                 y: {
                     formatter: function(val) {
-                        let count = Math.round((val / 100) * {!! json_encode($totalInvoices) !!}); // Hitung jumlah dokumen asli
+                        let count = Math.round((val / 100) * totalInvoices);
                         return new Intl.NumberFormat("id-ID", {
                             style: "decimal"
                         }).format(count) + " Invoices (" + Math.round(val) + "%)";
