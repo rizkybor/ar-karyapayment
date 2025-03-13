@@ -27,7 +27,7 @@ class NonManfeeDocAccumulatedCostSeeder extends Seeder
         foreach ($nonManfeeDocuments as $document_id) {
             $data[] = [
                 'document_id' => $document_id,
-                'account' => '',
+                'account' => null,
                 'dpp' => '0', 
                 'rate_ppn' => 0.00,
                 'nilai_ppn' => 0.00,
