@@ -26,7 +26,14 @@ class NonManfeeDocumentDataTableController extends Controller
                         $q->where('approver_id', $user->id); // Dokumen yang user harus approve
                     });
             })
-            ->select('non_manfee_documents.*');
+            ->select('non_manfee_documents.*')
+            // ✅ Urutkan yang mendekati expired di atas, dan yang expired di bawah
+            ->orderByRaw("
+                CASE 
+                    WHEN expired_at >= NOW() THEN 0 
+                    ELSE 1 
+                END, expired_at ASC
+            ");
 
         return DataTables::eloquent($query)
             ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
