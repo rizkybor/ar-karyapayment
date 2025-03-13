@@ -15,11 +15,21 @@ class DashboardController extends Controller
         // Ambil user yang sedang login
         $user = auth()->user();
 
+        // Hitung jumlah dokumen expired
+        $expiredCount = NonManfeeDocument::where(function ($query) use ($user) {
+            $query->where('created_by', $user->id)
+                ->orWhereHas('approvals', function ($q) use ($user) {
+                    $q->where('approver_id', $user->id);
+                });
+        })
+            ->where('expired_at', '<', now())
+            ->count();
+
         $dataInvoicesNonFee = NonManfeeDocument::with('contract', 'accumulatedCosts')
             ->where(function ($query) use ($user) {
-                $query->where('created_by', $user->id) // Dokumen dibuat oleh user login
+                $query->where('created_by', $user->id)
                     ->orWhereHas('approvals', function ($q) use ($user) {
-                        $q->where('approver_id', $user->id); // Dokumen yang user bisa approve
+                        $q->where('approver_id', $user->id);
                     });
             })
             ->where('expired_at', '>=', now())
@@ -41,9 +51,8 @@ class DashboardController extends Controller
 
 
 
-        // Ambil data invoices untuk Stick Chart untuk Non Management Fee dalam 6 bulan terakhir
+        // Ambil data invoices untuk Stick Chart dalam 6 bulan terakhir
         $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
-        // Ambil data dalam 6 bulan terakhir berdasarkan created_at & hitung total biaya dari relasi
         $dokumenSementara = NonManfeeDocument::join('non_manfee_doc_accumulated_costs', 'non_manfee_documents.id', '=', 'non_manfee_doc_accumulated_costs.document_id')
             ->selectRaw('
             DATE_FORMAT(non_manfee_documents.created_at, "%Y-%m") as month_year,
@@ -52,8 +61,7 @@ class DashboardController extends Controller
             SUM(non_manfee_doc_accumulated_costs.total) as total
         ')
             ->where('non_manfee_documents.created_at', '>=', $sixMonthsAgo)
-            ->where('non_manfee_documents.created_by', $user->id) // Filter berdasarkan user yang login
-
+            ->where('non_manfee_documents.created_by', $user->id)
             ->groupBy('month_year', 'month', 'year')
             ->orderBy('month_year', 'asc')
             ->get()
@@ -66,14 +74,13 @@ class DashboardController extends Controller
             });
 
         // Ambil data untuk Pie Chart
-        $activeCount = $dataInvoicesNonFee->where('is_active', 1)->count();
-        $notActiveCount = $dataInvoicesNonFee->where('is_active', 0)->count();
+        $activeCount = $dataInvoicesNonFee->where('is_active', true)->count();
+        $notActiveCount = $expiredCount;
         $rejectedCount = $dataInvoicesNonFee->where('status', 103)->count();
         $completedCount = $dataInvoicesNonFee->where('status', 100)->count();
 
         $totalInvoices = $activeCount + $notActiveCount + $rejectedCount + $completedCount;
-
-        return view('pages/dashboard/dashboard', compact('dokumenSementara', 'dataInvoicesNonFee', 'activeCount', 'notActiveCount', 'rejectedCount', 'completedCount', 'totalInvoices'));
+        return view('pages/dashboard/dashboard', compact('dokumenSementara', 'dataInvoicesNonFee', 'notActiveCount', 'totalInvoices'));
     }
 
     /**

@@ -3,10 +3,10 @@
     <div class="px-5 pt-5">
         <header class="flex flex-wrap justify-between items-center gap-2 mb-10">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                Status Payment
+                Seluruh Invoices
             </h2>
             <h6 class="text-sm text-gray-600 dark:text-gray-400">
-                Total Invoices Terbuat: {{ number_format($totalInvoices, 0, ',', '.') }}
+                Terbuat: {{ number_format($totalInvoices, 0, ',', '.') }}
             </h6>
         </header>
         <div class="mt-2 flex justify-center items-center md:h-64 h-74">
@@ -20,8 +20,8 @@
 
 @php
     // Hitung jumlah invoice berdasarkan kategori status
-    $activeCount = $dataInvoices->where('is_active', 1)->count();
-    $notActiveCount = $dataInvoices->where('is_active', 0)->count();
+    $activeCount = $dataInvoices->where('is_active', true)->count();
+    $notActiveCount = $docExpired;
     $rejectedCount = $dataInvoices->where('status', 103)->count();
     $completedCount = $dataInvoices->where('status', 100)->count();
 
