@@ -23,7 +23,7 @@
             <x-dashboard-invoice.card-stick :dataDocuments=$dokumenSementara />
 
             <!-- Pie chart (Acme Advanced) -->
-            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataInvoicesNonFee/>
+            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataInvoicesNonFee :docExpired=$notActiveCount />
 
             <!-- Card (Customers) -->
             <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoicesNonFee />
