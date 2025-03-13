@@ -15,6 +15,9 @@
                             <div class="font-semibold text-center">No</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-left">No Invoices</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
                             <div class="font-semibold text-left">No Kontrak</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
@@ -33,9 +36,12 @@
                     @php $i = 1; @endphp
                     @forelse($dataInvoices as $invoice)
                         <tr class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                            onclick="confirmRedirect('/invoice/{{ $invoice->id }}')">
+                            onclick="confirmRedirect('/non-management-fee/{{ $invoice->id }}/show')">
                             <td class="p-2 whitespace-nowrap">
                                 <div class="text-center">{{ $i++ }}</div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-left">{{ $invoice->invoice_number ?? '-' }}</div>
                             </td>
                             <td class="p-2 whitespace-nowrap">
                                 <div class="text-left">{{ $invoice->contract_number ?? '-' }}</div>

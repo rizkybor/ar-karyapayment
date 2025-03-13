@@ -29,7 +29,7 @@
             <!-- Card (Customers) -->
             <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoices />
 
-            <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoices />
+            <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoicesNonFee />
 
             {{-- <!-- Line chart (Acme Professional) -->
             <x-dashboard.dashboard-card-03 :dataFeed="$dataFeed" />
