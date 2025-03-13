@@ -20,14 +20,13 @@
         <div class="grid grid-cols-12 gap-6">
 
             <!-- Line chart (Acme Plus) -->
-            <x-dashboard-invoice.card-stick :dataDocuments=$dataInvoices />
+            <x-dashboard-invoice.card-stick :dataDocuments=$dokumenSementara />
 
-            <!-- Line chart (Acme Advanced) -->
-            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataInvoices :draftCount=$draftCount
-                :onProgressCount=$onProgressCount :rejectedCount=$rejectedCount :completedCount=$completedCount/>
+            <!-- Pie chart (Acme Advanced) -->
+            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataInvoicesNonFee/>
 
             <!-- Card (Customers) -->
-            <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoices />
+            <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoicesNonFee />
 
             <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoicesNonFee />
 
