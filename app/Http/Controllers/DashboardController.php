@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DataFeed;
 use App\Models\NonManfeeDocument;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -37,6 +38,25 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Ambil data invoices untuk Non Management Fee dalam 6 bulan terakhir
+        $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
+
+        // Ambil data dalam 6 bulan terakhir berdasarkan created_at & hitung total biaya dari relasi
+        $dokumenSementara = NonManfeeDocument::join('non_manfee_doc_accumulated_costs', 'non_manfee_documents.id', '=', 'non_manfee_doc_accumulated_costs.document_id')
+            ->selectRaw('DATE_FORMAT(non_manfee_documents.created_at, "%Y-%m") as month_year, SUM(non_manfee_doc_accumulated_costs.total) as total')
+            ->where('non_manfee_documents.created_at', '>=', $sixMonthsAgo) // ✅ Perbaikan: gunakan alias tabel
+            ->groupBy('month_year')
+            ->orderBy('month_year', 'asc')
+            ->get()
+            ->map(function ($doc) {
+                return (object) [
+                    'month' => date('M', strtotime($doc->month_year . '-01')), // Ambil nama bulan
+                    'year' => date('Y', strtotime($doc->month_year . '-01')), // Ambil tahun
+                    'total' => $doc->total ?? 0, // Total tagihan dari relasi
+                ];
+            });
+
+
         // Dummy data untuk testing (mirip dengan hasil dari database)
         $dataInvoices = collect([
             (object) ['id' => 1, 'invoice_number' => 'INV-001', 'period' => '2024-01', 'contract_number' => 'KPU-001/2024', 'employer_name' => 'PT. Contoh Sejahtera', 'status' => 1, 'total' => 15000000],
@@ -57,7 +77,7 @@ class DashboardController extends Controller
         $totalInvoices = $draftCount + $onProgressCount + $completedCount + $rejectedCount;
 
 
-        return view('pages/dashboard/dashboard', compact('dataInvoices', 'dataInvoicesNonFee', 'draftCount', 'onProgressCount', 'completedCount', 'rejectedCount', 'totalInvoices'));
+        return view('pages/dashboard/dashboard', compact('dataInvoices', 'dokumenSementara', 'dataInvoicesNonFee', 'draftCount', 'onProgressCount', 'completedCount', 'rejectedCount', 'totalInvoices'));
     }
 
     /**
