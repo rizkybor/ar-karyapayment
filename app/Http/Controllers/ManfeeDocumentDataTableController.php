@@ -24,7 +24,13 @@ class ManfeeDocumentDataTableController extends Controller
             $q->where('approver_id', $user->id); // Dokumen yang user harus approve
           });
       })
-      ->select('manfee_documents.*');
+      ->select('manfee_documents.*')
+      ->orderByRaw("
+      CASE 
+          WHEN expired_at >= NOW() THEN 0 
+          ELSE 1 
+      END, expired_at ASC
+  ");
 
     return DataTables::eloquent($query)
       ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
@@ -61,6 +67,13 @@ class ManfeeDocumentDataTableController extends Controller
       ->filterColumn('contract.contract_number', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
           $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+        });
+      })
+
+      // FILTER SEARCH untuk `contract.title`
+      ->filterColumn('contract.title', function ($query, $keyword) {
+        $query->whereHas('contract', function ($q) use ($keyword) {
+          $q->whereRaw('LOWER(title) LIKE ?', ["%" . strtolower($keyword) . "%"]);
         });
       })
 
