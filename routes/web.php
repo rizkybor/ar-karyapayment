@@ -165,6 +165,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::delete('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
         });
 
+        // Route Print PDF Surat Permohonan, Kwitansi, Invoice
+        Route::get('/{id}/print-surat', [PDFController::class, 'generateLetter'])->name('print-surat');;
+        Route::get('/{id}/print-kwitansi', [PDFController::class, 'generateInvoice'])->name('print-kwitansi');;
+        Route::get('/{id}/print-invoice', [PDFController::class, 'generateKwitansi'])->name('print-invoice');;
+
         Route::prefix('histories')->name('histories.')->group(function () {
             Route::get('/', [ManfeeHistoryController::class, 'index'])->name('index');
             Route::get('/{history_id}', [ManfeeHistoryController::class, 'show'])->name('show');

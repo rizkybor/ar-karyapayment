@@ -7,6 +7,23 @@
     'latestApprover' => '',
 ])
 
+@php
+    $printOptions = [
+        [
+            'label' => 'Surat Permohonan Pembayaran',
+            'route' => route('management-fee.print-surat', $document['id']),
+        ],
+        [
+            'label' => 'Kwitansi',
+            'route' => route('management-fee.print-kwitansi', $document['id']),
+        ],
+        [
+            'label' => 'Invoice',
+            'route' => route('management-fee.print-invoice', $document['id']),
+        ],
+    ];
+@endphp
+
 <div x-data="{ modalOpen: false }">
     <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-5">
 
@@ -50,12 +67,33 @@
         @endif
 
         <!-- Tombol Action -->
-        @if ($isShowPage)
+        @if ($isShowPage && $transaction_status == '1')
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
-                        <x-button-action color="blue" icon="print">Cetak</x-button-action>
-                        <x-button-action color="teal" icon="paid">Tutup Dokumen</x-button-action>
+
+                        <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
+                        <div x-data="{ open: false }" class="relative">
+                            <x-button-action @click="open = !open" color="blue" icon="print">
+                                Cetak Dokumen
+                            </x-button-action>
+
+                            <div x-show="open" @click.away="open = false"
+                                class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                                <ul class="py-2 text-gray-700">
+                                    @foreach ($printOptions as $option)
+                                        <li>
+                                            <a href="{{ $option['route'] }}"
+                                                class="block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                                {{ $option['label'] }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Button batalkan dokumen -->
                         <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
                     @endif
 
@@ -72,12 +110,12 @@
 
                         <!-- Reject Button -->
                         {{-- <x-button-action color="red" icon="reject"
-                        data-action="{{ route('management-fee.reject', $document['id']) }}"
-                        data-title="Reject Document" data-button-text="Reject"
-                        data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
-                        onclick="openModal(this)">
-                        Reject
-                    </x-button-action> --}}
+                            data-action="{{ route('management-fee.reject', $document['id']) }}"
+                            data-title="Reject Document" data-button-text="Reject"
+                            data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
+                            onclick="openModal(this)">
+                            Reject
+                        </x-button-action> --}}
 
                         <!-- Approve Button -->
                         <x-button-action color="blue" icon="approve"
