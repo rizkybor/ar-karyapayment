@@ -92,10 +92,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
 
-        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
-        Route::put('/revision/{id}', [ManfeeDocumentController::class, 'processRevision'])->name('processRevision');
-
-
         Route::resource('/', ManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
             'index' => 'index',
             'create' => 'create',
@@ -106,6 +102,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
+
+        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/revision/{id}', [ManfeeDocumentController::class, 'processRevision'])->name('processRevision');
 
         // Edit
         // management-fee.edit

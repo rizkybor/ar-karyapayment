@@ -26,11 +26,11 @@ class ManfeeDocumentDataTableController extends Controller
       })
       ->select('manfee_documents.*')
       ->orderByRaw("
-      CASE 
-          WHEN expired_at >= NOW() THEN 0 
-          ELSE 1 
-      END, expired_at ASC
-  ");
+        CASE 
+            WHEN expired_at >= NOW() THEN 0 
+            ELSE 1 
+        END, expired_at ASC
+    ");
 
     return DataTables::eloquent($query)
       ->addIndexColumn() // ✅ Tambahkan ini agar DT_RowIndex dikenali
