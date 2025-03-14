@@ -34,7 +34,7 @@
                 <div>
                     <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
                         class="text-gray-800 dark:text-gray-100" />
-                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                    <p class="mt-1 font-semibold {{ $transaction_status ? 'text-green-600' : 'text-red-600' }}">
                         {{ $transaction_status ? 'Invoice Aktif' : 'Invoice Tidak Aktif' }}
                     </p>
                 </div>
