@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 
 class ManfeeDocument extends Model
@@ -25,7 +26,26 @@ class ManfeeDocument extends Model
         'last_reviewers',
         'is_active',
         'created_by',
+        'expired_at',
     ];
+
+    // ✅ Event Model untuk Set Expired_at & Auto-Update is_active
+    protected static function boot()
+    {
+        parent::boot();
+
+        // 1️⃣ Set Default Expired Date H+30 dengan Waktu 00:01:00 saat Dokumen Dibuat
+        static::creating(function ($document) {
+            $document->expired_at = Carbon::now()->addDays(30)->setTime(0, 1, 0);
+        });
+
+        // 2️⃣ Cek Apakah Dokumen Sudah Expired Setiap Kali Diambil dari Database
+        static::retrieved(function ($document) {
+            if ($document->expired_at && $document->expired_at < Carbon::now() && $document->is_active) {
+                $document->update(['is_active' => 0]);
+            }
+        });
+    }
 
     // Relasi ke Contracts
     public function contract()
