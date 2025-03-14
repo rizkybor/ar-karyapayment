@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Contracts;
+use Carbon\Carbon;
 use App\Models\ManfeeDocument;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
@@ -112,6 +113,7 @@ class ManfeeDocumentController extends Controller
         $input['status'] = $request->status ?? 0;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
+        $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
         try {
             $manfeeDoc = ManfeeDocument::create($input);
