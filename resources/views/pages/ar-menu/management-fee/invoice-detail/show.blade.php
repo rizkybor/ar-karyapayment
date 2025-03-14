@@ -41,9 +41,9 @@
             </div>
 
             {{-- DESKRIPSI --}}
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+            {{-- <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                 <x-management-fee.descriptions.index :manfeeDoc="$manfeeDoc" />
-            </div>
+            </div> --}}
 
             {{-- FAKTUR PAJAK --}}
             @if (!empty($manfeeDoc->taxFiles))
