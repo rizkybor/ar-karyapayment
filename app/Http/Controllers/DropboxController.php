@@ -39,16 +39,20 @@ class DropboxController extends Controller
             'file' => 'required|file|max:10240',
         ]);
 
-         // 🔄 **Pastikan Access Token tersedia sebelum upload**
-         try {
+        // 🔄 **Pastikan Access Token tersedia sebelum upload**
+        try {
             $accessToken = DropboxService::getAccessToken();
+            Log::warning("🚨 [DROPBOX] TOKENNYAAAA" . $accessToken);
         } catch (Exception $e) {
             Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
             return DropboxService::redirectToAuthorization();
         }
+
+
         $file = $request->file('file');
         $filePath = '/uploads/' . $file->getClientOriginalName();
 
+        Log::warning("🚨 [DROPBOX] TOKENNYAAAA" . $accessToken . $file . $filePath);
         Storage::disk('dropbox')->put($filePath, file_get_contents($file));
 
         return response()->json([
