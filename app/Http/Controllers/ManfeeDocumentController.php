@@ -138,9 +138,18 @@ class ManfeeDocumentController extends Controller
             'approvals.approver'
         ])->findOrFail($id);
 
-        $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
-            return $items->sum('nilai_biaya');
-        });
+        // Semua Biaya Personil
+        // $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
+        //     return $items->sum('nilai_biaya');
+        // });
+
+        // Kecuali Biaya Non Personil
+        $subtotals = $manfeeDoc->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
+            ->groupBy('expense_type')
+            ->map(function ($items) {
+                return $items->sum('nilai_biaya');
+            });
+
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
@@ -171,9 +180,15 @@ class ManfeeDocumentController extends Controller
             'detailPayments'
         ])->findOrFail($id);
 
-        $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
-            return $items->sum('nilai_biaya');
-        });
+        // $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
+        //     return $items->sum('nilai_biaya');
+        // });
+        $subtotals = $manfeeDoc->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
+            ->groupBy('expense_type')
+            ->map(function ($items) {
+                return $items->sum('nilai_biaya');
+            });
+
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
