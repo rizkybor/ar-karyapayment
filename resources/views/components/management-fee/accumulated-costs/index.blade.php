@@ -91,7 +91,8 @@
                 <x-label for="nilai_manfee" value="{{ __('Nilai Manfee') }}" />
                 @if ($isEdit)
                     <x-input id="nilai_manfee" class="block mt-1 w-full" type="text" name="nilai_manfee"
-                        value="Rp. {{ old('nilai_manfee', number_format($firstAccumulatedCost->nilai_manfee ?? null, 0, ',', '.')) }}" />
+                        value="Rp. {{ old('nilai_manfee', number_format($firstAccumulatedCost->nilai_manfee ?? null, 0, ',', '.')) }}"
+                        oninput="formatCurrency(this);" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">Rp.
                         {{ number_format($firstAccumulatedCost->nilai_manfee ?? null, 0, ',', '.') }}</p>
@@ -206,6 +207,14 @@
         if (saveButton) {
             saveButton.disabled = true;
         }
+
+
+        window.formatCurrency = function(input) {
+            let value = input.value.replace(/\D/g, ''); // Hanya angka
+            if (value === '') return;
+            input.value = new Intl.NumberFormat("id-ID").format(value);
+            checkChanges();
+        };
 
         checkChanges();
 
