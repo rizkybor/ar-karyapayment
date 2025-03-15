@@ -260,7 +260,7 @@
             const nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value) || 0;
 
             // Total = Nilai Manfee + Nilai PPN + Subtotal Biaya Non Personil
-            const total = subtotals + nilaiManfee + nilaiPpn;
+            const total = subtotals + nilaiManfee + nilaiPpn + subtotalBiayaNonPersonil;
             document.getElementById('total').value = formatRupiah(total);
         }
 
