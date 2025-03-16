@@ -65,6 +65,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
 
+    Route::get('/dropbox/files', [DropboxController::class, 'listFiles'])->name('dropbox.files');
+
 
 
 

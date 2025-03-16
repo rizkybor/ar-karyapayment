@@ -83,4 +83,32 @@ class DropboxController extends Controller
             return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
         }
     }
+
+    public function listFiles()
+    {
+        try {
+            $accessToken = DropboxService::getAccessToken();
+
+            // 🔄 **Pastikan Access Token tersedia**
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            $client = new \Spatie\Dropbox\Client($accessToken);
+
+            // 🔍 Ambil daftar file dalam folder "uploads"
+            $folderPath = '/uploads';
+            $response = $client->listFolder($folderPath);
+
+            Log::info("📂 [DROPBOX] Isi folder uploads:", $response['entries']);
+
+            return response()->json([
+                'message' => 'Daftar file dalam Dropbox berhasil diambil',
+                'files' => $response['entries'],
+            ]);
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal mendapatkan daftar file!", ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Gagal mendapatkan daftar file: ' . $e->getMessage()], 500);
+        }
+    }
 }
