@@ -53,7 +53,7 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
         $action = new CreateNewUser();
         $action->create($request->all());
 
-        return redirect()->route('dashboard')->with('status', 'User berhasil dibuat.');
+        return redirect()->route('register')->with('status', 'User berhasil dibuat.');
     });
 });
 

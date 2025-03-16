@@ -21,7 +21,7 @@
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="name" type="text" name="name"
                                     class="mt-1 block w-full min-h-[40px]" :value="old('name')" required autofocus
-                                    autocomplete="name" />
+                                    autocomplete="name" placeholder="Masukkan nama lengkap" />
                             </div>
 
                             <!-- NIP -->
@@ -29,7 +29,7 @@
                                 <x-label for="nip">{{ __('NIP') }} <span
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="nip" type="number" name="nip" :value="old('nip')" required
-                                    oninput="limitNIPLength(this)" />
+                                    oninput="limitNIPLength(this)" placeholder="Masukkan nomor NIP" />
                                 <x-input-error for="nip" class="mt-2" />
                             </div>
 
@@ -37,7 +37,8 @@
                             <div>
                                 <x-label for="email">{{ __('Email Address') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="email" type="email" name="email" :value="old('email')" required />
+                                <x-input id="email" type="email" name="email" :value="old('email')" required
+                                    placeholder="Masukkan alamat email" />
                             </div>
 
                             <!-- Password -->
@@ -45,7 +46,7 @@
                                 <x-label for="password">{{ __('Password') }} <span
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="password" type="password" name="password" required
-                                    autocomplete="new-password" />
+                                    autocomplete="new-password" placeholder="Masukkan password" />
                             </div>
 
                             <!-- Confirm Password -->
@@ -53,21 +54,34 @@
                                 <x-label for="password_confirmation">{{ __('Confirm Password') }} <span
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="password_confirmation" type="password" name="password_confirmation"
-                                    required autocomplete="new-password" />
+                                    required autocomplete="new-password" placeholder="Masukkan ulang password" />
                             </div>
 
                             <!-- Department -->
                             <div>
                                 <x-label for="department">{{ __('Department') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="department" type="text" name="department" :value="old('department')" required />
+                                <select id="department" name="department"
+                                    class="mt-1 block w-full form-select rounded-md border-gray-300 shadow-sm" required>
+                                    <option value="">Pilih Department</option>
+                                    <option value="Departmen SDM">Departmen SDM</option>
+                                    <option value="Departmen Pengadaan dan Administrasi Umum">Departmen Pengadaan dan
+                                        Administrasi Umum</option>
+                                    <option value="Departmen Operasi">Departmen Operasi</option>
+                                    <option value="Departmen Keuangan">Departmen Keuangan</option>
+                                    <option value="Departmen Pengadaan dan Administrasi Umum">Departmen Pengadaan dan
+                                        Administrasi Umum</option>
+                                    <option value="Departmen SDM">Departmen SDM</option>
+                                </select>
+                                <x-input-error for="department" class="mt-2" />
                             </div>
 
                             <!-- Position -->
                             <div>
                                 <x-label for="position">{{ __('Position') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="position" type="text" name="position" :value="old('position')" required />
+                                <x-input id="position" type="text" name="position" :value="old('position')" required
+                                    placeholder="Masukkan posisi" />
                             </div>
 
                             <!-- Role -->
@@ -92,7 +106,7 @@
                                 <x-label for="employee_status">{{ __('Employee Status') }} <span
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="employee_status" type="text" name="employee_status" :value="old('employee_status')"
-                                    required />
+                                    required placeholder="Masukkan employee status" />
                             </div>
 
                             <!-- Gender -->
@@ -118,7 +132,7 @@
                                 <x-label for="identity_number">{{ __('Identity Number') }} <span
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="identity_number" type="text" name="identity_number" :value="old('identity_number')"
-                                    required />
+                                    required placeholder="Masukkan nomor identitas" />
                             </div>
                         </div>
 
