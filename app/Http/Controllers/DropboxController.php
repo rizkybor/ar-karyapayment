@@ -16,7 +16,28 @@ class DropboxController extends Controller
      */
     public function index(Request $request)
     {
-        return view('dropbox-upload');
+        try {
+            $accessToken = DropboxService::getAccessToken();
+    
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+    
+            $client = new Client($accessToken);
+            $folderPath = '/uploads';
+            $response = $client->listFolder($folderPath);
+            Log::info("📂 [DROPBOX] Isi folder uploads:", $response['entries']);
+    
+            return view('dropbox-upload', [
+                'files' => $response['entries']
+            ]);
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal mendapatkan daftar file!", ['error' => $e->getMessage()]);
+            return view('dropbox-upload', [
+                'files' => [],
+                'error' => 'Gagal mendapatkan daftar file: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -54,8 +75,8 @@ class DropboxController extends Controller
                 'file' => 'required|file|max:10240', // Maksimal 10MB
             ]);
 
-            // 🔄 **Pastikan Access Token tersedia sebelum upload**
             try {
+                // 🔄 **Pastikan Access Token tersedia sebelum upload**
                 $accessToken = DropboxService::getAccessToken();
 
                 // **Jika `getAccessToken()` mengembalikan Redirect, hentikan eksekusi**
@@ -118,6 +139,54 @@ class DropboxController extends Controller
         } catch (Exception $e) {
             Log::error("🚨 [DROPBOX] Gagal mendapatkan daftar file!", ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Gagal mendapatkan daftar file: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * 🔽 **Download File dari Dropbox**
+     */
+    public function readFile($path)
+    {
+        try {
+            $accessToken = DropboxService::getAccessToken();
+
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            $client = new Client($accessToken);
+            $fileContent = $client->download($path);
+
+            return response($fileContent, 200, [
+                'Content-Type' => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . basename($path) . '"',
+            ]);
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal mengunduh file!", ['error' => $e->getMessage()]);
+            return redirect()->route('dropbox.index')->with('error', 'Gagal mengunduh file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * ❌ **Hapus File dari Dropbox**
+     */
+    public function deleteFile($path)
+    {
+        try {
+            $accessToken = DropboxService::getAccessToken();
+
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            $client = new Client($accessToken);
+            $client->delete($path);
+
+            Log::info("✅ [DROPBOX] File berhasil dihapus: " . $path);
+            return redirect()->route('dropbox.index')->with('success', 'File berhasil dihapus dari Dropbox!');
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal menghapus file!", ['error' => $e->getMessage()]);
+            return redirect()->route('dropbox.index')->with('error', 'Gagal menghapus file: ' . $e->getMessage());
         }
     }
 }
