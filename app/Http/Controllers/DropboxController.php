@@ -88,9 +88,7 @@ class DropboxController extends Controller
 
             return redirect()->route('dropbox.index')->with('success', 'File berhasil diunggah ke Dropbox!');
         } catch (Exception $e) {
-        } catch (Exception $e) {
             Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
-
             // ❌ **Jika gagal, redirect kembali ke halaman upload dengan pesan error**
             return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
         }
