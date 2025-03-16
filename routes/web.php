@@ -51,19 +51,23 @@ Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
 Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
 
 
-Route::get('/dropbox/auth', [DropboxController::class, 'redirectToAuthorization'])
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+
+    Route::get('/dropbox/auth', [DropboxController::class, 'redirectToAuthorization'])
     ->name('dropbox.auth');
 
-Route::get('/dropbox/callback', [DropboxController::class, 'handleAuthorizationCallback'])
-    ->name('dropbox.callback');
+    Route::get('/dropbox/callback', [DropboxController::class, 'handleAuthorizationCallback'])
+        ->name('dropbox.callback');
 
-Route::post('/dropbox/upload', [DropboxController::class, 'upload'])
-    ->name('dropbox.upload');
+    Route::post('/dropbox/upload', [DropboxController::class, 'upload'])
+        ->name('dropbox.upload');
 
-Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
+    Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
 
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+
 
     // Route for the getting the data feed
     Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');

@@ -74,13 +74,13 @@ class DropboxController extends Controller
             Log::info("📂 [DROPBOX] Upload file: " . $filePath);
             Storage::disk('dropbox')->put($filePath, file_get_contents($file));
 
-            return response()->json([
-                'message' => 'File berhasil diunggah ke Dropbox!',
-                'file_path' => $filePath,
-            ]);
+            // ✅ **Jika berhasil, redirect ke halaman upload dengan pesan sukses**
+            return redirect()->route('dropbox.index')->with('success', 'File berhasil diunggah ke Dropbox!');
         } catch (Exception $e) {
             Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
-            return response()->json(['error' => 'Gagal mengunggah file: ' . $e->getMessage()], 500);
+
+            // ❌ **Jika gagal, redirect kembali ke halaman upload dengan pesan error**
+            return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
         }
     }
 }
