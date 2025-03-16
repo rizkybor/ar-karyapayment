@@ -82,10 +82,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/dropbox/view/{filePath}', [DropboxController::class, 'viewFile'])
     ->where('filePath', '.*')
     ->name('dropbox.file.view');
-    Route::get('/dropbox/url/{path}', [DropboxController::class, 'getFileUrl'])
+    Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])
     ->where('path', '.*')
-    ->name('dropbox.url');
-    Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])->name('dropbox.delete');
+    ->name('dropbox.delete');
     // END DROPBOX ROUTE
 
 

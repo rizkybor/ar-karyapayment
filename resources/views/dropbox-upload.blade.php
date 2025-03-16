@@ -2,13 +2,13 @@
     <h2 class="mb-3">📂 Upload File ke Dropbox</h2>
 
     {{-- Menampilkan pesan sukses/error --}}
-    @if(session()->has('success'))
+    @if (session()->has('success'))
         <div class="alert alert-success" role="alert">
             ✅ {{ session('success') }}
         </div>
     @endif
 
-    @if(session()->has('error'))
+    @if (session()->has('error'))
         <div class="alert alert-danger" role="alert">
             🚨 {{ session('error') }}
         </div>
@@ -28,7 +28,7 @@
     <h3>📁 Daftar File di Dropbox</h3>
 
     {{-- Tampilkan daftar file jika ada --}}
-    @if(isset($files) && count($files) > 0)
+    @if (isset($files) && count($files) > 0)
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
@@ -38,19 +38,29 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($files as $file)
+                @foreach ($files as $file)
                     <tr>
                         <td>{{ $file['name'] }}</td>
-                        
+
                         {{-- Preview File --}}
                         <td>
                             @php
                                 $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                                $previewable = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'pdf']);
+                                $previewable = in_array(strtolower($extension), [
+                                    'jpg',
+                                    'jpeg',
+                                    'png',
+                                    'gif',
+                                    'webp',
+                                    'mp4',
+                                    'webm',
+                                    'pdf',
+                                ]);
                             @endphp
-                            
-                            @if($previewable)
-                                <a href="{{ route('dropbox.file.view', ['filePath' => $file['path_lower']]) }}" target="_blank">
+
+                            @if ($previewable)
+                                <a href="{{ route('dropbox.file.view', ['filePath' => $file['path_lower']]) }}"
+                                    target="_blank">
                                     🖼 Lihat File
                                 </a>
                             @else
@@ -60,13 +70,11 @@
 
                         {{-- Tombol Aksi --}}
                         <td>
-                            {{-- Tombol Download --}}
-                            <a href="{{ route('dropbox.url', ['path' => $file['path_lower']]) }}" target="_blank" class="btn btn-success btn-sm">
-                                ⬇️ Download
-                            </a>
 
                             {{-- Tombol Hapus --}}
-                            <form action="{{ route('dropbox.delete', ['path' => $file['path_lower']]) }}" method="POST" style="display:inline-block;">
+                            <form
+                                action="{{ action([App\Http\Controllers\DropboxController::class, 'deleteFile'], ['path' => urlencode($file['path_lower'])]) }}"
+                                method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">🗑 Hapus</button>
