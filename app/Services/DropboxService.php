@@ -6,18 +6,19 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 use Exception;
 
 class DropboxService
 {
     /**
-     * 🔄 **Redirect pengguna ke halaman otorisasi Dropbox untuk mendapatkan Authorization Code**
+     * 🔄 **Redirect pengguna ke halaman otorisasi Dropbox**
      */
     public static function redirectToAuthorization()
     {
         $clientId = env('DROPBOX_APP_KEY');
         $redirectUri = env('DROPBOX_REDIRECT_URI');
-        $state = '12345'; // Bisa diubah atau dibuat dinamis jika diperlukan
+        $state = '12345'; // Bisa diubah jika perlu
 
         if (!$clientId || !$redirectUri) {
             throw new Exception("🚨 Konfigurasi Dropbox tidak ditemukan di .env");
@@ -29,17 +30,26 @@ class DropboxService
         $authUrl = "https://www.dropbox.com/oauth2/authorize?client_id={$clientId}&response_type=code&token_access_type=offline&redirect_uri={$redirectUri}&state={$state}";
 
         Log::info("🔗 [DROPBOX] Redirecting user to: " . $authUrl);
-        return redirect()->away($authUrl);
+        
+        // **Langsung redirect pengguna ke halaman otorisasi**
+        return $authUrl; // Kembalikan URL, biar Controller yang Redirect!
     }
 
     /**
-     * 🔄 **Menukar Authorization Code menjadi Refresh Token**
+     * 🔄 **Menangani Callback Dropbox untuk mendapatkan Refresh Token**
      */
-    public static function exchangeAuthCodeForRefreshToken($authorizationCode)
+    public static function handleAuthorizationCallback($request)
     {
-        Log::info("🔄 [DROPBOX] Menukar Authorization Code dengan Refresh Token...");
+        $authorizationCode = $request->query('code');
+
+        if (!$authorizationCode) {
+            Log::error("🚨 [DROPBOX] Authorization Code tidak ditemukan.");
+            return response()->json(['error' => 'Authorization Code tidak ditemukan.'], 400);
+        }
 
         try {
+            Log::info("🔄 [DROPBOX] Menukar Authorization Code dengan Refresh Token...");
+
             $response = Http::asForm()->post('https://api.dropboxapi.com/oauth2/token', [
                 'grant_type' => 'authorization_code',
                 'code' => $authorizationCode,
@@ -69,17 +79,15 @@ class DropboxService
      */
     public static function getAccessToken()
     {
-        // Cek apakah Access Token masih berlaku di Cache
         if (Cache::has('dropbox_access_token')) {
             return Cache::get('dropbox_access_token');
         }
 
         $refreshToken = env('DROPBOX_REFRESH_TOKEN');
 
-        // Jika tidak ada Refresh Token, arahkan pengguna untuk otorisasi ulang
         if (!$refreshToken) {
-            Log::warning("🚨 [DROPBOX] Refresh Token tidak ditemukan! Pengguna harus otorisasi ulang.");
-            return self::redirectToAuthorization();
+            Log::warning("🚨 [DROPBOX] Refresh Token tidak ditemukan! Mengarahkan ke OAuth...");
+            return self::redirectToAuthorization(); // Kembalikan URL, biar Controller Redirect
         }
 
         Log::info("🔄 [DROPBOX] Menggunakan Refresh Token untuk mendapatkan Access Token...");
@@ -97,7 +105,7 @@ class DropboxService
                     'error' => $response->json(),
                     'status' => $response->status()
                 ]);
-                return self::redirectToAuthorization();
+                return self::redirectToAuthorization(); // Kembalikan URL, biar Controller Redirect
             }
 
             $accessToken = $response->json()['access_token'];

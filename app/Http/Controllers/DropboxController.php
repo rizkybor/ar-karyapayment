@@ -6,21 +6,29 @@ use App\Services\DropboxService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Spatie\Dropbox\Client;
 use Exception;
-
 
 class DropboxController extends Controller
 {
+    /**
+     * 🔄 **Menampilkan halaman upload file ke Dropbox**
+     */
     public function index(Request $request)
     {
         return view('dropbox-upload');
     }
+
+    /**
+     * 🔄 **Redirect ke halaman otorisasi Dropbox jika belum login**
+     */
     public function redirectToAuthorization()
     {
         return DropboxService::redirectToAuthorization();
     }
 
+    /**
+     * 🔄 **Handle Callback setelah pengguna menyetujui akses Dropbox**
+     */
     public function handleAuthorizationCallback(Request $request)
     {
         $authorizationCode = $request->query('code');
@@ -29,35 +37,50 @@ class DropboxController extends Controller
             return response()->json(['error' => 'Authorization Code tidak ditemukan'], 400);
         }
 
-        DropboxService::exchangeAuthCodeForRefreshToken($authorizationCode);
+        // Tukarkan Authorization Code dengan Refresh Token
+        DropboxService::handleAuthorizationCallback($request);
+
         return redirect()->route('dropbox.upload')->with('success', 'Dropbox berhasil dihubungkan!');
     }
 
+    /**
+     * 🔄 **Upload File ke Dropbox**
+     */
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|max:10240',
-        ]);
-
-        // 🔄 **Pastikan Access Token tersedia sebelum upload**
         try {
-            $accessToken = DropboxService::getAccessToken();
-            Log::warning("🚨 [DROPBOX] TOKENNYAAAA" . $accessToken);
+            $request->validate([
+                'file' => 'required|file|max:10240', // Maksimal 10MB
+            ]);
+
+            // 🔄 **Pastikan Access Token tersedia sebelum upload**
+            try {
+                $accessToken = DropboxService::getAccessToken();
+
+                // **Jika `getAccessToken()` mengembalikan Redirect, hentikan eksekusi**
+                if (filter_var($accessToken, FILTER_VALIDATE_URL)) {
+                    return redirect($accessToken);
+                }
+
+                Log::info("✅ [DROPBOX] Menggunakan Access Token untuk upload.");
+            } catch (Exception $e) {
+                Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
+                return DropboxService::redirectToAuthorization();
+            }
+
+            $file = $request->file('file');
+            $filePath = 'uploads/' . $file->getClientOriginalName();
+
+            Log::info("📂 [DROPBOX] Upload file: " . $filePath);
+            Storage::disk('dropbox')->put($filePath, file_get_contents($file));
+
+            return response()->json([
+                'message' => 'File berhasil diunggah ke Dropbox!',
+                'file_path' => $filePath,
+            ]);
         } catch (Exception $e) {
-            Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
-            return DropboxService::redirectToAuthorization();
+            Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Gagal mengunggah file: ' . $e->getMessage()], 500);
         }
-
-
-        $file = $request->file('file');
-        $filePath = '/uploads/' . $file->getClientOriginalName();
-
-        Log::warning("🚨 [DROPBOX] TOKENNYAAAA" . $accessToken . $file . $filePath);
-        Storage::disk('dropbox')->put($filePath, file_get_contents($file));
-
-        return response()->json([
-            'message' => 'File berhasil diunggah ke Dropbox!',
-            'file_path' => $filePath,
-        ]);
     }
 }
