@@ -234,24 +234,25 @@
                         </div>
                     </li>
                     <!-- Settings -->
-                    <li
-                        class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
-                        bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                       @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif
-                       x-data="{ open: {{ Request::is('user*') || Request::is('contracts*') || Request::is('register*') ? 1 : 0 }} }">
+                    <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
+                    bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
+                    @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
+                        x-data="{ open: {{ Request::is('user*') || Request::is('contracts*') || Request::is('register*') ? 1 : 0 }} }">
+
                         <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                            @if (!Request::is('user*') && !Request::is('contracts*')) hover:text-gray-900 dark:hover:text-white @endif"
+                        @if (!Request::is('user*') && !Request::is('contracts*') && !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
                             href="#0" @click.prevent="open = !open; sidebarExpanded = true">
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 fill-current 
-                                      @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) text-violet-500 @else text-gray-400 dark:text-gray-500 @endif
-
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16" height="16" viewBox="0 0 16 16">
+                                    @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) text-violet-500 
+                                    @else 
+                                        text-gray-400 dark:text-gray-500 @endif"
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        viewBox="0 0 16 16">
                                         <path
-                                            d="M10.5 1a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2h-1.145a3.502 3.502 0 0 1-6.71 0H1a1 1 0 0 1 0-2h6.145A3.502 3.502 0 0 1 10.5 1ZM9 4.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM5.5 9a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2H8.855a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h1.145A3.502 3.502 0 0 1 5.5 9ZM4 12.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                                            d="M10.5 1a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2h-1.145a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h6.145A3.502 3.502 0 0 1 10.5 1ZM9 4.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM5.5 9a3.502 3.502 0 0 1 3.355 2.5H15a1 1 0 1 1 0 2H8.855a3.502 3.502 0 0 1-6.71 0H1a1 1 0 1 1 0-2h1.145A3.502 3.502 0 0 1 5.5 9ZM4 12.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
                                             fill-rule="evenodd" />
                                     </svg>
                                     <span
@@ -273,7 +274,7 @@
                         <!-- Dropdown -->
                         <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
                             <ul class="pl-8 mt-1 
-                                @if (!Request::is('user*') && !Request::is('contracts*') && !Request::is('register*')) hidden @endif"
+                            @if (!Request::is('user*') && !Request::is('contracts*') && !Request::is('register*')) hidden @endif"
                                 :class="open ? '!block' : 'hidden'">
 
                                 @role('super_admin')
@@ -292,7 +293,7 @@
                                 @role('super_admin')
                                     <li class="mb-1 last:mb-0">
                                         <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                    @if (Request::is('register*')) !text-violet-500 @endif"
+                                        @if (Request::is('register*')) !text-violet-500 @endif"
                                             href="{{ route('register') }}">
                                             <span
                                                 class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -304,7 +305,7 @@
 
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                        @if (Request::is('user*')) !text-violet-500 @endif"
+                                    @if (Request::is('user*')) !text-violet-500 @endif"
                                         href="{{ route('profile.show') }}">
                                         <span
                                             class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
@@ -316,6 +317,7 @@
                             </ul>
                         </div>
                     </li>
+
                 </ul>
             </div>
 
