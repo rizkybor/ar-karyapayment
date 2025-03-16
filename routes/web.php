@@ -1,36 +1,37 @@
 <?php
 
-use App\Http\Controllers\ContractsController;
-use App\Http\Controllers\ManfeeDescriptionsController;
-use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DataFeedController;
+use App\Http\Controllers\TestController;
+// use App\Http\Controllers\DataFeedController;
+use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\DashboardController;
 
+use App\Http\Controllers\ManfeeTaxController;
+use App\Http\Controllers\ManfeeHistoryController;
 use App\Http\Controllers\ManfeeDocumentController;
 use App\Http\Controllers\ManfeeAttachmentController;
-use App\Http\Controllers\ManfeeDocumentDataTableController;
-use App\Http\Controllers\ManfeeTaxController;
+use App\Http\Controllers\ManfeeDescriptionsController;
 use App\Http\Controllers\ManfeeDetailPaymentsController;
 use App\Http\Controllers\ManfeeAccumulatedCostController;
-use App\Http\Controllers\ManfeeHistoryController;
+use App\Http\Controllers\ManfeeDocumentDataTableController;
 
-use App\Http\Controllers\NonManfeeDocumentDataTableController;
-use App\Http\Controllers\NonManfeeDocumentController;
-use App\Http\Controllers\NonManfeeAccumulatedCostController;
-use App\Http\Controllers\NonManfeeAttachmentController;
-use App\Http\Controllers\NonManfeeDescriptionController;
 use App\Http\Controllers\NonManfeeTaxController;
 use App\Http\Controllers\NonManfeeHistoryController;
+use App\Http\Controllers\NonManfeeDocumentController;
+use App\Http\Controllers\NonManfeeAttachmentController;
+use App\Http\Controllers\NonManfeeDescriptionController;
+use App\Http\Controllers\NonManfeeAccumulatedCostController;
+use App\Http\Controllers\NonManfeeDocumentDataTableController;
 
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
-use App\Http\Controllers\DropboxController;
-use App\Http\Controllers\PDFController;
 
-use App\Actions\Fortify\CreateNewUser;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Actions\Fortify\CreateNewUser;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -59,39 +60,44 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
 Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
 
+// ROUTE RESET PASSWORD
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
-
-Route::get('/generate-letter', [PDFController::class, 'generateLetter']);
-Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
-Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
-
+// Route::get('/generate-letter', [PDFController::class, 'generateLetter']);
+// Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
+// Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    // Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
 
-    // DROPBOX ROUTE
+    /*
+    |--------------------------------------------------------------------------
+    | Dropbox Routes
+    |--------------------------------------------------------------------------
+    */
     Route::get('/dropbox/auth', [DropboxController::class, 'redirectToAuthorization'])
         ->name('dropbox.auth');
     Route::get('/dropbox/callback', [DropboxController::class, 'handleAuthorizationCallback'])
         ->name('dropbox.callback');
+
+    // DROPBOX TES UNGGAH, VIEW, CEK LIST FILE DI DROPBOX, DAN DELETE
     Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
     Route::post('/dropbox/upload', [DropboxController::class, 'upload'])
         ->name('dropbox.upload');
     Route::get('/dropbox/files', [DropboxController::class, 'listFiles'])->name('dropbox.files');
     Route::get('/dropbox/view/{filePath}', [DropboxController::class, 'viewFile'])
-    ->where('filePath', '.*')
-    ->name('dropbox.file.view');
+        ->where('filePath', '.*')
+        ->name('dropbox.file.view');
     Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])
-    ->where('path', '.*')
-    ->name('dropbox.delete');
-    // END DROPBOX ROUTE
+        ->where('path', '.*')
+        ->name('dropbox.delete');
 
-
-
-    // Route for the getting the data feed
-    Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
-
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Routes
+    |--------------------------------------------------------------------------
+    */
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/json', [NotificationController::class, 'getNotificationsJson'])->name('notifications.getNotificationsJson');
     Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
@@ -101,7 +107,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
-
+    // END ROUTE NOTIFICATION
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -112,7 +118,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
 
-    // ROUTE MANAGEMENT FEE
+    /*
+    |--------------------------------------------------------------------------
+    | Management Fee Routes
+    |--------------------------------------------------------------------------
+    */
     Route::prefix('management-fee')->name('management-fee.')->group(function () {
 
         Route::get('/datatable', [ManfeeDocumentDataTableController::class, 'index'])->name('datatable');
@@ -204,7 +214,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         });
     });
 
-    // ROUTE NON MANAGEMENT FEE
+    /*
+    |--------------------------------------------------------------------------
+    | Management Non Fee Routes
+    |--------------------------------------------------------------------------
+    */
     Route::prefix('non-management-fee')->name('non-management-fee.')->group(function () {
         Route::get('/datatable', [NonManfeeDocumentDataTableController::class, 'index'])->name('datatable');
         Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
@@ -242,6 +256,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::delete('/{attachment_id}', [NonManfeeAttachmentController::class, 'destroy'])->name('destroy');
         });
 
+        // Prefix untuk descriptions
         Route::prefix('{id}/edit/descriptions')->name('descriptions.')->group(function () {
             // non-management-fee.descriptions.show
             Route::get('/{description_id}', [NonManfeeDescriptionController::class, 'show'])->name('show');
@@ -253,6 +268,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::delete('/{description_id}', [NonManfeeDescriptionController::class, 'destroy'])->name('destroy');
         });
 
+        // Prefix untuk Tax
         Route::prefix('{id}/edit/taxes')->name('taxes.')->group(function () {
             // non-management-fee.taxs.show
             Route::get('/{taxes_id}', [NonManfeeTaxController::class, 'show'])->name('show');
