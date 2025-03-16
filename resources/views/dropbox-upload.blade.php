@@ -1,4 +1,3 @@
-{{-- SAMPLE-PENGGUNAAN-DROPBOX --}}
 <div class="container">
     <h2 class="mb-3">📂 Upload File ke Dropbox</h2>
 
@@ -34,6 +33,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Nama File</th>
+                    <th>Preview</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -41,9 +41,27 @@
                 @foreach($files as $file)
                     <tr>
                         <td>{{ $file['name'] }}</td>
+                        
+                        {{-- Preview File --}}
+                        <td>
+                            @php
+                                $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                                $previewable = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'pdf']);
+                            @endphp
+                            
+                            @if($previewable)
+                                <a href="{{ route('dropbox.file.view', ['filePath' => $file['path_lower']]) }}" target="_blank">
+                                    🖼 Lihat File
+                                </a>
+                            @else
+                                <span class="text-muted">❌ Tidak Bisa Dilihat</span>
+                            @endif
+                        </td>
+
+                        {{-- Tombol Aksi --}}
                         <td>
                             {{-- Tombol Download --}}
-                            <a href="{{ route('dropbox.read', ['path' => $file['path_lower']]) }}" class="btn btn-success btn-sm">
+                            <a href="{{ route('dropbox.url', ['path' => $file['path_lower']]) }}" target="_blank" class="btn btn-success btn-sm">
                                 ⬇️ Download
                             </a>
 
