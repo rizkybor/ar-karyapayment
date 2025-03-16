@@ -62,10 +62,9 @@ class DropboxController extends Controller
                 if (filter_var($accessToken, FILTER_VALIDATE_URL)) {
                     return redirect($accessToken);
                 }
-
-                Log::info("✅ [DROPBOX] Menggunakan Access Token untuk upload.");
+                // Log::info("✅ [DROPBOX] Menggunakan Access Token untuk upload.");
             } catch (Exception $e) {
-                Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
+                // Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
                 return DropboxService::redirectToAuthorization();
             }
 
@@ -75,11 +74,11 @@ class DropboxController extends Controller
             // **📂 Ambil File dari Request**
             $file = $request->file('file');
             $fileName = '/' . $file->getClientOriginalName();
-            Log::info("📂 [DROPBOX] Upload file ke: " . $fileName);
+            // Log::info("📂 [DROPBOX] Upload file ke: " . $fileName);
             $filePath = '/uploads' . $fileName;
             $fileContent = file_get_contents($file->getRealPath()); // Baca isi file
 
-            Log::info("📂 [DROPBOX] Upload file ke: " . $filePath);
+            // Log::info("📂 [DROPBOX] Upload file ke: " . $filePath);
 
             // **🚀 Gunakan metode `upload()` dari Spatie Client**
             $response = $client->upload($filePath, $fileContent, 'add'); // 'add' mode agar tidak menimpa
