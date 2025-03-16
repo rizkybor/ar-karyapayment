@@ -70,21 +70,22 @@ Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
-
+    // DROPBOX ROUTE
     Route::get('/dropbox/auth', [DropboxController::class, 'redirectToAuthorization'])
-    ->name('dropbox.auth');
-
+        ->name('dropbox.auth');
     Route::get('/dropbox/callback', [DropboxController::class, 'handleAuthorizationCallback'])
         ->name('dropbox.callback');
-
+    Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
     Route::post('/dropbox/upload', [DropboxController::class, 'upload'])
         ->name('dropbox.upload');
-
-    Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
-
     Route::get('/dropbox/files', [DropboxController::class, 'listFiles'])->name('dropbox.files');
-
-
+    Route::get('/dropbox/view/{filePath}', [DropboxController::class, 'viewFile'])
+    ->where('filePath', '.*')
+    ->name('dropbox.file.view');
+    Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])
+    ->where('path', '.*')
+    ->name('dropbox.delete');
+    // END DROPBOX ROUTE
 
 
 

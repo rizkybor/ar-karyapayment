@@ -29,7 +29,7 @@ class DropboxService
 
         $authUrl = "https://www.dropbox.com/oauth2/authorize?client_id={$clientId}&response_type=code&token_access_type=offline&redirect_uri={$redirectUri}&state={$state}";
 
-        Log::info("🔗 [DROPBOX] Redirecting user to: " . $authUrl);
+        // Log::info("🔗 [DROPBOX] Redirecting user to: " . $authUrl);
         
         // **Langsung redirect pengguna ke halaman otorisasi**
         return $authUrl; // Kembalikan URL, biar Controller yang Redirect!
@@ -43,12 +43,12 @@ class DropboxService
         $authorizationCode = $request->query('code');
 
         if (!$authorizationCode) {
-            Log::error("🚨 [DROPBOX] Authorization Code tidak ditemukan.");
+            // Log::error("🚨 [DROPBOX] Authorization Code tidak ditemukan.");
             return response()->json(['error' => 'Authorization Code tidak ditemukan.'], 400);
         }
 
         try {
-            Log::info("🔄 [DROPBOX] Menukar Authorization Code dengan Refresh Token...");
+            // Log::info("🔄 [DROPBOX] Menukar Authorization Code dengan Refresh Token...");
 
             $response = Http::asForm()->post('https://api.dropboxapi.com/oauth2/token', [
                 'grant_type' => 'authorization_code',
@@ -86,11 +86,11 @@ class DropboxService
         $refreshToken = env('DROPBOX_REFRESH_TOKEN');
 
         if (!$refreshToken) {
-            Log::warning("🚨 [DROPBOX] Refresh Token tidak ditemukan! Mengarahkan ke OAuth...");
+            // Log::warning("🚨 [DROPBOX] Refresh Token tidak ditemukan! Mengarahkan ke OAuth...");
             return self::redirectToAuthorization(); // Kembalikan URL, biar Controller Redirect
         }
 
-        Log::info("🔄 [DROPBOX] Menggunakan Refresh Token untuk mendapatkan Access Token...");
+        // Log::info("🔄 [DROPBOX] Menggunakan Refresh Token untuk mendapatkan Access Token...");
 
         try {
             $response = Http::asForm()->post('https://api.dropboxapi.com/oauth2/token', [
@@ -101,20 +101,14 @@ class DropboxService
             ]);
 
             if ($response->failed()) {
-                Log::error("🚨 [DROPBOX] Gagal mendapatkan Access Token!", [
-                    'error' => $response->json(),
-                    'status' => $response->status()
-                ]);
                 return self::redirectToAuthorization(); // Kembalikan URL, biar Controller Redirect
             }
 
             $accessToken = $response->json()['access_token'];
             Cache::put('dropbox_access_token', $accessToken, now()->addHours(3));
 
-            Log::info("✅ [DROPBOX] Access Token berhasil diperoleh.");
             return $accessToken;
         } catch (Exception $e) {
-            Log::error("🚨 [DROPBOX] Error saat mendapatkan Access Token", ['error' => $e->getMessage()]);
             throw $e;
         }
     }
