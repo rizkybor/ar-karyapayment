@@ -6,6 +6,7 @@ use App\Services\DropboxService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Spatie\Dropbox\Client;
 use Exception;
 
 class DropboxController extends Controller
@@ -68,14 +69,25 @@ class DropboxController extends Controller
                 return DropboxService::redirectToAuthorization();
             }
 
+            // **🔍 Inisialisasi Client Spatie**
+            $client = new Client($accessToken);
+
+            // **📂 Ambil File dari Request**
             $file = $request->file('file');
-            $filePath = 'uploads/' . $file->getClientOriginalName();
+            $fileName = '/' . $file->getClientOriginalName();
+            Log::info("📂 [DROPBOX] Upload file ke: " . $fileName);
+            $filePath = '/uploads' . $fileName;
+            $fileContent = file_get_contents($file->getRealPath()); // Baca isi file
 
-            Log::info("📂 [DROPBOX] Upload file: " . $filePath);
-            Storage::disk('dropbox')->put($filePath, file_get_contents($file));
+            Log::info("📂 [DROPBOX] Upload file ke: " . $filePath);
 
-            // ✅ **Jika berhasil, redirect ke halaman upload dengan pesan sukses**
+            // **🚀 Gunakan metode `upload()` dari Spatie Client**
+            $response = $client->upload($filePath, $fileContent, 'add'); // 'add' mode agar tidak menimpa
+
+            Log::info("✅ [DROPBOX] File berhasil diunggah: ", $response);
+
             return redirect()->route('dropbox.index')->with('success', 'File berhasil diunggah ke Dropbox!');
+        } catch (Exception $e) {
         } catch (Exception $e) {
             Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
 
@@ -94,7 +106,7 @@ class DropboxController extends Controller
                 return $accessToken;
             }
 
-            $client = new \Spatie\Dropbox\Client($accessToken);
+            $client = new Client($accessToken);
 
             // 🔍 Ambil daftar file dalam folder "uploads"
             $folderPath = '/uploads';
@@ -104,7 +116,7 @@ class DropboxController extends Controller
 
             return response()->json([
                 'message' => 'Daftar file dalam Dropbox berhasil diambil',
-                'files' => $response['entries'],
+                'files' => $response,
             ]);
         } catch (Exception $e) {
             Log::error("🚨 [DROPBOX] Gagal mendapatkan daftar file!", ['error' => $e->getMessage()]);
