@@ -28,6 +28,9 @@ use Laravel\Fortify\Http\Controllers\NewPasswordController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\PDFController;
 
+use App\Actions\Fortify\CreateNewUser;
+use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,6 +43,20 @@ use App\Http\Controllers\PDFController;
 */
 
 Route::redirect('/', 'login');
+
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/register', function () {
+        return view('auth.register', ['roles' => Role::all()]);
+    })->name('register');
+
+    Route::post('/register', function (Request $request) {
+        $action = new CreateNewUser();
+        $action->create($request->all());
+
+        return redirect()->route('dashboard')->with('status', 'User berhasil dibuat.');
+    });
+});
+
 Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
 
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
