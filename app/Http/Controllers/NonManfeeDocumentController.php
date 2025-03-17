@@ -341,7 +341,7 @@ class NonManfeeDocumentController extends Controller
             if ($document->attachments->isEmpty()) {
                 return back()->with(
                     'error',
-                    "Dokumen tidak dapat diproses karena belum ada lampiran."
+                    "Dokumen tidak dapat diproses karena belum memiliki lampiran."
                 );
             }
 
@@ -349,7 +349,7 @@ class NonManfeeDocumentController extends Controller
             if ($document->accumulatedCosts->pluck('account')[0] == null) {
                 return back()->with(
                     'error',
-                    "Dokumen tidak dapat diproses karena belum ada account yang dipilih pada akumulasi biaya."
+                    "Dokumen tidak dapat diproses karena tidak ada akun yang terpilih pada akumulasi biaya."
                 );
             }
 
