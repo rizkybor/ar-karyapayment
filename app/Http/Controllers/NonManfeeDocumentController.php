@@ -374,7 +374,7 @@ class NonManfeeDocumentController extends Controller
 
             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
             if ($document->last_reviewers === 'pajak') {
-                // ✅ Cek apakah ada lampiran (attachments)
+                // ✅ Cek apakah ada faktur pajak (tax files)
                 if ($document->taxFiles->isEmpty()) {
                     return back()->with(
                         'error',
