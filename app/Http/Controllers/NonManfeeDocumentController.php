@@ -44,27 +44,27 @@ class NonManfeeDocumentController extends Controller
 
         // Ambil nomor terakhir dan tambahkan 10
         $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-        ->value('letter_number');
+            ->value('letter_number');
 
 
-    if (!$lastNumber) {
-        $lastNumeric = 100;
-    } else {
+        if (!$lastNumber) {
+            $lastNumeric = 100;
+        } else {
 
-        preg_match('/^(\d{6})/', $lastNumber, $matches);
-        $lastNumeric = $matches[1] ?? '000100';
-        $lastNumeric = intval($lastNumeric);
+            preg_match('/^(\d{6})/', $lastNumber, $matches);
+            $lastNumeric = $matches[1] ?? '000100';
+            $lastNumeric = intval($lastNumeric);
 
-        if ($lastNumeric % 10 !== 0) {
-            $lastNumeric = ceil($lastNumeric / 10) * 10;
+            if ($lastNumeric % 10 !== 0) {
+                $lastNumeric = ceil($lastNumeric / 10) * 10;
+            }
         }
-    }
 
-    $nextNumber = $lastNumeric + 10;
+        $nextNumber = $lastNumeric + 10;
 
-    $letterNumber = sprintf("%06d/NMF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-    $invoiceNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-    $receiptNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $letterNumber = sprintf("%06d/NMF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/non-management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
@@ -334,6 +334,25 @@ class NonManfeeDocumentController extends Controller
     {
         DB::beginTransaction();
         try {
+            // 🔍 Ambil dokumen berdasarkan ID
+            $document = NonManfeeDocument::with(['attachments', 'accumulatedCosts'])->findOrFail($id);
+
+            // ✅ Cek apakah ada lampiran (attachments)
+            if ($document->attachments->isEmpty()) {
+                return back()->with(
+                    'error',
+                    "Dokumen tidak dapat diproses karena belum memiliki lampiran."
+                );
+            }
+
+            // ✅ Cek apakah ada akumulasi biaya (accumulatedCosts)
+            if ($document->accumulatedCosts->pluck('account')[0] == null) {
+                return back()->with(
+                    'error',
+                    "Dokumen tidak dapat diproses karena tidak ada akun yang terpilih pada akumulasi biaya."
+                );
+            }
+
             $document = NonManfeeDocument::findOrFail($id);
             $user = Auth::user();
             $userRole = $user->role;

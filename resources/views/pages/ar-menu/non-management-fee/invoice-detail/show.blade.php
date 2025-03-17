@@ -25,9 +25,14 @@
         <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :latestApprover=$latestApprover
             :document="$nonManfeeDocument" isShowPage="true" />
 
+        {{-- Get error message --}}
+        @if (session()->has('error'))
+            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                🚨 {{ session('error') }}
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 gap-6 mt-6">
-
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                 <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />

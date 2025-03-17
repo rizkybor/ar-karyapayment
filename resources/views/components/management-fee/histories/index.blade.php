@@ -104,7 +104,7 @@
                     '3': 'Checked by Mgr. Anggaran',
                     '4': 'Checked by Dir. Keuangan',
                     '5': 'Checked by Pajak',
-                    '6': 'Submit doc to Employer',
+                    '6': 'Done at Pembendaharaan',
                     '100': 'Finished',
                     '101': 'Canceled',
                     '102': 'Revised',

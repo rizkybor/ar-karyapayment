@@ -19,8 +19,10 @@
         <form action="{{ route('dropbox.upload') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <label class="block text-gray-700 font-medium mb-2">Pilih File:</label>
-            <input type="file" name="file" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" required>
-            <button type="submit" class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition">
+            <input type="file" name="file" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300"
+                required>
+            <button type="submit"
+                class="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition">
                 📤 Unggah ke Dropbox
             </button>
         </form>
@@ -48,13 +50,21 @@
                             <td class="p-3 border text-center">
                                 @php
                                     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                                    $previewable = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'pdf']);
+                                    $previewable = in_array(strtolower($extension), [
+                                        'jpg',
+                                        'jpeg',
+                                        'png',
+                                        'gif',
+                                        'webp',
+                                        'mp4',
+                                        'webm',
+                                        'pdf',
+                                    ]);
                                 @endphp
 
                                 @if ($previewable)
                                     <a href="{{ route('dropbox.file.view', ['filePath' => $file['path_lower']]) }}"
-                                       target="_blank"
-                                       class="text-blue-500 hover:underline">
+                                        target="_blank" class="text-blue-500 hover:underline">
                                         🖼 Lihat File
                                     </a>
                                 @else
@@ -64,13 +74,14 @@
 
                             {{-- 🗑 Tombol Hapus --}}
                             <td class="p-3 border text-center">
-                                <form action="{{ action([App\Http\Controllers\DropboxController::class, 'deleteFile'], ['path' => urlencode($file['path_lower'])]) }}"
-                                      method="POST"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
+                                <form
+                                    action="{{ action([App\Http\Controllers\DropboxController::class, 'deleteFile'], ['path' => urlencode($file['path_lower'])]) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus file ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                                        class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
                                         🗑 Hapus
                                     </button>
                                 </form>

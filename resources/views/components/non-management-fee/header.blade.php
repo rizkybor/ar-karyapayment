@@ -69,7 +69,8 @@
         @endif
 
         <!-- Tombol Action -->
-        @if ($isShowPage && $transaction_status == '1')
+        {{-- @if ($isShowPage && $transaction_status == '1') --}}
+        @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
