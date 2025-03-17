@@ -43,14 +43,28 @@ class NonManfeeDocumentController extends Controller
         $year = date('Y');
 
         // Ambil nomor terakhir dan tambahkan 10
-        $lastNumber = NonManfeeDocument::max('letter_number');
+        $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        ->value('letter_number');
+
+
+    if (!$lastNumber) {
+        $lastNumeric = 100;
+    } else {
+
         preg_match('/^(\d{6})/', $lastNumber, $matches);
         $lastNumeric = $matches[1] ?? '000100';
-        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
+        $lastNumeric = intval($lastNumeric);
 
-        $letterNumber = sprintf("No. %06d/NF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("No. %06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("No. %06d/NF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        if ($lastNumeric % 10 !== 0) {
+            $lastNumeric = ceil($lastNumeric / 10) * 10;
+        }
+    }
+
+    $nextNumber = $lastNumeric + 10;
+
+    $letterNumber = sprintf("%06d/NMF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+    $invoiceNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+    $receiptNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/non-management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
@@ -109,7 +123,7 @@ class NonManfeeDocumentController extends Controller
             ]);
 
             // Redirect ke halaman detail dengan ID yang benar
-            return redirect()->route('non-management-fee.show', ['id' => $document->id])
+            return redirect()->route('non-management-fee.edit', ['id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
