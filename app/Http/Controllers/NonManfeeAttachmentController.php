@@ -31,11 +31,12 @@ class NonManfeeAttachmentController extends Controller
     
         // **📂 Ambil File dari Request**
         $file = $request->file('file');
-        $fileName = $request->file_name; // Ambil nama file yang diinput user
+        $fileName = $request->file_name;
+        $dropboxFolderName = '/attachments/';
     
-        // 🚀 **Panggil fungsi uploadFile dari DropboxController**
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
         $dropboxController = new DropboxController();
-        $dropboxPath = $dropboxController->uploadFile($file, $fileName);
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
     
         // ❌ Cek apakah upload ke Dropbox gagal
         if (!$dropboxPath) {
@@ -82,6 +83,13 @@ class NonManfeeAttachmentController extends Controller
         $attachment = NonManfeeDocAttachment::where('document_id', $id)
             ->where('id', $attachment_id)
             ->firstOrFail();
+
+        // 🔄 **Ambil path file dari database**
+        $dropboxPath = $attachment->path;
+        dd($dropboxPath);
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $attachment->delete();
 
