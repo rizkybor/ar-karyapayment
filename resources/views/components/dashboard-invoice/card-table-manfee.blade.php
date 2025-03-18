@@ -15,6 +15,9 @@
                             <div class="font-semibold text-center">No</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-left">No Invoices</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
                             <div class="font-semibold text-left">No Kontrak</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
@@ -36,6 +39,9 @@
                             onclick="confirmRedirect('/invoice/{{ $invoice->id }}')">
                             <td class="p-2 whitespace-nowrap">
                                 <div class="text-center">{{ $i++ }}</div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-left">{{ $invoice->invoice_number ?? '-' }}</div>
                             </td>
                             <td class="p-2 whitespace-nowrap">
                                 <div class="text-left">{{ $invoice->contract_number ?? '-' }}</div>
