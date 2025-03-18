@@ -1,7 +1,7 @@
 <!-- Tombol untuk Membuka Modal -->
-<x-button-action color="blue" icon="history" onclick="openHistoryModal({{ $nonManfeeDocument['id'] }})">
+{{-- <x-button-action color="blue" icon="history" onclick="openHistoryModal({{ $nonManfeeDocument['id'] }})">
     Lihat History
-</x-button-action>
+</x-button-action> --}}
 
 <!-- Modal History -->
 <div id="historyModal"

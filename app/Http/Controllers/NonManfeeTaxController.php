@@ -47,7 +47,7 @@ class NonManfeeTaxController extends Controller
         // Simpan ke database
         NonManfeeDocTax::create([
             'document_id' => $id,
-            'file_name' => $request->file_name,
+            'file_name' => $fileName,
             'path' => $dropboxPath,
         ]);
 
