@@ -42,18 +42,20 @@ class NonManfeeDocumentDataTableController extends Controller
                 WHEN expired_at >= NOW() THEN 0 
                 ELSE 1
             END, 
-            CASE 
-                WHEN status = '0' THEN 1
-                WHEN status = '1' THEN 2
-                WHEN status = '2' THEN 3
-                WHEN status = '3' THEN 4
-                WHEN status = '4' THEN 5
-                WHEN status = '5' THEN 6
-                WHEN status = '6' THEN 7
-                ELSE 8
-            END, 
             expired_at ASC
         ");
+
+        // jika ingin di seragamkan by status datanya 
+        // CASE 
+        //   WHEN status = '0' THEN 1
+        //   WHEN status = '1' THEN 2
+        //   WHEN status = '2' THEN 3
+        //   WHEN status = '3' THEN 4
+        //   WHEN status = '4' THEN 5
+        //   WHEN status = '5' THEN 6
+        //   WHEN status = '6' THEN 7
+        //   ELSE 8
+        // END, 
 
         // ✅ Gunakan DataTables untuk proses data
         $data = DataTables::eloquent($query)
