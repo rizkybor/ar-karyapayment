@@ -41,32 +41,62 @@ class DropboxController extends Controller
     }
 
     /**
-     * 🔄 **Redirect ke halaman otorisasi Dropbox jika belum login**
+     * 📂 **Get Single URL with fixed File from Dropbox (MODE TESTING)**
      */
-    public function redirectToAuthorization()
+    public function getFileUrl($filePath)
     {
-        return DropboxService::redirectToAuthorization();
-    }
+        // Pastikan path sesuai dengan format Dropbox
+        $filePath = '/' . ltrim($filePath, '/');
+        $filePathLower = strtolower($filePath);
 
-    /**
-     * 🔄 **Handle Callback setelah pengguna menyetujui akses Dropbox**
-     */
-    public function handleAuthorizationCallback(Request $request)
-    {
-        $authorizationCode = $request->query('code');
+        try {
+            Log::info("📂 [DROPBOX] Mengakses file: " . $filePath);
 
-        if (!$authorizationCode) {
-            return response()->json(['error' => 'Authorization Code tidak ditemukan'], 400);
+            $accessToken = DropboxService::getAccessToken();
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            $client = new Client($accessToken);
+
+            // 🔍 **Pastikan file ada di Dropbox sebelum mengambil link**
+            $list = $client->listFolder('/uploads');
+
+            $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
+
+            if (!$fileExists) {
+                Log::error("❌ [DROPBOX] File tidak ditemukan: " . $filePath);
+                return null;
+            }
+
+            // 🔍 **Ambil shared link yang sudah ada**
+            Log::info("🔄 [DROPBOX] Mengecek shared links...");
+            $sharedLinks = $client->listSharedLinks($filePath);
+            $sharedLink = $sharedLinks[0]['url'] ?? null;
+            if (!$sharedLink) {
+                // ✅ Jika tidak ada shared link, buat satu
+                try {
+                    Log::info("⚡ [DROPBOX] Membuat shared link baru...");
+                    $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
+                    Log::info("✅ [DROPBOX] Shared link baru: " . $sharedLink);
+                } catch (\Exception $e) {
+                    Log::error("❌ [DROPBOX] Gagal membuat shared link: " . $e->getMessage());
+                    return null;
+                }
+            }
+
+            // 🔗 **Ubah link agar bisa langsung diakses**
+            $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
+
+            return $fileUrl;
+        } catch (\Exception $e) {
+            Log::error("❌ [DROPBOX] Gagal mendapatkan URL file: " . $e->getMessage());
+            return null;
         }
-
-        // Tukarkan Authorization Code dengan Refresh Token
-        DropboxService::handleAuthorizationCallback($request);
-
-        return redirect()->route('dropbox.upload')->with('success', 'Dropbox berhasil dihubungkan!');
     }
 
     /**
-     * 🔄 **Upload File ke Dropbox**
+     * 🔄 **Upload File ke Dropbox fixed folder /uploads (MODE TESTING)**
      */
     public function upload(Request $request)
     {
@@ -114,6 +144,9 @@ class DropboxController extends Controller
         }
     }
 
+    /**
+     * 🔎 **Menampilkan List File dari Dropbox (MODE TESTING)**
+     */
     public function listFiles()
     {
         try {
@@ -143,66 +176,7 @@ class DropboxController extends Controller
     }
 
     /**
-     * 🔽 **Download File dari Dropbox**
-     */
-    /**
-     * 📂 **Mengambil URL File dari Dropbox**
-     */
-    public function getFileUrl($filePath)
-    {
-        // Pastikan path sesuai dengan format Dropbox
-        $filePath = '/' . ltrim($filePath, '/');
-        $filePathLower = strtolower($filePath);
-
-        try {
-            Log::info("📂 [DROPBOX] Mengakses file: " . $filePath);
-
-            $accessToken = DropboxService::getAccessToken();
-            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
-                return $accessToken;
-            }
-
-            $client = new Client($accessToken);
-
-            // 🔍 **Pastikan file ada di Dropbox sebelum mengambil link**
-            $list = $client->listFolder('/uploads');
-
-            $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
-
-            if (!$fileExists) {
-                Log::error("❌ [DROPBOX] File tidak ditemukan: " . $filePath);
-                return null; // Kembalikan null jika file tidak ditemukan
-            }
-
-            // 🔍 **Ambil shared link yang sudah ada**
-            Log::info("🔄 [DROPBOX] Mengecek shared links...");
-            $sharedLinks = $client->listSharedLinks($filePath);
-            $sharedLink = $sharedLinks[0]['url'] ?? null;
-            if (!$sharedLink) {
-                // ✅ Jika tidak ada shared link, buat satu
-                try {
-                    Log::info("⚡ [DROPBOX] Membuat shared link baru...");
-                    $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
-                    Log::info("✅ [DROPBOX] Shared link baru: " . $sharedLink);
-                } catch (\Exception $e) {
-                    Log::error("❌ [DROPBOX] Gagal membuat shared link: " . $e->getMessage());
-                    return null; // Kembalikan null jika gagal membuat shared link
-                }
-            }
-
-            // 🔗 **Ubah link agar bisa langsung diakses**
-            $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
-
-            return $fileUrl; // Kembalikan fileUrl
-
-        } catch (\Exception $e) {
-            Log::error("❌ [DROPBOX] Gagal mendapatkan URL file: " . $e->getMessage());
-            return null; // Kembalikan null jika terjadi error
-        }
-    }
-
-    /**
-     * 🔎 **Menampilkan File dari Dropbox**
+     * 🔎 **Menampilkan File dari Dropbox (MODE TESTING)**
      */
     public function viewFile($filePath)
     {
@@ -225,9 +199,160 @@ class DropboxController extends Controller
     }
 
     /**
-     * ❌ **Hapus File dari Dropbox**
+     * ❌ **Hapus File dari Dropbox (MODE TESTING)**
      */
     public function deleteFile($path)
+    {
+        try {
+            // 🔄 **Dekode URL path yang telah diencode**
+            $decodedPath = urldecode($path);
+
+            Log::info("🗑 [DROPBOX] Menghapus file: " . $decodedPath);
+
+            // 🔄 **Dapatkan Access Token**
+            $accessToken = DropboxService::getAccessToken();
+
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            // 🔍 **Inisialisasi Client Spatie**
+            $client = new Client($accessToken);
+
+            // ❌ **Hapus file dari Dropbox**
+            $client->delete($decodedPath);
+
+            Log::info("✅ [DROPBOX] File berhasil dihapus: " . $decodedPath);
+            return redirect()->route('dropbox.index')->with('success', 'File berhasil dihapus dari Dropbox!');
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal menghapus file!", ['error' => $e->getMessage()]);
+            return redirect()->route('dropbox.index')->with('error', 'Gagal menghapus file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * HANYA 5 FUNCTION DIBAWAH YANG DIGUNAKAN UNTUK APLIKASI AR : Redirect, Callback, View, Upload, Delete**
+     */
+
+    /**
+     * 🔄 **Redirect ke halaman otorisasi Dropbox jika belum login**
+     */
+    public function redirectToAuthorization()
+    {
+        return DropboxService::redirectToAuthorization();
+    }
+
+    /**
+     * 🔄 **Handle Callback setelah pengguna menyetujui akses Dropbox**
+     */
+    public function handleAuthorizationCallback(Request $request)
+    {
+        $authorizationCode = $request->query('code');
+
+        if (!$authorizationCode) {
+            return response()->json(['error' => 'Authorization Code tidak ditemukan'], 400);
+        }
+
+        // Tukarkan Authorization Code dengan Refresh Token
+        DropboxService::handleAuthorizationCallback($request);
+
+        return redirect()->route('dropbox.index')->with('success', 'Dropbox berhasil dihubungkan!');
+    }
+
+    /**
+     * 🔄 **Upload File ke Dropbox dynamic folder**
+     */
+    public function uploadAttachment($file, $fileName, $folderName)
+    {
+        try {
+            // 🔄 **Pastikan Access Token tersedia sebelum upload**
+            $accessToken = DropboxService::getAccessToken();
+
+            if (filter_var($accessToken, FILTER_VALIDATE_URL)) {
+                return redirect($accessToken);
+            }
+
+            // **🔍 Inisialisasi Client Spatie**
+            $client = new Client($accessToken);
+
+            // **Pastikan `file_name` tetap memiliki ekstensi**
+            $originalExtension = $file->getClientOriginalExtension(); // Ambil ekstensi asli
+            $cleanFileName = preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME)); // Bersihkan nama file tanpa menghapus ekstensi
+            $finalFileName = $cleanFileName . '.' . $originalExtension; // Gabungkan dengan ekstensi
+
+            // **📂 Tentukan path penyimpanan di Dropbox**
+            $filePath = $folderName . $finalFileName;
+
+            // 🚀 **Baca isi file dan unggah ke Dropbox**
+            $fileContent = file_get_contents($file->getRealPath());
+            $client->upload($filePath, $fileContent, 'add');
+
+            // ✅ Kembalikan path dari Dropbox
+            return $filePath;
+        } catch (Exception $e) {
+            Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
+            return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 📂 **Get Multi URL with dynamic folder File from Dropbox**
+     */
+    public function getAttachmentUrl($filePath, $folderName)
+    {
+        // Pastikan path sesuai dengan format Dropbox
+        $filePath = '/' . ltrim($filePath, '/');
+        $filePathLower = strtolower($filePath);
+
+        try {
+            Log::info("📂 [DROPBOX] Mengakses file: " . $filePath);
+
+            $accessToken = DropboxService::getAccessToken();
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return $accessToken;
+            }
+
+            $client = new Client($accessToken);
+
+            // 🔍 **Pastikan file ada di Dropbox sebelum mengambil link**
+            $list = $client->listFolder($folderName);
+            $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
+
+            if (!$fileExists) {
+                Log::error("❌ [DROPBOX] File tidak ditemukan: " . $filePath);
+                return null; // Kembalikan null jika file tidak ditemukan
+            }
+
+            // 🔍 **Ambil shared link yang sudah ada**
+            Log::info("🔄 [DROPBOX] Mengecek shared links...");
+            $sharedLinks = $client->listSharedLinks($filePath);
+            $sharedLink = $sharedLinks[0]['url'] ?? null;
+            if (!$sharedLink) {
+                // ✅ Jika tidak ada shared link, buat satu
+                try {
+                    Log::info("⚡ [DROPBOX] Membuat shared link baru...");
+                    $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
+                    Log::info("✅ [DROPBOX] Shared link baru: " . $sharedLink);
+                } catch (\Exception $e) {
+                    Log::error("❌ [DROPBOX] Gagal membuat shared link: " . $e->getMessage());
+                    return null;
+                }
+            }
+
+            // 🔗 **Ubah link agar bisa langsung diakses**
+            $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
+
+            return $fileUrl;
+        } catch (\Exception $e) {
+            Log::error("❌ [DROPBOX] Gagal mendapatkan URL file: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * ❌ **Hapus File dari Dropbox**
+     */
+    public function deleteAttachment($path)
     {
         try {
             // 🔄 **Dekode URL path yang telah diencode**
