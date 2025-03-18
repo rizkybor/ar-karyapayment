@@ -83,7 +83,7 @@
             if (file) {
                 if (file.size > maxSize) {
                     fileErrorMessage.classList.remove("hidden");
-                    fileInput.value = ""; // Hapus file dari input
+                    fileInput.value = "";
                     submitButton.disabled = true;
                     submitButton.classList.add("bg-gray-300", "cursor-not-allowed");
                     submitButton.classList.remove("bg-violet-500", "hover:bg-violet-600");
