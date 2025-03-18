@@ -22,6 +22,13 @@
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document_status="$manfeeDoc['status']" :latestApprover=$latestApprover :document="$manfeeDoc"
             isShowPage="true" />
 
+        {{-- Get error message --}}
+        @if (session()->has('error'))
+            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                🚨 {{ session('error') }}
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 gap-6 mt-6">
 
             {{-- DETAIL BIAYA --}}

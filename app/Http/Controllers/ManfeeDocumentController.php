@@ -365,6 +365,25 @@ class ManfeeDocumentController extends Controller
     {
         DB::beginTransaction();
         try {
+            // 🔍 Ambil dokumen berdasarkan ID
+            $document = ManfeeDocument::with(['attachments', 'accumulatedCosts'])->findOrFail($id);
+
+            // ✅ Cek apakah ada lampiran (attachments)
+            if ($document->attachments->isEmpty()) {
+                return back()->with(
+                    'error',
+                    "Dokumen tidak dapat diproses karena belum memiliki lampiran."
+                );
+            }
+
+            // ✅ Cek apakah ada akumulasi biaya (accumulatedCosts)
+            if ($document->accumulatedCosts->pluck('account')[0] == null) {
+                return back()->with(
+                    'error',
+                    "Dokumen tidak dapat diproses karena tidak ada akun yang terpilih pada akumulasi biaya."
+                );
+            }
+
             $document = ManfeeDocument::findOrFail($id);
             $user = Auth::user();
             $userRole = $user->role;
@@ -386,8 +405,16 @@ class ManfeeDocumentController extends Controller
 
             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
             if ($document->last_reviewers === 'pajak') {
+                // ✅ Cek apakah ada faktur pajak (tax files)
+                if ($document->taxFiles->isEmpty()) {
+                    return back()->with(
+                        'error',
+                        "Faktur pajak belum ada, upload faktur pajak dahulu sebelum anda melakukan approval"
+                    );
+                }
+
                 $nextRole = 'pembendaharaan';
-                $statusCode = '6'; // submit_doc_to_employer
+                $statusCode = '6'; // done
                 $nextApprovers = User::where('role', $nextRole)->get();
             }
             // 🔹 4️⃣ Jika revisi, kembalikan ke approver sebelumnya
@@ -537,7 +564,7 @@ class ManfeeDocumentController extends Controller
             '3'   => 'manager_anggaran',
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
-            '6'   => 'submit_doc_to_employer',
+            '6'   => 'done',
             '100' => 'finished',
             '101' => 'canceled',
             '102' => 'revised',
