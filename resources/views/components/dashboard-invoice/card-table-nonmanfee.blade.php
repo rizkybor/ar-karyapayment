@@ -27,6 +27,9 @@
                             <div class="font-semibold text-center">Status</div>
                         </th>
                         <th class="p-2 whitespace-nowrap">
+                            <div class="font-semibold text-center">Expired</div>
+                        </th>
+                        <th class="p-2 whitespace-nowrap">
                             <div class="font-semibold text-center">Total</div>
                         </th>
                     </tr>
@@ -54,6 +57,11 @@
                                     <x-label-status-table :status="$invoice->status">
                                         Status
                                     </x-label-status-table>
+                                </div>
+                            </td>
+                            <td class="p-2 whitespace-nowrap">
+                                <div class="text-left">
+                                    {{ $invoice->expired_at ? \Carbon\Carbon::parse($invoice->expired_at)->translatedFormat('d F Y') : '-' }}
                                 </div>
                             </td>
                             <td class="p-2 whitespace-nowrap">

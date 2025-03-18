@@ -44,7 +44,7 @@ class DashboardController extends Controller
                     });
             })
             ->where('expired_at', '>=', now())
-            ->select('id', 'invoice_number', 'period', 'contract_id', 'is_active', 'status', 'created_by')
+            ->select('id', 'invoice_number', 'period', 'contract_id', 'is_active', 'status', 'expired_at', 'created_by')
             ->orderBy('expired_at', 'asc')
             ->get()
             ->map(function ($invoice) {
@@ -56,6 +56,7 @@ class DashboardController extends Controller
                     'employer_name' => $invoice->contract ? $invoice->contract->employee_name : '-',
                     'is_active' => $invoice->is_active,
                     'status' => $invoice->status,
+                    'expired_at' => $invoice->expired_at,
                     'total' => $invoice->accumulatedCosts->sum('total') ?? 0,
                 ];
             });
@@ -69,7 +70,7 @@ class DashboardController extends Controller
                     });
             })
             ->where('expired_at', '>=', now())
-            ->select('id', 'invoice_number', 'period', 'contract_id', 'is_active', 'status', 'created_by')
+            ->select('id', 'invoice_number', 'period', 'contract_id', 'is_active', 'status', 'expired_at', 'created_by')
             ->orderBy('expired_at', 'asc')
             ->get()
             ->map(function ($invoice) {
@@ -81,6 +82,7 @@ class DashboardController extends Controller
                     'employer_name' => $invoice->contract ? $invoice->contract->employee_name : '-',
                     'is_active' => $invoice->is_active,
                     'status' => $invoice->status,
+                    'expired_at' => $invoice->expired_at,
                     'total' => $invoice->accumulatedCosts->sum('total') ?? 0,
                 ];
             });
