@@ -13,8 +13,8 @@ class NonManfeeTaxController extends Controller
     public function show($id, $tax_id)
     {
         $tax = NonManfeeDocTax::where('id', $id)
-                            ->where('id', $tax_id)
-                            ->firstOrFail();
+            ->where('id', $tax_id)
+            ->firstOrFail();
 
         return response()->json($tax);
     }
@@ -26,17 +26,29 @@ class NonManfeeTaxController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'file' => 'required|file|max:10240',
         ]);
 
-        // Simpan file dan ambil path-nya
-        $path = $request->file('file')->store('attachments', 'public');
+        // **📂 Ambil File dari Request**
+        $file = $request->file('file');
+        $fileName = $request->file_name;
+        $dropboxFolderName = '/taxes/';
+
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        // ❌ Cek apakah upload ke Dropbox gagal
+        if (!$dropboxPath) {
+            return redirect()->route('non-management-fee.edit', ['id' => $id])
+                ->with('error', 'Gagal mengunggah file.');
+        }
 
         // Simpan ke database
         NonManfeeDocTax::create([
             'document_id' => $id,
             'file_name' => $request->file_name,
-            'path' => $path,
+            'path' => $dropboxPath,
         ]);
 
         return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
@@ -54,8 +66,8 @@ class NonManfeeTaxController extends Controller
         ]);
 
         $tax = NonManfeeDocTax::where('id', $id)
-                            ->where('id', $tax_id)
-                            ->firstOrFail();
+            ->where('id', $tax_id)
+            ->firstOrFail();
 
         $tax->update([
             'tax_type' => $request->tax_type,
@@ -72,8 +84,15 @@ class NonManfeeTaxController extends Controller
     public function destroy($id, $tax_id)
     {
         $tax = NonManfeeDocTax::where('document_id', $id)
-                            ->where('id', $tax_id)
-                            ->firstOrFail();
+            ->where('id', $tax_id)
+            ->firstOrFail();
+
+        // 🔄 **Ambil path file dari database**
+        $dropboxPath = $tax->path;
+
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $tax->delete();
 
