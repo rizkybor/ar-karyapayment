@@ -26,20 +26,33 @@ class NonManfeeAttachmentController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'file' => 'required|file|max:10240', // Maksimal 10MB
         ]);
-
-        // Simpan file dan ambil path-nya
-        $path = $request->file('file')->store('attachments', 'public');
-
-
+    
+        // **📂 Ambil File dari Request**
+        $file = $request->file('file');
+        $fileName = $request->file_name;
+        $dropboxFolderName = '/attachments/';
+    
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+    
+        // ❌ Cek apakah upload ke Dropbox gagal
+        if (!$dropboxPath) {
+            return redirect()->route('non-management-fee.edit', ['id' => $id])
+                ->with('error', 'Gagal mengunggah file ke Dropbox.');
+        }
+    
+        // ✅ Simpan data ke database dengan path Dropbox
         NonManfeeDocAttachment::create([
             'document_id' => $id,
-            'file_name' => $request->file_name,
-            'path' => $path,
+            'file_name' => $fileName, // Simpan nama file yang diinput user
+            'path' => $dropboxPath, // Simpan path dari Dropbox
         ]);
-
-        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
+    
+        return redirect()->route('non-management-fee.edit', ['id' => $id])
+            ->with('success', 'File berhasil diunggah ke Dropbox dan disimpan!');
     }
 
     /**
@@ -70,6 +83,13 @@ class NonManfeeAttachmentController extends Controller
         $attachment = NonManfeeDocAttachment::where('document_id', $id)
             ->where('id', $attachment_id)
             ->firstOrFail();
+
+        // 🔄 **Ambil path file dari database**
+        $dropboxPath = $attachment->path;
+        dd($dropboxPath);
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $attachment->delete();
 

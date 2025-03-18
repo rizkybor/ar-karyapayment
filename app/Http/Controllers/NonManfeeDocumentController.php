@@ -149,7 +149,13 @@ class NonManfeeDocumentController extends Controller
             ->latest('updated_at') // Ambil hanya yang paling baru
             ->first();
 
-        // dd($latestApprover);
+        // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
+        $dropboxController = new DropboxController();
+        $dropboxFolderName = '/attachments/';
+        foreach ($nonManfeeDocument->attachments as $attachment) {
+            $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
             'nonManfeeDocument',
             'latestApprover'
@@ -170,6 +176,13 @@ class NonManfeeDocumentController extends Controller
         ])->findOrFail($id);
 
         $akunOptions = ['Kas (0001)', 'Bank (0002)', 'Piutang (0003)', 'Hutang (0004)', 'Modal (0005)'];
+
+        // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
+        $dropboxController = new DropboxController();
+        $dropboxFolderName = '/attachments/';
+        foreach ($nonManfeeDocument->attachments as $attachment) {
+            $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
