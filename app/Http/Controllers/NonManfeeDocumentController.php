@@ -151,9 +151,15 @@ class NonManfeeDocumentController extends Controller
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
+        
         $dropboxFolderName = '/attachments/';
         foreach ($nonManfeeDocument->attachments as $attachment) {
             $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
+
+        $dropboxFolderName = '/taxes/';
+        foreach ($nonManfeeDocument->taxFiles as $taxFile) {
+            $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
@@ -179,9 +185,15 @@ class NonManfeeDocumentController extends Controller
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
+        
         $dropboxFolderName = '/attachments/';
         foreach ($nonManfeeDocument->attachments as $attachment) {
             $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
+
+        $dropboxFolderName = '/taxes/';
+        foreach ($nonManfeeDocument->taxFiles as $taxFile) {
+            $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(

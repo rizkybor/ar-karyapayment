@@ -26,7 +26,7 @@ class NonManfeeAttachmentController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
-            'file' => 'required|file|max:10240', // Maksimal 10MB
+            'file' => 'required|file|max:10240',
         ]);
     
         // **📂 Ambil File dari Request**
@@ -41,7 +41,7 @@ class NonManfeeAttachmentController extends Controller
         // ❌ Cek apakah upload ke Dropbox gagal
         if (!$dropboxPath) {
             return redirect()->route('non-management-fee.edit', ['id' => $id])
-                ->with('error', 'Gagal mengunggah file ke Dropbox.');
+                ->with('error', 'Gagal mengunggah file.');
         }
     
         // ✅ Simpan data ke database dengan path Dropbox
@@ -52,7 +52,7 @@ class NonManfeeAttachmentController extends Controller
         ]);
     
         return redirect()->route('non-management-fee.edit', ['id' => $id])
-            ->with('success', 'File berhasil diunggah ke Dropbox dan disimpan!');
+            ->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -86,7 +86,7 @@ class NonManfeeAttachmentController extends Controller
 
         // 🔄 **Ambil path file dari database**
         $dropboxPath = $attachment->path;
-        dd($dropboxPath);
+
         // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
         $dropboxController = app(DropboxController::class);
         $dropboxController->deleteAttachment($dropboxPath);
