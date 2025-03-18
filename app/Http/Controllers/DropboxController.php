@@ -62,57 +62,44 @@ class DropboxController extends Controller
         // Tukarkan Authorization Code dengan Refresh Token
         DropboxService::handleAuthorizationCallback($request);
 
-        return redirect()->route('dropbox.upload')->with('success', 'Dropbox berhasil dihubungkan!');
+        return redirect()->route('dropbox.index')->with('success', 'Dropbox berhasil dihubungkan!');
     }
 
     /**
      * 🔄 **Upload File ke Dropbox**
      */
-    public function upload(Request $request)
-    {
-        try {
-            $request->validate([
-                'file' => 'required|file|max:10240', // Maksimal 10MB
-            ]);
+    public function uploadFile($file, $fileName)
+{
+    try {
+        // 🔄 **Pastikan Access Token tersedia sebelum upload**
+        $accessToken = DropboxService::getAccessToken();
 
-            try {
-                // 🔄 **Pastikan Access Token tersedia sebelum upload**
-                $accessToken = DropboxService::getAccessToken();
-
-                // **Jika `getAccessToken()` mengembalikan Redirect, hentikan eksekusi**
-                if (filter_var($accessToken, FILTER_VALIDATE_URL)) {
-                    return redirect($accessToken);
-                }
-                // Log::info("✅ [DROPBOX] Menggunakan Access Token untuk upload.");
-            } catch (Exception $e) {
-                // Log::warning("🚨 [DROPBOX] Access Token tidak tersedia. Redirecting ke OAuth...");
-                return DropboxService::redirectToAuthorization();
-            }
-
-            // **🔍 Inisialisasi Client Spatie**
-            $client = new Client($accessToken);
-
-            // **📂 Ambil File dari Request**
-            $file = $request->file('file');
-            $fileName = '/' . $file->getClientOriginalName();
-            // Log::info("📂 [DROPBOX] Upload file ke: " . $fileName);
-            $filePath = '/uploads' . $fileName;
-            $fileContent = file_get_contents($file->getRealPath()); // Baca isi file
-
-            // Log::info("📂 [DROPBOX] Upload file ke: " . $filePath);
-
-            // **🚀 Gunakan metode `upload()` dari Spatie Client**
-            $response = $client->upload($filePath, $fileContent, 'add'); // 'add' mode agar tidak menimpa
-
-            Log::info("✅ [DROPBOX] File berhasil diunggah: ", $response);
-
-            return redirect()->route('dropbox.index')->with('success', 'File berhasil diunggah ke Dropbox!');
-        } catch (Exception $e) {
-            Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
-            // ❌ **Jika gagal, redirect kembali ke halaman upload dengan pesan error**
-            return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
+        if (filter_var($accessToken, FILTER_VALIDATE_URL)) {
+            return redirect($accessToken);
         }
+
+        // **🔍 Inisialisasi Client Spatie**
+        $client = new Client($accessToken);
+
+        // **Pastikan `file_name` tetap memiliki ekstensi**
+        $originalExtension = $file->getClientOriginalExtension(); // Ambil ekstensi asli
+        $cleanFileName = preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME)); // Bersihkan nama file tanpa menghapus ekstensi
+        $finalFileName = $cleanFileName . '.' . $originalExtension; // Gabungkan dengan ekstensi
+
+        // **📂 Tentukan path penyimpanan di Dropbox**
+        $filePath = "/attachments/" . $finalFileName;
+
+        // 🚀 **Baca isi file dan unggah ke Dropbox**
+        $fileContent = file_get_contents($file->getRealPath());
+        $client->upload($filePath, $fileContent, 'add');
+
+        // ✅ Kembalikan path dari Dropbox
+        return $filePath;
+    } catch (Exception $e) {
+        Log::error("🚨 [DROPBOX] Gagal mengunggah file!", ['error' => $e->getMessage()]);
+        return redirect()->route('dropbox.index')->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
     }
+}
 
     public function listFiles()
     {
