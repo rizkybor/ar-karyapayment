@@ -2,7 +2,7 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
                     #{{ $manfeeDoc->invoice_number }}</h1>
             </div>
             {{-- Tombol Kembali --}}
@@ -17,6 +17,8 @@
                 </div>
             </div>
         </div>
+
+        <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document_status="$manfeeDoc['status']" :latestApprover=$latestApprover :document="$manfeeDoc"
