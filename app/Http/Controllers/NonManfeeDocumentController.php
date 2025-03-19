@@ -18,18 +18,20 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Services\AccurateService;
+use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
 
 
 
 class NonManfeeDocumentController extends Controller
 {
-    private $accurateService;
-    private $accurateOption;
-    public function __construct(AccurateService $accurateService, AccurateMasterOptionService $accurateOption)
-    {
-        // Inject the service
+    private AccurateTransactionService $accurateService;
+    private AccurateMasterOptionService $accurateOption;
+
+    public function __construct(
+        AccurateTransactionService $accurateService,
+        AccurateMasterOptionService $accurateOption
+    ) {
         $this->accurateService = $accurateService;
         $this->accurateOption = $accurateOption;
     }

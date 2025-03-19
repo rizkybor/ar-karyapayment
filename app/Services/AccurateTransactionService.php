@@ -5,7 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use Exception;
 
-class AccurateService
+class AccurateTransactionService
 {
     private $client;
 
