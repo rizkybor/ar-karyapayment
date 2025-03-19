@@ -275,10 +275,15 @@ class DropboxController extends Controller
             // **🔍 Inisialisasi Client Spatie**
             $client = new Client($accessToken);
 
-            // **Pastikan `file_name` tetap memiliki ekstensi**
+            // **🔍 Pastikan `file_name` tetap memiliki ekstensi**
             $originalExtension = $file->getClientOriginalExtension(); // Ambil ekstensi asli
-            $cleanFileName = preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME)); // Bersihkan nama file tanpa menghapus ekstensi
-            $finalFileName = $cleanFileName . '.' . $originalExtension; // Gabungkan dengan ekstensi
+            $cleanFileName = strtolower(preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME))); // Bersihkan nama file & ubah ke huruf kecil
+
+            // **🎯 Format Unik: file_name + YYYYMMDDHHMMSS + uniqid() + random_bytes()**
+            $uniqueId = now()->format('YmdHis') . '_' . uniqid('', true) . '_' . bin2hex(random_bytes(4));
+
+            // **🔗 Gabungkan nama file & ID unik (hindari duplikasi `_`)**
+            $finalFileName = trim("{$cleanFileName}_{$uniqueId}.{$originalExtension}", '_');
 
             // **📂 Tentukan path penyimpanan di Dropbox**
             $filePath = $folderName . $finalFileName;
