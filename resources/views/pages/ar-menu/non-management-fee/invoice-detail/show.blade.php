@@ -35,7 +35,7 @@
         <div class="grid grid-cols-1 gap-6 mt-6">
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :isEdit="false" />
+                <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :optionAccount="$optionAccount" :isEdit="false" />
             </div>
 
             {{-- LAMPIRAN --}}
