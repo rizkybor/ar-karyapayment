@@ -19,29 +19,23 @@
     <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-            {{-- Akun (Dropdown) --}}
-            <div class="col-span-1">
-                <x-label for="akun" value="{{ __('Akun') }}" />
-                @if ($isEdit)
-                    <select id="akun" name="akun"
-                        class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
-                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
-                        onchange="checkChanges()">
-                        <option value="">Pilih Akun</option>
-                        @foreach ($optionAccount as $akun)
-                            <option value="{{ $akun['no'] }}"
-                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
-                                ( {{ $akun['no'] }} ) {{ $akun['name'] }}
-                            </option>
-                        @endforeach
-                    </select>
-                @else
-                    <p class="text-gray-800 dark:text-gray-200">
-                        {{ $firstAccumulatedCost->account ?? 'Belum memilih akun' }}
-                    </p>
-                @endif
-            </div>
+           {{-- Akun (Dropdown) --}}
+<div class="col-span-1">
+    <x-label for="akun" value="{{ __('Akun') }}" />
+    <select id="akun" name="akun"
+        class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
+        font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
+        {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
+        onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
+        <option value="">Pilih Akun</option>
+        @foreach ($optionAccount as $akun)
+            <option value="{{ $akun['no'] }}"
+                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                ({{ $akun['no'] }}) {{ $akun['name'] }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
             {{-- DPP Pekerjaan --}}
             <div class="col-span-1">

@@ -163,7 +163,7 @@ class NonManfeeDocumentController extends Controller
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
-        
+
         $dropboxFolderName = '/attachments/';
         foreach ($nonManfeeDocument->attachments as $attachment) {
             $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
@@ -174,9 +174,14 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
+        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $optionAccount = json_decode($apiResponse, true)['d'];
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
             'nonManfeeDocument',
-            'latestApprover'
+            'latestApprover',
+            'optionAccount',
         ));
     }
 
@@ -195,7 +200,7 @@ class NonManfeeDocumentController extends Controller
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
-        
+
         $dropboxFolderName = '/attachments/';
         foreach ($nonManfeeDocument->attachments as $attachment) {
             $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
@@ -206,6 +211,7 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponse = $this->accurateOption->getAccountNonFeeList();
         $optionAccount = json_decode($apiResponse, true)['d'];
 
