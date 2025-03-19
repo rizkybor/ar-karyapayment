@@ -276,8 +276,8 @@ class DropboxController extends Controller
             $client = new Client($accessToken);
 
             // **🔍 Pastikan `file_name` tetap memiliki ekstensi**
-            $originalExtension = $file->getClientOriginalExtension(); // Ambil ekstensi asli
-            $cleanFileName = strtolower(preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME))); // Bersihkan nama file & ubah ke huruf kecil
+            $originalExtension = $file->getClientOriginalExtension();
+            $cleanFileName = strtolower(preg_replace('/[^A-Za-z0-9\-\_]/', '_', pathinfo($fileName, PATHINFO_FILENAME)));
 
             // **🎯 Format Unik: file_name + YYYYMMDDHHMMSS + uniqid() + random_bytes()**
             $uniqueId = now()->format('YmdHis') . '_' . uniqid('', true) . '_' . bin2hex(random_bytes(4));
