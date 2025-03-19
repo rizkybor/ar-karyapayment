@@ -23,7 +23,8 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('templates.document-letter', $data);
 
         // Download file PDF dengan nama document-letter.pdf
-        return $pdf->download('document-letter.pdf');
+        // return $pdf->download('document-letter.pdf');
+        return $pdf->stream('document-letter.pdf');
     }
 
     public function generateKwitansi()
@@ -37,7 +38,8 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('templates.document-kwitansi', $data);
 
         // Download file PDF dengan nama document-letter.pdf
-        return $pdf->download('document-kwitansi.pdf');
+        // return $pdf->download('document-kwitansi.pdf');
+        return $pdf->stream('document-kwitansi.pdf');
     }
 
     public function generateInvoice()
@@ -51,6 +53,7 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('templates.document-invoice', $data);
 
         // Download file PDF dengan nama document-letter.pdf
-        return $pdf->download('document-invoice.pdf');
+        // return $pdf->download('document-invoice.pdf');
+        return $pdf->stream('document-invoice.pdf');
     }
 }

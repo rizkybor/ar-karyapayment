@@ -84,7 +84,7 @@
                                 <ul class="py-2 text-gray-700">
                                     @foreach ($printOptions as $option)
                                         <li>
-                                            <a href="{{ $option['route'] }}"
+                                            <a href="{{ $option['route'] }}" target="_blank"
                                                 class="block px-4 py-2 hover:bg-blue-500 hover:text-white">
                                                 {{ $option['label'] }}
                                             </a>
