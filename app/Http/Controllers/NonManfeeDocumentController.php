@@ -40,9 +40,6 @@ class NonManfeeDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $optionBank = $this->accurateOption->getBankTransferList();
-        $optionAsset = $this->accurateOption->getAssetList();
-        dd($optionBank, $optionAsset,'<<<<<< cek cek bor');
         return view('pages/ar-menu/non-management-fee/index');
     }
 
@@ -196,8 +193,6 @@ class NonManfeeDocumentController extends Controller
             'taxFiles'
         ])->findOrFail($id);
 
-        $akunOptions = ['Kas (0001)', 'Bank (0002)', 'Piutang (0003)', 'Hutang (0004)', 'Modal (0005)'];
-
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
         
@@ -211,9 +206,12 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $optionAccount = json_decode($apiResponse, true)['d'];
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
-            'akunOptions'
+            'optionAccount'
         ));
     }
 

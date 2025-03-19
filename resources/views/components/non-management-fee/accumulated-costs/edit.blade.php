@@ -9,5 +9,5 @@
 
     <x-validation-errors :attributes="$nonManfeeDocument" :errors="$errors" />
 
-    <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions" :isEdit="true" />
+    <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :optionAccount="$optionAccount" :isEdit="true" />
 </form>

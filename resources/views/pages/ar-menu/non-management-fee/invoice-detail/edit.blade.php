@@ -25,7 +25,7 @@
             {{-- AKUMULASI BIAYA --}}
             @if ($nonManfeeDocument->status == 0 || $nonManfeeDocument->status == 102)
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                    <x-non-management-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :akunOptions="$akunOptions"
+                    <x-non-management-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :optionAccount="$optionAccount"
                         :isEdit="false" />
                 </div>
 

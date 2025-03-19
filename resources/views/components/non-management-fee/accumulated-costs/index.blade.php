@@ -1,4 +1,4 @@
-@props(['nonManfeeDocument', 'akunOptions' => [], 'isEdit' => false])
+@props(['nonManfeeDocument', 'optionAccount' => [], 'isEdit' => false])
 
 @php
     $firstAccumulatedCost = $nonManfeeDocument->accumulatedCosts->first();
@@ -25,14 +25,14 @@
                 @if ($isEdit)
                     <select id="akun" name="akun"
                         class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                        text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
-                        focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
                         onchange="checkChanges()">
                         <option value="">Pilih Akun</option>
-                        @foreach ($akunOptions as $akun)
-                            <option value="{{ $akun }}"
-                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun ? 'selected' : '' }}>
-                                {{ $akun }}
+                        @foreach ($optionAccount as $akun)
+                            <option value="{{ $akun['no'] }}"
+                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                ( {{ $akun['no'] }} ) {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>
@@ -147,7 +147,7 @@
         window.checkChanges = function() {
             let akunValue = document.getElementById("akun")?.value || '';
             let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') ||
-            '';
+                '';
             let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
 
             let hasChanged = akunValue !== initialData.akun ||

@@ -73,7 +73,7 @@ class AccurateMasterOptionService
         return $response->getBody()->getContents();
     }
 
-    // GET ASSETS 
+    // GET ASSETS LIST
     public function getAssetList()
     {
         // Mendapatkan token dari file .env
@@ -104,6 +104,49 @@ class AccurateMasterOptionService
             'filter.leafOnly' => 'true',
             'field.accountType.op' => 'EQUAL',
             'filter.accountType.val[0]' => 'OTHER_CURRENT_ASSET',
+        ];
+
+        // Mengirim request GET ke API Accurate
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query' => $queryParams
+        ]);
+
+        // Mengembalikan isi response dari request
+        return $response->getBody()->getContents();
+    }
+
+    // GET ACCOUNT NON FEE LIST
+    public function getAccountNonFeeList()
+    {
+        // Mendapatkan token dari file .env
+        $token = env('ACCURATE_ACCESS_TOKEN');
+        if (!$token) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        // Membuat timestamp saat ini
+        $timestamp = now()->format('d/m/Y H:i:s');
+
+        // Membuat signature
+        $signature = $this->makeSignature($timestamp);
+
+        // Header untuk request
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature
+        ];
+
+        // URL endpoint API Accurate
+        $url = 'https://zeus.accurate.id/accurate/api/glaccount/list.do';
+
+        // Parameter query
+        $queryParams = [
+            'fields' => 'id,no,name,accountType',
+            'filter.leafOnly' => 'true',
+            'field.accountType.op' => 'EQUAL',
+            'filter.accountType.val[0]' => 'COGS',
         ];
 
         // Mengirim request GET ke API Accurate
