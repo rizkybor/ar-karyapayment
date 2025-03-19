@@ -29,14 +29,26 @@ class ManfeeTaxController extends Controller
             'file' => 'required|file|max:2048',
         ]);
 
-        // Simpan file dan ambil path-nya
-        $path = $request->file('file')->store('attachments', 'public');
+        // **📂 Ambil File dari Request**
+        $file = $request->file('file');
+        $fileName = $request->file_name;
+        $dropboxFolderName = '/taxes/';
+
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        // ❌ Cek apakah upload ke Dropbox gagal
+        if (!$dropboxPath) {
+            return redirect()->route('non-management-fee.edit', ['id' => $id])
+                ->with('error', 'Gagal mengunggah file.');
+        }
 
         // Simpan ke database
         ManfeeDocTax::create([
             'document_id' => $id,
             'file_name' => $request->file_name,
-            'path' => $path,
+            'path' => $dropboxPath,
         ]);
 
         return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
@@ -49,6 +61,8 @@ class ManfeeTaxController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
+            'percentage' => 'required|numeric|min:0|max:100',
+            'amount' => 'required|numeric|min:0',
         ]);
 
         $tax = ManfeeDocTax::where('document_id', $document_id)
@@ -57,6 +71,8 @@ class ManfeeTaxController extends Controller
 
         $tax->update([
             'file_name' => $request->file_name,
+            'percentage' => $request->percentage,
+            'amount' => $request->amount,
         ]);
 
         return response()->json(['message' => 'tax berhasil diperbarui.', 'data' => $tax]);
@@ -70,6 +86,13 @@ class ManfeeTaxController extends Controller
         $tax = ManfeeDocTax::where('document_id', $document_id)
             ->where('id', $tax_id)
             ->firstOrFail();
+
+        // 🔄 **Ambil path file dari database**
+        $dropboxPath = $tax->path;
+
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $tax->delete();
 

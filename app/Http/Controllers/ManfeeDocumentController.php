@@ -163,6 +163,19 @@ class ManfeeDocumentController extends Controller
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
+        // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
+        $dropboxController = new DropboxController();
+
+        $dropboxFolderName = '/attachments/';
+        foreach ($manfeeDoc->attachments as $attachment) {
+            $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
+
+        $dropboxFolderName = '/taxes/';
+        foreach ($manfeeDoc->taxFiles as $taxFile) {
+            $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
+        }
+
         return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil'));
     }
 
@@ -198,6 +211,19 @@ class ManfeeDocumentController extends Controller
         $rate_manfee = ['9', '10', '11', '12', '13'];
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
         $account_dummy = ['10011', '10012', '10013', '10014', '10015'];
+
+        // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
+        $dropboxController = new DropboxController();
+
+        $dropboxFolderName = '/attachments/';
+        foreach ($manfeeDoc->attachments as $attachment) {
+            $attachment->path = $dropboxController->getAttachmentUrl($attachment->path, $dropboxFolderName);
+        }
+
+        $dropboxFolderName = '/taxes/';
+        foreach ($manfeeDoc->taxFiles as $taxFile) {
+            $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
+        }
 
         return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_dummy', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee'));
     }

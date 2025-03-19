@@ -29,14 +29,27 @@ class ManfeeAttachmentController extends Controller
             'file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        // Simpan file dan ambil path-nya
-        $path = $request->file('file')->store('attachments', 'public');
+        // **📂 Ambil File dari Request**
+        $file = $request->file('file');
+        $fileName = $request->file_name;
+        $dropboxFolderName = '/attachments/';
+
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        // ❌ Cek apakah upload ke Dropbox gagal
+        if (!$dropboxPath) {
+            return redirect()->route('management-fee.edit', ['id' => $id])
+                ->with('error', 'Gagal mengunggah file.');
+        }
+
 
         // Simpan ke database
         ManfeeDocAttachments::create([
             'document_id' => $id,
             'file_name' => $request->file_name,
-            'path' => $path,
+            'path' => $dropboxPath,
         ]);
 
         return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
@@ -70,6 +83,13 @@ class ManfeeAttachmentController extends Controller
         $attachment = ManfeeDocAttachments::where('document_id', $document_id)
             ->where('id', $attachment_id)
             ->firstOrFail();
+
+        // 🔄 **Ambil path file dari database**
+        $dropboxPath = $attachment->path;
+
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $attachment->delete();
 

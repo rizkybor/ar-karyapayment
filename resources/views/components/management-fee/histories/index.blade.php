@@ -37,7 +37,6 @@
 
 <script>
     function openHistoryModal(documentId) {
-        // console.log('hello');
         let modal = document.getElementById("historyModal");
         let modalContent = document.getElementById("historyModalContent");
         let historyContent = document.getElementById("historyContent");

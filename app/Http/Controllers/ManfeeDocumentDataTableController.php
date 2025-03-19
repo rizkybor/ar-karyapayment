@@ -71,6 +71,39 @@ class ManfeeDocumentDataTableController extends Controller
         $query->whereRaw('LOWER(invoice_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
       })
 
+      ->filterColumn('status', function ($query, $keyword) {
+        $statusMapping = [
+          'draft' => '0',
+          'checked by kadiv' => '1',
+          'checked by pembendaharaan' => '2',
+          'checked by mgr. anggaran' => '3',
+          'checked by dir. keuangan' => '4',
+          'checked by pajak' => '5',
+          'done' => '6',
+        ];
+
+        $keywordLower = strtolower($keyword);
+
+        // Jika keyword cocok dengan status yang dimapping
+        if (isset($statusMapping[$keywordLower])) {
+          $query->where('status', $statusMapping[$keywordLower]);
+        } else {
+          // Jika user mencari kata "manager", tetap cocokkan ke "manager anggaran"
+          foreach ($statusMapping as $text => $value) {
+            if (strpos($text, $keywordLower) !== false) {
+              $query->where('status', $value);
+              return;
+            }
+          }
+        }
+      })
+
+      ->filterColumn('expired_at', function ($query, $keyword) {
+        if (strtolower($keyword) === 'expired') {
+          $query->where('expired_at', '<', now());
+        }
+      })
+
       ->filterColumn('contract.contract_number', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
           $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
