@@ -13,9 +13,9 @@ class NonManfeeAccumulatedCostController extends Controller
      */
     public function show($id)
     {
-        $nonManfeeDocument = NonManfeeDocument::findOrFail($id);
+        NonManfeeDocument::findOrFail($id);
         $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
-
+        
         return response()->json([
             'akun' => $accumulatedCost->account ?? null,
             'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,

@@ -18,11 +18,23 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Services\AccurateTransactionService;
+use App\Services\AccurateMasterOptionService;
 
 
 
 class NonManfeeDocumentController extends Controller
 {
+    private AccurateTransactionService $accurateService;
+    private AccurateMasterOptionService $accurateOption;
+
+    public function __construct(
+        AccurateTransactionService $accurateService,
+        AccurateMasterOptionService $accurateOption
+    ) {
+        $this->accurateService = $accurateService;
+        $this->accurateOption = $accurateOption;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -181,8 +193,6 @@ class NonManfeeDocumentController extends Controller
             'taxFiles'
         ])->findOrFail($id);
 
-        $akunOptions = ['Kas (0001)', 'Bank (0002)', 'Piutang (0003)', 'Hutang (0004)', 'Modal (0005)'];
-
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
         
@@ -196,9 +206,12 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $optionAccount = json_decode($apiResponse, true)['d'];
+
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
-            'akunOptions'
+            'optionAccount'
         ));
     }
 
