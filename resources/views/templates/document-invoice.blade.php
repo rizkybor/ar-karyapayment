@@ -48,6 +48,19 @@
         .footer td {
             vertical-align: top;
         }
+
+        .no-border {
+            border: none !important;
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .no-border-top-side {
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: 1px solid black;
+        }
     </style>
 </head>
 
@@ -110,90 +123,100 @@
             <tr>
                 <td rowspan="8" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
-                <td colspan="3">Masa Pemeliharaan dan progress akhir dan pekerjaan Revilitas</td> <!-- Keterangan -->
+                <td colspan="3" style=" border-bottom: none;">Masa Pemeliharaan dan progress akhir dan pekerjaan
+                    Revilitas</td> <!-- Keterangan -->
 
-                <td>Rp</td> <!-- Simbol Rupiah -->
-                <td style="text-align: right;">9.500.000</td> <!-- Jumlah, rata kanan agar lebih rapi -->
+                <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
+                <td style="text-align: right; border-left:none; border-bottom: none;">9.500.000</td>
+                <!-- Jumlah, rata kanan agar lebih rapi -->
             </tr>
 
             <tr>
-                <td>Biaya Personil</td>
-                <td>Rp.</td>
-                <td>9.500.000</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td class="no-border">Biaya Personil</td>
+                <td class="no-border">Rp.</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">9.500.000</td>
+                <td class="no-border">&nbsp;</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td>Jumlah</td>
-                <td><strong>Rp.</strong></td>
-                <td><strong>9.500.000</strong></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td class="no-border">Jumlah</td>
+                <td class="no-border"><strong>Rp.</strong></td>
+                <td style="border-left: none; border-top: none; border-bottom: none;"><strong>9.500.000</strong></td>
+                <td class="no-border">&nbsp;</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td>PPN 12%</td>
-                <td>Rp.</td>
-                <td>1.045.000</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td class="no-border">PPN 12%</td>
+                <td class="no-border">Rp.</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">1.045.000</td>
+                <td class="no-border">&nbsp;</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td>Jumlah Total</td>
-                <td>Rp.</td>
-                <td>19.545.000</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
+                <td class="no-border-top-side">Jumlah Total</td>
+                <td class="no-border-top-side">Rp.</td>
+                <td style="border-left: none; border-top: none;">19.545.000</td>
+                <td class="no-border-top-side">&nbsp;</td>
+                <td style="border-left: none; border-top: none;">&nbsp;</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;">Jumlah</td>
-                <td><strong>Rp</strong></td>
-                <td><strong>9.500.000</strong></td>
+                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
+                <td style="text-align: right; border-left: none;"><strong>9.500.000</strong></td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;">PPN 12%</td>
-                <td>Rp</td>
-                <td>1.045.000</td>
+                <td style="border-bottom: none; border-right: none;">Rp</td>
+                <td style="text-align: right; border-left: none;">1.045.000</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
-                <td><strong>Rp</strong></td>
-                <td><strong>10.545.000</strong></td>
+                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
+                <td style="text-align: right;border-left: none;"><strong>10.545.000</strong></td>
             </tr>
             <tr>
                 <td rowspan="6"></td>
-                <td colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2">Jakarta, 11 Februari 2025<br>Direktur Keuangan dan Administrasi</td>
+                <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
+                <td colspan="2" style="border-bottom: none;">Jakarta, 11 Februari 2025<br>Direktur Keuangan dan
+                    Administrasi
+                </td>
             </tr>
             <tr>
-                <td>Bank</td>
-                <td>:</td>
-                <td>PT. Bank Mandiri (Persero) Tbk.</td>
-                <td colspan="2" rowspan="3">
+                <td class="no-border">Bank</td>
+                <td class="no-border">:</td>
+                <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
+                <td colspan="2" rowspan="3" style="border-top: none; border-bottom: none;">
                     <img src="https://repository-images.githubusercontent.com/8805592/85279ffa-7f4a-4880-8e41-59e8032b0f71"
                         alt="signature" width="150" height="150">
                 </td>
             </tr>
             <tr>
-                <td>No. Rekening</td>
-                <td>:</td>
-                <td>115.00.9999666.4</td>
+                <td class="no-border">No. Rekening</td>
+                <td class="no-border">:</td>
+                <td class="no-border">115.00.9999666.4</td>
             </tr>
             <tr>
-                <td>Cabang</td>
-                <td>:</td>
-                <td>KK Jakarta Gedung PGN Pusat<br>Jl. KH. Zainul Arifin No. 20<br>Jakarta Barat - 11140</td>
+                <td class="no-border">Cabang</td>
+                <td class="no-border">:</td>
+                <td class="no-border">KK Jakarta Gedung PGN Pusat<br>Jl. KH. Zainul Arifin No. 20<br>Jakarta Barat -
+                    11140</td>
             </tr>
             <tr>
-                <td>Atas Nama</td>
-                <td>:</td>
-                <td>PT. Karya Prima Usahatama</td>
-                <td colspan="2">Sutaryo</td>
-            </tr>
+                <td class="no-border">Atas Nama</td>
+                <td class="no-border">:</td>
+                <td class="no-border">PT. Karya Prima Usahatama</td>
+                <td colspan="2"
+                    style="border-top: none; border-bottom: none; text-align: center; font-weight: bold;">
+                    Sutaryo
+                </td </tr>
             <tr>
-                <td>Email</td>
-                <td>:</td>
-                <td>contact@kpusahatama.co.id</td>
-                <td colspan="2"></td>
+                <td class="no-border-top-side">
+                    Email</td>
+                <td class="no-border-top-side">
+                    :</td>
+                <td class="no-border-top-side">
+                    contact@kpusahatama.co.id</td>
+                <td colspan="2" style="border-top: none;"></td>
             </tr>
         </tbody>
     </table>
