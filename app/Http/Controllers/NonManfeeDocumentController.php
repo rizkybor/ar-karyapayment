@@ -18,16 +18,29 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Services\AccurateService;
+use App\Services\AccurateMasterOptionService;
 
 
 
 class NonManfeeDocumentController extends Controller
 {
+    private $accurateService;
+    private $accurateOption;
+    public function __construct(AccurateService $accurateService, AccurateMasterOptionService $accurateOption)
+    {
+        // Inject the service
+        $this->accurateService = $accurateService;
+        $this->accurateOption = $accurateOption;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $optionBank = $this->accurateOption->getBankTransferList();
+        $optionAsset = $this->accurateOption->getAssetList();
+        dd($optionBank, $optionAsset,'<<<<<< cek cek bor');
         return view('pages/ar-menu/non-management-fee/index');
     }
 
