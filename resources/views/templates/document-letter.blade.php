@@ -26,6 +26,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            margin-top: 10px;
         }
 
         td {
@@ -129,39 +130,45 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        <p>
-            Berdasarkan Surat Perintah Kerja (SPK) antara PT Jendela Kode dengan PT Karya Prima Usahatama No.
-            *********/INV/SOL/III/2025 tanggal 00 Desember 0000 tentang Pekerjaan Revitalisasi Area Taman Belakang
-            Kantor PT Jendela Kode Area Head Cirebon, dengan ini kami mengajukan permohonan pembayaran masa pemeliharaan
-            dan progres akhir pekerjaan tersebut, dengan bukti perincian terlampir.
-        </p>
+
+        Berdasarkan Surat Perintah Kerja (SPK) antara PT Jendela Kode dengan PT Karya Prima Usahatama No.
+        *********/INV/SOL/III/2025 tanggal 00 Desember 0000 tentang Pekerjaan Revitalisasi Area Taman Belakang
+        Kantor PT Jendela Kode Area Head Cirebon, dengan ini kami mengajukan permohonan pembayaran masa pemeliharaan
+        dan progres akhir pekerjaan tersebut, dengan bukti perincian terlampir.
+
     </div>
 
+    <!-- Detail Pembayaran -->
     <!-- Detail Pembayaran -->
     <table class="w-full mt-4 text-smaller" style="border-collapse: collapse;">
         <tr>
             <td class="w-6">1.</td>
             <td class="w-32">Kwitansi</td>
             <td class="w-2">:</td>
-            <td class="w-[220px]">No. 002260/KW/KPU/SOL/III/2025</td>
-            <td class="w-16 text-right">Sebesar</td>
-            <td class="w-10 text-right">Rp</td>
-            <td class="w-24 text-right">NILAI RUPIAH</td>
+            <td class="w-32">No. 002260/KW/KPU/SOL/III/2025</td>
+            <td class="w-16 text-right pl-2">Sebesar</td>
+            <td class="w-10 text-right pl-2">Rp</td>
+            <td class="w-24 text-right pl-2">NILAI RUPIAH</td>
         </tr>
         <tr>
             <td class="w-6">2.</td>
             <td class="w-32">Invoice</td>
             <td class="w-2">:</td>
-            <td class="w-[220px]">No. *********/INV/SOL/III/2025</td>
-            <td class="w-16 text-right">Sebesar</td>
-            <td class="w-10 text-right">Rp</td>
-            <td class="w-24 text-right">NILAI RUPIAH</td>
+            <td class="w-32">No. *********/INV/SOL/III/2025</td>
+            <td class="w-16 text-right pl-2">Sebesar</td>
+            <td class="w-10 text-right pl-2">Rp</td>
+            <td class="w-24 text-right pl-2">NILAI RUPIAH</td>
         </tr>
     </table>
 
+
+
+
     <!-- Informasi Pembayaran -->
     <div class="mt-2 text-smaller">
-        <p>Pembayaran dapat ditransfer melalui:</p>
+        <div>
+            Pembayaran dapat ditransfer melalui:
+        </div>
         <table border="0">
             <tr>
                 <td style="width: 10%; border: none;">Bank</td>
