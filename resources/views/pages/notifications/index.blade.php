@@ -17,7 +17,6 @@
                     <form action="{{ route('notifications.clearAll') }}" method="POST"
                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua notifikasi?');">
                         @csrf
-                        @method('DELETE')
                         <x-button-action color="red" icon="trash" type="submit">
                             Hapus Semua
                         </x-button-action>
@@ -48,7 +47,7 @@
                                 if (is_string($message) && str_contains($message, 'Lihat detail:')) {
                                     $url = $notification;
                                     $messageParts = explode('Lihat detail:', $message, 2);
-                                    $textMessage = trim($messageParts[0]); 
+                                    $textMessage = trim($messageParts[0]);
 
                                     // // Validasi URL
                                     // if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
@@ -68,16 +67,17 @@
 
                                 <div class="flex justify-between items-center">
 
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
-                                    Dikirim oleh : 
-                                    <span class="font-normal">
-                                        ({{ $notification->sender->nip }}) {{ $notification->sender->name }} - {{ $notification->sender->position }}
-                                    </span>
-                                </p>
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                                        Dikirim oleh :
+                                        <span class="font-normal">
+                                            ({{ $notification->sender->nip }})
+                                            {{ $notification->sender->name }} - {{ $notification->sender->position }}
+                                        </span>
+                                    </p>
 
-                                <p class="text-sm text-gray-800 dark:text-gray-300">
-                                    Tanggal dikirim : {{ $notification->created_at }}
-                                </p>
+                                    <p class="text-sm text-gray-800 dark:text-gray-300">
+                                        Tanggal dikirim : {{ $notification->created_at }}
+                                    </p>
                                 </div>
                                 <div class="w-full border-b border-gray-300 dark:border-gray-600 my-3"></div>
 
