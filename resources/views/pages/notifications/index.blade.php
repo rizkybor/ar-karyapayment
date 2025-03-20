@@ -13,7 +13,7 @@
                     </form>
                 @endif
 
-                @if ($notifications->count() > 0)
+                {{-- @if ($notifications->count() > 0)
                     <form action="{{ route('notifications.clearAll') }}" method="POST"
                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua notifikasi?');">
                         @csrf
@@ -22,6 +22,11 @@
                             Hapus Semua
                         </x-button-action>
                     </form>
+                @endif --}}
+                @if ($notifications->count() > 0)
+                    <x-button-action color="red" icon="trash" onclick="deleteAllNotifications()">
+                        Hapus Semua
+                    </x-button-action>
                 @endif
             </div>
         </div>
@@ -48,7 +53,7 @@
                                 if (is_string($message) && str_contains($message, 'Lihat detail:')) {
                                     $url = $notification;
                                     $messageParts = explode('Lihat detail:', $message, 2);
-                                    $textMessage = trim($messageParts[0]); 
+                                    $textMessage = trim($messageParts[0]);
 
                                     // // Validasi URL
                                     // if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
@@ -68,16 +73,17 @@
 
                                 <div class="flex justify-between items-center">
 
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
-                                    Dikirim oleh : 
-                                    <span class="font-normal">
-                                        ({{ $notification->sender->nip }}) {{ $notification->sender->name }} - {{ $notification->sender->position }}
-                                    </span>
-                                </p>
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                                        Dikirim oleh :
+                                        <span class="font-normal">
+                                            ({{ $notification->sender->nip }})
+                                            {{ $notification->sender->name }} - {{ $notification->sender->position }}
+                                        </span>
+                                    </p>
 
-                                <p class="text-sm text-gray-800 dark:text-gray-300">
-                                    Tanggal dikirim : {{ $notification->created_at }}
-                                </p>
+                                    <p class="text-sm text-gray-800 dark:text-gray-300">
+                                        Tanggal dikirim : {{ $notification->created_at }}
+                                    </p>
                                 </div>
                                 <div class="w-full border-b border-gray-300 dark:border-gray-600 my-3"></div>
 
@@ -156,5 +162,29 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    function deleteAllNotifications() {
+        if (!confirm("Apakah Anda yakin ingin menghapus semua notifikasi?")) return;
+
+        fetch("http://127.0.0.1:8000/notifications/clear-all", { // Gunakan URL lengkap
+        method: "DELETE",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+    })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Semua notifikasi berhasil dihapus.");
+                location.reload();
+            })
+            .catch(error => console.error("Error:", error));
     }
 </script>
