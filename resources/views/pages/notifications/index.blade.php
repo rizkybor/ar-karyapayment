@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="mb-8 flex justify-between items-center">
-            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Notifikasi</h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">📩 Semua Pesan</h1>
 
             <div class="flex gap-2">
                 @if ($notifications->whereNull('read_at')->count() > 0)
@@ -28,8 +28,6 @@
 
         <!-- Daftar Notifikasi -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-            <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">📩 Semua Notifikasi</h2>
-
             <div class="overflow-y-auto max-h-[600px] scrollbar-hidden">
                 @if ($notifications->isEmpty())
                     <p class="text-gray-500 dark:text-gray-400">Tidak ada notifikasi.</p>
@@ -48,14 +46,15 @@
 
                                 // Jika berbentuk string
                                 if (is_string($message) && str_contains($message, 'Lihat detail:')) {
+                                    $url = $notification;
                                     $messageParts = explode('Lihat detail:', $message, 2);
-                                    $textMessage = trim($messageParts[0]); // Pesan utama
-                                    $url = isset($messageParts[1]) ? trim($messageParts[1]) : null; // Ambil URL
+                                    $textMessage = trim($messageParts[0]); 
 
-                                    // Validasi URL
-                                    if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
-                                        $url = null; // Kosongkan jika tidak valid
-                                    }
+                                    // // Validasi URL
+                                    // if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
+                                    //     $url = null; // Kosongkan jika tidak valid
+                                    // }
+                                    $url = url('/notifications/' . $notification->id);
                                 } else {
                                     $textMessage = is_string($message) ? $message : 'Tidak ada pesan.';
                                     $url = null;
@@ -64,20 +63,20 @@
 
                             <div class="relative p-4 border rounded-lg cursor-pointer transition-colors duration-300 ease-in-out 
                                 {{ $notification->read_at === null ? 'bg-yellow-100 dark:bg-yellow-900' : 'bg-gray-200 dark:bg-gray-700' }}"
-                                @click="markAsRead('{{ route('notifications.markAsRead', $notification->id) }}', {{ $notification->id }});"
+                                @click="markAsRead('{{ route('notifications.markAsRead', $notification->id) }}', {{ $notification->id }}, '{{ $url }}');"
                                 data-id="{{ $notification->id }}">
 
                                 <div class="flex justify-between items-center">
 
                                 <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
-                                    Pengirim : 
+                                    Dikirim oleh : 
                                     <span class="font-normal">
                                         ({{ $notification->sender->nip }}) {{ $notification->sender->name }} - {{ $notification->sender->position }}
                                     </span>
                                 </p>
 
                                 <p class="text-sm text-gray-800 dark:text-gray-300">
-                                    {{ $notification->created_at }}
+                                    Tanggal dikirim : {{ $notification->created_at }}
                                 </p>
                                 </div>
                                 <div class="w-full border-b border-gray-300 dark:border-gray-600 my-3"></div>
@@ -92,13 +91,14 @@
                                             {{ $textMessage }}
                                         </p>
 
-                                        @if ($url)
+                                        {{-- @if ($url)
                                             <x-button-action color="violet"
                                                 @click="window.open('{{ $url }}', '_blank')"
+                                                onclick="window.location.href='{{ $url }}'"
                                                 class="px-2 my-3 text-xs w-28">
                                                 Lihat Detail >>
                                             </x-button-action>
-                                        @endif
+                                        @endif --}}
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $notification->created_at->diffForHumans() }}
                                         </p>
@@ -132,7 +132,7 @@
 </x-app-layout>
 
 <script>
-    function markAsRead(url, notificationId) {
+    function markAsRead(url, notificationId, redirectUrl) {
         fetch(url, {
                 method: 'POST',
                 headers: {
@@ -148,11 +148,11 @@
                 return response.json(); // 🔥 Pastikan hanya parse jika JSON
             })
             .then(data => {
-                console.log('Response dari server:', data);
                 if (data.success) {
                     setTimeout(() => {
                         location.reload(); // 🔄 REFRESH halaman setelah notifikasi ditandai sebagai dibaca
                     }, 500);
+                    window.location.href = redirectUrl;
                 }
             })
             .catch(error => console.error('Error:', error));
