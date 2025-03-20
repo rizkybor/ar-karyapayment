@@ -19,8 +19,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\ManfeeDocHistories;
 
+use App\Services\AccurateTransactionService;
+use App\Services\AccurateMasterOptionService;
+
 class ManfeeDocumentController extends Controller
 {
+
+    private AccurateTransactionService $accurateService;
+    private AccurateMasterOptionService $accurateOption;
+
+    public function __construct(
+        AccurateTransactionService $accurateService,
+        AccurateMasterOptionService $accurateOption
+    ) {
+        $this->accurateService = $accurateService;
+        $this->accurateOption = $accurateOption;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -210,7 +224,10 @@ class ManfeeDocumentController extends Controller
 
         $rate_manfee = ['9', '10', '11', '12', '13'];
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
-        $account_dummy = ['10011', '10012', '10013', '10014', '10015'];
+
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
+        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $account_dummy = json_decode($apiResponse, true)['d'];
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();

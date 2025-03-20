@@ -42,10 +42,11 @@
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                         <option value="">Pilih Akun</option>
-                        @foreach ($account_dummy as $account)
-                            <option value="{{ $account }}"
-                                {{ $detailPaymentId->account == $account ? 'selected' : '' }}>
-                                {{ $account }}
+                        @foreach ($account_dummy as $akun)
+                            <option value="{{ $akun['no'] }}"
+                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                ({{ $akun['no'] }})
+                                {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>

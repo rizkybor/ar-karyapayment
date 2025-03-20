@@ -25,8 +25,12 @@
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account</label>
                     <select id="account" name="account"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
-                        @foreach ($account_dummy as $account_dummys)
-                            <option value="{{ $account_dummys }}">{{ $account_dummys }}</option>
+                        @foreach ($account_dummy as $akun)
+                            <option value="{{ $akun['no'] }}"
+                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                ({{ $akun['no'] }})
+                                {{ $akun['name'] }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
