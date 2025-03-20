@@ -155,7 +155,11 @@
             <tr>
                 <td class="no-border-top-side">Jumlah Total</td>
                 <td class="no-border-top-side">Rp.</td>
-                <td style="border-left: none; border-top: none;">19.545.000</td>
+                <td
+                    style="border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
+                    19.545.000
+                    <div style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;"></div>
+                </td>
                 <td class="no-border-top-side">&nbsp;</td>
                 <td style="border-left: none; border-top: none;">&nbsp;</td>
             </tr>
