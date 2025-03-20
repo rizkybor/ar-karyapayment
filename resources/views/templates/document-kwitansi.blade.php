@@ -141,8 +141,7 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta, 11 Februari 2025<br>Direktur Keuangan dan
-                    Administrasi
+                <td colspan="2" style="border-bottom: none;">Jakarta, 11 Februari 2025
                 </td>
             </tr>
             <tr>
@@ -170,9 +169,10 @@
                 <td class="no-border">:</td>
                 <td class="no-border">PT. Karya Prima Usahatama</td>
                 <td colspan="2"
-                    style="border-top: none; border-bottom: none; text-align: center; font-weight: bold;">
-                    Sutaryo
-                </td </tr>
+                    style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
+                    <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
+                </td>
+
             <tr>
                 <td class="no-border-top-side">
                     Email</td>
