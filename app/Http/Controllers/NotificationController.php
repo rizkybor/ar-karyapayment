@@ -20,7 +20,7 @@ class NotificationController extends Controller
             $query->where('user_id', $userId);
         })
             ->orderByRaw('read_at IS NULL DESC, created_at DESC')
-            ->paginate(30);
+            ->paginate(15);
 
         return view('pages/notifications/index', compact('notifications'));
     }
