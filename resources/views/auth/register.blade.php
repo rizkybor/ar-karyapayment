@@ -69,9 +69,6 @@
                                         Administrasi Umum</option>
                                     <option value="Departmen Operasi">Departmen Operasi</option>
                                     <option value="Departmen Keuangan">Departmen Keuangan</option>
-                                    <option value="Departmen Pengadaan dan Administrasi Umum">Departmen Pengadaan dan
-                                        Administrasi Umum</option>
-                                    <option value="Departmen SDM">Departmen SDM</option>
                                 </select>
                                 <x-input-error for="department" class="mt-2" />
                             </div>
