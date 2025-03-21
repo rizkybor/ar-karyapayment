@@ -443,13 +443,14 @@ class NonManfeeDocumentController extends Controller
                 if (!$lastApprover) {
                     return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
                 }
-
                 $nextRole = $lastApprover->approver_role;
-                $statusCode = $previousStatus; // Kembali ke status sebelumnya
-                $nextApprovers = User::where('role', $nextRole)->get();
+                $statusCode = $lastApprover->status;
+
+                $nextApprovers = User::where('id', $lastApprover->approver_id)->get();
             }
             // 🔹 5️⃣ Jika bukan revisi & bukan pajak, lanjutkan approval normal
             else {
+
                 $nextRole = $this->getNextApprovalRole($currentRole, $department, $isRevised);
                 if (!$nextRole) {
                     return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
@@ -467,7 +468,7 @@ class NonManfeeDocumentController extends Controller
                     $statusCode = 'unknown';
                 }
             }
-
+            
             // 🔹 6️⃣ Jika tidak ada user untuk role berikutnya, batalkan
             if ($nextApprovers->isEmpty()) {
                 Log::warning("Approval gagal: Tidak ada user dengan role {$nextRole} untuk dokumen ID {$document->id}");
@@ -617,11 +618,7 @@ class NonManfeeDocumentController extends Controller
             $targetApprover = User::find($targetApproverId);
             $targetApproverRole = $targetApprover->role ?? 'maker';
 
-            // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (101)" dan set approver terakhir
-            $document->update([
-                'status'         => '102',
-                'last_reviewers' => $targetApproverRole, // Kembali ke yang terakhir merevisi
-            ]);
+           
 
             // 🔹 4️⃣ Simpan revisi ke dalam log approval (Pastikan tidak ada duplikasi)
             DocumentApproval::updateOrCreate(
@@ -632,10 +629,16 @@ class NonManfeeDocumentController extends Controller
                 ],
                 [
                     'role'         => $userRole,
-                    'status'       => '102', // Revised Completed
+                    'status'       => $document->status,
                     'approved_at'  => now(),
                 ]
             );
+
+             // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (102)" dan set approver terakhir
+             $document->update([
+                'status'         => '102',
+                'last_reviewers' => $userRole,
+            ]);
 
             // 🔹 5️⃣ Simpan riwayat revisi di `NonManfeeDocHistory`
             NonManfeeDocHistory::create([
