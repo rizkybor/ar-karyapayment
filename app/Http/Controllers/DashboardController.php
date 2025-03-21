@@ -88,7 +88,10 @@ class DashboardController extends Controller
             });
 
         // ✅ Gabungkan data NonManfee dan Manfee ke dalam `$dataPieChartAllInvoices`
-        $dataPieChartAllInvoices = $dataInvoicesNonFee->merge($dataInvoicesManFee);
+        // $dataPieChartAllInvoices = $dataInvoicesNonFee->merge($dataInvoicesManFee);
+        $nonFee = collect($dataInvoicesNonFee ?? []);
+        $manFee = collect($dataInvoicesManFee ?? []);
+        $dataPieChartAllInvoices = $nonFee->merge($manFee);
 
         // ✅ Ambil data invoices untuk Stick Chart dalam 6 bulan terakhir
         $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
