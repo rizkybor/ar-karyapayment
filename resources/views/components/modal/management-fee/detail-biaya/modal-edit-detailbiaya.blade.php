@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
 <div x-data="{
     modalOpen: false,
@@ -104,7 +104,7 @@
                                                 View
                                             </x-button-action> --}}
                                             <x-modal.management-fee.detail-biaya.modal-edit-data-detailbiaya
-                                                :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_dummy="$account_dummy"
+                                                :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_detailbiaya="$account_detailbiaya"
                                                 :detailPaymentId="$docdetails" />
 
 

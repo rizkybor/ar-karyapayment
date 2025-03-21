@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'account_dummy', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee'])
+@props(['manfeeDoc', 'account_akumulasi', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee'])
 
 @php
     $accumulated_id = optional($manfeeDoc->accumulatedCosts->first())->id ?? 'new';
@@ -16,5 +16,5 @@
     <x-validation-errors :attributes="$manfeeDoc" :errors="$errors" />
 
     <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :subtotals="$subtotals" :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" :rate_manfee="$rate_manfee"
-        :account_dummy="$account_dummy" :isEdit="true" />
+        :account_akumulasi="$account_akumulasi" :isEdit="true" />
 </form>

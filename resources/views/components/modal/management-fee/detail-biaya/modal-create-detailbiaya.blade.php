@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
 <div x-data="{
     modalOpen: false,
@@ -49,7 +49,7 @@
 
             <div class="flex justify-end items-center mb-3">
                 <x-modal.management-fee.detail-biaya.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
-                    :account_dummy="$account_dummy" />
+                    :account_detailbiaya="$account_detailbiaya" />
             </div>
 
             <!-- Tabel Detail Biaya -->

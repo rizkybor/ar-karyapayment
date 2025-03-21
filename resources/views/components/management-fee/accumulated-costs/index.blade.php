@@ -3,7 +3,7 @@
     'subtotals',
     'subtotalBiayaNonPersonil',
     'rate_manfee' => [],
-    'account_dummy' => [],
+    'account_akumulasi' => [],
     'isEdit' => false,
 ])
 
@@ -41,7 +41,7 @@
                     font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
                     {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
                     onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
-                    @foreach ($account_dummy as $akun)
+                    @foreach ($account_akumulasi as $akun)
                         <option value="{{ $akun['no'] }}"
                             {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                             ({{ $akun['no'] }})

@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_dummy'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
@@ -7,10 +7,10 @@
         </h5>
         <div class="flex gap-2 mt-4 sm:mt-0">
             <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
-                :account_dummy="$account_dummy" />
+                :account_detailbiaya="$account_detailbiaya" />
             @if ($manfeeDoc->detailPayments && $manfeeDoc->detailPayments->isNotEmpty())
                 <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
-                    :account_dummy="$account_dummy" />
+                    :account_detailbiaya="$account_detailbiaya" />
             @endif
         </div>
 
