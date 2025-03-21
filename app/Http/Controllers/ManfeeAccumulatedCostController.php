@@ -40,8 +40,6 @@ class ManfeeAccumulatedCostController extends Controller
             'total' => (float) str_replace(',', '.', preg_replace('/[^\d,]/', '', $request->total)),
         ]);
 
-        // dd($request->all());
-
         // Validasi input dengan custom messages
         $request->validate([
             'account' => 'required|string|max:255',
@@ -63,9 +61,9 @@ class ManfeeAccumulatedCostController extends Controller
         $total = $request->input('total');
 
         // Cek apakah `accumulated_id` ada, jika ada update, jika tidak buat baru
-        $accumulatedCost = ManfeeDocAccumulatedCost::updateOrCreate(
+        ManfeeDocAccumulatedCost::updateOrCreate(
             [
-                'id' => $accumulated_id, // Jika `accumulated_id` ada, update. Jika tidak, buat baru
+                'id' => $accumulated_id,
                 'document_id' => $id
             ],
             [

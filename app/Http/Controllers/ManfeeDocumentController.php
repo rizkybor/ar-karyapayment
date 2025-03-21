@@ -210,12 +210,12 @@ class ManfeeDocumentController extends Controller
         // $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
         //     return $items->sum('nilai_biaya');
         // });
+
         $subtotals = $manfeeDoc->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
             ->groupBy('expense_type')
             ->map(function ($items) {
                 return $items->sum('nilai_biaya');
             });
-
 
         $subtotalBiayaNonPersonil = $manfeeDoc->detailPayments
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
@@ -226,7 +226,7 @@ class ManfeeDocumentController extends Controller
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
-        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $apiResponse = $this->accurateOption->getInventoryList();
         $account_dummy = json_decode($apiResponse, true)['d'];
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
