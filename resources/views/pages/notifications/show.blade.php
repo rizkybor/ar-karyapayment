@@ -1,38 +1,40 @@
 <x-app-layout>
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-4xl mx-auto">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-6xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">📩 Detail Notifikasi</h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">📩 Pesan</h1>
         </div>
 
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <!-- Header Notifikasi -->
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    {!! getNotificationIcon($notification->data['status'] ?? 'info') !!}
-                    {{ $notification->data['title'] ?? 'Notifikasi' }}
+
+                    Dikirim oleh :
+                    ({{ $notification->sender->nip }}) {{ $notification->sender->name }} -
+                    {{ $notification->sender->position }}
                 </h3>
                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ $notification->created_at->format('d M Y, H:i') }}
+                    Tanggal dikirim : {{ $notification->created_at->format('d M Y, H:i') }}
                 </span>
             </div>
 
             <!-- Isi Notifikasi -->
             @php
-                // Ambil pesan dari notifikasi
                 $textMessage = $notification->messages ?? 'Tidak ada pesan';
-
-                // Cari URL dalam pesan menggunakan regex
                 preg_match('/https?:\/\/[^\s]+/', $textMessage, $matches);
                 $url = $matches[0] ?? null;
 
-                // Jika ada URL, hapus dari teks agar tidak tampil dua kali
                 if ($url) {
                     $textMessage = str_replace($url, '', $textMessage);
                 }
             @endphp
+            <div class="w-full border-b border-gray-300 dark:border-gray-600 my-3"></div>
 
-            <p class="text-sm text-gray-800 dark:text-gray-200">
-                {{ trim($textMessage) }}
+            <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                Pesan :
+                <span class="font-normal">
+                    {{ trim($textMessage) }}
+                </span>
             </p>
 
             @if ($url)
@@ -44,7 +46,6 @@
 
             <!-- FOOTER CARD: Grid Layout -->
             <div class="grid grid-cols-2 items-center mt-5">
-                <!-- KIRI BAWAH: Tampilkan link ke dokumen jika ada -->
                 @if (!empty($notification->data['document_id']))
                     <div>
                         <x-button-action color="blue" icon="eye"

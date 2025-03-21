@@ -175,7 +175,7 @@ class NonManfeeDocumentController extends Controller
         }
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
-        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $apiResponse = $this->accurateOption->getInventoryList();
         $optionAccount = json_decode($apiResponse, true)['d'];
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/show', compact(
@@ -212,7 +212,7 @@ class NonManfeeDocumentController extends Controller
         }
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
-        $apiResponse = $this->accurateOption->getAccountNonFeeList();
+        $apiResponse = $this->accurateOption->getInventoryList();
         $optionAccount = json_decode($apiResponse, true)['d'];
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
@@ -425,6 +425,9 @@ class NonManfeeDocumentController extends Controller
                         "Faktur pajak belum ada, upload faktur pajak dahulu sebelum anda melakukan approval"
                     );
                 }
+
+                // Assign Privy Services
+                // Assign Accurate Services
 
                 $nextRole = 'pembendaharaan';
                 $statusCode = '6'; // done

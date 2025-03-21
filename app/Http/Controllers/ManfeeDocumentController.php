@@ -446,6 +446,7 @@ class ManfeeDocumentController extends Controller
             $nextRole = null;
             $nextApprovers = collect();
 
+
             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
             if ($document->last_reviewers === 'pajak') {
                 // ✅ Cek apakah ada faktur pajak (tax files)
@@ -455,6 +456,9 @@ class ManfeeDocumentController extends Controller
                         "Faktur pajak belum ada, upload faktur pajak dahulu sebelum anda melakukan approval"
                     );
                 }
+
+                // Assign Privy Services
+                // Assign Accurate Services
 
                 $nextRole = 'pembendaharaan';
                 $statusCode = '6'; // done

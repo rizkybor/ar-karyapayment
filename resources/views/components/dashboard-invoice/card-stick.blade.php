@@ -2,7 +2,7 @@
     class="flex flex-col col-span-full sm:col-span-6 md:col-span-6 lg:col-span-8 xl:col-span-8 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
     <div class="px-5 pt-5">
         <header class="flex justify-between items-start">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Data Tagihan Bulanan</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Rekapitulasi nilai total tagihan 6 bulan terakhir</h2>
         </header>
         <div class="pt-6 px-2 pb-0">
             <div id="bar-chart" class="w-full min-h-[300px] flex items-center justify-center">

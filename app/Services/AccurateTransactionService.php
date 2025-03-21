@@ -59,6 +59,9 @@ class AccurateTransactionService
         return $response->getBody()->getContents();
     }
 
+    /**
+     * Get data by Id from the external API. (di HIT untuk pengecekkan)
+     */
     public function getDetailsPenerimaanView($idPayment)
     {
         $token = env('ACCURATE_ACCESS_TOKEN');
@@ -82,10 +85,62 @@ class AccurateTransactionService
 
 
     /**
-     * Post data from the external API.
+     * Post data from the external API. (di HIT pada saat approval dirut.keuangan >> pajak)
      */
     public function postDataPenerimaan(array $postData)
     {
+
+        /**
+         * Example body request $detailAccounts.
+         */
+
+        // Assign Detail Account by Table Data
+        //   $detailAccounts = [];
+        //   foreach ($tableData as $data) {
+        //        // angka hanya PPH yang berjenis Hutang Pajak
+        //        $amount = in_array($data['account'], ["210201", "210202", "210203","210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
+
+        //       $detailAccounts[] = [
+        //           'accountNo' => $data['account'],
+        //           'amount' => $amount,
+        //           'expenseName' => $data['account_name'],
+        //           '_status' => 'insert',
+        //           'dataClassification10Name' => '',
+        //           'dataClassification1Name' => '',
+        //           'dataClassification2Name' => '',
+        //           'dataClassification3Name' => '',
+        //           'dataClassification4Name' => '',
+        //           'dataClassification5Name' => '',
+        //           'dataClassification6Name' => '',
+        //           'dataClassification7Name' => '',
+        //           'dataClassification8Name' => '',
+        //           'dataClassification9Name' => '',
+        //           'departmentName' => '',
+        //           'id' => '',
+        //           'memo' => ''
+        //       ];
+        //   }
+
+        /**
+         * Example body request.
+         */
+
+        // $example = [
+        //     'bankNo' => $bankNumberDatas['d']['no'],
+        //     'detailAccount' => $detailAccounts,
+        //     'payee' => $penerima,
+        //     'transDate' => $formattedDate,
+        //     'branchId' => '',
+        //     'branchName' => '',
+        //     'chequeDate' => '',
+        //     'chequeNo' => $noCek,
+        //     'description' => $catatan,
+        //     'id' => '',
+        //     'number' => $noBuktiFull,
+        //     'rate' => '',
+        //     'typeAutoNumber' => ''
+        // ];
+
         $token = env('ACCURATE_ACCESS_TOKEN');
         if (!$token) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
@@ -112,7 +167,6 @@ class AccurateTransactionService
             } else {
                 throw new Exception('Unexpected status code: ' . $response->getStatusCode());
             }
-
         } catch (Exception $e) {
             throw new Exception('Failed to send request: ' . $e->getMessage());
         }
