@@ -159,6 +159,46 @@ class AccurateMasterOptionService
         return $response->getBody()->getContents();
     }
 
+    // GET INVENTORY LIST
+    public function getInventoryList()
+    {
+        // Mendapatkan token dari file .env
+        $token = env('ACCURATE_ACCESS_TOKEN');
+        if (!$token) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        // Membuat timestamp saat ini
+        $timestamp = now()->format('d/m/Y H:i:s');
+
+        // Membuat signature
+        $signature = $this->makeSignature($timestamp);
+
+        // Header untuk request
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature
+        ];
+
+        // URL endpoint API Accurate
+        $url = 'https://zeus.accurate.id/accurate/api/item/list.do';
+
+        // Parameter query
+        $queryParams = [
+            'fields' => 'id,no,name,itemType',
+        ];
+
+        // Mengirim request GET ke API Accurate
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query' => $queryParams
+        ]);
+
+        // Mengembalikan isi response dari request
+        return $response->getBody()->getContents();
+    }
+
     // GET BANK DETAILS 
     public function bankDetails($bankId)
     {
