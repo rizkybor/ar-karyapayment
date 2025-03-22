@@ -10,13 +10,14 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-        <x-button-action icon="save" id="saveButton" disabled="true" onclick="openConfirmationModal(
+            <x-button-action icon="save" id="saveButton" disabled="true"
+                onclick="openConfirmationModal(
             'Konfirmasi Simpan',
             'Yakin ingin menyimpan perubahan?',
             () => document.getElementById('accumulatedForm').submit()
         )">
-            Simpan Akumulasi Biaya
-        </x-button-action>
+                Simpan Akumulasi Biaya
+            </x-button-action>
         @endif
     </div>
 
