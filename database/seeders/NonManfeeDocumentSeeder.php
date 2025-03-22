@@ -42,11 +42,37 @@ class NonManfeeDocumentSeeder extends Seeder
             // ✅ Set expired_at H+30 dengan waktu tetap 00:01:00
             $expired_at = $created_at->copy()->addDays(30)->setTime(0, 1, 0);
 
+            // 🔢 Hitung nomor urut dengan kelipatan 5 dimulai dari 110
+            $nomorUrut = str_pad(110 + ($i - 1) * 5, 6, '0', STR_PAD_LEFT);
+
+            // 🗓️ Ambil bulan romawi dan tahun
+            $bulanRomawi = [
+                'I',
+                'II',
+                'III',
+                'IV',
+                'V',
+                'VI',
+                'VII',
+                'VIII',
+                'IX',
+                'X',
+                'XI',
+                'XII'
+            ];
+            $bulan = $bulanRomawi[(int) $created_at->format('m') - 1];
+            $tahun = $created_at->format('Y');
+
+            // 🧾 Format nomor dokumen
+            $invoice_number = "$nomorUrut/NMF/INV/KPU/SOL/$bulan/$tahun";
+            $receipt_number = "$nomorUrut/NMF/KW/KPU/SOL/$bulan/$tahun";
+            $letter_number  = "$nomorUrut/NMF/KEU/KPU/SOL/$bulan/$tahun";
+
             $data[] = [
                 'contract_id'    => $contract_id,
-                'invoice_number' => 'INV-' . Str::upper(Str::random(10)),
-                'receipt_number' => 'REC-' . Str::upper(Str::random(10)),
-                'letter_number'  => 'LTR-' . Str::upper(Str::random(10)),
+                'invoice_number' => $invoice_number,
+                'receipt_number' => $receipt_number,
+                'letter_number'  => $letter_number,
                 'period'         => '14',
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_non_fee',
