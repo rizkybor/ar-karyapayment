@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\NotificationRecipient;
+
 use App\Models\Notification;
+use App\Models\NotificationRecipient;
 
 class NotificationController extends Controller
 {
@@ -167,7 +168,7 @@ class NotificationController extends Controller
     public function getNotificationsJson()
     {
         $userId = auth()->id();
-    
+
         // Ambil notifikasi berdasarkan penerima yang sedang login
         $notifications = Notification::with('sender')
             ->whereHas('recipients', function ($query) use ($userId) {
@@ -176,7 +177,7 @@ class NotificationController extends Controller
             ->orderByRaw('read_at IS NULL DESC, created_at DESC')
             ->take(10)
             ->get();
-    
+
         return response()->json([
             'notifications' => $notifications->map(function ($notification) {
                 return [

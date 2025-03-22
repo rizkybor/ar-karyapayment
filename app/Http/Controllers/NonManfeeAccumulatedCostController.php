@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 use App\Models\NonManfeeDocument;
 use App\Models\NonManfeeDocAccumulatedCost;
-use Illuminate\Http\Request;
 
 class NonManfeeAccumulatedCostController extends Controller
 {
@@ -15,7 +16,7 @@ class NonManfeeAccumulatedCostController extends Controller
     {
         NonManfeeDocument::findOrFail($id);
         $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
-        
+
         return response()->json([
             'akun' => $accumulatedCost->account ?? null,
             'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,

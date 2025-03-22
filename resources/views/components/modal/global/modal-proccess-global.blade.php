@@ -6,10 +6,12 @@
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl sm:max-w-md sm:h-auto sm:max-h-[90vh] sm:overflow-auto flex flex-col">
 
         <!-- Header Modal dengan Flex -->
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-center items-center mb-1">
             <h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Konfirmasi
+                {{-- Dynamic Value --}}
             </h3>
+        </div>
+        <div class="flex justify-center items-center mb-1">
             <p class="text-gray-700 dark:text-gray-300 text-sm">
                 <strong>Invoice:</strong> {{ $document['invoice_number'] ?? 'Tidak Diketahui' }}
             </p>
@@ -23,7 +25,7 @@
             <!-- Field Pesan -->
             <div class="mb-4">
                 <x-label for="messages" value="Pesan (Opsional)" class="text-gray-700 dark:text-gray-200" />
-                <textarea id="messages" name="messages" class="form-input w-full mt-1 rounded-md"></textarea>
+                <textarea id="messages" name="messages" class="form-input w-full mt-1 rounded-md">{{ $document }}</textarea>
             </div>
 
             <!-- Footer Modal -->

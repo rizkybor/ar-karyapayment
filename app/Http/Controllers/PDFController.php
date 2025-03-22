@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\NonManfeeDocument;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+
+use App\Models\NonManfeeDocument;
+
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PDFController extends Controller
 {

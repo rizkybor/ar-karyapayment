@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\NonManfeeDocument;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+
+use App\Models\NonManfeeDocument;
+
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Http\Request;
+
 
 class NonManfeeDocumentDataTableController extends Controller
 {

@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Models\User;
 use App\Models\Contracts;
-use Carbon\Carbon;
-use App\Models\NonManfeeDocument;
-use App\Models\NonManfeeDocAccumulatedCost;
-use App\Models\NonManfeeDocHistory;
-use App\Models\DocumentApproval;
 use App\Models\Notification;
+use App\Models\DocumentApproval;
+use App\Models\NonManfeeDocument;
+use App\Models\NonManfeeDocHistory;
 use App\Models\NotificationRecipient;
-use App\Notifications\InvoiceApprovalNotification;
-use Illuminate\Http\Request;
+use App\Models\NonManfeeDocAccumulatedCost;
+
 use App\Exports\NonManfeeDocumentExport;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
-
+use App\Notifications\InvoiceApprovalNotification;
 
 
 class NonManfeeDocumentController extends Controller
@@ -156,9 +159,13 @@ class NonManfeeDocumentController extends Controller
             'approvals.approver'
         ])->findOrFail($id);
 
+        // jika mau digunakan
+        // $dataContract =  $contracts = Contracts::where('id', $nonManfeeDocument->id)
+        // ->get();
+
         $latestApprover = DocumentApproval::where('document_id', $id)
             ->with('approver')
-            ->latest('updated_at') // Ambil hanya yang paling baru
+            ->latest('updated_at')
             ->first();
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
@@ -468,7 +475,7 @@ class NonManfeeDocumentController extends Controller
                     $statusCode = 'unknown';
                 }
             }
-            
+
             // 🔹 6️⃣ Jika tidak ada user untuk role berikutnya, batalkan
             if ($nextApprovers->isEmpty()) {
                 Log::warning("Approval gagal: Tidak ada user dengan role {$nextRole} untuk dokumen ID {$document->id}");
@@ -618,7 +625,7 @@ class NonManfeeDocumentController extends Controller
             $targetApprover = User::find($targetApproverId);
             $targetApproverRole = $targetApprover->role ?? 'maker';
 
-           
+
 
             // 🔹 4️⃣ Simpan revisi ke dalam log approval (Pastikan tidak ada duplikasi)
             DocumentApproval::updateOrCreate(
@@ -634,8 +641,8 @@ class NonManfeeDocumentController extends Controller
                 ]
             );
 
-             // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (102)" dan set approver terakhir
-             $document->update([
+            // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (102)" dan set approver terakhir
+            $document->update([
                 'status'         => '102',
                 'last_reviewers' => $userRole,
             ]);

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DropboxService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
+use App\Services\DropboxService;
+
 use Spatie\Dropbox\Client;
+
 use Exception;
 
 class DropboxController extends Controller
