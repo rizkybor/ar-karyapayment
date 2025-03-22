@@ -46,17 +46,6 @@
         document.getElementById("messages").value = ""; 
     }
 
-    
-    function openModal() {
-        document.getElementById("modalOverlay").classList.remove("hidden");
-        clearMessages();
-    }
-
-    function closeModal() {
-        document.getElementById("modalOverlay").classList.add("hidden");
-        clearMessages(); 
-    }
-
     document.getElementById("modalSubmitButton").addEventListener("click", function () {
     document.getElementById("modalForm").submit(); // 🔥 Kirim form sebelum reset textarea
 });

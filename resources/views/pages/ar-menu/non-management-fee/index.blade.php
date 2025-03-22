@@ -128,8 +128,8 @@
             </div>
         </div>
 
-        <x-modal.global.modal-alert-global id="globalAlertModal" type="success" title="Berhasil!"
-            message="Data berhasil disimpan." timeout="3000" />
+        {{-- <x-modal.global.modal-alert-global id="globalAlertModal" type="success" title="Berhasil!"
+            message="Data berhasil disimpan." timeout="3000" /> --}}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -31,13 +31,17 @@
             <li class="p-4 text-center text-gray-500 dark:text-gray-400">Memuat notifikasi...</li>
         </ul>
         <div id="viewAllNotifications" class="hidden p-2 text-center">
-            <a href="http://127.0.0.1:8000/notifications"
+            <a href="{{ config('app.url') }}/notifications"
                 class="text-blue-500 dark:text-blue-400 text-sm font-semibold hover:underline">
                 View All Notifications
             </a>
         </div>
     </div>
 </div>
+
+<script>
+    window.APP_URL = "{{ config('app.url') }}";
+</script>
 
 <script>
     function fetchNotifications() {
@@ -52,7 +56,7 @@
 
         content.innerHTML = '<li class="p-4 text-center text-gray-500 dark:text-gray-400">Memuat notifikasi...</li>';
 
-        fetch("http://127.0.0.1:8000/notifications/json", {
+        fetch(window.APP_URL + "/notifications/json", {
                 headers: {
                     "Accept": "application/json"
                 }
@@ -121,7 +125,7 @@
 
     // ✅ Fungsi untuk menandai notifikasi sebagai telah dibaca
     function markAsRead(notificationId) {
-        fetch(`http://127.0.0.1:8000/notifications/${notificationId}/mark-as-read`, {
+        fetch(`${window.APP_URL}/notifications/${notificationId}/mark-as-read`, {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",

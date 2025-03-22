@@ -78,6 +78,7 @@
 
             <main class="grow">
                 {{ $slot }}
+                <x-modal.global.modal-confirmation-global />
             </main>
 
         </div>
@@ -87,5 +88,34 @@
     @livewireScriptConfig
 
 </body>
+
+<script>
+    function openConfirmationModal(title, description, yesCallback) {
+    const modal = document.getElementById('globalConfirmationModal');
+    const modalTitle = modal?.querySelector('h3');
+    const modalDesc = modal?.querySelector('p');
+    const yesBtn = document.getElementById('globalYesButton');
+
+    if (!modal || !yesBtn) {
+        console.error("Modal atau tombol Ya tidak ditemukan!");
+        return;
+    }
+
+    // Set teks
+    modalTitle.textContent = title || 'Konfirmasi';
+    modalDesc.textContent = description || 'Apakah Anda yakin?';
+
+    // Bersihkan event lama
+    const newYesBtn = yesBtn.cloneNode(true);
+    yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+
+    newYesBtn.addEventListener('click', function () {
+        yesCallback();
+        modal.classList.add('hidden');
+    });
+
+    modal.classList.remove('hidden');
+}
+</script>
 
 </html>

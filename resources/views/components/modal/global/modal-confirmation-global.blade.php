@@ -4,7 +4,6 @@
     'description' => 'Apakah Anda yakin?',
     'yesLabel' => 'Ya',
     'noLabel' => 'Tidak',
-    'yesAction' => null,
 ])
 
 <div id="{{ $id }}" class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center px-4 hidden">
@@ -25,10 +24,10 @@
 
         <!-- Tombol -->
         <div class="flex justify-center gap-4">
-            <x-secondary-button type="button" onclick="location.reload(true)">
+            <x-secondary-button type="button" onclick="document.getElementById('{{ $id }}').classList.add('hidden')">
                 {{ $noLabel }}
             </x-secondary-button>
-            <x-button-action color="green" type="button" onclick="{{ $yesAction }}()">
+            <x-button-action id="globalYesButton" color="green" type="button">
                 {{ $yesLabel }}
             </x-button-action>
         </div>
@@ -36,7 +35,31 @@
 </div>
 
 <script>
-    function openModal(id) {
-        document.getElementById(id).classList.remove('hidden');
+    function openConfirmationModal(title, description, yesCallback) {
+        const modal = document.getElementById('globalConfirmationModal');
+        const modalTitle = modal.querySelector('h3');
+        const modalDesc = modal.querySelector('p');
+        const yesBtn = document.getElementById('globalYesButton');
+
+        if (!yesBtn) {
+            console.error("Tombol Ya tidak ditemukan dalam modal!");
+            return;
+        }
+
+        // Set teks
+        modalTitle.textContent = title || 'Konfirmasi';
+        modalDesc.textContent = description || 'Apakah Anda yakin?';
+
+        // Reset event listener dulu
+        const newYesBtn = yesBtn.cloneNode(true);
+        yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+
+        newYesBtn.addEventListener('click', function () {
+            yesCallback();
+            modal.classList.add('hidden');
+        });
+
+        // Tampilkan modal
+        modal.classList.remove('hidden');
     }
 </script>

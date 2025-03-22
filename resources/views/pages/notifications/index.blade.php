@@ -14,13 +14,9 @@
                 @endif
 
                 @if ($notifications->count() > 0)
-                    <form action="{{ route('notifications.clearAll') }}" method="POST"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua notifikasi?');">
-                        @csrf
-                        <x-button-action color="red" icon="trash" type="submit">
-                            Hapus Semua
-                        </x-button-action>
-                    </form>
+                <x-button-action color="red" icon="trash" type="button" onclick="clearAllNotifications()">
+                    Hapus Semua
+                </x-button-action>
                 @endif
             </div>
         </div>
@@ -106,15 +102,10 @@
 
                                     <!-- 📌 Kanan: Tombol Aksi -->
                                     <div class="w-1/3 flex justify-end gap-2">
-                                        <form action="{{ route('notifications.destroy', $notification->id) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus notifikasi ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <x-button-action color="red">
-                                                Hapus
-                                            </x-button-action>
-                                        </form>
+                                        <x-button-action color="red" type="button"
+                                        @click.stop="deleteNotification({{ $notification->id }})">
+                                        Hapus
+                                    </x-button-action>
                                     </div>
                                 </div>
                             </div>
@@ -156,5 +147,56 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    function deleteNotification(notificationId) {
+        openConfirmationModal(
+            "Konfirmasi Hapus",
+            "Apakah Anda yakin ingin menghapus notifikasi ini?",
+            function () {
+                console.log(notificationId,'<< cek')
+                fetch(`{{ url('/notifications') }}/${notificationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Gagal menghapus notifikasi');
+                    return response.json();
+                })
+                .then(() => location.reload())
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus notifikasi.');
+                });
+            }
+        );
+    }
+
+    function clearAllNotifications() {
+        openConfirmationModal(
+            "Konfirmasi Hapus Semua",
+            "Apakah Anda yakin ingin menghapus semua notifikasi?",
+            function () {
+                fetch(`{{ route('notifications.clearAll') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Gagal menghapus semua notifikasi');
+                    return response.json();
+                })
+                .then(() => location.reload())
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menghapus semua notifikasi.');
+                });
+            }
+        );
     }
 </script>
