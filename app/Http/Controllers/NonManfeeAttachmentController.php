@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\NonManfeeDocAttachment;
 
 class NonManfeeAttachmentController extends Controller
@@ -28,29 +29,29 @@ class NonManfeeAttachmentController extends Controller
             'file_name' => 'required|string|max:255',
             'file' => 'required|file|max:10240',
         ]);
-    
+
         // **📂 Ambil File dari Request**
         $file = $request->file('file');
         $fileName = $request->file_name;
         $dropboxFolderName = '/attachments/';
-    
+
         // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
         $dropboxController = new DropboxController();
         $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
-    
+
         // ❌ Cek apakah upload ke Dropbox gagal
         if (!$dropboxPath) {
             return redirect()->route('non-management-fee.edit', ['id' => $id])
                 ->with('error', 'Gagal mengunggah file.');
         }
-    
+
         // ✅ Simpan data ke database dengan path Dropbox
         NonManfeeDocAttachment::create([
             'document_id' => $id,
             'file_name' => $fileName, // Simpan nama file yang diinput user
             'path' => $dropboxPath, // Simpan path dari Dropbox
         ]);
-    
+
         return redirect()->route('non-management-fee.edit', ['id' => $id])
             ->with('success', 'Data berhasil disimpan!');
     }

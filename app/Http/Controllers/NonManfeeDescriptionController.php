@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\NonManfeeDocDescription;
 
 class NonManfeeDescriptionController extends Controller
@@ -13,8 +14,8 @@ class NonManfeeDescriptionController extends Controller
     public function show($id, $description_id)
     {
         $description = NonManfeeDocDescription::where('document_id', $id)
-                            ->where('id', $description_id)
-                            ->firstOrFail();
+            ->where('id', $description_id)
+            ->firstOrFail();
 
         return response()->json($description);
     }
@@ -34,7 +35,7 @@ class NonManfeeDescriptionController extends Controller
         ]);
 
         return redirect()->route('non-management-fee.edit', ['id' => $id])
-                         ->with('success', 'Data berhasil disimpan!');
+            ->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -47,8 +48,8 @@ class NonManfeeDescriptionController extends Controller
         ]);
 
         $description = NonManfeeDocDescription::where('document_id', $id)
-                            ->where('id', $description_id)
-                            ->firstOrFail();
+            ->where('id', $description_id)
+            ->firstOrFail();
 
         $description->update([
             'description' => $request->description,
@@ -66,12 +67,12 @@ class NonManfeeDescriptionController extends Controller
     public function destroy($id, $description_id)
     {
         $description = NonManfeeDocDescription::where('document_id', $id)
-                            ->where('id', $description_id)
-                            ->firstOrFail();
+            ->where('id', $description_id)
+            ->firstOrFail();
 
         $description->delete();
 
         return redirect()->route('non-management-fee.edit', ['id' => $id])
-                         ->with('success', 'Deskripsi berhasil dihapus!');
+            ->with('success', 'Deskripsi berhasil dihapus!');
     }
 }
