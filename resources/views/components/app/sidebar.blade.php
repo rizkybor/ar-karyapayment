@@ -41,7 +41,7 @@
                 <h3 class="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3">
                     <span class="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6"
                         aria-hidden="true">•••</span>
-                    <span class="lg:hidden lg:sidebar-expanded:block 2xl:block">Pages</span>
+                    <span class="lg:hidden lg:sidebar-expanded:block 2xl:block">Main Menu</span>
                 </h3>
                 <ul class="mt-3">
                     <li
@@ -56,7 +56,7 @@
                                     <svg class="shrink-0 fill-current 
                                     @if (Request::is('notifications*')) text-violet-500 
                                     @else text-gray-400 dark:text-gray-500 @endif"
-                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"
                                         stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -65,7 +65,7 @@
                                         <path d="M10 21h4a2 2 0 0 1 -4 0z" />
                                     </svg>
                                     <span
-                                        class="text-sm font-medium ml-4 
+                                        class="text-sm font-medium ml-3 
                                     lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                         Notifications
                                     </span>
@@ -76,18 +76,6 @@
                                         class="inline-flex items-center justify-center h-5 text-xs font-medium text-white bg-violet-400 px-2 rounded">
                                         {{ $unreadNotificationsCount ?? 0 }}</span>
                                 </div>
-
-
-                                {{-- Script jika ingin real-time  --}}
-                                {{-- <div class="flex flex-shrink-0 ml-2" x-data="{ count: {{ $unreadNotificationsCount ?? 0 }} }" x-init="setInterval(() => {
-                                    fetch('/notifications/unread-count')
-                                        .then(response => response.json())
-                                        .then(data => count = data.unread_count);
-                                }, 30000)">
-                                    <span class="inline-flex items-center justify-center h-5 text-xs font-medium text-white bg-violet-400 px-2 rounded">
-                                        <span x-text="count"></span>
-                                    </span>
-                                </div> --}}
 
                             </div>
                         </a>

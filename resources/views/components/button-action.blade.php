@@ -40,6 +40,12 @@
             '<path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L6 20l-4 1 1-4 13.5-13.5z"/>',
         'trash' =>
             '<path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m-5 4v6m4-6v6m-8-6v6m-3 4h14a2 2 0 002-2V6H3v10a2 2 0 002 2z"/>',
+        'submit' => '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />',
+        'upload' =>
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12"/>',
+        'send' => '<path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2L15 22L11 13L2 9l20-7z" />',
+        'right-arrow' =>
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m6 0l-3 3m3-3l-3-3m9 3a9 9 0 11-18 0 9 9 0 0118 0z" />',
     ];
 
     $iconSvg = isset($icons[$icon])
@@ -47,8 +53,8 @@
             $icons[$icon] .
             '</svg>'
         : '';
-    
-        $disabledClass = $disabled
+
+    $disabledClass = $disabled
         ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed opacity-50 hover:bg-gray-400'
         : $colorClass;
 @endphp
