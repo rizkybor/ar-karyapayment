@@ -22,5 +22,17 @@ Panggil di Function :
 showAutoCloseAlert('globalAlertModal', 3000, 'Pilih minimal satu data untuk diexport!', 'error', 'Gagal!');
  -->
 
+ <!-- Penggunaan Modal Confirmation di Pages
+<x-modal.global.modal-confirmation-global
+        id="confirmSubmitModal"
+        title="Konfirmasi"
+        description="Apakah Anda yakin ingin menyimpan perubahan ini?"
+        yesLabel="Ya, Simpan" noLabel="Batal"
+        yesAction="submitAccumulatedForm" />
+
+Panggil di Function :
+openModal('confirmSubmitModal');
+-->
+
 
 
