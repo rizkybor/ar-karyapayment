@@ -103,12 +103,15 @@
     </div>
 
     {{-- modal confirmation --}}
-    <x-modal.global.modal-confirmation-global
-        id="confirmSubmitModal"
-        title="Konfirmasi"
-        description="Apakah Anda yakin ingin menyimpan perubahan ini?"
-        yesLabel="Ya, Simpan" noLabel="Batal"
-        yesAction="submitAccumulatedForm" />
+    @if ($isEdit)
+        <x-modal.global.modal-confirmation-global
+            id="confirmSubmitModal" 
+            title="Konfirmasi"
+            description="Apakah Anda yakin ingin menyimpan perubahan ini?"
+            yesLabel="Ya, Simpan"
+            noLabel="Batal"
+            yesAction="submitAccumulatedForm" />
+    @endif
 </div>
 
 <!-- SweetAlert Library -->
