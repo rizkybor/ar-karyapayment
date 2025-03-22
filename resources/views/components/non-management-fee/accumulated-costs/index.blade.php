@@ -10,12 +10,13 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-            <x-button-action icon="save" id="saveButton" disabled="true" onclick="openCustomModal()">
-                Simpan Akumulasi Biaya
-            </x-button-action>
-            {{-- <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
-                Simpan Akumulasi Biaya
-            </x-button-action> --}}
+        <x-button-action icon="save" id="saveButton" disabled="true" onclick="openConfirmationModal(
+            'Konfirmasi Simpan',
+            'Yakin ingin menyimpan perubahan?',
+            () => document.getElementById('accumulatedForm').submit()
+        )">
+            Simpan Akumulasi Biaya
+        </x-button-action>
         @endif
     </div>
 
@@ -101,53 +102,9 @@
 
         </div>
     </div>
-
-    {{-- modal confirmation --}}
-    @if ($isEdit)
-        <x-modal.global.modal-confirmation-global
-            id="confirmSubmitModal" 
-            title="Konfirmasi"
-            description="Apakah Anda yakin ingin menyimpan perubahan ini?"
-            yesLabel="Ya, Simpan"
-            noLabel="Batal"
-            yesAction="submitAccumulatedForm" />
-    @endif
 </div>
 
-<!-- SweetAlert Library -->
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-
 <script>
-    function openCustomModal() {
-        openModal('confirmSubmitModal');
-    }
-
-    function submitAccumulatedForm() {
-        document.getElementById("accumulatedForm").submit();
-    }
-
-    // function confirmSubmit(event) {
-    //     event.preventDefault();
-
-    //     let saveButton = document.getElementById("saveButton");
-    //     if (saveButton.disabled) return; // Cegah jika tombol masih disabled
-
-    //     Swal.fire({
-    //         title: "Apakah Anda yakin?",
-    //         text: "Data yang telah diperbarui akan tersimpan.",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#3085d6",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "Ya, Simpan!",
-    //         cancelButtonText: "Batal"
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             document.getElementById("accumulatedForm").submit();
-    //         }
-    //     });
-    // }
-
     document.addEventListener("DOMContentLoaded", function() {
         let saveButton = document.getElementById("saveButton");
 

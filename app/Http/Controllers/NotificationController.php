@@ -136,7 +136,10 @@ class NotificationController extends Controller
             Notification::where('id', $notification_id)->delete();
         }
 
-        return back()->with('success', 'Notifikasi berhasil dihapus.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Notifikasi berhasil dihapus.'
+        ]);
     }
 
     /**
@@ -152,7 +155,10 @@ class NotificationController extends Controller
         // Hapus notifikasi yang sudah tidak memiliki penerima
         Notification::whereDoesntHave('recipients')->delete();
 
-        return back()->with('success', 'Semua notifikasi berhasil dihapus.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Semua notifikasi berhasil dihapus.'
+        ]);
     }
 
     public function getUnreadNotificationsCount()
