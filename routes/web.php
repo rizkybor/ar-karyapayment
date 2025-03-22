@@ -281,9 +281,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         });
 
         // Route Print PDF Surat Permohonan, Kwitansi, Invoice
-        Route::get('/{id}/print-surat', [PDFController::class, 'generateLetter'])->name('print-surat');;
-        Route::get('/{id}/print-invoice', [PDFController::class, 'generateInvoice'])->name('print-invoice');;
-        Route::get('/{id}/print-kwitansi', [PDFController::class, 'generateKwitansi'])->name('print-kwitansi');;
+        Route::get('/{id}/print-surat', [PDFController::class, 'nonManfeeLetter'])->name('print-surat');;
+        Route::get('/{id}/print-invoice', [PDFController::class, 'nonManfeeInvoice'])->name('print-invoice');;
+        Route::get('/{id}/print-kwitansi', [PDFController::class, 'nonManfeeKwitansi'])->name('print-kwitansi');;
 
         // Route History
         Route::prefix('histories')->name('histories.')->group(function () {

@@ -125,7 +125,7 @@
                         </p>
                         ${item.notes ? `<p class="text-sm text-gray-600 dark:text-gray-300">${item.notes}</p>` : ''}
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            Oleh: <span class="font-medium">${item.user}</span> • ${item.timestamp}
+                            Oleh: <span class="font-medium">${item.user}</span> • ${item.timestamp} wib
                         </p>
                     </div>
                 </div>

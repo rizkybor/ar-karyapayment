@@ -75,8 +75,8 @@ class NonManfeeDocumentController extends Controller
         $nextNumber = $lastNumeric + 10;
 
         $letterNumber = sprintf("%06d/NMF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/non-management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
     }
