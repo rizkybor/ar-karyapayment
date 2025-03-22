@@ -25,6 +25,7 @@ class NotificationController extends Controller
 
         return view('pages/notifications/index', compact('notifications'));
     }
+    
     /**
      * Menampilkan detail notifikasi dan menandainya sebagai telah dibaca.
      */

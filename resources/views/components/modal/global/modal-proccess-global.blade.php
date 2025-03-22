@@ -11,7 +11,7 @@
                 {{-- Dynamic Value --}}
             </h3>
         </div>
-        <div class="flex justify-center items-center mb-1">
+        <div class="flex justify-center items-center mb-4">
             <p class="text-gray-700 dark:text-gray-300 text-sm">
                 <strong>Invoice:</strong> {{ $document['invoice_number'] ?? 'Tidak Diketahui' }}
             </p>
@@ -25,7 +25,7 @@
             <!-- Field Pesan -->
             <div class="mb-4">
                 <x-label for="messages" value="Pesan (Opsional)" class="text-gray-700 dark:text-gray-200" />
-                <textarea id="messages" name="messages" class="form-input w-full mt-1 rounded-md">{{ $document }}</textarea>
+                <textarea id="messages" name="messages" class="form-input w-full mt-1 rounded-md"></textarea>
             </div>
 
             <!-- Footer Modal -->
