@@ -151,12 +151,23 @@
                     })
                     .then(response => {
                         if (!response.ok) throw new Error('Gagal menghapus notifikasi');
-                        return response.json();
+                        return showAutoCloseAlert(
+                            'globalAlertModal',
+                            3000,
+                            'Notifikasi berhasil dihapus.',
+                            'success',
+                            'Berhasil!'
+                        );
                     })
                     .then(() => location.reload())
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan saat menghapus notifikasi.');
+                        return showAutoCloseAlert(
+                            'globalAlertModal',
+                            3000,
+                            'Notifikasi gagal dihapus.',
+                            'error',
+                            'Error!'
+                        );
                     });
             }
         );
@@ -176,12 +187,23 @@
                     })
                     .then(response => {
                         if (!response.ok) throw new Error('Gagal menghapus semua notifikasi');
-                        return response.json();
+                        return showAutoCloseAlert(
+                            'globalAlertModal',
+                            3000,
+                            'Seluruh notifikasi berhasil dihapus.',
+                            'success',
+                            'Berhasil!'
+                        );
                     })
                     .then(() => location.reload())
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan saat menghapus semua notifikasi.');
+                        return showAutoCloseAlert(
+                            'globalAlertModal',
+                            3000,
+                            'Seluruh notifikasi gagal dihapus.',
+                            'error',
+                            'Error!'
+                        );
                     });
             }
         );
