@@ -14,9 +14,9 @@
                 @endif
 
                 @if ($notifications->count() > 0)
-                <x-button-action color="red" icon="trash" type="button" onclick="clearAllNotifications()">
-                    Hapus Semua
-                </x-button-action>
+                    <x-button-action color="red" icon="trash" type="button" onclick="clearAllNotifications()">
+                        Hapus Semua
+                    </x-button-action>
                 @endif
             </div>
         </div>
@@ -44,11 +44,6 @@
                                     $url = $notification;
                                     $messageParts = explode('Lihat detail:', $message, 2);
                                     $textMessage = trim($messageParts[0]);
-
-                                    // // Validasi URL
-                                    // if ($url && !filter_var($url, FILTER_VALIDATE_URL)) {
-                                    //     $url = null; // Kosongkan jika tidak valid
-                                    // }
                                     $url = url('/notifications/' . $notification->id);
                                 } else {
                                     $textMessage = is_string($message) ? $message : 'Tidak ada pesan.';
@@ -87,14 +82,6 @@
                                             {{ $textMessage }}
                                         </p>
 
-                                        {{-- @if ($url)
-                                            <x-button-action color="violet"
-                                                @click="window.open('{{ $url }}', '_blank')"
-                                                onclick="window.location.href='{{ $url }}'"
-                                                class="px-2 my-3 text-xs w-28">
-                                                Lihat Detail >>
-                                            </x-button-action>
-                                        @endif --}}
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $notification->created_at->diffForHumans() }}
                                         </p>
@@ -103,9 +90,9 @@
                                     <!-- 📌 Kanan: Tombol Aksi -->
                                     <div class="w-1/3 flex justify-end gap-2">
                                         <x-button-action color="red" type="button"
-                                        @click.stop="deleteNotification({{ $notification->id }})">
-                                        Hapus
-                                    </x-button-action>
+                                            @click.stop="deleteNotification({{ $notification->id }})">
+                                            Hapus
+                                        </x-button-action>
                                     </div>
                                 </div>
                             </div>
@@ -153,24 +140,24 @@
         openConfirmationModal(
             "Konfirmasi Hapus",
             "Apakah Anda yakin ingin menghapus notifikasi ini?",
-            function () {
-                console.log(notificationId,'<< cek')
+            function() {
+                console.log(notificationId, '<< cek')
                 fetch(`{{ url('/notifications') }}/${notificationId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Gagal menghapus notifikasi');
-                    return response.json();
-                })
-                .then(() => location.reload())
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus notifikasi.');
-                });
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal menghapus notifikasi');
+                        return response.json();
+                    })
+                    .then(() => location.reload())
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus notifikasi.');
+                    });
             }
         );
     }
@@ -179,23 +166,23 @@
         openConfirmationModal(
             "Konfirmasi Hapus Semua",
             "Apakah Anda yakin ingin menghapus semua notifikasi?",
-            function () {
+            function() {
                 fetch(`{{ route('notifications.clearAll') }}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Gagal menghapus semua notifikasi');
-                    return response.json();
-                })
-                .then(() => location.reload())
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menghapus semua notifikasi.');
-                });
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        },
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal menghapus semua notifikasi');
+                        return response.json();
+                    })
+                    .then(() => location.reload())
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat menghapus semua notifikasi.');
+                    });
             }
         );
     }
