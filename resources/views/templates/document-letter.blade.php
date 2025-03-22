@@ -76,7 +76,7 @@
         <table border="0">
             <tr>
                 <td style="width: 10%; border: none;">Nomor</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? 'NO Surat' }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->letter_number }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none;">Sifat</td>
@@ -91,7 +91,7 @@
                 <td style="width: 90%; border: none; vertical-align: top;">
                     <div style="display: inline-block; vertical-align: top;">:</div>
                     <div style="display: inline-block; width: calc(100% - 10px);">
-                        <strong>{{ $bagian ?? 'Permohonan Pembayaran Masa Pemeliharaan dan Progres Akhir Pekerjaan Revitalisasi Area Taman Belakang Kantor PT Jendela Kode Area Head Cirebon' }}</strong>
+                        <strong>{{ $document->letter_subject }} - {{ $document->period }}</strong>
                     </div>
                 </td>
             </tr>
@@ -102,9 +102,9 @@
     {{-- Tanggal --}}
 
     <table border="0">
-        <tr>
-            <td style="width: 100%; border: none;">Jakarta, 00 Januari 0000</td>
-        </tr>
+        <td style="width: 100%; border: none;">
+            Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+        </td>
     </table>
 
     {{-- Kepada yth --}}
@@ -114,50 +114,41 @@
             <td style="width: 100%; border: none;">Kepada Yth:</td>
         </tr>
         <tr>
-            <td style="width: 100%; border: none;"><strong>PT Jendela Kode</strong></td>
+            <td style="width: 100%; border: none;"><strong>{{ $contract->employee_name }}</strong></td>
         </tr>
         <tr>
-            <td style="width: 100%; border: none;">Gedung C Lantai 4</td>
-        </tr>
-        <tr>
-            <td style="width: 100%; border: none;">L. K.H. Zainul Arifin No. 2</td>
-        </tr>
-        <tr>
-            <td style="width: 100%; border: none;">Jakarta Barat 11140</td>
+            <td style="width: 100%; border: none;">{{ $contract->address }}</td>
         </tr>
     </table>
 
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-
-        Berdasarkan Surat Perintah Kerja (SPK) antara PT Jendela Kode dengan PT Karya Prima Usahatama No.
-        *********/INV/SOL/III/2025 tanggal 00 Desember 0000 tentang Pekerjaan Revitalisasi Area Taman Belakang
-        Kantor PT Jendela Kode Area Head Cirebon, dengan ini kami mengajukan permohonan pembayaran masa pemeliharaan
-        dan progres akhir pekerjaan tersebut, dengan bukti perincian terlampir.
-
+        Berdasarkan nomor kontrak {{ $contract->contract_number }} ({{ $contract->type }}) antara
+        {{ $contract->employee_name }} dengan PT Karya Prima Usahatama tentang {{ $contract->title }}
+        ({{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }}), dengan ini kami mengajukan
+        permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
     </div>
 
-    <!-- Detail Pembayaran -->
     <!-- Detail Pembayaran -->
     <table class="w-full mt-4 text-smaller" style="border-collapse: collapse;">
         <tr>
             <td class="w-6">1.</td>
             <td class="w-32">Kwitansi</td>
             <td class="w-2">:</td>
-            <td class="w-32">No. 002260/KW/KPU/SOL/III/2025</td>
+            <td class="w-32">{{ $document->receipt_number }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">NILAI RUPIAH</td>
+            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td class="w-6">2.</td>
             <td class="w-32">Invoice</td>
             <td class="w-2">:</td>
-            <td class="w-32">No. *********/INV/SOL/III/2025</td>
+            <td class="w-32">{{ $document->invoice_number }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">NILAI RUPIAH</td>
+            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
     </table>
 
