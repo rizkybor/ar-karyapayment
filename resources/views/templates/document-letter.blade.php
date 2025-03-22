@@ -76,7 +76,7 @@
         <table border="0">
             <tr>
                 <td style="width: 10%; border: none;">Nomor</td>
-                <td style="width: 90%; border: none;">: {{ $document->letter_number }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->letter_number ?? 'Nomor surat tidak ada' }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none;">Sifat</td>
@@ -91,7 +91,7 @@
                 <td style="width: 90%; border: none; vertical-align: top;">
                     <div style="display: inline-block; vertical-align: top;">:</div>
                     <div style="display: inline-block; width: calc(100% - 10px);">
-                        <strong>{{ $document->letter_subject }} - {{ $document->period }}</strong>
+                        <strong>{{ $document->letter_subject ?? '-' }} - {{ $document->period ?? '-' }}</strong>
                     </div>
                 </td>
             </tr>
@@ -114,18 +114,19 @@
             <td style="width: 100%; border: none;">Kepada Yth:</td>
         </tr>
         <tr>
-            <td style="width: 100%; border: none;"><strong>{{ $contract->employee_name }}</strong></td>
+            <td style="width: 100%; border: none;"><strong>{{ $contract->employee_name ?? 'NULL' }}</strong></td>
         </tr>
         <tr>
-            <td style="width: 100%; border: none;">{{ $contract->address }}</td>
+            <td style="width: 100%; border: none;">{{ $contract->address ?? 'NULL' }}</td>
         </tr>
     </table>
 
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan nomor kontrak {{ $contract->contract_number }} ({{ $contract->type }}) antara
-        {{ $contract->employee_name }} dengan PT Karya Prima Usahatama tentang {{ $contract->title }}
+        Berdasarkan nomor kontrak {{ $contract->contract_number ?? 'NULL' }} ({{ $contract->type ?? 'NULL' }}) antara
+        {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
+        {{ $contract->title ?? 'NULL' }}
         ({{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }}), dengan ini kami mengajukan
         permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
     </div>
@@ -136,7 +137,7 @@
             <td class="w-6">1.</td>
             <td class="w-32">Kwitansi</td>
             <td class="w-2">:</td>
-            <td class="w-32">{{ $document->receipt_number }}</td>
+            <td class="w-32">{{ $document->receipt_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
             <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
@@ -145,7 +146,7 @@
             <td class="w-6">2.</td>
             <td class="w-32">Invoice</td>
             <td class="w-2">:</td>
-            <td class="w-32">{{ $document->invoice_number }}</td>
+            <td class="w-32">{{ $document->invoice_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
             <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
@@ -203,10 +204,10 @@
     <!-- Tanda Tangan -->
     <div class="signature">
         <div>
-            <p>Diterktur Keuangan Dan Administrasi</p>
+            <p>Direktur Keuangan dan Administrasi</p>
             <br><br>
             <p>_____________________</p>
-            <p><strong style="text-decoration: underline;">Sutaryo</strong></p>
+            <p><strong >Sutaryo</strong></p>
         </div>
     </div>
 

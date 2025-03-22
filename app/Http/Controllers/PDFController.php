@@ -21,17 +21,10 @@ class PDFController extends Controller
 */
     public function generateLetter($document_id)
     {
-        // Ambil data dokumen NonManfee beserta relasi Contract dan AccumulatedCosts
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
-
-        // Siapkan data untuk dikirim ke blade template
         $data = [
-            'document' => $document,
-            'contract' => $document->contract,
-            'accumulatedCosts' => $document->accumulatedCosts,
+            'title' => 'Contoh PDF',
+            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
         ];
-
-        dd($data);
 
         // Load Blade view dari folder templates
         $pdf = Pdf::loadView('templates.document-letter', $data);
@@ -86,8 +79,8 @@ class PDFController extends Controller
             'accumulatedCosts' => $document->accumulatedCosts,
         ];
 
-        // format filename tersusun : invoice_number/contract_number/nama_kontraktor 
-        $filename = $data['document']->invoice_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name . '.pdf';
+        // format filename tersusun : letter_number/contract_number/nama_kontraktor 
+        $filename = $data['document']->letter_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name . '.pdf';
 
         // Load Blade view dari folder templates
         $pdf = Pdf::loadView('templates.document-letter', $data);
@@ -97,34 +90,46 @@ class PDFController extends Controller
         return $pdf->stream($filename);
     }
 
-    public function nonManfeeInvoice()
+    public function nonManfeeInvoice($document_id)
     {
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+
         $data = [
-            'title' => 'Contoh PDF',
-            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
         ];
+
+        // format filename tersusun : invoice_number/contract_number/nama_kontraktor 
+        $filename = $data['document']->invoice_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name . '.pdf';
 
         // Load Blade view dari folder templates
         $pdf = Pdf::loadView('templates.document-invoice', $data);
 
         // Download file PDF dengan nama document-letter.pdf
         // return $pdf->download('document-invoice.pdf');
-        return $pdf->stream('document-invoice.pdf');
+        return $pdf->stream($filename);
     }
 
-    public function nonManfeeKwitansi()
+    public function nonManfeeKwitansi($document_id)
     {
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+
         $data = [
-            'title' => 'Contoh PDF',
-            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
         ];
+
+        // format filename tersusun : receipt_number/contract_number/nama_kontraktor 
+        $filename = $data['document']->receipt_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name . '.pdf';
 
         // Load Blade view dari folder templates
         $pdf = Pdf::loadView('templates.document-kwitansi', $data);
 
         // Download file PDF dengan nama document-letter.pdf
         // return $pdf->download('document-kwitansi.pdf');
-        return $pdf->stream('document-kwitansi.pdf');
+        return $pdf->stream($filename);
     }
 
     /*
