@@ -10,32 +10,36 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-            <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
+            <x-button-action icon="save" id="saveButton" disabled="true" onclick="openCustomModal()">
                 Simpan Akumulasi Biaya
             </x-button-action>
+            {{-- <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
+                Simpan Akumulasi Biaya
+            </x-button-action> --}}
         @endif
     </div>
 
     <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-           {{-- Akun (Dropdown) --}}
-<div class="col-span-1">
-    <x-label for="akun" value="{{ __('Akun') }}" />
-    <select id="akun" name="akun"
-        class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
+            {{-- Akun (Dropdown) --}}
+            <div class="col-span-1">
+                <x-label for="akun" value="{{ __('Akun') }}" />
+                <select id="akun" name="akun"
+                    class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
         font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
         {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
-        onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
-        <option value="">Pilih Akun</option>
-        @foreach ($optionAccount as $akun)
-            <option value="{{ $akun['no'] }}"
-                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
-                ({{ $akun['no'] }}) {{ $akun['name'] }}
-            </option>
-        @endforeach
-    </select>
-</div>
+                    onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
+                    <option value="">Pilih Akun</option>
+                    @foreach ($optionAccount as $akun)
+                        <option value="{{ $akun['no'] }}"
+                            {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                            ({{ $akun['no'] }})
+                            {{ $akun['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
             {{-- DPP Pekerjaan --}}
             <div class="col-span-1">
@@ -97,33 +101,49 @@
 
         </div>
     </div>
+
+    {{-- modal confirmation --}}
+    <x-modal.global.modal-confirmation-global
+        id="confirmSubmitModal"
+        title="Konfirmasi"
+        description="Apakah Anda yakin ingin menyimpan perubahan ini?"
+        yesLabel="Ya, Simpan" noLabel="Batal"
+        yesAction="submitAccumulatedForm" />
 </div>
 
 <!-- SweetAlert Library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function confirmSubmit(event) {
-        event.preventDefault(); // Cegah form terkirim langsung
-
-        let saveButton = document.getElementById("saveButton");
-        if (saveButton.disabled) return; // Cegah jika tombol masih disabled
-
-        Swal.fire({
-            title: "Apakah Anda yakin?",
-            text: "Data yang telah diperbarui akan tersimpan.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Ya, Simpan!",
-            cancelButtonText: "Batal"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById("accumulatedForm").submit();
-            }
-        });
+    function openCustomModal() {
+        openModal('confirmSubmitModal');
     }
+
+    function submitAccumulatedForm() {
+        document.getElementById("accumulatedForm").submit();
+    }
+
+    // function confirmSubmit(event) {
+    //     event.preventDefault();
+
+    //     let saveButton = document.getElementById("saveButton");
+    //     if (saveButton.disabled) return; // Cegah jika tombol masih disabled
+
+    //     Swal.fire({
+    //         title: "Apakah Anda yakin?",
+    //         text: "Data yang telah diperbarui akan tersimpan.",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: "#3085d6",
+    //         cancelButtonColor: "#d33",
+    //         confirmButtonText: "Ya, Simpan!",
+    //         cancelButtonText: "Batal"
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             document.getElementById("accumulatedForm").submit();
+    //         }
+    //     });
+    // }
 
     document.addEventListener("DOMContentLoaded", function() {
         let saveButton = document.getElementById("saveButton");
@@ -159,8 +179,8 @@
         };
 
         window.validateRatePPN = function(input) {
-            input.value = input.value.replace(/[^0-9.,]/g, ''); // Hanya angka, koma, titik
-            input.value = input.value.replace(/,/g, '.'); // Ubah koma menjadi titik
+            input.value = input.value.replace(/[^0-9.,]/g, '');
+            input.value = input.value.replace(/,/g, '.');
 
             let parts = input.value.split('.');
             if (parts.length > 2) {
@@ -170,7 +190,7 @@
         };
 
         window.formatCurrency = function(input) {
-            let value = input.value.replace(/\D/g, ''); // Hanya angka
+            let value = input.value.replace(/\D/g, '');
             if (value === '') return;
             input.value = new Intl.NumberFormat("id-ID").format(value);
             checkChanges();
@@ -188,7 +208,7 @@
             document.getElementById("jumlah").value = new Intl.NumberFormat("id-ID").format(jumlah);
         };
 
-        calculateValues(); // Hitung nilai awal
-        checkChanges(); // Periksa perubahan awal
+        calculateValues();
+        checkChanges();
     });
 </script>
