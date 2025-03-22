@@ -64,9 +64,9 @@ class NonManfeeDocumentSeeder extends Seeder
             $tahun = $created_at->format('Y');
 
             // 🧾 Format nomor dokumen
-            $invoice_number = "$nomorUrut/NMF/INV/KPU/SOL/$bulan/$tahun";
-            $receipt_number = "$nomorUrut/NMF/KW/KPU/SOL/$bulan/$tahun";
-            $letter_number  = "$nomorUrut/NMF/KEU/KPU/SOL/$bulan/$tahun";
+            $invoice_number = "$nomorUrut/NF/INV/KPU/SOL/$bulan/$tahun";
+            $receipt_number = "$nomorUrut/NF/KW/KPU/SOL/$bulan/$tahun";
+            $letter_number  = "$nomorUrut/NF/KEU/KPU/SOL/$bulan/$tahun";
 
             $data[] = [
                 'contract_id'    => $contract_id,
