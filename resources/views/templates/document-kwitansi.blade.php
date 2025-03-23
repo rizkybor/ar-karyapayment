@@ -61,7 +61,7 @@
                         </td>
                         <td
                             style="border: 1px solid black; padding: 10px; text-align: left; font-style: italic; font-weight: bold; width: 70%; line-height: 1; vertical-align: middle; height: 40px;">
-                            {{ $terbilang ?? "Tidak ada nilai" }} Rupiah
+                            {{ $terbilang ?? 'Tidak ada nilai' }} Rupiah
                         </td>
                     </tr>
                 </thead>
@@ -86,7 +86,9 @@
                     <tr>
                         <td class="no-border">Jumlah</td>
                         <td class="no-border"><strong>Rp.</strong></td>
-                        <td class="no-border"><strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong></td>
+                        <td class="no-border">
+                            <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                        </td>
                         <td class="no-border">&nbsp;</td>
 
                     </tr>
@@ -126,7 +128,7 @@
                     Rp.</td>
                 <td
                     style="padding: 5px 10px; text-align: right; font-weight: bold; font-style: italic; vertical-align: middle; height: 30px;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }},</td>
             </tr>
         </table>
 
@@ -135,16 +137,20 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                <td colspan="2" style="border-bottom: none;">Jakarta,
+                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
                 <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
-                <td colspan="2" rowspan="3" style="border-top: none; border-bottom: none;">
-                    <img src="https://repository-images.githubusercontent.com/8805592/85279ffa-7f4a-4880-8e41-59e8032b0f71"
-                        alt="signature" width="150" height="150">
+                <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
+                    @php
+                        $logoPath = public_path('images/dirut-keuangan.png');
+                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+                    @endphp
+                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150">
                 </td>
             </tr>
             <tr>

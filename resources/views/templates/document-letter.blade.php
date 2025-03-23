@@ -205,9 +205,14 @@
     <div class="signature">
         <div>
             <p>Direktur Keuangan dan Administrasi</p>
-            <br><br>
-            <p>_____________________</p>
-            <p><strong >Sutaryo</strong></p>
+            <br />
+            @php
+                $logoPath = public_path('images/dirut-keuangan.png');
+                $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+            @endphp
+            <img src="{{ $logoBase64 }}" alt="Logo KPU" width="120">
+            <br />
+            <p><strong>Sutaryo</strong></p>
         </div>
     </div>
 

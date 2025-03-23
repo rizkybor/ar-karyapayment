@@ -77,7 +77,7 @@
             <td class="header" style="border: none;">
                 <h3 style="text-decoration: underline; letter-spacing: 3px;">INVOICE</h3>
 
-                <h3>No. 002260/INV/SOL/ll/2025</h3>
+                <h3>No. {{ $document->invoice_number ?? 'Nomor surat tidak ada' }}</h3>
             </td>
         </tr>
     </table>
@@ -87,10 +87,8 @@
         <tr>
             <td style="border: 1px solid black; padding: 8px; text-align: left;">
                 Kepada Yth:<br>
-                <strong>PT Gas Solution</strong><br>
-                Gedung C Lantai 4<br>
-                Jl. K.H. Zainul Arifin No. 2<br>
-                Jakarta Barat 11140
+                <strong>{{ $contract->employee_name ?? 'NULL' }}</strong><br>
+                {{ $contract->address ?? 'NULL' }}
             </td>
         </tr>
     </table>
@@ -100,11 +98,13 @@
         style="border: 1px solid black; width: 60%; border-collapse: collapse;">
         <tr>
             <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Kwitansi</strong></td>
-            <td class="w-2" style="border: 1px solid black; padding: 8px;">No. 002260/KW/KPU/SOL/III/2025</td>
+            <td class="w-2" style="border: 1px solid black; padding: 8px;">No.
+                {{ $document->receipt_number ?? 'NULL' }}</td>
         </tr>
         <tr>
             <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Tanggal</strong></td>
-            <td class="w-2" style="border: 1px solid black; padding: 8px;">11 Februari 2025</td>
+            <td class="w-2" style="border: 1px solid black; padding: 8px;">
+                {{ \Carbon\Carbon::parse($document->created_at)->translatedFormat('d F Y') }}</td>
         </tr>
     </table>
 
@@ -123,32 +123,37 @@
             <tr>
                 <td rowspan="8" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
-                <td colspan="3" style=" border-bottom: none;">Masa Pemeliharaan dan progress akhir dan pekerjaan
-                    Revilitas</td> <!-- Keterangan -->
+                <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
+                    {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
 
                 <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
-                <td style="text-align: right; border-left:none; border-bottom: none;">9.500.000</td>
+                <td style="text-align: right; border-left:none; border-bottom: none;">
+                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
                 <!-- Jumlah, rata kanan agar lebih rapi -->
             </tr>
 
             <tr>
                 <td class="no-border">Biaya Personil</td>
                 <td class="no-border">Rp.</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">9.500.000</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">
+                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
                 <td class="no-border">Jumlah</td>
                 <td class="no-border"><strong>Rp.</strong></td>
-                <td style="border-left: none; border-top: none; border-bottom: none;"><strong>9.500.000</strong></td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">
+                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td class="no-border">PPN 12%</td>
+                <td class="no-border">PPN</td>
                 <td class="no-border">Rp.</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">1.045.000</td>
+                <td style="border-left: none; border-top: none; border-bottom: none;">
+                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
@@ -157,7 +162,7 @@
                 <td class="no-border-top-side">Rp.</td>
                 <td
                     style="border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
-                    19.545.000
+                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
                     <div style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;"></div>
                 </td>
                 <td class="no-border-top-side">&nbsp;</td>
@@ -166,32 +171,40 @@
             <tr>
                 <td colspan="3" style="text-align: right;">Jumlah</td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
-                <td style="text-align: right; border-left: none;"><strong>9.500.000</strong></td>
+                <td style="text-align: right; border-left: none;">
+                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                </td>
             </tr>
             <tr>
-                <td colspan="3" style="text-align: right;">PPN 12%</td>
+                <td colspan="3" style="text-align: right;">PPN</td>
                 <td style="border-bottom: none; border-right: none;">Rp</td>
-                <td style="text-align: right; border-left: none;">1.045.000</td>
+                <td style="text-align: right; border-left: none;">
+                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
-                <td style="text-align: right;border-left: none;"><strong>10.545.000</strong></td>
+                <td style="text-align: right;border-left: none;">
+                    <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
+                </td>
             </tr>
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta, 11 Februari 2025<br>Direktur Keuangan dan
-                    Administrasi
+                <td colspan="2" style="border-bottom: none;">Jakarta,
+                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
                 <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
-                <td colspan="2" rowspan="3" style="border-top: none; border-bottom: none;">
-                    <img src="https://repository-images.githubusercontent.com/8805592/85279ffa-7f4a-4880-8e41-59e8032b0f71"
-                        alt="signature" width="150" height="150">
+                <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
+                    @php
+                        $logoPath = public_path('images/dirut-keuangan.png');
+                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+                    @endphp
+                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150">
                 </td>
             </tr>
             <tr>
@@ -210,8 +223,10 @@
                 <td class="no-border">:</td>
                 <td class="no-border">PT. Karya Prima Usahatama</td>
                 <td colspan="2"
-                    style="border-top: none; border-bottom: none; text-align: center; font-weight: bold;">
-                    Sutaryo
+                    style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
+                    <strong>Sutaryo</strong>
+                    <br>
+                    Direktur Keuangan dan Administrasi
                 </td </tr>
             <tr>
                 <td class="no-border-top-side">
