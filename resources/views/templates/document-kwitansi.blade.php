@@ -31,7 +31,7 @@
                                 style="height: 50px; width: auto; display: block; margin-left: 10px; margin-top: 10px;">
                         </th>
                         <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
-                            No. 002260/KW/KPU/SOL/III/2025
+                            No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}
                         </th>
                     </tr>
                 </thead>
@@ -41,10 +41,8 @@
                         <td style="padding: 1; vertical-align: top;">
                             <div class="border-box" style="margin: 1; padding: 1;">
                                 <p class="font-semibold" style="margin: 1; padding: 1;">Sudah Terima Dari :</p>
-                                <p style="margin: 1; padding: 1;">PT PGAS Solution</p>
-                                <p style="margin: 1; padding: 1;">Gedung C Lantai 4</p>
-                                <p style="margin: 1; padding: 1;">Jl. K.H. Zainul Arifin No. 20</p>
-                                <p style="margin: 1; padding: 1;">Jakarta Barat 11140</p>
+                                <p style="margin: 1; padding: 1;">{{ $contract->employee_name ?? 'NULL' }}</p>
+                                <p style="margin: 1; padding: 1;">{{ $contract->address ?? 'NULL' }}</p>
                             </div>
                         </td>
                     </tr>
@@ -63,7 +61,7 @@
                         </td>
                         <td
                             style="border: 1px solid black; padding: 10px; text-align: left; font-style: italic; font-weight: bold; width: 70%; line-height: 1; vertical-align: middle; height: 40px;">
-                            Sepuluh Juta Lima Ratus Empat Puluh Lima Ribu Rupiah
+                            {{ $terbilang ?? "Tidak ada nilai" }} Rupiah
                         </td>
                     </tr>
                 </thead>
@@ -75,31 +73,27 @@
             <p class="font-semibold" style="height: 5px; margin: 2px 0; line-height: 1;">Untuk Pembayaran :</p>
             <div style="padding: 10px;">
                 <div class="border-box">
-                    <p class="italic">Masa Pemeliharaan dan Progres Akhir Pekerjaan Revitalisasi Area Taman Belakang
-                        Kantor
-                        PT
-                        PGAS
-                        Solution Area Head Cirebon</p>
+                    <p class="italic">{{ $document->letter_subject ?? '-' }} - {{ $document->period ?? '-' }}</p>
                 </div>
 
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
                     <tr>
                         <td class="no-border">Biaya Pekerjaan</td>
                         <td class="no-border">Rp.</td>
-                        <td class="no-border">9.500.000</td>
+                        <td class="no-border">{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
 
                     </tr>
                     <tr>
                         <td class="no-border">Jumlah</td>
                         <td class="no-border"><strong>Rp.</strong></td>
-                        <td class="no-border"><strong>9.500.000</strong></td>
+                        <td class="no-border"><strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong></td>
                         <td class="no-border">&nbsp;</td>
 
                     </tr>
                     <tr>
-                        <td class="no-border">PPN 12%</td>
+                        <td class="no-border">PPN</td>
                         <td class="no-border">Rp.</td>
-                        <td class="no-border">1.045.000</td>
+                        <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
 
                     </tr>
                     <tr>
@@ -112,7 +106,7 @@
                         </td>
                         <td
                             style="border-left: none; border-bottom: none; border-top:none; border-right: 1px solid black;  position: relative;">
-                            <strong>10.545.000</strong>
+                            <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
                             <div
                                 style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;">
                             </div>
@@ -132,7 +126,7 @@
                     Rp.</td>
                 <td
                     style="padding: 5px 10px; text-align: right; font-weight: bold; font-style: italic; vertical-align: middle; height: 30px;">
-                    100.000</td>
+                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
             </tr>
         </table>
 
@@ -141,7 +135,7 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta, 11 Februari 2025
+                <td colspan="2" style="border-bottom: none;">Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>

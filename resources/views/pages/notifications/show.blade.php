@@ -8,10 +8,11 @@
             <!-- Header Notifikasi -->
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-
                     Dikirim oleh :
-                    ({{ $notification->sender->nip }}) {{ $notification->sender->name }} -
-                    {{ $notification->sender->position }}
+                    <span class="font-normal ml-1">
+                        {{ $notification->sender->name }} ({{ $notification->sender->nip }} -
+                        {{ $notification->sender->position }})
+                    </span>
                 </h3>
                 <span class="text-sm text-gray-500 dark:text-gray-400">
                     Tanggal dikirim : {{ $notification->created_at->format('d M Y, H:i') }}
