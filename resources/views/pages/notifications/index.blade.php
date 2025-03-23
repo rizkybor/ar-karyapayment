@@ -61,8 +61,7 @@
                                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
                                         Dikirim oleh :
                                         <span class="font-normal">
-                                            ({{ $notification->sender->nip }})
-                                            {{ $notification->sender->name }} - {{ $notification->sender->position }}
+                                            {{ $notification->sender->name }} ({{ $notification->sender->nip }} - {{ $notification->sender->position }})
                                         </span>
                                     </p>
 
