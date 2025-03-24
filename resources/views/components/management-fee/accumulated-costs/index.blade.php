@@ -21,7 +21,12 @@
             Akumulasi Biaya
         </h5>
         @if ($isEdit)
-            <x-button-action icon="save" id="saveButton" disabled="true" onclick="confirmSubmit(event)">
+            <x-button-action icon="save" id="saveButton" disabled="true"
+                onclick="openConfirmationModal(
+        'Konfirmasi Simpan',
+        'Yakin ingin menyimpan perubahan?',
+        () => document.getElementById('accumulatedForm').submit()
+    )">
                 Simpan Akumulasi Biaya
             </x-button-action>
         @endif
@@ -44,7 +49,7 @@
                         onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
                         @foreach ($account_akumulasi as $akun)
                             <option value="{{ $akun['no'] }}"
-                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                {{ old('account', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
                             </option>
@@ -173,61 +178,44 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function confirmSubmit(event) {
-        event.preventDefault(); // Cegah form terkirim langsung
-
-        let saveButton = document.getElementById("saveButton");
-        if (saveButton.disabled) return; // Cegah jika tombol masih disabled
-
-        Swal.fire({
-            title: "Apakah Anda yakin?",
-            text: "Data yang telah diperbarui akan tersimpan.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Ya, Simpan!",
-            cancelButtonText: "Batal"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('accumulatedForm').submit();
-            }
-        });
-    }
-
-    // Fungsi untuk memeriksa perubahan data
-    function checkChanges() {
-        let accountValue = document.getElementById('account').value;
-        let totalExpenseManfeeValue = document.getElementById('total_expense_manfee').value;
-        let dppValue = document.getElementById('dpp').value;
-        let ratePpnValue = document.getElementById('rate_ppn').value;
-
-        // Cek apakah semua input yang diperlukan telah diisi
-        if (accountValue && totalExpenseManfeeValue && dppValue && ratePpnValue) {
-            saveButton.disabled = false; // Aktifkan tombol simpan
-        } else {
-            saveButton.disabled = true; // Nonaktifkan tombol simpan
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         let saveButton = document.getElementById("saveButton");
 
-        if (saveButton) {
-            saveButton.disabled = true;
-        }
-
-
-        window.formatCurrency = function(input) {
-            let value = input.value.replace(/\D/g, ''); // Hanya angka
-            if (value === '') return;
-            input.value = new Intl.NumberFormat("id-ID").format(value);
-            checkChanges();
+        // Simpan nilai awal untuk mendeteksi perubahan input
+        let initialValues = {
+            nilai_manfee: document.getElementById('nilai_manfee').value,
+            account: document.getElementById('account').value,
+            total_expense_manfee: document.getElementById('total_expense_manfee').value,
+            dpp: document.getElementById('dpp').value,
+            rate_ppn: document.getElementById('rate_ppn').value
         };
 
-        checkChanges();
+        // Fungsi untuk mengecek apakah ada perubahan nilai dari nilai awal
+        function hasChanges() {
+            return (
+                document.getElementById('nilai_manfee').value !== initialValues.nilai_manfee ||
+                document.getElementById('account').value !== initialValues.account ||
+                document.getElementById('total_expense_manfee').value !== initialValues
+                .total_expense_manfee ||
+                document.getElementById('dpp').value !== initialValues.dpp ||
+                document.getElementById('rate_ppn').value !== initialValues.rate_ppn
+            );
+        }
 
-        // Format angka ke Rupiah
+        // Fungsi untuk memperbarui status tombol save
+        function updateSaveButtonState() {
+            let hasChanged = hasChanges();
+            if (saveButton) {
+                saveButton.disabled = !hasChanged;
+                saveButton.classList.toggle("bg-gray-400", !hasChanged);
+                saveButton.classList.toggle("cursor-not-allowed", !hasChanged);
+                saveButton.classList.toggle("opacity-50", !hasChanged);
+                saveButton.classList.toggle("bg-violet-500", hasChanged);
+                saveButton.classList.toggle("hover:bg-violet-600", hasChanged);
+            }
+        }
+
+        // Fungsi untuk memformat angka ke dalam format Rupiah
         function formatRupiah(angka) {
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',
@@ -235,88 +223,83 @@
             }).format(angka);
         }
 
-        // Hapus format Rupiah
+        // Fungsi untuk menghapus format Rupiah dan mengubahnya kembali ke angka
         function unformatRupiah(rupiah) {
-            return parseFloat(rupiah.replace(/[^0-9,-]/g, '').replace(',', '.'));
+            return parseFloat(rupiah.replace(/[^0-9,-]/g, '').replace(',', '.')) || 0;
         }
 
-        // Ambil nilai
-        const subtotals = {{ $subtotals->sum() }};
-        const subtotalBiayaNonPersonil = {{ $subtotalBiayaNonPersonil }};
-
-        // Hitung DPP
+        // Fungsi untuk menghitung DPP (Dasar Pengenaan Pajak)
         function calculateDpp(nilaiManfee) {
-            const dpp = nilaiManfee + subtotalBiayaNonPersonil;
+            let subtotalBiayaNonPersonil = {{ $subtotalBiayaNonPersonil }}; // Ambil nilai subtotal dari server
+            let dpp = nilaiManfee + subtotalBiayaNonPersonil;
             document.getElementById('dpp').value = formatRupiah(dpp);
-
-            // Hitung PPN menggunakan DPP yang sudah di-unformat
-            calculatePPN(dpp);
-            calculateTotal(); // Hitung total setelah DPP diperbarui
+            calculatePPN(dpp); // Hitung nilai PPN berdasarkan DPP
+            calculateTotal(); // Hitung total keseluruhan
+            updateSaveButtonState(); // Perbarui status tombol save
         }
 
-        // Hitung Nilai PPN
+        // Fungsi untuk menghitung nilai PPN berdasarkan DPP
         function calculatePPN(dpp) {
-            const ratePpn = parseFloat(document.getElementById('rate_ppn').value) || 0;
-            const nilaiPpn = dpp * (ratePpn / 100); // Hitung Nilai PPN
-
-            // Tampilkan Nilai PPN yang sudah diformat
-            document.getElementById('nilai_ppn').value = formatRupiah(nilaiPpn);
+            let ratePpn = parseFloat(document.getElementById('rate_ppn').value) || 0;
+            document.getElementById('nilai_ppn').value = formatRupiah(dpp * (ratePpn / 100));
         }
 
-        // Hitung Nilai Manfee
+        // Fungsi untuk menghitung nilai Manfee berdasarkan subtotal
         function calculateManfee() {
-            const rateManfee = parseFloat(document.getElementById('total_expense_manfee').value) || 0;
-            const nilaiManfee = subtotals * (rateManfee / 100);
-
+            let subtotals = {{ $subtotals->sum() }}; // Ambil nilai subtotal dari server
+            let rateManfee = parseFloat(document.getElementById('total_expense_manfee').value) || 0;
+            let nilaiManfee = subtotals * (rateManfee / 100);
             document.getElementById('nilai_manfee').value = formatRupiah(nilaiManfee);
-            calculateDpp(nilaiManfee); // Hitung DPP setelah nilai manfee diperbarui
+            calculateDpp(nilaiManfee); // Hitung DPP setelah nilai Manfee diperbarui
         }
 
-        // Hitung Total Seluruh Jenis Biaya
+        // Fungsi untuk menghitung total keseluruhan biaya
         function calculateTotal() {
-            const nilaiManfee = unformatRupiah(document.getElementById('nilai_manfee').value) || 0;
-            const nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value) || 0;
-
-            // Total = Nilai Manfee + Nilai PPN + Subtotal Biaya Non Personil
-            const total = subtotals + nilaiManfee + nilaiPpn + subtotalBiayaNonPersonil;
-            document.getElementById('total').value = formatRupiah(total);
+            let subtotals = {{ $subtotals->sum() }};
+            let subtotalBiayaNonPersonil = {{ $subtotalBiayaNonPersonil }};
+            let nilaiManfee = unformatRupiah(document.getElementById('nilai_manfee').value);
+            let nilaiPpn = unformatRupiah(document.getElementById('nilai_ppn').value);
+            document.getElementById('total').value = formatRupiah(subtotals + nilaiManfee + nilaiPpn +
+                subtotalBiayaNonPersonil);
         }
 
-        // Validasi input rate PPN
-        function validateRatePPN(input) {
-            input.value = input.value.replace(/[^0-9.]/g, ''); // Hanya angka dan titik desimal
-            if (input.value.split('.').length > 2) {
-                input.value = input.value.slice(0, -
-                    1); // Hapus karakter terakhir jika ada lebih dari satu titik
-            }
-        }
-
-        // Panggil fungsi calculateManfee saat rate manfee berubah
+        // Event listener untuk mengupdate nilai saat total_expense_manfee berubah
         document.getElementById('total_expense_manfee').addEventListener('change', function() {
             calculateManfee();
-            checkChanges(); // Periksa perubahan data
+            updateSaveButtonState();
         });
 
-        // Panggil fungsi calculateTotal setelah menghitung PPN
+        // Event listener untuk mengupdate nilai saat rate_ppn berubah
         document.getElementById('rate_ppn').addEventListener('input', function() {
-            const dpp = unformatRupiah(document.getElementById('dpp').value);
+            let dpp = unformatRupiah(document.getElementById('dpp').value);
             calculatePPN(dpp);
             calculateTotal();
-            checkChanges(); // Periksa perubahan data
+            updateSaveButtonState();
         });
 
-        // Panggil checkChanges saat input lainnya berubah
-        document.getElementById('account').addEventListener('change', checkChanges);
-        document.getElementById('dpp').addEventListener('input', checkChanges);
+        // Event listener untuk mengupdate status tombol save ketika account atau DPP berubah
+        document.getElementById('account').addEventListener('change', updateSaveButtonState);
+        document.getElementById('dpp').addEventListener('input', updateSaveButtonState);
 
-    });
+        document.getElementById('nilai_manfee').addEventListener('input', function() {
+            let nilaiManfee = unformatRupiah(this.value);
+            calculateDpp(nilaiManfee); // Hitung ulang DPP berdasarkan nilai Manfee
+            updateSaveButtonState();
+        });
 
-    document.getElementById('accumulatedForm').addEventListener('submit', function(e) {
-        document.getElementById('nilai_manfee').value = document.getElementById('nilai_manfee').value.replace(
-            /[^\d]/g, '');
-        document.getElementById('dpp').value = document.getElementById('dpp').value.replace(/[^\d]/g, '');
-        document.getElementById('nilai_ppn').value = document.getElementById('nilai_ppn').value.replace(
-            /[^\d]/g, '');
-        document.getElementById('total').value = document.getElementById('total').value.replace(/[^\d]/g, '');
+
+        // Event listener untuk memformat angka sebelum data dikirim ke server
+        document.getElementById('accumulatedForm').addEventListener('submit', function() {
+            document.getElementById('nilai_manfee').value = unformatRupiah(document.getElementById(
+                'nilai_manfee').value);
+            document.getElementById('dpp').value = unformatRupiah(document.getElementById('dpp').value);
+            document.getElementById('nilai_ppn').value = unformatRupiah(document.getElementById(
+                'nilai_ppn').value);
+            document.getElementById('total').value = unformatRupiah(document.getElementById('total')
+                .value);
+        });
+
+        // Inisialisasi status tombol save pada awal halaman dimuat
+        updateSaveButtonState();
     });
 </script>
