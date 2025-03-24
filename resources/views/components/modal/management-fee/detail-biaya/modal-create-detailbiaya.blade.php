@@ -1,5 +1,6 @@
 @props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
+
 <div x-data="{
     modalOpen: false,
     selectedExpenseType: '',
@@ -28,7 +29,7 @@
 
     <!-- Modal -->
     <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center" x-show="modalOpen" x-cloak>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full"
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-5xl w-full"
             @click.outside="modalOpen = false">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Informasi Detail Biaya</h3>
 
@@ -86,8 +87,23 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
+
+                                    @php
+                                        // Cari akun berdasarkan nomor account yang ada di setiap $docdetails->account
+                                        $selectedAkun = collect($account_detailbiaya)->firstWhere(
+                                            'no',
+                                            (string) $docdetails->account,
+                                        );
+                                    @endphp
+
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $docdetails->account }}</div>
+                                        <div class="text-left">
+                                            @if ($selectedAkun)
+                                                ({{ $selectedAkun['no'] }}) {{ $selectedAkun['name'] }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">{{ $docdetails->uraian }}</div>
