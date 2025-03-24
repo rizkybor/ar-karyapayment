@@ -1,5 +1,7 @@
 @props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
+{{-- disabled --}}
+
 <div x-data="{
     modalOpen: false,
     selectedExpenseType: '',

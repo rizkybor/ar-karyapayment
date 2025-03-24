@@ -7,8 +7,8 @@
 
     <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-30 z-50 flex justify-center items-start pt-20"
         x-show="modalOpen" x-cloak>
-        <div class="absolute bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full"
-            @click.outside="modalOpen = false">
+        <div class="absolute bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+            {{-- @click.outside="modalOpen = false"> --}}
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Detail Biaya</h3>
 
             <form class="text-left"
@@ -44,12 +44,13 @@
                         <option value="">Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
                             <option value="{{ $akun['no'] }}"
-                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                {{ old('account', $detailPaymentId->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>
+
                 </div>
 
                 <!-- Uraian -->
@@ -77,7 +78,7 @@
 
                 <div class="flex justify-end gap-2">
                     <x-button-action color="red" class="px-4 py-2 bg-gray-500 text-white rounded-md"
-                        @click="modalOpen = false">Batal</x-button>
+                        @click.prevent="modalOpen = false">Batal</x-button>
                         <x-button-action color="violet" type="submit">Simpan</x-button>
                 </div>
             </form>

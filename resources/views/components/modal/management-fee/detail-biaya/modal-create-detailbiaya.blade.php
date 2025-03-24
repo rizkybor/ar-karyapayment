@@ -22,7 +22,7 @@
 }">
     <div class="flex justify-between items-center mb-3">
         <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" @click="modalOpen = true">
-            Tambah Detail Biaya
+            + Tambah Detail Biaya
         </x-button-action>
     </div>
 
@@ -108,6 +108,9 @@
                                                 href="{{ route('management-fee.detail_payments.show', ['id' => $manfeeDoc->id, 'detail_payment_id' => $docdetails->id]) }}">
                                                 View
                                             </x-button-action> --}}
+                                            <x-modal.management-fee.detail-biaya.modal-edit-data-detailbiaya
+                                                :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :account_detailbiaya="$account_detailbiaya"
+                                                :detailPaymentId="$docdetails" />
 
                                             <!-- Button Hapus -->
                                             <x-button-action color="red" icon="trash"

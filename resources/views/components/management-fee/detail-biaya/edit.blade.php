@@ -8,10 +8,10 @@
         <div class="flex gap-2 mt-4 sm:mt-0">
             <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
                 :account_detailbiaya="$account_detailbiaya" />
-            @if ($manfeeDoc->detailPayments && $manfeeDoc->detailPayments->isNotEmpty())
+            {{-- @if ($manfeeDoc->detailPayments && $manfeeDoc->detailPayments->isNotEmpty())
                 <x-modal.management-fee.detail-biaya.modal-edit-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
                     :account_detailbiaya="$account_detailbiaya" />
-            @endif
+            @endif --}}
         </div>
 
     </div>
