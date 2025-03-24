@@ -35,7 +35,8 @@
 
             {{-- DETAIL BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
-                <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false" />
+                <x-management-fee.detail-biaya.index :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya" :isEdit="false"
+                    :account_detailbiaya="$account_detailbiaya" />
             </div>
 
             {{-- AKUMULASI BIAYA --}}

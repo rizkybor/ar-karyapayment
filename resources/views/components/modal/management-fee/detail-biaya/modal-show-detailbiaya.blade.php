@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya'])
+@props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
 
 @php
     // Ambil hanya expense_type yang ada di detailPayments
@@ -52,7 +52,7 @@
                 <select id="expense_type" name="expense_type"
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
                     x-model="selectedExpenseType" @change="changeSelectedExpenseType">
-                    <option value="">Pilih Jenis Biaya</option>
+                    <option value="">Semua Jenis Biaya</option>
                     @foreach ($filteredJenisBiaya as $jenis)
                         <option value="{{ $jenis }}">{{ $jenis }}</option>
                     @endforeach
@@ -90,8 +90,21 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center">{{ $i++ }}</div>
                                     </td>
+                                    @php
+                                        // Cari akun berdasarkan nomor account yang ada di setiap $docdetails->account
+                                        $selectedAkun = collect($account_detailbiaya)->firstWhere(
+                                            'no',
+                                            (string) $docdetails->account,
+                                        );
+                                    @endphp
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $docdetails->account }}</div>
+                                        <div class="text-left">
+                                            @if ($selectedAkun)
+                                                ({{ $selectedAkun['no'] }}) {{ $selectedAkun['name'] }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-left">{{ $docdetails->uraian }}</div>

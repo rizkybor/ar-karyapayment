@@ -177,6 +177,9 @@ class ManfeeDocumentController extends Controller
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
+        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
+        $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
+
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
 
@@ -190,7 +193,7 @@ class ManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya'));
     }
 
 
