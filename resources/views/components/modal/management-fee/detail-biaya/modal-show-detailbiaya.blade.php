@@ -1,5 +1,14 @@
 @props(['manfeeDoc', 'jenis_biaya'])
 
+@php
+    // Ambil hanya expense_type yang ada di detailPayments
+    $filteredJenisBiaya = collect($jenis_biaya)
+        ->filter(function ($jenis) use ($manfeeDoc) {
+            return $manfeeDoc->detailPayments->contains('expense_type', $jenis);
+        })
+        ->unique();
+@endphp
+
 <div x-data="{
     modalOpen: false,
     selectedExpenseType: '',
@@ -44,9 +53,8 @@
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
                     x-model="selectedExpenseType" @change="changeSelectedExpenseType">
                     <option value="">Pilih Jenis Biaya</option>
-                    @foreach ($jenis_biaya as $jenis_biayas)
-                        <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}
-                        </option>
+                    @foreach ($filteredJenisBiaya as $jenis)
+                        <option value="{{ $jenis }}">{{ $jenis }}</option>
                     @endforeach
                 </select>
             </div>
