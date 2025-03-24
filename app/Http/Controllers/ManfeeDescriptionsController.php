@@ -51,7 +51,10 @@ class ManfeeDescriptionsController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json(['message' => 'deskripsi berhasil diperbarui.', 'data' => $descriptions]);
+        return response()->json([
+            'message' => 'Deskripsi berhasil diperbarui.',
+            'data' => $descriptions
+        ]);
     }
 
     /**

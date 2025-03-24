@@ -113,7 +113,7 @@
                 // ✅ Menampilkan hasil history dengan format lebih baik
                 historyArray.forEach(item => {
                     let statusText = statusMap[item.status] ||
-                        'Unknown Status'; // Ambil deskripsi status atau 'Unknown'
+                    'Unknown Status'; // Ambil deskripsi status atau 'Unknown'
 
                     historyContent.innerHTML += `
                   <div class="p-4 border-b border-gray-300 dark:border-gray-700 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">

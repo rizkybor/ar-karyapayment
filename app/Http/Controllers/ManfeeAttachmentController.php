@@ -44,11 +44,10 @@ class ManfeeAttachmentController extends Controller
                 ->with('error', 'Gagal mengunggah file.');
         }
 
-
-        // Simpan ke database
+        // ✅ Simpan data ke database dengan path Dropbox
         ManfeeDocAttachments::create([
             'document_id' => $id,
-            'file_name' => $request->file_name,
+            'file_name' => $fileName,
             'path' => $dropboxPath,
         ]);
 
