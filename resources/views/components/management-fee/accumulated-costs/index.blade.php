@@ -51,8 +51,18 @@
                         @endforeach
                     </select>
                 @else
+                    @php
+                        $selectedAkun = collect($account_akumulasi)->firstWhere(
+                            'no',
+                            (string) $firstAccumulatedCost->account,
+                        );
+                    @endphp
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ $firstAccumulatedCost->account ?? 'Belum memilih akun' }}
+                        @if ($selectedAkun)
+                            ({{ $selectedAkun['no'] }}) {{ $selectedAkun['name'] }}
+                        @else
+                            Belum memilih akun
+                        @endif
                     </p>
                 @endif
             </div>

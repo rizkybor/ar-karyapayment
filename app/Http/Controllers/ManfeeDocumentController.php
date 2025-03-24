@@ -177,6 +177,10 @@ class ManfeeDocumentController extends Controller
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
+        $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
+        $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
+
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
@@ -193,7 +197,7 @@ class ManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi'));
     }
 
 
@@ -230,8 +234,9 @@ class ManfeeDocumentController extends Controller
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
-        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
+
+        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**

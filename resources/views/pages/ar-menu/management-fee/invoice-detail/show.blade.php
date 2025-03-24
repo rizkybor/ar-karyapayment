@@ -42,7 +42,7 @@
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                 <x-management-fee.accumulated-costs.index :manfeeDoc="$manfeeDoc" :isEdit="false" :subtotals="$subtotals"
-                    :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" />
+                    :subtotalBiayaNonPersonil="$subtotalBiayaNonPersonil" :account_akumulasi="$account_akumulasi" />
             </div>
 
             {{-- LAMPIRAN --}}
