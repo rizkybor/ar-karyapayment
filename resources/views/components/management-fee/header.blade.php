@@ -52,7 +52,6 @@
                 <x-label for="transaction_status" value="{{ __('Jenis') }}"
                     class="text-gray-800 dark:text-gray-100" />
                 <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                    {{-- {{ ucwords(str_replace('_', ' ', $category)) }} --}}
                     Management Fee
                 </p>
             </div>
@@ -60,7 +59,7 @@
 
         <!-- Tombol Action -->
         @if ($isEditable)
-            <x-button-action color="blue" icon="eye"
+            <x-button-action color="teal" icon="right-arrow"
                 onclick="window.location.href='{{ route('management-fee.show', $document->id) }}'">
                 Process Document
             </x-button-action>
@@ -96,6 +95,15 @@
 
                         <!-- Button batalkan dokumen -->
                         <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
+
+                        <!-- Reject Button -->
+                        {{-- <x-button-action color="red" icon="reject"
+                            data-action="{{ route('non-management-fee.reject', $document['id']) }}"
+                            data-title="Reject Document" data-button-text="Reject"
+                            data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
+                            onclick="openModal(this)">
+                            Reject
+                        </x-button-action> --}}
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
@@ -109,14 +117,13 @@
                             Need Info
                         </x-button-action>
 
-                        <!-- Reject Button -->
-                        {{-- <x-button-action color="red" icon="reject"
-                            data-action="{{ route('management-fee.reject', $document['id']) }}"
-                            data-title="Reject Document" data-button-text="Reject"
-                            data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
-                            onclick="openModal(this)">
-                            Reject
-                        </x-button-action> --}}
+                        @if (auth()->user()->role === 'pajak')
+                            <!-- Upload Faktur Pajak Button -->
+                            <x-button-action color="teal" icon="upload"
+                                onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
+                                Upload Faktur Pajak
+                            </x-button-action>
+                        @endif
 
                         <!-- Approve Button -->
                         <x-button-action color="blue" icon="approve"
@@ -142,7 +149,7 @@
                     @endif
 
                     @if ($document_status == 0)
-                        <x-button-action color="green" icon="process"
+                        <x-button-action color="green" icon="send"
                             data-action="{{ route('management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
                             data-button-color="bg-green-500 hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-700"
