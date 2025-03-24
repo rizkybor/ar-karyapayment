@@ -10,6 +10,15 @@
                     </p>
                 </div>
             </div>
+            @if (session('status'))
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        showAutoCloseAlert('globalAlertModal', 3000, @json(session('status')), 'success', 'Success!');
+                    });
+                </script>
+            @endif
+
+
             <div class="mt-5 md:mt-0 md:col-span-2">
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
