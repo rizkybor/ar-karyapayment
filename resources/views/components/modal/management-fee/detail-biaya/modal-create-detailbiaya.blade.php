@@ -31,7 +31,7 @@
     <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center" x-show="modalOpen" x-cloak>
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-5xl w-full"
             @click.outside="modalOpen = false">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Informasi Detail Biaya</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tambah Detail Biaya</h3>
 
             <!-- Jenis Biaya -->
             <div class="mb-4">
@@ -52,6 +52,9 @@
                 <x-modal.management-fee.detail-biaya.modal-create-data-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
                     :account_detailbiaya="$account_detailbiaya" />
             </div>
+
+            <h3 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                x-text="selectedExpenseType ? `List Detail ${selectedExpenseType}` : 'List Detail Semua Biaya'"></h3>
 
             <!-- Tabel Detail Biaya -->
             <div class="overflow-x-auto">

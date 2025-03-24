@@ -59,6 +59,9 @@
                 </select>
             </div>
 
+            <h3 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+                x-text="selectedExpenseType ? `List Detail ${selectedExpenseType}` : 'List Detail Semua Biaya'"></h3>
+
             <!-- Tabel Detail Biaya -->
             <div class="overflow-x-auto">
                 <table id="detail-biaya-table" class="table-auto w-full">
