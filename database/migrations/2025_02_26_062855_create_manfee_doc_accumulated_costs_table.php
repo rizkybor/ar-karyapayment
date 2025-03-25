@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('document_id')->constrained('manfee_documents')->onDelete('cascade');
             $table->string('account', 255);
+            $table->string('account_name', 255);
             $table->decimal('total_expense_manfee', 5, 2);
             $table->decimal('nilai_manfee', 15, 2);
             $table->string('dpp', 255);
