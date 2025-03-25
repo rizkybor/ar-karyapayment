@@ -61,7 +61,8 @@
                                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
                                         Dikirim oleh :
                                         <span class="font-normal">
-                                            {{ $notification->sender->name }} ({{ $notification->sender->nip }} - {{ $notification->sender->position }})
+                                            {{ $notification->sender->name }} ({{ $notification->sender->nip }} -
+                                            {{ $notification->sender->position }})
                                         </span>
                                     </p>
 
@@ -126,9 +127,6 @@
             })
             .then(data => {
                 if (data.success) {
-                    setTimeout(() => {
-                        location.reload(); // 🔄 REFRESH halaman setelah notifikasi ditandai sebagai dibaca
-                    }, 500);
                     window.location.href = redirectUrl;
                 }
             })
