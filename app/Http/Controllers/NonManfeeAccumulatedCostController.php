@@ -37,6 +37,7 @@ class NonManfeeAccumulatedCostController extends Controller
         // Validasi input dengan custom messages
         $request->validate([
             'akun' => 'required|string|max:255',
+            'nama_akun' => 'required|string|max:255',
             'dpp_pekerjaan' => 'required|string|min:1', // String karena ada format angka dengan titik
             'rate_ppn' => 'required|numeric|min:0|max:999.99',
         ], [
@@ -67,6 +68,7 @@ class NonManfeeAccumulatedCostController extends Controller
             ],
             [
                 'account' => $request->akun,
+                'account_name' => $request->nama_akun,
                 'dpp' => $dppPekerjaan,
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,

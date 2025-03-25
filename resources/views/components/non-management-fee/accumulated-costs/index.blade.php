@@ -29,18 +29,22 @@
                 <x-label for="akun" value="{{ __('Akun') }}" />
                 <select id="akun" name="akun"
                     class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
-        font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
-        {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
+                    font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
+                    {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
                     onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
                     <option value="">Pilih Akun</option>
                     @foreach ($optionAccount as $akun)
-                        <option value="{{ $akun['no'] }}"
+                        <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
                             {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                             ({{ $akun['no'] }})
                             {{ $akun['name'] }}
                         </option>
                     @endforeach
                 </select>
+
+                {{-- Hidden input untuk menyimpan nama akun --}}
+                <input type="hidden" id="nama_akun" name="nama_akun"
+                    value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
             </div>
 
             {{-- DPP Pekerjaan --}}
@@ -115,17 +119,26 @@
 
         let initialData = {
             akun: document.getElementById("akun")?.value || '',
+            nama_akun: document.getElementById("nama_akun")?.value || '',
             dpp_pekerjaan: document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '',
             rate_ppn: document.getElementById("rate_ppn")?.value || ''
         };
 
         window.checkChanges = function() {
-            let akunValue = document.getElementById("akun")?.value || '';
+            let akunSelect = document.getElementById("akun");
+            let akunValue = akunSelect?.value || '';
+            let selectedOption = akunSelect.options[akunSelect.selectedIndex];
+            let akunName = selectedOption.getAttribute("data-name") || '';
+
+            // Update hidden input
+            document.getElementById("nama_akun").value = akunName;
+
             let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') ||
-                '';
+            '';
             let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
 
             let hasChanged = akunValue !== initialData.akun ||
+                akunName !== initialData.nama_akun ||
                 dppPekerjaanValue !== initialData.dpp_pekerjaan ||
                 ratePpnValue !== initialData.rate_ppn;
 
