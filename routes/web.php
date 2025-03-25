@@ -236,6 +236,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
 
+        // non-management-fee.rejeced
+        Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
+
         // Prefix untuk accumulated cost
         Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
             Route::get('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');
@@ -291,8 +294,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::post('/store', [NonManfeeHistoryController::class, 'store'])->name('store');
             Route::delete('/{history_id}', [NonManfeeHistoryController::class, 'destroy'])->name('destroy');
         });
-
-        Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
     });
 
     Route::fallback(function () {
