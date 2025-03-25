@@ -21,6 +21,8 @@ class NonManfeeDocument extends Model
         'letter_subject',
         'category',
         'status',
+        'file_name_rejected',
+        'path_rejected',
         'last_reviewers',
         'is_active',
         'created_by',

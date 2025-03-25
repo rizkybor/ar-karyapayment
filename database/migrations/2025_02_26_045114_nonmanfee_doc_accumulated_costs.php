@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('document_id')->constrained('non_manfee_documents')->onDelete('cascade');
             $table->string('account', 255)->nullable();
+            $table->string('account_name', 255);
             $table->string('dpp', 255);
             $table->decimal('rate_ppn', 5, 2)->default(0.00);;
             $table->decimal('nilai_ppn', 15, 2)->default(0.00);;

@@ -14,6 +14,7 @@ class NonManfeeDocAccumulatedCost extends Model
     protected $fillable = [
         'document_id',
         'account',
+        'account_name',
         'dpp',
         'rate_ppn',
         'nilai_ppn',

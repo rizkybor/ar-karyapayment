@@ -292,6 +292,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::post('/store', [NonManfeeHistoryController::class, 'store'])->name('store');
             Route::delete('/{history_id}', [NonManfeeHistoryController::class, 'destroy'])->name('destroy');
         });
+
+        Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
     });
 
     Route::fallback(function () {
