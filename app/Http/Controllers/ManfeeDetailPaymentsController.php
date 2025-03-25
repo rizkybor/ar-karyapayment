@@ -51,7 +51,7 @@ class ManfeeDetailPaymentsController extends Controller
      */
     public function update(Request $request, $document_id, $docdetail_id)
     {
-        dd($request->all());
+        // dd($request->all());
         $request->validate([
             'expense_type' => 'required',
             'account' => 'required',
