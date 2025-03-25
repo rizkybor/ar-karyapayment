@@ -3,7 +3,7 @@
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
         <h5 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Tambah Detail Biaya
+            Detail Biaya
         </h5>
         <div class="flex gap-2 mt-4 sm:mt-0">
             <x-modal.management-fee.detail-biaya.modal-create-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"

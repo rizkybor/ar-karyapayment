@@ -23,7 +23,7 @@
 }">
     <div class="flex justify-between items-center mb-3">
         <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" @click="modalOpen = true">
-            + Tambah Detail Biaya
+            + Detail Biaya
         </x-button-action>
     </div>
 
