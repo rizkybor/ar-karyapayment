@@ -14,7 +14,7 @@ class ContractInvoiceSeeder extends Seeder
     public function run(): void
     {
         $categories = ['SPK', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
-        
+
         Contracts::insert([
             [
                 'contract_number' => 'ADSAKDSA23',
@@ -75,7 +75,7 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Ansaman Raya No. 15, Surabaya',
                 'work_unit' => 'keuangan',
                 'status' => null,
-                'title' => 'Pengadaan Peralatan Kantor PT Pasific',
+                'title' => 'Pengadaan Peralatan Kantor PT Pasific untuk mendukung operasional dan efisiensi kerja',
                 'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -91,7 +91,7 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Rohaya, No 12',
                 'work_unit' => 'keuangan',
                 'status' => null,
-                'title' => 'Kontrak Pengerjaan Kapal PT Indo Jaya Maritim',
+                'title' => 'Kontrak Pengerjaan Kapal PT Indo Jaya Maritim guna memperkuat armada laut perusahaan',
                 'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -107,7 +107,7 @@ class ContractInvoiceSeeder extends Seeder
                 'address' => 'Jl. Jaya Energi, No 37',
                 'work_unit' => 'keuangan',
                 'status' => null,
-                'title' => 'Penyediaan Alat Elektronik PT Taffware Indo',
+                'title' => 'Penyediaan Alat Elektronik PT Taffware Indo demi meningkatkan kualitas dan produktivitas',
                 'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),

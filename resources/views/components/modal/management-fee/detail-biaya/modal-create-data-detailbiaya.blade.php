@@ -31,9 +31,10 @@
                     <label for="account"
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Account</label>
                     <select id="account" name="account"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500">
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
+                        onchange="updateAccountName()">
                         @foreach ($account_detailbiaya as $akun)
-                            <option value="{{ $akun['no'] }}"
+                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
                                 {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
@@ -41,6 +42,9 @@
                         @endforeach
                     </select>
                 </div>
+
+                <input type="hidden" id="account_name" name="account_name" value="">
+
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                         for="uraian">Uraian</label>
@@ -68,7 +72,10 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Inisialisasi account_name saat halaman dimuat
+        updateAccountName();
 
+        // Format Rupiah Nilai Biaya
         window.formatCurrency = function(input) {
             let value = input.value.replace(/\D/g, ''); // Hanya angka
             if (value === '') return;
@@ -76,4 +83,11 @@
             checkChanges();
         };
     });
+
+    // account_name
+    function updateAccountName() {
+        let accountSelect = document.getElementById("account");
+        let selectedOption = accountSelect.options[accountSelect.selectedIndex];
+        document.getElementById("account_name").value = selectedOption.getAttribute("data-name");
+    }
 </script>

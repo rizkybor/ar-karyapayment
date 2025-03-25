@@ -24,6 +24,7 @@ class ManfeeDetailPaymentsController extends Controller
         $request->validate([
             'expense_type' => 'required',
             'account' => 'required',
+            'account_name' => 'required',
             'uraian' => 'required',
             'nilai_biaya' => 'required',
         ]);
@@ -37,6 +38,7 @@ class ManfeeDetailPaymentsController extends Controller
             'document_id' => $id,
             'expense_type' => $request->expense_type,
             'account' => $request->account,
+            'account_name' => $request->account_name,
             'uraian' => $request->uraian,
             'nilai_biaya' => $rupiahBiaya,
         ]);
