@@ -1,75 +1,88 @@
 @props(['manfeeDoc', 'detailPaymentId', 'jenis_biaya', 'account_detailbiaya'])
 
 <!-- Modal for Editing Cost Details -->
-<div x-data="{ modalOpen: false }">
+<div x-data="{
+    modalOpen: false,
+    account: '{{ old('account', $detailPaymentId->account) }}',
+    account_name: '{{ old('account_name', $detailPaymentId->account_name) }}',
+    nilai_biaya: '{{ old('nilai_biaya', number_format($detailPaymentId->nilai_biaya, 0, ',', '.')) }}',
+    init() {
+        // Format nilai biaya saat modal dibuka
+        this.$watch('nilai_biaya', (value) => {
+            this.nilai_biaya = this.formatCurrency(value);
+        });
+    },
+    formatCurrency(value) {
+        let num = value.replace(/\D/g, '');
+        return num ? new Intl.NumberFormat('id-ID').format(num) : '';
+    }
+}">
     <x-button-action class="px-4 py-2 text-white rounded-md" @click="modalOpen = true" color="yellow"
         icon="pencil">Edit</x-button-action>
 
-    <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-30 z-50 flex justify-center items-start pt-20"
-        x-show="modalOpen" x-cloak>
-        <div class="absolute bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center" x-show="modalOpen" x-cloak>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full"
+            @click.outside="modalOpen = false">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Detail Biaya</h3>
 
-            <form class="text-left"
-                action="{{ route('management-fee.detail_payments.update', ['id' => $manfeeDoc->id, 'detail_payment_id' => $detailPaymentId->id]) }}"
-                method="POST" id="editForm">
+            <form method="POST"
+                action="{{ route('management-fee.detail_payments.update', ['id' => $manfeeDoc->id, 'detail_payment_id' => $detailPaymentId->id]) }}">
                 @csrf
                 @method('PUT')
 
                 <!-- Jenis Biaya -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="expense_type">Jenis
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Jenis
                         Biaya</label>
-                    <select id="expense_type" name="expense_type"
+
+                    <select name="expense_type" x-model="expense_type"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                         <option value="" disabled>Pilih Jenis Biaya</option>
                         @foreach ($jenis_biaya as $jenis)
                             <option value="{{ $jenis }}"
-                                {{ $detailPaymentId->expense_type == $jenis ? 'selected' : '' }}>{{ $jenis }}
+                                {{ $detailPaymentId->expense_type == $jenis ? 'selected' : '' }}>
+                                {{ $jenis }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                {{-- @php
-                    dd($account_detailbiaya);
-                @endphp --}}
+
                 <!-- Account -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        for="account">Account</label>
-                    <select id="account" name="account"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Account</label>
+                    <select name="account" x-model="account"
+                        @change="account_name = $event.target.selectedOptions[0].dataset.name"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        onchange="updateAccountName()" required>
+                        required>
+                        <option value="">Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
                             <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
-                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                {{ old('account', $detailPaymentId->account) == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>
+                    <input type="hidden" name="account_name" x-model="account_name">
                 </div>
-
-                <!-- Hidden Account Name -->
-                <input type="hidden" id="account_name" name="account_name" value="">
 
                 <!-- Uraian -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        for="uraian">Uraian</label>
-                    <input type="text" id="uraian" name="uraian" value="{{ $detailPaymentId->uraian }}"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Uraian</label>
+                    <input type="text" name="uraian" value="{{ old('uraian', $detailPaymentId->uraian) }}"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                 </div>
 
                 <!-- Nilai Biaya -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">Nilai
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Nilai
                         Biaya</label>
-                    <x-input id="nilai_biaya" class="block mt-1 w-full" type="text" name="nilai_biaya"
-                        value="{{ old('nilai_biaya', number_format($detailPaymentId->nilai_biaya ?? 0, 0, ',', '.')) }}"
-                        oninput="formatCurrency(this);" />
+                    <input type="text" name="nilai_biaya" x-model="nilai_biaya"
+                        @input="nilai_biaya = formatCurrency($event.target.value)"
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                        required>
                 </div>
 
                 <div class="flex justify-end gap-2">
@@ -81,24 +94,3 @@
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Inisialisasi account_name saat halaman dimuat
-        updateAccountName();
-
-        // Format Rupiah Nilai Biaya
-        window.formatCurrency = function(input) {
-            let value = input.value.replace(/\D/g, ''); // Hanya angka
-            if (value === '') return;
-            input.value = new Intl.NumberFormat("id-ID").format(value);
-            checkChanges();
-        };
-    });
-
-    // account_name
-    function updateAccountName() {
-        let accountSelect = document.getElementById("account");
-        let selectedOption = accountSelect.options[accountSelect.selectedIndex];
-        document.getElementById("account_name").value = selectedOption.getAttribute("data-name");
-    }
-</script>
