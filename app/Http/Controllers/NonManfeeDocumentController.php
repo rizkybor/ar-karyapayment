@@ -715,4 +715,35 @@ class NonManfeeDocumentController extends Controller
 
         return Excel::download(new NonManfeeDocumentExport($ids), 'non_manfee_documents.xlsx');
     }
+
+    public function rejected(Request $request, $id)
+    {
+        $request->validate([
+            'file_name' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:10240', // max 10MB
+        ]);
+
+        dd('FUNGSI REJECTED');
+        // $document = NonManfeeDocument::findOrFail($id);
+
+        // // Simpan file
+        // $path = $request->file('file')->store('attachments/rejected', 'public');
+
+        // // Simpan ke database (misalnya pada relasi attachments)
+        // $document->attachments()->create([
+        //     'file_name' => $request->file_name,
+        //     'file_path' => $path,
+        //     'type' => 'rejected',
+        //     'uploaded_by' => auth()->id(),
+        // ]);
+
+        // // Update status dokumen
+        // $document->update([
+        //     'status' => 'rejected',
+        //     'last_reviewers' => auth()->user()->role,
+        // ]);
+
+        // return redirect()->route('non-management-fee.show', $document->id)
+        //     ->with('success', 'Dokumen berhasil dibatalkan.');
+    }
 }

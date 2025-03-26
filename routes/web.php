@@ -232,11 +232,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('{id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
         Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
         Route::put('/revision/{id}', [NonManfeeDocumentController::class, 'processRevision'])->name('processRevision');
-        //  Route::put('/revision-reply/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
 
-        // Edit
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
+
+        // non-management-fee.rejeced
+        Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
+
         // Prefix untuk accumulated cost
         Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
             Route::get('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');

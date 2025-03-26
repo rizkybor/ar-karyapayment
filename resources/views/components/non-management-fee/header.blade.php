@@ -87,7 +87,7 @@
                                     @foreach ($printOptions as $option)
                                         <li>
                                             <a href="{{ $option['route'] }}" target="_blank"
-                                                class="block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                                class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
                                                 {{ $option['label'] }}
                                             </a>
                                         </li>
@@ -97,16 +97,13 @@
                         </div>
 
                         <!-- Button batalkan dokumen -->
-                        <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
+                        {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
                         <!-- Reject Button -->
-                        {{-- <x-button-action color="red" icon="reject"
-                            data-action="{{ route('non-management-fee.reject', $document['id']) }}"
-                            data-title="Reject Document" data-button-text="Reject"
-                            data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
-                            onclick="openModal(this)">
-                            Reject
-                        </x-button-action> --}}
+                        <x-button-action color="red" icon="reject"
+                            onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">
+                            Batalkan Dokumen
+                        </x-button-action>
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
@@ -152,6 +149,11 @@
                     @endif
 
                     @if ($document_status == 0)
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
+                            Edit Invoice
+                        </x-button-action>
+
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
@@ -167,6 +169,8 @@
 
     <!-- Panggil Komponen Modal dengan Route -->
     <x-modal.global.modal-proccess-global :document="$document" />
+
+    <x-modal.global.modal-reject-global :document-id="$document->id" />
 </div>
 
 <!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
