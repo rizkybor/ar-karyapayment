@@ -104,8 +104,8 @@
                     '4': 'Checked by Dir. Keuangan',
                     '5': 'Checked by Pajak',
                     '6': 'Done at Pembendaharaan',
-                    '100': 'Finished',
-                    '101': 'Canceled',
+                    '100': 'Finished', // belum digunakan
+                    '101': 'Canceled', // belum digunakan
                     '102': 'Revised',
                     '103': 'Rejected'
                 };

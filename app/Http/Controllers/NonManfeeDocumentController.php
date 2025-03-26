@@ -181,6 +181,9 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        $dropboxFolderName = '/rejected/';
+        $nonManfeeDocument->path_rejected = $dropboxController->getAttachmentUrl($nonManfeeDocument->path_rejected, $dropboxFolderName);
+
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponse = $this->accurateOption->getInventoryList();
         $optionAccount = json_decode($apiResponse, true)['d'];
@@ -589,8 +592,8 @@ class NonManfeeDocumentController extends Controller
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
             '6'   => 'done',
-            '100' => 'finished',
-            '101' => 'canceled',
+            '100' => 'finished', // status belum digunakan
+            '101' => 'canceled', // status belum digunakan
             '102' => 'revised',
             '103'  => 'rejected',
         ];
@@ -719,31 +722,47 @@ class NonManfeeDocumentController extends Controller
     public function rejected(Request $request, $id)
     {
         $request->validate([
-            'file_name' => 'required|string|max:255',
-            'file' => 'required|file|mimes:pdf|max:10240', // max 10MB
+            'reason' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        dd('FUNGSI REJECTED');
-        // $document = NonManfeeDocument::findOrFail($id);
+        $document = NonManfeeDocument::findOrFail($id);
+        $user = auth()->user(); // Ambil user yang sedang login
+        $userRole = $user->role;
+        $previousStatus = $document->status;
 
-        // // Simpan file
-        // $path = $request->file('file')->store('attachments/rejected', 'public');
+        // Ambil file dan nama untuk diupload
+        $file = $request->file('file');
+        $fileName = 'Pembatalan ' . $document->letter_subject;
+        $dropboxFolderName = '/rejected/';
 
-        // // Simpan ke database (misalnya pada relasi attachments)
-        // $document->attachments()->create([
-        //     'file_name' => $request->file_name,
-        //     'file_path' => $path,
-        //     'type' => 'rejected',
-        //     'uploaded_by' => auth()->id(),
-        // ]);
+        // Upload ke Dropbox
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
 
-        // // Update status dokumen
-        // $document->update([
-        //     'status' => 'rejected',
-        //     'last_reviewers' => auth()->user()->role,
-        // ]);
+        if (!$dropboxPath) {
+            return back()->with('error', 'Gagal mengunggah file penolakan.');
+        }
 
-        // return redirect()->route('non-management-fee.show', $document->id)
-        //     ->with('success', 'Dokumen berhasil dibatalkan.');
+        // Update dokumen
+        $document->update([
+            'reason_rejected' => $request->reason,
+            'path_rejected'   => $dropboxPath,
+            'status'          => 103, // Status dibatalkan
+        ]);
+
+        // Simpan ke riwayat
+        \App\Models\NonManfeeDocHistory::create([
+            'document_id'     => $document->id,
+            'performed_by'    => $user->id,
+            'role'            => $userRole,
+            'previous_status' => $previousStatus,
+            'new_status'      => '103',
+            'action'          => 'Rejected',
+            'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
+        ]);
+
+        return redirect()->route('non-management-fee.show', $document->id)
+            ->with('success', 'Dokumen berhasil dibatalkan.');
     }
 }
