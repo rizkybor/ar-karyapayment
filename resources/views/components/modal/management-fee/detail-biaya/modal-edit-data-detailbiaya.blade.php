@@ -68,13 +68,24 @@
                     <input type="hidden" name="account_name" x-model="account_name">
                 </div>
 
-                <!-- Uraian -->
-                <div class="mb-4">
+                <!-- Uraian Dinamis -->
+                {{-- <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Uraian</label>
                     <input type="text" name="uraian" value="{{ old('uraian', $detailPaymentId->uraian) }}"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
+
+                          value="{{ old('account_name', $detailPaymentId->account_name) }}"
+                </div> --}}
+
+                <!-- Uraian -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Uraian</label>
+                    <input type="text" x-model="account_name"
+                        class="mt-1 block w-full rounded-md border-gray-300 bg-gray-200 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                        required readonly>
                 </div>
+
 
                 <!-- Nilai Biaya -->
                 <div class="mb-4">

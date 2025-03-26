@@ -48,17 +48,27 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                         for="uraian">Uraian</label>
+                    <input type="text" id="account_show"
+                        class="mt-1 block w-full rounded-md border-gray-300 bg-gray-200 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                        required readonly>
+                </div>
+
+                <!-- Uraian Dinamis -->
+                {{-- <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                        for="uraian">Uraian</label>
                     <input type="text" id="uraian" name="uraian"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
-                </div>
+                </div> --}}
+
                 <!-- Nilai Biaya -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="nilai_biaya">
                         Nilai Biaya
                     </label>
                     <x-input id="nilai_biaya" class="block mt-1 w-full" type="text" name="nilai_biaya"
-                        oninput="formatCurrency(this);" inputmode="numeric" />
+                        oninput="formatCurrency(this);" inputmode="numeric" placeholder="Masukkan nilai biaya" />
                 </div>
                 <div class="flex justify-end gap-2">
                     <x-button-action color="red" class="px-4 py-2 bg-gray-500 text-white rounded-md"
@@ -77,11 +87,16 @@
 
         // Format Rupiah Nilai Biaya
         window.formatCurrency = function(input) {
-            let value = input.value.replace(/\D/g, ''); // Hanya angka
-            if (value === '') return;
+            let value = input.value.replace(/[^\d]/g, ''); // Hanya angka
             input.value = new Intl.NumberFormat("id-ID").format(value);
-            checkChanges();
         };
+
+        // Mencegah huruf saat mengetik
+        document.getElementById("nilai_biaya").addEventListener("keypress", function(e) {
+            if (isNaN(e.key) && e.key !== "Backspace") {
+                e.preventDefault();
+            }
+        });
     });
 
     // account_name
@@ -89,5 +104,6 @@
         let accountSelect = document.getElementById("account");
         let selectedOption = accountSelect.options[accountSelect.selectedIndex];
         document.getElementById("account_name").value = selectedOption.getAttribute("data-name");
+        document.getElementById("account_show").value = selectedOption.getAttribute("data-name");
     }
 </script>

@@ -66,16 +66,16 @@
                                 <div class="font-semibold text-center">No</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Account</div>
+                                <div class="font-semibold text-center">Account</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Uraian</div>
+                                <div class="font-semibold text-center">Uraian</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Jenis Biaya</div>
+                                <div class="font-semibold text-center">Jenis Biaya</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
-                                <div class="font-semibold text-left">Nilai Biaya</div>
+                                <div class="font-semibold text-center">Nilai Biaya</div>
                             </th>
                             <th class="p-2 whitespace-nowrap">
                                 <div class="font-semibold text-center">Aksi</div>
@@ -100,24 +100,24 @@
                                     @endphp
 
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">
+                                        <div class="text-center">
                                             @if ($selectedAkun)
-                                                ({{ $selectedAkun['no'] }}) {{ $selectedAkun['name'] }}
+                                                ({{ $selectedAkun['no'] }})
                                             @else
                                                 -
                                             @endif
                                         </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">{{ $docdetails->uraian }}</div>
+                                        <div class="text-center">{{ $docdetails->account_name }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">
+                                        <div class="text-center">
                                             {{ $docdetails->expense_type }}
                                         </div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
-                                        <div class="text-left">Rp
+                                        <div class="text-center">Rp
                                             {{ number_format($docdetails->nilai_biaya, 0, ',', '.') }}</div>
                                     </td>
                                     <td class="p-2 whitespace-nowrap">
