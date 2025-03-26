@@ -49,8 +49,16 @@
 
             <br />
 
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 {{-- Jenis --}}
+                <div>
+                    <x-label for="transaction_status" value="{{ __('Jenis') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                        Non Management Fee
+                    </p>
+                </div>
+
                 <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
                         class="text-gray-800 dark:text-gray-100" />
@@ -72,9 +80,14 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+                @if ($document_status == 103)
+                    <x-button-action color="red" icon="eye">
+                        Alasan Pembatalan
+                    </x-button-action>
+                @endif
+
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
-
                         <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
                         <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
@@ -107,7 +120,7 @@
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
-                            !in_array($document_status, [102, 6, 'approved', 'finalized']))
+                            !in_array($document_status, [102, 103, 6, 'approved', 'finalized']))
                         <!-- Need Info Button -->
                         <x-button-action color="orange" icon="info"
                             data-action="{{ route('non-management-fee.processRevision', $document['id']) }}"

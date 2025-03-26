@@ -4,7 +4,7 @@
             <div class="mb-4 sm:mb-0">
                 <x-label class="text-sm mt-1">Dibuat oleh : {{ $nonManfeeDocument->creator->name ?? '-' }} ({{ $nonManfeeDocument->creator->department ?? '-' }}) </x-label>
                 <h1 class="text-2xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
-                    #{{ $nonManfeeDocument['invoice_number'] }}
+                    : {{ $nonManfeeDocument['invoice_number'] }}
                 </h1>
             </div>
             {{-- Tombol Kembali --}}
