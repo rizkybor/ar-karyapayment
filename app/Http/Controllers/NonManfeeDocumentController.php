@@ -181,6 +181,9 @@ class NonManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
+        $dropboxFolderName = '/rejected/';
+        $nonManfeeDocument->path_rejected = $dropboxController->getAttachmentUrl($nonManfeeDocument->path_rejected, $dropboxFolderName);
+
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponse = $this->accurateOption->getInventoryList();
         $optionAccount = json_decode($apiResponse, true)['d'];

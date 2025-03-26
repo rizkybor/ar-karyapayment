@@ -81,7 +81,8 @@
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if ($document_status == 103)
-                    <x-button-action color="red" icon="eye">
+                    <x-button-action color="red" icon="eye"
+                        onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
                         Alasan Pembatalan
                     </x-button-action>
                 @endif
