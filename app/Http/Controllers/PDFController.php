@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\NonManfeeDocument;
+use App\Models\ManfeeDocument;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -221,5 +222,77 @@ class PDFController extends Controller
 |--------------------------------------------------------------------------
 */
 
-    /** -.YOUR CODE.- */
+    public function ManfeeLetter($document_id)
+    {
+        $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+        ];
+
+        // format filename tersusun : letter_number/contract_number/nama_kontraktor 
+        $rawFilename = $this->sanitizeFileName($data['document']->letter_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name);
+        $filename = $rawFilename . '.pdf';
+
+        $pdf = Pdf::loadView('templates.management-fee.document-letter', $data);
+
+        return $pdf->stream($filename);
+    }
+
+    public function ManfeeInvoice($document_id)
+    {
+        $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+        ];
+
+        // format filename tersusun : invoice_number/contract_number/nama_kontraktor 
+        $rawFilename = $this->sanitizeFileName($data['document']->invoice_number . '_' . $data['contract']->contract_number . '_' . $data['contract']->employee_name);
+        $filename = $rawFilename . '.pdf';
+
+        $pdf = Pdf::loadView('templates.management-fee.document-invoice', $data);
+
+        return $pdf->stream($filename);
+    }
+
+    public function ManfeeKwitansi($document_id)
+    {
+        $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+
+        // Pastikan accumulatedCosts tidak kosong untuk menghindari error
+        $firstCost = $document->accumulatedCosts->first();
+
+        if (!$firstCost) {
+            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        }
+
+        // Hitung nilai terbilang dari total
+        $terbilang = $this->nilaiToString($firstCost->total);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'terbilang' => $terbilang
+        ];
+
+        // Format filename: receipt_number_contract_number_nama_kontraktor.pdf
+        $rawFilename = $this->sanitizeFileName(
+            $document->receipt_number . '_' .
+                $document->contract->contract_number . '_' .
+                $document->contract->employee_name
+        );
+
+        $filename = $rawFilename . '.pdf';
+
+        // Buat dan tampilkan PDF
+        $pdf = Pdf::loadView('templates.management-fee.document-kwitansi', $data);
+
+        return $pdf->stream($filename);
+    }
 }
