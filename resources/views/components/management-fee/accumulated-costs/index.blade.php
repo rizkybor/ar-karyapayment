@@ -43,7 +43,7 @@
             <div class="col-span-1 sm:col-span-2 lg:col-span-3">
                 <x-label for="account" value="{{ __('Akun') }}" />
                 @if ($isEdit)
-                    <select id="account" name="account"
+                    <select id="account_id" name="account"
                         class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
                         font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
                         {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
@@ -182,7 +182,7 @@
         // Simpan nilai awal untuk mendeteksi perubahan input
         let initialValues = {
             nilai_manfee: document.getElementById('nilai_manfee').value,
-            account: document.getElementById('account').value,
+            account: document.getElementById('account_id').value,
             total_expense_manfee: document.getElementById('total_expense_manfee').value,
             dpp: document.getElementById('dpp').value,
             rate_ppn: document.getElementById('rate_ppn').value
@@ -192,7 +192,7 @@
         function hasChanges() {
             return (
                 document.getElementById('nilai_manfee').value !== initialValues.nilai_manfee ||
-                document.getElementById('account').value !== initialValues.account ||
+                document.getElementById('account_id').value !== initialValues.account ||
                 document.getElementById('total_expense_manfee').value !== initialValues
                 .total_expense_manfee ||
                 document.getElementById('dpp').value !== initialValues.dpp ||
@@ -276,7 +276,7 @@
         });
 
         // Event listener untuk mengupdate status tombol save ketika account atau DPP berubah
-        document.getElementById('account').addEventListener('change', updateSaveButtonState);
+        document.getElementById('account_id').addEventListener('change', updateSaveButtonState);
         document.getElementById('dpp').addEventListener('input', updateSaveButtonState);
 
         document.getElementById('nilai_manfee').addEventListener('input', function() {
