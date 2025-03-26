@@ -107,6 +107,8 @@ class DashboardController extends Controller
             ')
             ->where('non_manfee_documents.created_at', '>=', $sixMonthsAgo)
             ->where('non_manfee_documents.created_by', $user->id)
+            ->where('non_manfee_documents.status', '!=', '103')
+            ->where('non_manfee_documents.is_active', 1) 
             ->groupBy('month_year', 'month', 'year')
             ->orderBy('month_year', 'asc')
             ->get();
@@ -120,6 +122,8 @@ class DashboardController extends Controller
             ')
             ->where('manfee_documents.created_at', '>=', $sixMonthsAgo)
             ->where('manfee_documents.created_by', $user->id)
+            ->where('manfee_documents.status', '!=', '103')
+            ->where('manfee_documents.is_active', 1) 
             ->groupBy('month_year', 'month', 'year')
             ->orderBy('month_year', 'asc')
             ->get();
@@ -132,10 +136,9 @@ class DashboardController extends Controller
         $notActiveCount = $totalExpiredCount;
         $rejectedCount = $dataPieChartAllInvoices->where('status', 103)->count();
         $completedCount = $dataPieChartAllInvoices->where('status', 100)->count();
+        $totalInvoices = $activeCount + $notActiveCount + $completedCount + $rejectedCount;
 
-        $totalInvoices = $activeCount + $notActiveCount + $rejectedCount + $completedCount;
-
-        if ($rejectedCount != 0){
+        if ($rejectedCount > 0){
             $totalInvoices = $totalInvoices - $rejectedCount;
         }
 
