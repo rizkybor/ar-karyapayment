@@ -43,6 +43,7 @@ class ManfeeAccumulatedCostController extends Controller
         // Validasi input dengan custom messages
         $request->validate([
             'account' => 'required|string|max:255',
+            'account_name' => 'required|string|max:255',
             'total_expense_manfee' => 'required|string|max:255',
             'nilai_manfee' => 'required|numeric',
             'dpp' => 'required|numeric',
@@ -53,6 +54,7 @@ class ManfeeAccumulatedCostController extends Controller
 
         // Ambil nilai dari request
         $account = $request->input('account');
+        $account_name = $request->account_name;
         $totalExpenseManfee = $request->input('total_expense_manfee');
         $nilaiManfee = $request->input('nilai_manfee');
         $dpp = $request->input('dpp');
@@ -68,6 +70,7 @@ class ManfeeAccumulatedCostController extends Controller
             ],
             [
                 'account' => $account,
+                'account_name' => $account_name,
                 'total_expense_manfee' => $totalExpenseManfee,
                 'nilai_manfee' => $nilaiManfee,
                 'dpp' => $dpp,

@@ -38,37 +38,35 @@
     <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         {{-- Akumulasi Biaya Form --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+
             {{-- Akun --}}
             <div class="col-span-1 sm:col-span-2 lg:col-span-3">
                 <x-label for="account" value="{{ __('Akun') }}" />
                 @if ($isEdit)
                     <select id="account" name="account"
                         class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
-                    font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
-                    {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
-                        onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
+                        font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
+                        {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
+                        onchange="document.getElementById('account_name_input').value = this.selectedOptions[0].dataset.name"
+                        {{ !$isEdit ? 'disabled' : '' }}>
                         @foreach ($account_akumulasi as $akun)
-                            <option value="{{ $akun['no'] }}"
+                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
                                 {{ old('account', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>
+                    <input type="hidden" id="account_name_input" name="account_name"
+                        value="{{ old('account_name', $firstAccumulatedCost->account_name ?? '') }}">
                 @else
-                    {{-- @php
-                        $selectedAkun = collect($account_akumulasi)->firstWhere(
-                            'no',
-                            (string) $firstAccumulatedCost->account,
-                        );
-                    @endphp --}}
-                    {{-- <p class="text-gray-800 dark:text-gray-200">
-                        @if ($selectedAkun)
-                            ({{ $selectedAkun['no'] }}) {{ $selectedAkun['name'] }}
+                    <p class="text-gray-800 dark:text-gray-200">
+                        @if ($firstAccumulatedCost->account)
+                            ({{ $firstAccumulatedCost->account }}) {{ $firstAccumulatedCost->account_name }}
                         @else
                             Belum memilih akun
                         @endif
-                    </p> --}}
+                    </p>
                 @endif
             </div>
 

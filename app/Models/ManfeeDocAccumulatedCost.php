@@ -14,6 +14,7 @@ class ManfeeDocAccumulatedCost extends Model
     protected $fillable = [
         'document_id',
         'account',
+        'account_name',
         'total_expense_manfee',
         'nilai_manfee',
         'dpp',
