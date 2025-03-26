@@ -77,6 +77,8 @@ class NonManfeeDocumentSeeder extends Seeder
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_non_fee',
                 'status'         => 0,
+                'file_name_rejected' => '',
+                'path_rejected' => '',
                 'last_reviewers' => null,
                 'is_active'      => true,
                 'created_by'     => $created_by,
