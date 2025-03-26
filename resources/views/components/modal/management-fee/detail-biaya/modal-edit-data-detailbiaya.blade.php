@@ -3,6 +3,7 @@
 <!-- Modal for Editing Cost Details -->
 <div x-data="{
     modalOpen: false,
+    expense_type: '{{ old('expense_type', $detailPaymentId->expense_type) }}',
     account: '{{ old('account', $detailPaymentId->account) }}',
     account_name: '{{ old('account_name', $detailPaymentId->account_name) }}',
     nilai_biaya: '{{ old('nilai_biaya', number_format($detailPaymentId->nilai_biaya, 0, ',', '.')) }}',
