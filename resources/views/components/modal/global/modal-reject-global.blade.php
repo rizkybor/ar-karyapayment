@@ -1,6 +1,6 @@
 <div id="rejectDocumentModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center hidden">
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4 sm:mx-0">
         <h3 id="rejectModalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Batalkan Dokumen
         </h3>
 
