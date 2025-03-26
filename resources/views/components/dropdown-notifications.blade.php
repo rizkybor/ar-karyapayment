@@ -82,7 +82,7 @@
                     let icon = getNotificationIcon(notification.type);
                     let cleanedMessage = notification.message.replace(/Lihat detail:\s*https?:\/\/[^\s]+/g,
                         '').trim();
-                    let displayMessage = cleanedMessage.length > 30 ? cleanedMessage.substring(0, 30) +
+                    let displayMessage = cleanedMessage.length > 60 ? cleanedMessage.substring(0, 60) +
                         "..." : cleanedMessage;
 
                     // ✅ Cek apakah notifikasi belum terbaca

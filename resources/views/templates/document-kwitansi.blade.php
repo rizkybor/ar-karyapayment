@@ -78,7 +78,7 @@
 
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
                     <tr>
-                        <td class="no-border">Biaya Pekerjaan</td>
+                        <td class="no-border">{{ $accumulatedCosts[0]->account_name ?? '-' }}</td>
                         <td class="no-border">Rp.</td>
                         <td class="no-border">{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
 

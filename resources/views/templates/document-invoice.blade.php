@@ -133,7 +133,7 @@
             </tr>
 
             <tr>
-                <td class="no-border">Biaya Personil</td>
+                <td class="no-border">{{ $accumulatedCosts[0]->account_name ?? '-' }}</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
