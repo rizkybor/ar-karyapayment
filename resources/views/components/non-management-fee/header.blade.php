@@ -49,16 +49,8 @@
 
             <br />
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 {{-- Jenis --}}
-                <div>
-                    <x-label for="transaction_status" value="{{ __('Jenis') }}"
-                        class="text-gray-800 dark:text-gray-100" />
-                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                        Non Management Fee
-                    </p>
-                </div>
-
                 <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
                         class="text-gray-800 dark:text-gray-100" />
