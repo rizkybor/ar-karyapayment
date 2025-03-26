@@ -49,6 +49,7 @@
                         {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
                         onchange="document.getElementById('account_name_input').value = this.selectedOptions[0].dataset.name"
                         {{ !$isEdit ? 'disabled' : '' }}>
+                        <option value="" disabled selected>Pilih Akun</option>
                         @foreach ($account_akumulasi as $akun)
                             <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
                                 {{ old('account', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>

@@ -33,6 +33,7 @@
                     <select id="account" name="account"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
                         onchange="updateAccountName()">
+                        <option value="" disabled selected>Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
                             <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
                                 {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
