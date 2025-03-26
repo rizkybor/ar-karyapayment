@@ -100,7 +100,8 @@
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
                         <!-- Reject Button -->
-                        <x-button-action color="red" icon="reject" onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">
+                        <x-button-action color="red" icon="reject"
+                            onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">
                             Batalkan Dokumen
                         </x-button-action>
                     @endif
@@ -148,6 +149,11 @@
                     @endif
 
                     @if ($document_status == 0)
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
+                            Edit Invoice
+                        </x-button-action>
+
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
