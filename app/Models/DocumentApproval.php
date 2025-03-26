@@ -14,7 +14,7 @@ class DocumentApproval extends Model
 
     protected $fillable = [
         'document_id',
-        'document_type', 
+        'document_type',
         'approver_id',
         'approver_role',
         'submitter_id',
@@ -91,16 +91,18 @@ class DocumentApproval extends Model
     public function getStatusTextAttribute()
     {
         $statuses = [
-            '0' => 'Draft',
-            '1' => 'Checked by Kepala Divisi',
-            '2' => 'Checked by Pembendaharaan',
-            '3' => 'Checked by Manager Keuangan',
-            '4' => 'Checked by Direktur Keuangan',
-            '5' => 'Checked by Pajak',
-            '6' => 'Close Doc at Pembendaharaan',
-            '9' => 'Requires Information',
-            '99' => 'Rejected',
-            '100' => 'Completed',
+
+            '0'   => 'Draft',
+            '1'   => 'Checked by Kepala Divisi',
+            '2'   => 'Checked by Pembendaharaan',
+            '3'   => 'Checked by Manager Keuangan',
+            '4'   => 'Checked by Direktur Keuangan',
+            '5'   => 'Checked by Pajak',
+            '6'   => 'Done',
+            '100' => 'Finished', // status belum digunakan
+            '101' => 'Canceled', // status belum digunakan
+            '102' => 'Revised',
+            '103'  => 'Rejected',
         ];
 
         return $statuses[$this->status] ?? 'Unknown';

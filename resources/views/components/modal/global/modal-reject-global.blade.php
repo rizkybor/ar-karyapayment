@@ -7,8 +7,8 @@
             @method('PUT')
 
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama File</label>
-                <input type="text" name="file_name" required class="form-input w-full rounded-md">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Alasan Dibatalkan</label>
+                <input type="text" name="reason" required class="form-input w-full rounded-md">
             </div>
 
             <div class="mb-4">

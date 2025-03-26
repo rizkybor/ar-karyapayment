@@ -589,8 +589,8 @@ class NonManfeeDocumentController extends Controller
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
             '6'   => 'done',
-            '100' => 'finished',
-            '101' => 'canceled',
+            '100' => 'finished', // status belum digunakan
+            '101' => 'canceled', // status belum digunakan
             '102' => 'revised',
             '103'  => 'rejected',
         ];
@@ -719,31 +719,34 @@ class NonManfeeDocumentController extends Controller
     public function rejected(Request $request, $id)
     {
         $request->validate([
-            'file_name' => 'required|string|max:255',
-            'file' => 'required|file|mimes:pdf|max:10240', // max 10MB
+            'reason' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        dd('FUNGSI REJECTED');
-        // $document = NonManfeeDocument::findOrFail($id);
+        $document = NonManfeeDocument::findOrFail($id);
 
-        // // Simpan file
-        // $path = $request->file('file')->store('attachments/rejected', 'public');
+        // Ambil file dan nama untuk diupload
+        $file = $request->file('file');
+        $fileName = 'Pembatalan ' . $document->letter_subject;
+        $dropboxFolderName = '/rejected/';
 
-        // // Simpan ke database (misalnya pada relasi attachments)
-        // $document->attachments()->create([
-        //     'file_name' => $request->file_name,
-        //     'file_path' => $path,
-        //     'type' => 'rejected',
-        //     'uploaded_by' => auth()->id(),
-        // ]);
+        // Upload ke Dropbox
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
 
-        // // Update status dokumen
-        // $document->update([
-        //     'status' => 'rejected',
-        //     'last_reviewers' => auth()->user()->role,
-        // ]);
+        if (!$dropboxPath) {
+            return back()->with('error', 'Gagal mengunggah file penolakan.');
+        }
 
-        // return redirect()->route('non-management-fee.show', $document->id)
-        //     ->with('success', 'Dokumen berhasil dibatalkan.');
+        // Simpan ke database
+
+        $document->update([
+            'reason_rejected' => $request->reason,
+            'path_rejected' => $dropboxPath,
+            'status' => 103,
+        ]);
+
+        return redirect()->route('non-management-fee.show', $document->id)
+            ->with('success', 'Dokumen berhasil dibatalkan.');
     }
 }

@@ -622,8 +622,8 @@ class ManfeeDocumentController extends Controller
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
             '6'   => 'done',
-            '100' => 'finished',
-            '101' => 'canceled',
+            '100' => 'finished', // status belum digunakan
+            '101' => 'canceled', // status belum digunakan
             '102' => 'revised',
             '103'  => 'rejected',
         ];
