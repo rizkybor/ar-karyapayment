@@ -135,6 +135,10 @@ class DashboardController extends Controller
 
         $totalInvoices = $activeCount + $notActiveCount + $rejectedCount + $completedCount;
 
+        if ($rejectedCount != 0){
+            $totalInvoices = $totalInvoices - $rejectedCount;
+        }
+
         // ✅ Pastikan variabel tersedia di view
         return view('pages/dashboard/dashboard', compact(
             'dataStickChartAllInvoices',
