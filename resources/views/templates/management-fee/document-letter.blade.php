@@ -91,7 +91,8 @@
                 <td style="width: 90%; border: none; vertical-align: top;">
                     <div style="display: inline-block; vertical-align: top;">:</div>
                     <div style="display: inline-block; width: calc(100% - 10px);">
-                        <strong>{{ $document->letter_subject ?? '-' }} - {{ $document->period ?? '-' }}</strong>
+                        <strong>Permohonan Pembayaran {{ $document->letter_subject ?? '-' }} -
+                            {{ $document->period ?? '-' }}</strong>
                     </div>
                 </td>
             </tr>
@@ -124,11 +125,11 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan nomor kontrak {{ $contract->contract_number ?? 'NULL' }} ({{ $contract->type ?? 'NULL' }}) antara
-        {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
-        {{ $contract->title ?? 'NULL' }}
-        ({{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }}), dengan ini kami mengajukan
-        permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
+        Berdasarkan {{ $contract->category ?? 'NULL' }} antara {{ $contract->employee_name ?? 'NULL' }} dengan PT
+        Karya Prima Usahatama No.{{ $contract->contract_number ?? 'NULL' }} tanggal
+        {{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }} tentang
+        {{ $contract->title ?? 'NULL' }}, dengan ini kami mengajukan permohonan pembayaran pekerjaan tersebut, dengan
+        bukti perincian terlampir.
     </div>
 
     <!-- Detail Pembayaran -->
