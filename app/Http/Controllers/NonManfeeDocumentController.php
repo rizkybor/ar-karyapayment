@@ -724,6 +724,9 @@ class NonManfeeDocumentController extends Controller
         ]);
 
         $document = NonManfeeDocument::findOrFail($id);
+        $user = auth()->user(); // Ambil user yang sedang login
+        $userRole = $user->role;
+        $previousStatus = $document->status;
 
         // Ambil file dan nama untuk diupload
         $file = $request->file('file');
@@ -738,12 +741,22 @@ class NonManfeeDocumentController extends Controller
             return back()->with('error', 'Gagal mengunggah file penolakan.');
         }
 
-        // Simpan ke database
-
+        // Update dokumen
         $document->update([
             'reason_rejected' => $request->reason,
-            'path_rejected' => $dropboxPath,
-            'status' => 103,
+            'path_rejected'   => $dropboxPath,
+            'status'          => 103, // Status dibatalkan
+        ]);
+
+        // Simpan ke riwayat
+        \App\Models\NonManfeeDocHistory::create([
+            'document_id'     => $document->id,
+            'performed_by'    => $user->id,
+            'role'            => $userRole,
+            'previous_status' => $previousStatus,
+            'new_status'      => '103',
+            'action'          => 'Rejected',
+            'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
         ]);
 
         return redirect()->route('non-management-fee.show', $document->id)
