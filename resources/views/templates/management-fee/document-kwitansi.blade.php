@@ -77,17 +77,36 @@
                 </div>
 
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
+                    @php
+                        $totalBiaya = 0;
+                    @endphp
+                    @foreach ($detailPayments as $payment)
+                        <tr>
+                            <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                            <td class="no-border">Rp.</td>
+                            <td class="no-border">{{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}</td>
+                        </tr>
+                        @php
+                            $totalBiaya += $payment->nilai_biaya ?? 0;
+                        @endphp
+                    @endforeach
                     <tr>
-                        <td class="no-border">Biaya Pekerjaan</td>
+                        <td class="no-border">Management Fee</td>
                         <td class="no-border">Rp.</td>
-                        <td class="no-border">{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
-
+                        <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_manfee'), 0, ',', '.') }}
+                        </td>
                     </tr>
+
+                    @php
+                        $grandTotal = $totalBiaya + $accumulatedCosts->sum('nilai_manfee');
+                    @endphp
                     <tr>
                         <td class="no-border">Jumlah</td>
                         <td class="no-border"><strong>Rp.</strong></td>
                         <td class="no-border">
-                            <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                            <strong>
+                                {{ number_format($grandTotal, 0, ',', '.') }}
+                            </strong>
                         </td>
                         <td class="no-border">&nbsp;</td>
 
@@ -95,7 +114,8 @@
                     <tr>
                         <td class="no-border">PPN</td>
                         <td class="no-border">Rp.</td>
-                        <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
+                        <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                        </td>
 
                     </tr>
                     <tr>
