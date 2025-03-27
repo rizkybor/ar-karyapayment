@@ -110,7 +110,11 @@
 
 
     {{-- Table Detail --}}
-
+    @php
+        $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
+        $grandTotal = $totalBiaya + $accumulatedCosts->sum('nilai_manfee');
+        $rowspan = 8 + $detailPayments->count(); 
+    @endphp
     <table class="border-table" width="100%">
         <thead>
             <tr>
@@ -121,30 +125,56 @@
         </thead>
         <tbody>
             <tr>
-                <td rowspan="8" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
+                <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
                 <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
                     {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
 
                 <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
                 <td style="text-align: right; border-left:none; border-bottom: none;">
-                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
-                <!-- Jumlah, rata kanan agar lebih rapi -->
+                    {{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
 
+            @php
+                $totalBiaya = 0;
+            @endphp
+
+            @foreach ($detailPayments as $payment)
+                <tr>
+                    <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                    <td class="no-border">Rp.</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">
+                        {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                    </td>
+                    <td class="no-border">&nbsp;</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
+                </tr>
+                @php
+                    $totalBiaya += $payment->nilai_biaya ?? 0;
+                @endphp
+            @endforeach
+
             <tr>
-                <td class="no-border">Biaya Pekerjaan</td>
+                <td class="no-border">Management Fee</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
-                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
+                    {{ number_format($accumulatedCosts->sum('nilai_manfee'), 0, ',', '.') }}
+                </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
+
+            @php
+                $grandTotal = $totalBiaya + $accumulatedCosts->sum('nilai_manfee');
+            @endphp
+
             <tr>
                 <td class="no-border">Jumlah</td>
                 <td class="no-border"><strong>Rp.</strong></td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">
-                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                <td
+                    style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: none; padding: 5px; position: relative;">
+                    {{ number_format($grandTotal, 0, ',', '.') }}
+                    <div style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;"></div>
                 </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
@@ -159,9 +189,9 @@
             </tr>
             <tr>
                 <td class="no-border-top-side">Jumlah Total</td>
-                <td class="no-border-top-side">Rp.</td>
+                <td class="no-border-top-side"><strong>Rp.</strong></td>
                 <td
-                    style="border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
+                    style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
                     {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
                     <div style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;"></div>
                 </td>
@@ -172,7 +202,7 @@
                 <td colspan="3" style="text-align: right;">Jumlah</td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
                 <td style="text-align: right; border-left: none;">
-                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                    <strong> {{ number_format($grandTotal, 0, ',', '.') }}</strong>
                 </td>
             </tr>
             <tr>
