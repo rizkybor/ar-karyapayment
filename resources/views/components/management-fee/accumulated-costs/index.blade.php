@@ -101,7 +101,7 @@
 
             {{-- Nilai Manfee (Disabled) --}}
             <div class="col-span-1 sm:col-span-2 lg:col-span-3 lg:col-start-6">
-                <x-label for="nilai_manfee" value="{{ __('Nilai Manfee') }}" />
+                <x-label for="nilai_manfee" value="{{ __('Nilai Manfee (Tidak Termasuk Biaya Non Personil)') }}" />
                 @if ($isEdit)
                     <x-input id="nilai_manfee" class="block mt-1 w-full" type="text" name="nilai_manfee"
                         value="Rp. {{ old('nilai_manfee', number_format($firstAccumulatedCost->nilai_manfee ?? null, 0, ',', '.')) }}"
