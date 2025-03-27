@@ -25,11 +25,11 @@
 @endphp
 
 <div x-data="{ modalOpen: false }">
-    <div class="flex flex-col lg:flex-row justify-between items-start gap-4 mb-5">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 
         <!-- Box Status -->
-        <div class="w-full lg:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="w-full sm:w-1/2 bg-white dark:bg-gray-800 shadow-sm rounded-lg p-5">
+            <div class="grid grid-cols-2 gap-4">
                 {{-- Status Transaksi --}}
                 <div>
                     <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
@@ -69,6 +69,14 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+
+                @if ($document_status == 103)
+                    <x-button-action color="red" icon="eye"
+                        onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
+                        Alasan Pembatalan
+                    </x-button-action>
+                @endif
+
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
 
@@ -94,16 +102,13 @@
                         </div>
 
                         <!-- Button batalkan dokumen -->
-                        <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action>
+                        {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
                         <!-- Reject Button -->
-                        {{-- <x-button-action color="red" icon="reject"
-                            data-action="{{ route('non-management-fee.reject', $document['id']) }}"
-                            data-title="Reject Document" data-button-text="Reject"
-                            data-button-color="bg-red-500 hover:bg-red-600 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-700"
-                            onclick="openModal(this)">
-                            Reject
-                        </x-button-action> --}}
+                        <x-button-action color="red" icon="reject"
+                            onclick="openRejectModal('{{ route('management-fee.rejected', $document->id) }}')">
+                            Batalkan Dokumen
+                        </x-button-action>
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
@@ -149,6 +154,11 @@
                     @endif
 
                     @if ($document_status == 0)
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
+                            Edit Invoice
+                        </x-button-action>
+
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
@@ -164,6 +174,8 @@
 
     <!-- Panggil Komponen Modal dengan Route -->
     <x-modal.global.modal-proccess-global :document="$document" />
+
+    <x-modal.global.modal-reject-global :document-id="$document->id" />
 </div>
 
 <!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
