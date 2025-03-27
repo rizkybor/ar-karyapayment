@@ -23,6 +23,8 @@ class ManfeeDocument extends Model
         'letter_subject',
         'category',
         'status',
+        'reason_rejected',
+        'path_rejected',
         'last_reviewers',
         'is_active',
         'created_by',
