@@ -263,7 +263,7 @@ class PDFController extends Controller
 
     public function ManfeeKwitansi($document_id)
     {
-        $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+        $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts'])->findOrFail($document_id);
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
@@ -279,7 +279,8 @@ class PDFController extends Controller
             'document' => $document,
             'contract' => $document->contract,
             'accumulatedCosts' => $document->accumulatedCosts,
-            'terbilang' => $terbilang
+            'terbilang' => $terbilang,
+            'detailPayments' => $document->detailPayments
         ];
 
         // Format filename: receipt_number_contract_number_nama_kontraktor.pdf
