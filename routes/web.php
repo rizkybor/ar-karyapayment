@@ -147,6 +147,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // management-fee.edit
         Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
 
+        // management-fee.rejeced
+        Route::put('/{id}/rejected', [ManfeeDocumentController::class, 'rejected'])->name('rejected');
+
         // Prefix untuk attachments
         Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
             // management-fee.attachments.show

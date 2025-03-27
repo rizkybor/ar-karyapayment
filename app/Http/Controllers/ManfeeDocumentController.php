@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Models\User;
 use App\Models\Contracts;
-use Carbon\Carbon;
 use App\Models\ManfeeDocument;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use App\Notifications\InvoiceApprovalNotification;
-// use App\Models\MasterBillType;
-use App\Exports\ManfeeDocumentExport;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use App\Models\ManfeeDocHistories;
+// use App\Models\MasterBillType;
 
+use App\Exports\ManfeeDocumentExport;
 use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
 
@@ -196,6 +199,12 @@ class ManfeeDocumentController extends Controller
         foreach ($manfeeDoc->taxFiles as $taxFile) {
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
+
+        if ($manfeeDoc->status == '103') {
+            $dropboxFolderName = '/rejected/';
+            $manfeeDoc->path_rejected = $dropboxController->getAttachmentUrl($manfeeDoc->path_rejected, $dropboxFolderName);
+        }
+
 
         return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi'));
     }
@@ -742,5 +751,52 @@ class ManfeeDocumentController extends Controller
         }
 
         return Excel::download(new ManfeeDocumentExport($ids), 'manfee_documents.xlsx');
+    }
+
+    public function rejected(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        $document = ManfeeDocument::findOrFail($id);
+        $user = auth()->user(); // Ambil user yang sedang login
+        $userRole = $user->role;
+        $previousStatus = $document->status;
+
+        // Ambil file dan nama untuk diupload
+        $file = $request->file('file');
+        $fileName = 'Pembatalan ' . $document->letter_subject;
+        $dropboxFolderName = '/rejected/';
+
+        // Upload ke Dropbox
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        if (!$dropboxPath) {
+            return back()->with('error', 'Gagal mengunggah file penolakan.');
+        }
+
+        // Update dokumen
+        $document->update([
+            'reason_rejected' => $request->reason,
+            'path_rejected'   => $dropboxPath,
+            'status'          => 103, // Status dibatalkan
+        ]);
+
+        // Simpan ke riwayat
+        \App\Models\ManfeeDocHistories::create([
+            'document_id'     => $document->id,
+            'performed_by'    => $user->id,
+            'role'            => $userRole,
+            'previous_status' => $previousStatus,
+            'new_status'      => '103',
+            'action'          => 'Rejected',
+            'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
+        ]);
+
+        return redirect()->route('management-fee.show', $document->id)
+            ->with('success', 'Dokumen berhasil dibatalkan.');
     }
 }

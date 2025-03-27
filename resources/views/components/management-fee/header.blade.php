@@ -112,7 +112,7 @@
                     @endif
 
                     @if (auth()->user()->role === optional($latestApprover)->approver_role &&
-                            !in_array($document_status, [102, 6, 'approved', 'finalized']))
+                            !in_array($document_status, [102, 103, 6, 'approved', 'finalized']))
                         <!-- Need Info Button -->
                         <x-button-action color="orange" icon="info"
                             data-action="{{ route('management-fee.processRevision', $document['id']) }}"
