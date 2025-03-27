@@ -47,6 +47,12 @@ class ManfeeDocument extends Model
         });
     }
 
+    // Relasi ke User (pembuat dokumen)
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     // Relasi ke Contracts
     public function contract()
     {
