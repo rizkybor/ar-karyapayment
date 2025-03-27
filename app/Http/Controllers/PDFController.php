@@ -243,12 +243,13 @@ class PDFController extends Controller
 
     public function ManfeeInvoice($document_id)
     {
-        $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+        $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts'])->findOrFail($document_id);
 
         $data = [
             'document' => $document,
             'contract' => $document->contract,
             'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
         ];
 
         // format filename tersusun : invoice_number/contract_number/nama_kontraktor 
