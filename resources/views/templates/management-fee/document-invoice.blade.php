@@ -113,7 +113,7 @@
     @php
         $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
         $grandTotal = $totalBiaya + $accumulatedCosts->sum('nilai_manfee');
-        $rowspan = 8 + $detailPayments->count(); 
+        $rowspan = 8 + $detailPayments->count();
     @endphp
     <table class="border-table" width="100%">
         <thead>
@@ -130,7 +130,7 @@
                 <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
                     {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
 
-                <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
+                <td style="border-right:none; border-bottom: none;">Rp.</td> <!-- Simbol Rupiah -->
                 <td style="text-align: right; border-left:none; border-bottom: none;">
                     {{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
@@ -169,7 +169,7 @@
             @endphp
 
             <tr>
-                <td class="no-border">Jumlah</td>
+                <td class="no-border"><strong>Jumlah</strong></td>
                 <td class="no-border"><strong>Rp.</strong></td>
                 <td
                     style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: none; padding: 5px; position: relative;">
@@ -188,7 +188,7 @@
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td class="no-border-top-side">Jumlah Total</td>
+                <td class="no-border-top-side"><strong>Jumlah Total</strong></td>
                 <td class="no-border-top-side"><strong>Rp.</strong></td>
                 <td
                     style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
@@ -199,21 +199,21 @@
                 <td style="border-left: none; border-top: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="3" style="text-align: right;">Jumlah</td>
-                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
+                <td colspan="3" style="text-align: right;"><strong>Jumlah</strong></td>
+                <td style="border-bottom: none; border-right: none;"><strong>Rp.</strong></td>
                 <td style="text-align: right; border-left: none;">
                     <strong> {{ number_format($grandTotal, 0, ',', '.') }}</strong>
                 </td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;">PPN</td>
-                <td style="border-bottom: none; border-right: none;">Rp</td>
+                <td style="border-bottom: none; border-right: none;">Rp.</td>
                 <td style="text-align: right; border-left: none;">
                     {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
-                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
+                <td style="border-bottom: none; border-right: none;"><strong>Rp.</strong></td>
                 <td style="text-align: right;border-left: none;">
                     <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
                 </td>
