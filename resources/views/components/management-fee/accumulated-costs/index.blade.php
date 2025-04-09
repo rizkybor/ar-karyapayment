@@ -62,12 +62,9 @@
                         value="{{ old('account_name', $firstAccumulatedCost->account_name ?? '') }}">
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        @if ($firstAccumulatedCost->account)
-                            ({{ $firstAccumulatedCost->account }}) {{ $firstAccumulatedCost->account_name }}
-                        @else
-                            Belum memilih akun
-                        @endif
+                        {{ $firstAccumulatedCost?->account ? "({$firstAccumulatedCost->account}) {$firstAccumulatedCost->account_name}" : 'Belum memilih akun' }}
                     </p>
+
                 @endif
             </div>
 
