@@ -26,7 +26,7 @@ class ManfeeTaxController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'file' => 'required|file|max:10240',
         ]);
 
         // **📂 Ambil File dari Request**
