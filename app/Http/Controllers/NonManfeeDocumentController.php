@@ -51,37 +51,15 @@ class NonManfeeDocumentController extends Controller
      */
     public function create()
     {
-        $contracts = Contracts::where('type', 'non_management_fee')
-            ->get();
+        $contracts = Contracts::where('type', 'non_management_fee')->get();
+        $numbers = $this->generateDocumentNumbers(); // default 'NMF'
 
-        $monthRoman = $this->convertToRoman(date('n'));
-        $year = date('Y');
-
-        // Ambil nomor terakhir dan tambahkan 10
-        $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-
-
-        if (!$lastNumber) {
-            $lastNumeric = 100;
-        } else {
-
-            preg_match('/^(\d{6})/', $lastNumber, $matches);
-            $lastNumeric = $matches[1] ?? '000100';
-            $lastNumeric = intval($lastNumeric);
-
-            if ($lastNumeric % 10 !== 0) {
-                $lastNumeric = ceil($lastNumeric / 10) * 10;
-            }
-        }
-
-        $nextNumber = $lastNumeric + 10;
-
-        $letterNumber = sprintf("%06d/NMF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%06d/NMF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%06d/NMF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-
-        return view('pages/ar-menu/non-management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
+        return view('pages/ar-menu/non-management-fee/create', [
+            'contracts' => $contracts,
+            'letterNumber' => $numbers['letter_number'],
+            'invoiceNumber' => $numbers['invoice_number'],
+            'receiptNumber' => $numbers['receipt_number'],
+        ]);
     }
 
     /**
@@ -89,58 +67,66 @@ class NonManfeeDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input
+
         $request->validate([
             'contract_id' => 'required|exists:contracts,id',
             'period' => 'required',
             'letter_subject' => 'required',
         ]);
 
-        // Cek apakah contract_id sudah memiliki dokumen non_manfee
-        // $existingDocument = NonManfeeDocument::where('contract_id', $request->contract_id)->first();
-        // if ($existingDocument) {
-        //     return redirect()->back()->withErrors(['contract_id' => 'Dokumen untuk kontrak ini sudah ada.']);
-        // }
+        $numbers = $this->generateDocumentNumbers();
 
-        // Generate nomor surat, invoice, dan kwitansi
-        $monthRoman = $this->convertToRoman(date('n'));
-        $year = date('Y');
-
-        // Ambil nomor terakhir dan tambahkan 10
-        $lastNumber = NonManfeeDocument::max('letter_number');
-        preg_match('/^(\d{6})/', $lastNumber, $matches);
-        $lastNumeric = $matches[1] ?? '000100';
-        $nextNumber = $lastNumber ? (intval($lastNumeric) + 10) : 100;
-
-        $letterNumber = sprintf("%06d/NF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%06d/NF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%06d/NF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-
-        // Menyiapkan data untuk disimpan
         $input = $request->all();
-        $input['letter_number'] = $letterNumber;
-        $input['invoice_number'] = $invoiceNumber;
-        $input['receipt_number'] = $receiptNumber;
+        $input['letter_number'] = $numbers['letter_number'];
+        $input['invoice_number'] = $numbers['invoice_number'];
+        $input['receipt_number'] = $numbers['receipt_number'];
         $input['category'] = 'management_non_fee';
         $input['status'] = $input['status'] ?? 0;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
         $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
+
         try {
+            Log::info('🟢 Mulai menyimpan NonManfeeDocument', [
+                'input' => $input,
+                'user_id' => auth()->id()
+            ]);
+
             // Simpan dokumen baru
             $document = NonManfeeDocument::create($input);
 
-            // **Buat data di NonManfeeDocAccumulatedCost dengan hanya document_id**
-            NonManfeeDocAccumulatedCost::create([
+            Log::info('✅ NonManfeeDocument berhasil disimpan', [
                 'document_id' => $document->id,
-                'dpp' => '0'
+                'letter_number' => $document->letter_number,
             ]);
 
-            // Redirect ke halaman detail dengan ID yang benar
+            // Buat data di NonManfeeDocAccumulatedCost
+            NonManfeeDocAccumulatedCost::create([
+                'document_id' => $document->id,
+                'account' => null,
+                'account_name' => '',
+                'dpp' => '0', 
+                'rate_ppn' => 0.00,
+                'nilai_ppn' => 0.00,
+                'total' => 0.00,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+
+            Log::info('✅ NonManfeeDocAccumulatedCost dibuat', [
+                'document_id' => $document->id,
+            ]);
+
             return redirect()->route('non-management-fee.edit', ['id' => $document->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
+            Log::error('❌ Gagal menyimpan NonManfeeDocument', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+                'input' => $input
+            ]);
+
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -766,5 +752,34 @@ class NonManfeeDocumentController extends Controller
 
         return redirect()->route('non-management-fee.show', $document->id)
             ->with('success', 'Dokumen berhasil dibatalkan.');
+    }
+
+    private function generateDocumentNumbers(string $prefix = 'NMF'): array
+    {
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        $lastNumber = \App\Models\NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+
+        if (!$lastNumber) {
+            $lastNumeric = 100;
+        } else {
+            preg_match('/^(\d{6})/', $lastNumber, $matches);
+            $lastNumeric = intval($matches[1] ?? 100);
+
+            // Pembulatan kelipatan 10
+            if ($lastNumeric % 10 !== 0) {
+                $lastNumeric = ceil($lastNumeric / 10) * 10;
+            }
+        }
+
+        $nextNumber = $lastNumeric + 10;
+
+        return [
+            'letter_number' => sprintf("%06d/%s/KEU/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
+            'invoice_number' => sprintf("%06d/%s/INV/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
+            'receipt_number' => sprintf("%06d/%s/KW/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
+        ];
     }
 }

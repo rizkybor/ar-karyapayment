@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('letter_subject', 255);
             $table->string('category', 255);
             $table->string('status', 255);
-            $table->string('reason_rejected', 255);
-            $table->string('path_rejected', 255);
+            $table->string('reason_rejected', 255)->nullable();
+            $table->string('path_rejected', 255)->nullable();
             $table->string('last_reviewers', 255)->nullable();
             $table->boolean('is_active')->nullable()->default(null);
             $table->integer('created_by')->unsigned()->nullable();
