@@ -1,4 +1,4 @@
-@props(['manfeeDoc', 'jenis_biaya', 'account_detailbiaya'])
+@props(['nonManfeeDocument', 'jenis_biaya', 'account_detailbiaya'])
 
 <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
     <div class="flex justify-between items-center mb-3">
@@ -6,7 +6,7 @@
             Detail Biaya
         </h5>
         <div class="flex gap-2 mt-4 sm:mt-0">
-            <x-modal.management-fee.detail-biaya.modal-show-detailbiaya :manfeeDoc="$manfeeDoc" :jenis_biaya="$jenis_biaya"
+            <x-modal.non-management-fee.detail-biaya.modal-show-detailbiaya :nonManfeeDocument="$nonManfeeDocument" :jenis_biaya="$jenis_biaya"
                 :account_detailbiaya="$account_detailbiaya" />
         </div>
 
@@ -32,7 +32,7 @@
                     <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
                         @php
                             $i = 1;
-                            $groupedDetails = $manfeeDoc->detailPayments
+                            $groupedDetails = $nonManfeeDocument->detailPayments
                                 ->groupBy('expense_type')
                                 ->map(function ($group) {
                                     return [
@@ -42,7 +42,7 @@
                                 });
                         @endphp
 
-                        @if (!empty($manfeeDoc) && $manfeeDoc->detailPayments && $manfeeDoc->detailPayments->count())
+                        @if (!empty($nonManfeeDocument) && $nonManfeeDocument->detailPayments && $nonManfeeDocument->detailPayments->count())
                             @foreach ($groupedDetails as $expenseType => $group)
                                 <tr>
                                     <td class="p-2 whitespace-nowrap">
