@@ -1,6 +1,7 @@
 @props([
     'transaction_status' => '',
     'document_status' => '',
+    'bankAccounts' => '',
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
@@ -49,7 +50,7 @@
 
             <br />
 
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 {{-- Jenis --}}
                 <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
@@ -58,6 +59,27 @@
                         Non Management Fee
                     </p>
                 </div>
+
+                {{-- Bank Account --}}
+                {{-- <div class="mt-4">
+                    <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+
+                    <select name="bank_account_id" id="bank_account_id"
+                        class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <option value="">-- Pilih Akun Bank --</option>
+                        @foreach ($bankAccounts as $bank)
+                            <option value="{{ $bank->id }}"
+                                {{ old('bank_account_id', $selectedBankId ?? '') == $bank->id ? 'selected' : '' }}>
+                                {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->account_name }})
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('bank_account_id')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
+                </div> --}}
             </div>
         </div>
 

@@ -14,6 +14,7 @@ class NonManfeeDocument extends Model
 
     protected $fillable = [
         'contract_id',
+        'bank_account_id',
         'invoice_number',
         'receipt_number',
         'letter_number',
@@ -58,6 +59,11 @@ class NonManfeeDocument extends Model
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
     }
+
+    public function bankAccount()
+{
+    return $this->belongsTo(BankAccount::class);
+}
 
     public function approvals()
     {
