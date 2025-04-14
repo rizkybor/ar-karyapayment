@@ -72,6 +72,28 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+                @if ($document_status > 0)
+                    <div x-data="{ open: false }" class="relative">
+                        <x-button-action @click="open = !open" color="blue" icon="eye">
+                            Lihat Dokumen
+                        </x-button-action>
+
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                            <ul class="py-2 text-gray-700">
+                                @foreach ($printOptions as $option)
+                                    <li>
+                                        <a href="{{ $option['route'] }}" target="_blank"
+                                            class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                            {{ $option['label'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
                 @if ($document_status == 103)
                     <x-button-action color="red" icon="eye"
                         onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
@@ -82,7 +104,7 @@
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
                         <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
-                        <div x-data="{ open: false }" class="relative">
+                        {{-- <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
                                 Cetak Dokumen
                             </x-button-action>
@@ -100,7 +122,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}

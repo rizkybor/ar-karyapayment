@@ -34,6 +34,12 @@
         @endif
 
         <div class="grid grid-cols-1 gap-6 mt-6">
+            {{-- DETAIL BIAYA --}}
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                <x-non-management-fee.detail-biaya.index :nonManfeeDocument="$nonManfeeDocument" :jenis_biaya="$jenis_biaya" :isEdit="false"
+                    :account_detailbiaya="$account_detailbiaya" />
+            </div>
+
             {{-- AKUMULASI BIAYA --}}
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                 <x-non-management-fee.accumulated-costs.index :nonManfeeDocument="$nonManfeeDocument" :optionAccount="$optionAccount" :isEdit="false" />
