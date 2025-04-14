@@ -93,7 +93,7 @@
 
                     </tr>
                     <tr>
-                        <td class="no-border">PPN</td>
+                        <td class="no-border">{{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
                         <td class="no-border">Rp.</td>
                         <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
 
@@ -144,7 +144,7 @@
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
+                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
                     @php
                         $logoPath = public_path('images/dirut-keuangan.png');
@@ -156,7 +156,7 @@
             <tr>
                 <td class="no-border">No. Rekening</td>
                 <td class="no-border">:</td>
-                <td class="no-border">115.00.9999666.4</td>
+                <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
@@ -167,7 +167,7 @@
             <tr>
                 <td class="no-border">Atas Nama</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Karya Prima Usahatama</td>
+                <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
                     <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi

@@ -144,12 +144,12 @@ class PDFController extends Controller
 
     public function nonManfeeLetter($document_id)
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
         $data = [
             'document' => $document,
             'contract' => $document->contract,
-            'accumulatedCosts' => $document->accumulatedCosts,
+            'accumulatedCosts' => $document->accumulatedCosts
         ];
 
         // format filename tersusun : letter_number/contract_number/nama_kontraktor 
@@ -163,7 +163,7 @@ class PDFController extends Controller
 
     public function nonManfeeInvoice($document_id)
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
         $data = [
             'document' => $document,
@@ -182,7 +182,7 @@ class PDFController extends Controller
 
     public function nonManfeeKwitansi($document_id)
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
