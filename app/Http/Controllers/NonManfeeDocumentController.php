@@ -154,6 +154,15 @@ class NonManfeeDocumentController extends Controller
             ->latest('updated_at')
             ->first();
 
+        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
+        $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
+        $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
+
+        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
+        $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
+
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
 
@@ -180,6 +189,9 @@ class NonManfeeDocumentController extends Controller
             'nonManfeeDocument',
             'latestApprover',
             'optionAccount',
+            'jenis_biaya',
+            'account_detailbiaya',
+            'account_akumulasi'
         ));
     }
 
@@ -195,6 +207,15 @@ class NonManfeeDocumentController extends Controller
             'descriptions',
             'taxFiles'
         ])->findOrFail($id);
+
+        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
+        $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
+        $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
+
+        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
+        $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -215,7 +236,10 @@ class NonManfeeDocumentController extends Controller
 
         return view('pages/ar-menu/non-management-fee/invoice-detail/edit', compact(
             'nonManfeeDocument',
-            'optionAccount'
+            'optionAccount',
+            'jenis_biaya',
+            'account_akumulasi',
+            'account_detailbiaya'
         ));
     }
 

@@ -1,7 +1,13 @@
+@props(['nonManfeeDocument', 'optionAccount'])
+
+@php
+    $accumulated_id = optional($nonManfeeDocument->accumulatedCosts->first())->id ?? 'new';
+@endphp
+
 <form method="POST"
     action="{{ route('non-management-fee.accumulated.update', [
         'id' => $nonManfeeDocument->id,
-        'accumulated_id' => optional($nonManfeeDocument->accumulatedCosts->first())->id,
+        'accumulated_id' => $accumulated_id,
     ]) }}"
     id="accumulatedForm">
     @csrf
