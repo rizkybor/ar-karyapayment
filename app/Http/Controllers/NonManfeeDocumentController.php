@@ -225,7 +225,7 @@ class NonManfeeDocumentController extends Controller
             'descriptions',
             'taxFiles'
         ])->findOrFail($id);
-
+        
         $allBankAccounts = BankAccount::all();
 
         $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
