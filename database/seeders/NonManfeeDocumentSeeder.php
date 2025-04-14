@@ -84,7 +84,7 @@ class NonManfeeDocumentSeeder extends Seeder
                 'created_by'     => $created_by,
                 'created_at'     => $created_at,
                 'updated_at'     => $created_at,
-                'expired_at'     => $expired_at, // ✅ Waktu 00:01:00
+                'expired_at'     => $expired_at,
             ];
         }
 
