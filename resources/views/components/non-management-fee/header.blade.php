@@ -176,12 +176,14 @@
                         </x-button-action>
                     @endif
 
-                    @if ($document_status == 0)
+                    @if (in_array($document_status, [0, 102]))
                         <x-button-action color="teal" icon="pencil"
                             onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
                             Edit Invoice
                         </x-button-action>
+                    @endif
 
+                    @if ($document_status == 0)
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
