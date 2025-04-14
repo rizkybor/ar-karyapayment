@@ -124,7 +124,7 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan nomor kontrak {{ $contract->contract_number ?? 'NULL' }} ({{ $contract->type ?? 'NULL' }}) antara
+        Berdasarkan nomor kontrak {{ $contract->contract_number ?? 'NULL' }} antara
         {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
         {{ $contract->title ?? 'NULL' }}
         ({{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }}), dengan ini kami mengajukan
