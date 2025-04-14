@@ -17,6 +17,14 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DashboardTableSeeder::class,
+            UserSeeder::class,
+            PermissionSeeder::class,
+            MasterDataSeeder::class,
+            ContractInvoiceSeeder::class,
+            MasterBillTypeSeeder::class,
+            NonManfeeDocumentSeeder::class,
+            NonManfeeDocAccumulatedCostSeeder::class,
+            ManfeeDocumentSeeder::class,
         ]);
     }
 }

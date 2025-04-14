@@ -1,15 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DataFeedController;
+use App\Http\Controllers\TestController;
+// use App\Http\Controllers\DataFeedController;
+use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\MemberController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\JobController;
-use App\Http\Controllers\CampaignController;
+
+use App\Http\Controllers\ManfeeTaxController;
+use App\Http\Controllers\ManfeeHistoryController;
+use App\Http\Controllers\ManfeeDocumentController;
+use App\Http\Controllers\ManfeeAttachmentController;
+use App\Http\Controllers\ManfeeDescriptionsController;
+use App\Http\Controllers\ManfeeDetailPaymentsController;
+use App\Http\Controllers\ManfeeAccumulatedCostController;
+use App\Http\Controllers\ManfeeDocumentDataTableController;
+
+use App\Http\Controllers\NonManfeeTaxController;
+use App\Http\Controllers\NonManfeeHistoryController;
+use App\Http\Controllers\NonManfeeDocumentController;
+use App\Http\Controllers\NonManfeeAttachmentController;
+use App\Http\Controllers\NonManfeeDescriptionController;
+use App\Http\Controllers\NonManfeeAccumulatedCostController;
+use App\Http\Controllers\NonManfeeDocumentDataTableController;
+
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\DropboxController;
+use App\Http\Controllers\NotificationController;
+use Laravel\Fortify\Http\Controllers\NewPasswordController;
+
+use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+use App\Actions\Fortify\CreateNewUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,174 +45,261 @@ use App\Http\Controllers\CampaignController;
 
 Route::redirect('/', 'login');
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/register', function () {
+        return view('auth.register', ['roles' => Role::all()]);
+    })->name('register');
 
-    // Route for the getting the data feed
-    Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
+    Route::post('/register', function (Request $request) {
+        $action = new CreateNewUser();
+        $action->create($request->all());
+
+        return redirect()->route('register')->with('status', 'User berhasil dibuat.');
+    });
+});
+
+Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
+
+// ROUTE RESET PASSWORD
+Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
+Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+
+// Route::get('/generate-letter', [PDFController::class, 'generateLetter']);
+// Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
+// Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    // Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dropbox Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dropbox/auth', [DropboxController::class, 'redirectToAuthorization'])
+        ->name('dropbox.auth');
+    Route::get('/dropbox/callback', [DropboxController::class, 'handleAuthorizationCallback'])
+        ->name('dropbox.callback');
+
+    // DROPBOX TES UNGGAH, VIEW, CEK LIST FILE DI DROPBOX, DAN DELETE
+    Route::get('/test-dropbox', [DropboxController::class, 'index'])->name('dropbox.index');
+    Route::post('/dropbox/upload', [DropboxController::class, 'upload'])
+        ->name('dropbox.upload');
+    Route::get('/dropbox/files', [DropboxController::class, 'listFiles'])->name('dropbox.files');
+    Route::get('/dropbox/view/{filePath}', [DropboxController::class, 'viewFile'])
+        ->where('filePath', '.*')
+        ->name('dropbox.file.view');
+    Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])
+        ->where('path', '.*')
+        ->name('dropbox.delete');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/json', [NotificationController::class, 'getNotificationsJson'])->name('notifications.getNotificationsJson');
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAsRead');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadNotificationsCount']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::post('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notifications.clearAll');
+    // END ROUTE NOTIFICATION
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/analytics', [DashboardController::class, 'analytics'])->name('analytics');
-    Route::get('/dashboard/fintech', [DashboardController::class, 'fintech'])->name('fintech');
-    Route::get('/ecommerce/customers', [CustomerController::class, 'index'])->name('customers');
-    Route::get('/ecommerce/orders', [OrderController::class, 'index'])->name('orders');
-    Route::get('/ecommerce/invoices', [InvoiceController::class, 'index'])->name('invoices');
-    Route::get('/ecommerce/shop', function () {
-        return view('pages/ecommerce/shop');
-    })->name('shop');    
-    Route::get('/ecommerce/shop-2', function () {
-        return view('pages/ecommerce/shop-2');
-    })->name('shop-2');     
-    Route::get('/ecommerce/product', function () {
-        return view('pages/ecommerce/product');
-    })->name('product');
-    Route::get('/ecommerce/cart', function () {
-        return view('pages/ecommerce/cart');
-    })->name('cart');    
-    Route::get('/ecommerce/cart-2', function () {
-        return view('pages/ecommerce/cart-2');
-    })->name('cart-2');    
-    Route::get('/ecommerce/cart-3', function () {
-        return view('pages/ecommerce/cart-3');
-    })->name('cart-3');    
-    Route::get('/ecommerce/pay', function () {
-        return view('pages/ecommerce/pay');
-    })->name('pay');     
-    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns');
-    Route::get('/community/users-tabs', [MemberController::class, 'indexTabs'])->name('users-tabs');
-    Route::get('/community/users-tiles', [MemberController::class, 'indexTiles'])->name('users-tiles');
-    Route::get('/community/profile', function () {
-        return view('pages/community/profile');
-    })->name('profile');
-    Route::get('/community/feed', function () {
-        return view('pages/community/feed');
-    })->name('feed');     
-    Route::get('/community/forum', function () {
-        return view('pages/community/forum');
-    })->name('forum');
-    Route::get('/community/forum-post', function () {
-        return view('pages/community/forum-post');
-    })->name('forum-post');    
-    Route::get('/community/meetups', function () {
-        return view('pages/community/meetups');
-    })->name('meetups');    
-    Route::get('/community/meetups-post', function () {
-        return view('pages/community/meetups-post');
-    })->name('meetups-post');    
-    Route::get('/finance/cards', function () {
-        return view('pages/finance/credit-cards');
-    })->name('credit-cards');
-    Route::get('/finance/transactions', [TransactionController::class, 'index01'])->name('transactions');
-    Route::get('/finance/transaction-details', [TransactionController::class, 'index02'])->name('transaction-details');
-    Route::get('/job/job-listing', [JobController::class, 'index'])->name('job-listing');
-    Route::get('/job/job-post', function () {
-        return view('pages/job/job-post');
-    })->name('job-post');    
-    Route::get('/job/company-profile', function () {
-        return view('pages/job/company-profile');
-    })->name('company-profile');
-    Route::get('/messages', function () {
-        return view('pages/messages');
-    })->name('messages');
-    Route::get('/tasks/kanban', function () {
-        return view('pages/tasks/tasks-kanban');
-    })->name('tasks-kanban');
-    Route::get('/tasks/list', function () {
-        return view('pages/tasks/tasks-list');
-    })->name('tasks-list');       
-    Route::get('/inbox', function () {
-        return view('pages/inbox');
-    })->name('inbox'); 
-    Route::get('/calendar', function () {
-        return view('pages/calendar');
-    })->name('calendar'); 
-    Route::get('/settings/account', function () {
-        return view('pages/settings/account');
-    })->name('account');  
-    Route::get('/settings/notifications', function () {
-        return view('pages/settings/notifications');
-    })->name('notifications');  
-    Route::get('/settings/apps', function () {
-        return view('pages/settings/apps');
-    })->name('apps');
-    Route::get('/settings/plans', function () {
-        return view('pages/settings/plans');
-    })->name('plans');      
-    Route::get('/settings/billing', function () {
-        return view('pages/settings/billing');
-    })->name('billing');  
-    Route::get('/settings/feedback', function () {
-        return view('pages/settings/feedback');
-    })->name('feedback');
-    Route::get('/utility/changelog', function () {
-        return view('pages/utility/changelog');
-    })->name('changelog');  
-    Route::get('/utility/roadmap', function () {
-        return view('pages/utility/roadmap');
-    })->name('roadmap');  
-    Route::get('/utility/faqs', function () {
-        return view('pages/utility/faqs');
-    })->name('faqs');  
-    Route::get('/utility/empty-state', function () {
-        return view('pages/utility/empty-state');
-    })->name('empty-state');  
-    Route::get('/utility/404', function () {
+
+
+    // ROUTE CONTRACTS (Super Admin)
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::resource('/contracts', ContractsController::class);
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Management Fee Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('management-fee')->name('management-fee.')->group(function () {
+
+        Route::get('/datatable', [ManfeeDocumentDataTableController::class, 'index'])->name('datatable');
+
+        Route::get('/export/data', [ManfeeDocumentController::class, 'export'])->name('export');
+
+        Route::resource('/', ManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
+            'index' => 'index',
+            'create' => 'create',
+            'store' => 'store',
+            'update' => 'update',
+            'destroy' => 'destroy',
+        ]);
+
+        // Details
+        Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
+
+        Route::put('/process/{id}', [ManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/revision/{id}', [ManfeeDocumentController::class, 'processRevision'])->name('processRevision');
+
+        // Edit
+        // management-fee.edit
+        Route::get('/{id}/edit', [ManfeeDocumentController::class, 'edit'])->name('edit');
+
+        // management-fee.rejeced
+        Route::put('/{id}/rejected', [ManfeeDocumentController::class, 'rejected'])->name('rejected');
+
+        // Prefix untuk attachments
+        Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
+            // management-fee.attachments.show
+            Route::get('/{attachment_id}', [ManfeeAttachmentController::class, 'show'])->name('show');
+            // management-fee.attachments.store
+            Route::post('/store', [ManfeeAttachmentController::class, 'store'])->name('store');
+            // management-fee.attachments.update
+            Route::put('/{attachment_id}/update', [ManfeeAttachmentController::class, 'update'])->name('update');
+            // management-fee.attachments.destroy
+            Route::delete('/{attachment_id}', [ManfeeAttachmentController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/descriptions')->name('descriptions.')->group(function () {
+            // management-fee.descriptions.show
+            Route::get('/{description_id}', [ManfeeDescriptionsController::class, 'show'])->name('show');
+            // management-fee.descriptions.store
+            Route::post('/store', [ManfeeDescriptionsController::class, 'store'])->name('store');
+            // management-fee.descriptions.update
+            Route::put('/{description_id}/update', [ManfeeDescriptionsController::class, 'update'])->name('update');
+            // management-fee.descriptions.destroy
+            Route::delete('/{description_id}', [ManfeeDescriptionsController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/taxs')->name('taxs.')->group(function () {
+            // management-fee.taxs.show
+            Route::get('/{tax_id}', [ManfeeTaxController::class, 'show'])->name('show');
+            // management-fee.taxs.store
+            Route::post('/store', [ManfeeTaxController::class, 'store'])->name('store');
+            // management-fee.taxs.update
+            Route::put('/{tax_id}/update', [ManfeeTaxController::class, 'update'])->name('update');
+            // management-fee.taxs.destroy
+            Route::delete('/{tax_id}', [ManfeeTaxController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/detail_payments')->name('detail_payments.')->group(function () {
+            // management-fee.detail_payments.show
+            Route::get('/{detail_payment_id}', [ManfeeDetailPaymentsController::class, 'show'])->name('show');
+            // management-fee.detail_payments.store
+            Route::post('/store', [ManfeeDetailPaymentsController::class, 'store'])->name('store');
+            // management-fee.detail_payments.update
+            Route::put('/{detail_payment_id}/update', [ManfeeDetailPaymentsController::class, 'update'])->name('update');
+            // management-fee.detail_payments.destroy
+            Route::delete('/{detail_payment_id}', [ManfeeDetailPaymentsController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
+            // management-fee.accumulated.show
+            Route::get('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'show'])->name('show');
+            // management-fee.accumulated.update
+            Route::put('/{accumulated_id}/update', [ManfeeAccumulatedCostController::class, 'update'])->name('update');
+            // management-fee.accumulated.destroy 
+            Route::delete('/{accumulated_id}', [ManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route Print PDF Surat Permohonan, Kwitansi, Invoice
+        Route::get('/{id}/print-surat', [PDFController::class, 'ManfeeLetter'])->name('print-surat');;
+        Route::get('/{id}/print-invoice', [PDFController::class, 'ManfeeInvoice'])->name('print-invoice');;
+        Route::get('/{id}/print-kwitansi', [PDFController::class, 'ManfeeKwitansi'])->name('print-kwitansi');;
+
+        Route::prefix('histories')->name('histories.')->group(function () {
+            Route::get('/', [ManfeeHistoryController::class, 'index'])->name('index');
+            Route::get('/{history_id}', [ManfeeHistoryController::class, 'show'])->name('show');
+            Route::post('/store', [ManfeeHistoryController::class, 'store'])->name('store');
+            Route::delete('/{history_id}', [ManfeeHistoryController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Management Non Fee Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('non-management-fee')->name('non-management-fee.')->group(function () {
+        Route::get('/datatable', [NonManfeeDocumentDataTableController::class, 'index'])->name('datatable');
+        Route::get('/export/data', [NonManfeeDocumentController::class, 'export'])->name('export');
+        Route::resource('/', NonManfeeDocumentController::class)->except(['show', 'edit'])->parameters(['' => 'id'])->names([
+            'index' => 'index',
+            'create' => 'create',
+            'store' => 'store',
+            'update' => 'update',
+            'destroy' => 'destroy',
+        ]);
+        Route::get('{id}/show', [NonManfeeDocumentController::class, 'show'])->name('show');
+        Route::put('/process/{id}', [NonManfeeDocumentController::class, 'processApproval'])->name('processApproval');
+        Route::put('/revision/{id}', [NonManfeeDocumentController::class, 'processRevision'])->name('processRevision');
+
+        // non-management-fee.edit
+        Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
+
+        // non-management-fee.rejeced
+        Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
+
+        // Prefix untuk accumulated cost
+        Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {
+            Route::get('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'show'])->name('show');
+            Route::put('/{accumulated_id}/update', [NonManfeeAccumulatedCostController::class, 'update'])->name('update'); // Tetap pakai PUT
+            Route::delete('/{accumulated_id}', [NonManfeeAccumulatedCostController::class, 'destroy'])->name('destroy');
+        });
+
+        // Prefix untuk attachments
+        Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
+            // non-management-fee.attachments.show
+            Route::get('/{attachment_id}', [NonManfeeAttachmentController::class, 'show'])->name('show');
+            // non-management-fee.attachments.store
+            Route::post('/store', [NonManfeeAttachmentController::class, 'store'])->name('store');
+            // non-management-fee.attachments.update
+            Route::put('/{attachment_id}/update', [NonManfeeAttachmentController::class, 'update'])->name('update');
+            // non-management-fee.attachments.destroy
+            Route::delete('/{attachment_id}', [NonManfeeAttachmentController::class, 'destroy'])->name('destroy');
+        });
+
+        // Prefix untuk descriptions
+        Route::prefix('{id}/edit/descriptions')->name('descriptions.')->group(function () {
+            // non-management-fee.descriptions.show
+            Route::get('/{description_id}', [NonManfeeDescriptionController::class, 'show'])->name('show');
+            // non-management-fee.descriptions.store
+            Route::post('/store', [NonManfeeDescriptionController::class, 'store'])->name('store');
+            // non-management-fee.descriptions.update
+            Route::put('/{description_id}/update', [NonManfeeDescriptionController::class, 'update'])->name('update');
+            // non-management-fee.descriptions.destroy
+            Route::delete('/{description_id}', [NonManfeeDescriptionController::class, 'destroy'])->name('destroy');
+        });
+
+        // Prefix untuk Tax
+        Route::prefix('{id}/edit/taxes')->name('taxes.')->group(function () {
+            // non-management-fee.taxs.show
+            Route::get('/{taxes_id}', [NonManfeeTaxController::class, 'show'])->name('show');
+            // non-management-fee.taxs.store
+            Route::post('/store', [NonManfeeTaxController::class, 'store'])->name('store');
+            // non-management-fee.taxs.update
+            Route::put('/{taxes_id}/update', [NonManfeeTaxController::class, 'update'])->name('update');
+            // non-management-fee.taxs.destroy
+            Route::delete('/{taxes_id}', [NonManfeeTaxController::class, 'destroy'])->name('destroy');
+        });
+
+        // Route Print PDF Surat Permohonan, Kwitansi, Invoice
+        Route::get('/{id}/print-surat', [PDFController::class, 'nonManfeeLetter'])->name('print-surat');;
+        Route::get('/{id}/print-invoice', [PDFController::class, 'nonManfeeInvoice'])->name('print-invoice');;
+        Route::get('/{id}/print-kwitansi', [PDFController::class, 'nonManfeeKwitansi'])->name('print-kwitansi');;
+
+        // Route History
+        Route::prefix('histories')->name('histories.')->group(function () {
+            Route::get('/', [NonManfeeHistoryController::class, 'index'])->name('index');
+            Route::get('/{history_id}', [NonManfeeHistoryController::class, 'show'])->name('show');
+            Route::post('/store', [NonManfeeHistoryController::class, 'store'])->name('store');
+            Route::delete('/{history_id}', [NonManfeeHistoryController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    Route::fallback(function () {
         return view('pages/utility/404');
-    })->name('404');
-    Route::get('/utility/knowledge-base', function () {
-        return view('pages/utility/knowledge-base');
-    })->name('knowledge-base');
-    Route::get('/onboarding-01', function () {
-        return view('pages/onboarding-01');
-    })->name('onboarding-01');   
-    Route::get('/onboarding-02', function () {
-        return view('pages/onboarding-02');
-    })->name('onboarding-02');   
-    Route::get('/onboarding-03', function () {
-        return view('pages/onboarding-03');
-    })->name('onboarding-03');   
-    Route::get('/onboarding-04', function () {
-        return view('pages/onboarding-04');
-    })->name('onboarding-04');
-    Route::get('/component/button', function () {
-        return view('pages/component/button-page');
-    })->name('button-page');
-    Route::get('/component/form', function () {
-        return view('pages/component/form-page');
-    })->name('form-page');
-    Route::get('/component/dropdown', function () {
-        return view('pages/component/dropdown-page');
-    })->name('dropdown-page');
-    Route::get('/component/alert', function () {
-        return view('pages/component/alert-page');
-    })->name('alert-page');
-    Route::get('/component/modal', function () {
-        return view('pages/component/modal-page');
-    })->name('modal-page'); 
-    Route::get('/component/pagination', function () {
-        return view('pages/component/pagination-page');
-    })->name('pagination-page');
-    Route::get('/component/tabs', function () {
-        return view('pages/component/tabs-page');
-    })->name('tabs-page');
-    Route::get('/component/breadcrumb', function () {
-        return view('pages/component/breadcrumb-page');
-    })->name('breadcrumb-page');
-    Route::get('/component/badge', function () {
-        return view('pages/component/badge-page');
-    })->name('badge-page'); 
-    Route::get('/component/avatar', function () {
-        return view('pages/component/avatar-page');
-    })->name('avatar-page');
-    Route::get('/component/tooltip', function () {
-        return view('pages/component/tooltip-page');
-    })->name('tooltip-page');
-    Route::get('/component/accordion', function () {
-        return view('pages/component/accordion-page');
-    })->name('accordion-page');
-    Route::get('/component/icons', function () {
-        return view('pages/component/icons-page');
-    })->name('icons-page');
-    Route::fallback(function() {
-        return view('pages/utility/404');
-    });    
+    });
 });
