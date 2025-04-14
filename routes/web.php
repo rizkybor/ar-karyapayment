@@ -240,6 +240,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
 
+        Route::post('/{id}/update-bank', [NonManfeeDocumentController::class, 'updateBankAccount'])
+            ->name('updateBank');
+
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
 
