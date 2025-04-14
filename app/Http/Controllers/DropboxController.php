@@ -82,7 +82,7 @@ class DropboxController extends Controller
                     Log::info("⚡ [DROPBOX] Membuat shared link baru...");
                     $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
                     Log::info("✅ [DROPBOX] Shared link baru: " . $sharedLink);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::error("❌ [DROPBOX] Gagal membuat shared link: " . $e->getMessage());
                     return null;
                 }
@@ -92,7 +92,7 @@ class DropboxController extends Controller
             $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
 
             return $fileUrl;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("❌ [DROPBOX] Gagal mendapatkan URL file: " . $e->getMessage());
             return null;
         }
@@ -195,7 +195,7 @@ class DropboxController extends Controller
             }
 
             return redirect()->away($fileUrl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("❌ [DROPBOX] Gagal menampilkan file: " . $e->getMessage());
             return abort(404, 'Gagal menampilkan file dari Dropbox: ' . $e->getMessage());
         }
@@ -341,7 +341,7 @@ class DropboxController extends Controller
                     Log::info("⚡ [DROPBOX] Membuat shared link baru...");
                     $sharedLink = $client->createSharedLinkWithSettings($filePath)['url'];
                     Log::info("✅ [DROPBOX] Shared link baru: " . $sharedLink);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::error("❌ [DROPBOX] Gagal membuat shared link: " . $e->getMessage());
                     return null;
                 }
@@ -351,7 +351,7 @@ class DropboxController extends Controller
             $fileUrl = str_replace('?dl=0', '?raw=1', $sharedLink);
 
             return $fileUrl;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("❌ [DROPBOX] Gagal mendapatkan URL file: " . $e->getMessage());
             return null;
         }
