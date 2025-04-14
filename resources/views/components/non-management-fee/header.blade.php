@@ -1,6 +1,7 @@
 @props([
     'transaction_status' => '',
     'document_status' => '',
+    'bankAccounts',
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
@@ -49,7 +50,7 @@
 
             <br />
 
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 {{-- Jenis --}}
                 <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
@@ -58,6 +59,30 @@
                         Non Management Fee
                     </p>
                 </div>
+
+                {{-- Bank Account --}}
+                @if ($isEditable)
+                    <div class="mt-4">
+                        <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
+                            class="text-gray-800 dark:text-gray-100" />
+
+                        <select name="bank_account_id" id="bank_account_id"
+                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            onchange="updateBankAccount(this.value)">
+                            <option value="">-- Pilih Akun Bank --</option>
+                            @foreach ($bankAccounts as $bank)
+                                <option value="{{ $bank->id }}"
+                                    {{ old('bank_account_id', $selectedBankId ?? '') == $bank->id ? 'selected' : '' }}>
+                                    {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->account_name }})
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('bank_account_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -227,5 +252,37 @@
 
     function closeModal() {
         document.querySelector('#modalOverlay').classList.add('hidden');
+    }
+
+    function updateBankAccount(bankId) {
+        const documentId = "{{ $document->id }}";
+        const token = "{{ csrf_token() }}";
+
+        fetch(`/non-management-fee/${documentId}/update-bank`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    bank_account_id: bankId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // ✅ Show success modal
+                    showAutoCloseAlert('globalAlertModal', 3000, 'Akun bank berhasil diperbarui.', 'success',
+                        'Berhasil!');
+                } else {
+                    // ❌ Show failure modal
+                    showAutoCloseAlert('globalAlertModal', 3000, 'Gagal memperbarui akun bank.', 'error', 'Gagal!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan saat menyimpan.', 'error',
+                    'Kesalahan!');
+            });
     }
 </script>

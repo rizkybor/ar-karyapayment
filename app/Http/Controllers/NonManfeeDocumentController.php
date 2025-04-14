@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
 use App\Models\Contracts;
+use App\Models\BankAccount;
 use App\Models\Notification;
 use App\Models\DocumentApproval;
 use App\Models\NonManfeeDocument;
@@ -149,6 +150,8 @@ class NonManfeeDocumentController extends Controller
         // $dataContract =  $contracts = Contracts::where('id', $nonManfeeDocument->id)
         // ->get();
 
+        $allBankAccounts = BankAccount::all();
+
         // Kecuali Biaya Non Personil
         $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
             ->groupBy('expense_type')
@@ -206,6 +209,7 @@ class NonManfeeDocumentController extends Controller
             'account_akumulasi',
             'subtotals',
             'subtotalBiayaNonPersonil',
+            'allBankAccounts'
         ));
     }
 
@@ -221,6 +225,8 @@ class NonManfeeDocumentController extends Controller
             'descriptions',
             'taxFiles'
         ])->findOrFail($id);
+
+        $allBankAccounts = BankAccount::all();
 
         $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
             ->groupBy('expense_type')
@@ -265,7 +271,8 @@ class NonManfeeDocumentController extends Controller
             'account_akumulasi',
             'account_detailbiaya',
             'subtotals',
-            'subtotalBiayaNonPersonil'
+            'subtotalBiayaNonPersonil',
+            'allBankAccounts'
         ));
     }
 
@@ -831,5 +838,19 @@ class NonManfeeDocumentController extends Controller
             'invoice_number' => sprintf("%06d/%s/INV/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
             'receipt_number' => sprintf("%06d/%s/KW/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
         ];
+    }
+
+    public function updateBankAccount(Request $request, $id)
+    {
+        $document = NonManfeeDocument::findOrFail($id);
+        $request->validate([
+            'bank_account_id' => 'nullable|exists:bank_accounts,id',
+        ]);
+
+        $document->update([
+            'bank_account_id' => $request->bank_account_id
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

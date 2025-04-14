@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('non_manfee_documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
+            $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('set null');
             $table->string('invoice_number', 255);
             $table->string('receipt_number', 255);
             $table->string('letter_number', 255);
