@@ -839,4 +839,18 @@ class NonManfeeDocumentController extends Controller
             'receipt_number' => sprintf("%06d/%s/KW/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
         ];
     }
+
+    public function updateBankAccount(Request $request, $id)
+    {
+        $document = NonManfeeDocument::findOrFail($id);
+        $request->validate([
+            'bank_account_id' => 'nullable|exists:bank_accounts,id',
+        ]);
+
+        $document->update([
+            'bank_account_id' => $request->bank_account_id
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }
