@@ -43,7 +43,7 @@ class NonManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => $rupiahBiaya,
         ]);
 
-        return redirect()->route('management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
+        return redirect()->route('non-management-fee.edit', ['id' => $id])->with('success', 'Data berhasil disimpan!');
     }
 
     /**
@@ -74,7 +74,7 @@ class NonManfeeDetailPaymentsController extends Controller
             'nilai_biaya' => $rupiahBiaya,
         ]);
 
-        return redirect()->route('management-fee.edit', ['id' => $document_id])->with('success', 'Data berhasil diperbaharui!');
+        return redirect()->route('non-management-fee.edit', ['id' => $document_id])->with('success', 'Data berhasil diperbaharui!');
     }
 
     /**
@@ -88,6 +88,6 @@ class NonManfeeDetailPaymentsController extends Controller
 
         $docdetail->delete();
 
-        return redirect()->route('management-fee.edit', ['id' => $document_id])->with('success', 'Lampiran berhasil dihapus!');
+        return redirect()->route('non-management-fee.edit', ['id' => $document_id])->with('success', 'Lampiran berhasil dihapus!');
     }
 }

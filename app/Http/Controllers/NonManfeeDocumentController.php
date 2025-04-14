@@ -764,7 +764,7 @@ class NonManfeeDocumentController extends Controller
         ]);
 
         // Simpan ke riwayat
-        \App\Models\NonManfeeDocHistory::create([
+        NonManfeeDocHistory::create([
             'document_id'     => $document->id,
             'performed_by'    => $user->id,
             'role'            => $userRole,
@@ -783,7 +783,7 @@ class NonManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        $lastNumber = \App\Models\NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
         if (!$lastNumber) {

@@ -786,7 +786,7 @@ class ManfeeDocumentController extends Controller
         ]);
 
         // Simpan ke riwayat
-        \App\Models\ManfeeDocHistories::create([
+        ManfeeDocHistories::create([
             'document_id'     => $document->id,
             'performed_by'    => $user->id,
             'role'            => $userRole,
