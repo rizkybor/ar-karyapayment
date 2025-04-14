@@ -127,7 +127,7 @@
                                                 href="{{ route('management-fee.detail_payments.show', ['id' => $nonManfeeDocument->id, 'detail_payment_id' => $docdetails->id]) }}">
                                                 View
                                             </x-button-action> --}}
-                                            <x-modal.management-fee.detail-biaya.modal-edit-data-detailbiaya
+                                            <x-modal.non-management-fee.detail-biaya.modal-edit-data-detailbiaya
                                                 :nonManfeeDocument="$nonManfeeDocument" :jenis_biaya="$jenis_biaya" :account_detailbiaya="$account_detailbiaya"
                                                 :detailPaymentId="$docdetails" />
 
@@ -139,7 +139,7 @@
                                             </x-button-action>
 
                                             <form id="delete-attachment-{{ $docdetails->id }}" method="POST"
-                                                action="{{ route('management-non-fee.detail_payments.destroy', ['id' => $docdetails->document_id, 'detail_payment_id' => $docdetails->id]) }}"
+                                                action="{{ route('non-management-fee.detail_payments.destroy', ['id' => $docdetails->document_id, 'detail_payment_id' => $docdetails->id]) }}"
                                                 class="hidden">
                                                 @csrf
                                                 @method('DELETE')

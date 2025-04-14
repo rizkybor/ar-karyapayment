@@ -106,7 +106,7 @@ class NonManfeeDocumentController extends Controller
                 'document_id' => $document->id,
                 'account' => null,
                 'account_name' => '',
-                'dpp' => '0', 
+                'dpp' => '0',
                 'rate_ppn' => 0.00,
                 'nilai_ppn' => 0.00,
                 'total' => 0.00,
@@ -148,6 +148,18 @@ class NonManfeeDocumentController extends Controller
         // jika mau digunakan
         // $dataContract =  $contracts = Contracts::where('id', $nonManfeeDocument->id)
         // ->get();
+
+        // Kecuali Biaya Non Personil
+        $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
+            ->groupBy('expense_type')
+            ->map(function ($items) {
+                return $items->sum('nilai_biaya');
+            });
+
+
+        $subtotalBiayaNonPersonil = $nonManfeeDocument->detailPayments
+            ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
+            ->sum('nilai_biaya');
 
         $latestApprover = DocumentApproval::where('document_id', $id)
             ->with('approver')
@@ -191,7 +203,9 @@ class NonManfeeDocumentController extends Controller
             'optionAccount',
             'jenis_biaya',
             'account_detailbiaya',
-            'account_akumulasi'
+            'account_akumulasi',
+            'subtotals',
+            'subtotalBiayaNonPersonil',
         ));
     }
 
@@ -207,6 +221,16 @@ class NonManfeeDocumentController extends Controller
             'descriptions',
             'taxFiles'
         ])->findOrFail($id);
+
+        $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
+            ->groupBy('expense_type')
+            ->map(function ($items) {
+                return $items->sum('nilai_biaya');
+            });
+
+        $subtotalBiayaNonPersonil = $nonManfeeDocument->detailPayments
+            ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
+            ->sum('nilai_biaya');
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
@@ -239,7 +263,9 @@ class NonManfeeDocumentController extends Controller
             'optionAccount',
             'jenis_biaya',
             'account_akumulasi',
-            'account_detailbiaya'
+            'account_detailbiaya',
+            'subtotals',
+            'subtotalBiayaNonPersonil'
         ));
     }
 
