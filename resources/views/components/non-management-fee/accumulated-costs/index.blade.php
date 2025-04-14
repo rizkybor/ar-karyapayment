@@ -68,6 +68,12 @@
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
                         value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '')) }}"
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
+
+                        <x-input id="comment_ppn" class="block mt-1 w-full"
+                        placeholder="Keterangan PPN"
+                        name="comment_ppn"
+                        value="{{ old('comment_ppn')}}"
+                         />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
                         {{ number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '') }}%

@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
             ContractInvoiceSeeder::class,
             MasterBillTypeSeeder::class,
             NonManfeeDocumentSeeder::class,
-            NonManfeeDocAccumulatedCostSeeder::class,
             ManfeeDocumentSeeder::class,
         ]);
     }

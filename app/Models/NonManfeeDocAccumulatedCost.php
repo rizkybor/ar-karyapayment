@@ -18,6 +18,7 @@ class NonManfeeDocAccumulatedCost extends Model
         'dpp',
         'rate_ppn',
         'nilai_ppn',
+        'comment_ppn',
         'total',
     ];
 
