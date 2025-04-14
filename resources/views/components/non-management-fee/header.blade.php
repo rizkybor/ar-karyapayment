@@ -62,7 +62,7 @@
 
                 {{-- Bank Account --}}
                 @if ($isEditable)
-                    <div class="mt-4">
+                    <div>
                         <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
                             class="text-gray-800 dark:text-gray-100" />
 
@@ -72,7 +72,7 @@
                             <option value="">-- Pilih Akun Bank --</option>
                             @foreach ($bankAccounts as $bank)
                                 <option value="{{ $bank->id }}"
-                                    {{ old('bank_account_id', $selectedBankId ?? '') == $bank->id ? 'selected' : '' }}>
+                                    {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
                                     {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->account_name }})
                                 </option>
                             @endforeach
