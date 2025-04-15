@@ -21,10 +21,12 @@
 
 <body class="p-8">
 
-    <!-- Watermark Layer -->
-    <div style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-        DRAFT
-    </div>
+    @if ($document->status != 6)
+        <!-- Watermark Layer -->
+        <div style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+            DRAFT
+        </div>
+    @endif
 
     <div class="bg-white p-8 border-box"">
         <!-- Header -->
