@@ -122,7 +122,6 @@
         $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
         $rowspan = 8 + $detailPayments->count();
     @endphp
-    <p>{{ $totalBiaya }}</p>
     <table class="border-table" width="100%">
         <thead>
             <tr>
