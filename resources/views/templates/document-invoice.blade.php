@@ -213,11 +213,11 @@
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                    @php
+                    {{-- @php
                         $logoPath = public_path('images/dirut-keuangan.png');
                         $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
                     @endphp
-                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150">
+                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150"> --}}
                 </td>
             </tr>
             <tr>
