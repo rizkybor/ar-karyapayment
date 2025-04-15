@@ -21,9 +21,16 @@
 
 <body class="p-8">
 
-    @if ($document->status != 6)
+    @php
+        $statusIsSix = (int) $document->status === 6;
+        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+        $showDraft = $statusIsSix && $isPembendaharaan;
+    @endphp
+
+    @if (!$showDraft)
         <!-- Watermark Layer -->
-        <div style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+        <div
+            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
             DRAFT
         </div>
     @endif
