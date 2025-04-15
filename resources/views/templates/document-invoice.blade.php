@@ -120,7 +120,7 @@
     {{-- Table Detail --}}
     @php
         $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
-        $rowspan = 8 + $detailPayments->count();
+        $rowspan = 7 + $detailPayments->count();
     @endphp
     <table class="border-table" width="100%">
         <thead>
@@ -132,7 +132,7 @@
         </thead>
         <tbody>
             <tr>
-                <td rowspan="8" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
+                <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
                 <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
                     {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
@@ -143,14 +143,30 @@
                 <!-- Jumlah, rata kanan agar lebih rapi -->
             </tr>
 
-            <tr>
+            {{-- <tr>
                 <td class="no-border">{{ $accumulatedCosts[0]->account_name ?? '-' }}</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-            </tr>
+            </tr> --}}
+
+            @foreach ($detailPayments as $payment)
+                <tr>
+                    <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                    <td class="no-border">Rp.</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">
+                        {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                    </td>
+                    <td class="no-border">&nbsp;</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
+                </tr>
+                @php
+                    $totalBiaya += $payment->nilai_biaya ?? 0;
+                @endphp
+            @endforeach
+
             <tr>
                 <td class="no-border">Jumlah</td>
                 <td class="no-border"><strong>Rp.</strong></td>
