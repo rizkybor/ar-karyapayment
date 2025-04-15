@@ -25,6 +25,12 @@
     ];
 @endphp
 
+@php
+    $statusIsSix = (int) $document_status === 6;
+    $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+    $showDraft = $statusIsSix && $isPembendaharaan;
+@endphp
+
 <div x-data="{ modalOpen: false }">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-5 gap-4">
 
@@ -100,7 +106,7 @@
                 @if ($document_status > 0)
                     <div x-data="{ open: false }" class="relative">
                         <x-button-action @click="open = !open" color="blue" icon="eye">
-                            Lihat Dokumen
+                            {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
                         </x-button-action>
 
                         <div x-show="open" @click.away="open = false"
