@@ -138,7 +138,6 @@ class PDFController extends Controller
 
             return $directLink;
         }
-
         return null; // Jika URL tidak ditemukan
     }
 
@@ -163,12 +162,13 @@ class PDFController extends Controller
 
     public function nonManfeeInvoice($document_id)
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
         $data = [
             'document' => $document,
             'contract' => $document->contract,
             'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
         ];
 
         // format filename tersusun : invoice_number/contract_number/nama_kontraktor 
@@ -182,7 +182,7 @@ class PDFController extends Controller
 
     public function nonManfeeKwitansi($document_id)
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
@@ -198,7 +198,8 @@ class PDFController extends Controller
             'document' => $document,
             'contract' => $document->contract,
             'accumulatedCosts' => $document->accumulatedCosts,
-            'terbilang' => $terbilang
+            'terbilang' => $terbilang,
+            'detailPayments' => $document->detailPayments
         ];
 
         // Format filename: receipt_number_contract_number_nama_kontraktor.pdf
@@ -296,5 +297,141 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('templates.management-fee.document-kwitansi', $data);
 
         return $pdf->stream($filename);
+    }
+
+
+    /*
+|--------------------------------------------------------------------------
+| Convert to Base 64 for PrivyId
+|--------------------------------------------------------------------------
+*/
+
+    //     public function nonManfeeLetterBase64($document_id)
+    // {
+    //     $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+    //     $data = [
+    //         'document' => $document,
+    //         'contract' => $document->contract,
+    //         'accumulatedCosts' => $document->accumulatedCosts,
+    //     ];
+
+    //     $pdf = Pdf::loadView('templates.document-letter', $data);
+
+    //     // Ambil output binary dari PDF
+    //     $pdfContent = $pdf->output();
+
+    //     // Encode ke base64
+    //     $base64Pdf = base64_encode($pdfContent);
+
+    //     // Format sesuai requirement API
+    //     $base64DataUrl = 'data:application/pdf;base64,' . $base64Pdf;
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'filename' => $document->letter_number . '.pdf',
+    //         'document_base64' => $base64DataUrl, // ⬅️ inilah yang bisa kamu kirim ke API body
+    //     ]);
+    // }
+
+    public function generateBase64Pdf(Request $request, $document_id)
+    {
+        $type = $request->query('type'); // contoh: 'non-manfee', 'manfee', 'invoice', 'kwitansi'
+        $view = '';
+        $document = null;
+        $data = [];
+
+        switch ($type) {
+            case 'non-manfee-letter':
+                $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+                $view = 'templates.document-letter';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts
+                ];
+                $filename = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            case 'non-manfee-invoice':
+                $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+                $view = 'templates.document-invoice';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts,
+                    'detailPayments' => $document->detailPayments
+                ];
+                $filename = $this->sanitizeFileName($document->invoice_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            case 'non-manfee-kwitansi':
+                $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+                $firstCost = $document->accumulatedCosts->first();
+                if (!$firstCost) return response()->json(['success' => false, 'message' => 'Akumulasi biaya kosong.']);
+                $view = 'templates.document-kwitansi';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts,
+                    'detailPayments' => $document->detailPayments,
+                    'terbilang' => $this->nilaiToString($firstCost->total)
+                ];
+                $filename = $this->sanitizeFileName($document->receipt_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            case 'manfee-letter':
+                $document = ManfeeDocument::with(['contract', 'accumulatedCosts'])->findOrFail($document_id);
+                $view = 'templates.management-fee.document-letter';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts
+                ];
+                $filename = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            case 'manfee-invoice':
+                $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts'])->findOrFail($document_id);
+                $view = 'templates.management-fee.document-invoice';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts,
+                    'detailPayments' => $document->detailPayments
+                ];
+                $filename = $this->sanitizeFileName($document->invoice_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            case 'manfee-kwitansi':
+                $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts'])->findOrFail($document_id);
+                $firstCost = $document->accumulatedCosts->first();
+                if (!$firstCost) return response()->json(['success' => false, 'message' => 'Akumulasi biaya kosong.']);
+                $view = 'templates.management-fee.document-kwitansi';
+                $data = [
+                    'document' => $document,
+                    'contract' => $document->contract,
+                    'accumulatedCosts' => $document->accumulatedCosts,
+                    'detailPayments' => $document->detailPayments,
+                    'terbilang' => $this->nilaiToString($firstCost->total)
+                ];
+                $filename = $this->sanitizeFileName($document->receipt_number . '_' . $document->contract->contract_number . '_' . $document->contract->employee_name);
+                break;
+
+            default:
+                return response()->json(['success' => false, 'message' => 'Jenis dokumen tidak valid.']);
+        }
+
+        // Generate PDF
+        $pdf = Pdf::loadView($view, $data);
+        $pdfContent = $pdf->output();
+        $base64Pdf = base64_encode($pdfContent);
+        $base64DataUrl = 'data:application/pdf;base64,' . $base64Pdf;
+
+        return response()->json([
+            'success' => true,
+            'filename' => $filename . '.pdf',
+            'document_base64' => $base64DataUrl,
+        ]);
     }
 }

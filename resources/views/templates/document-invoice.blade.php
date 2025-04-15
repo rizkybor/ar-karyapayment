@@ -66,6 +66,14 @@
 
 <body class="bg-white p-8">
 
+    @if ($document->status != 6)
+        <!-- Watermark Layer -->
+        <div
+            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+            DRAFT
+        </div>
+    @endif
+
     <table width="100%" border="0" style="border-collapse: collapse;">
         <tr>
             <td style="border: none;">
@@ -110,7 +118,11 @@
 
 
     {{-- Table Detail --}}
-
+    @php
+        $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
+        $rowspan = 8 + $detailPayments->count();
+    @endphp
+    <p>{{ $totalBiaya }}</p>
     <table class="border-table" width="100%">
         <thead>
             <tr>
@@ -150,7 +162,8 @@
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td class="no-border">{{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
+                <td class="no-border">
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
