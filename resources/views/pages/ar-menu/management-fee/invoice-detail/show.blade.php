@@ -2,10 +2,22 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <x-label class="text-sm mt-1">Dibuat oleh : {{ $manfeeDoc->creator->name ?? '-' }}
+                {{-- <x-label class="text-sm mt-1">Dibuat oleh : {{ $manfeeDoc->creator->name ?? '-' }}
                     ({{ $manfeeDoc->creator->department ?? '-' }}) </x-label>
                 <h1 class="text-2xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice :
-                    {{ $manfeeDoc->invoice_number }}</h1>
+                    {{ $manfeeDoc->invoice_number }}</h1> --}}
+
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nama Kontrak :
+                    {{ $manfeeDoc->contract->title }} (
+                    {{ $manfeeDoc->contract->employee_name }} ) </h1>
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
+                    : {{ $manfeeDoc['invoice_number'] }}
+                </h1>
+                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal :
+                    {{ $manfeeDoc->letter_subject }}
+                </h1>
+                <x-label class="text-sm mt-1">Dibuat oleh : {{ $manfeeDoc->creator->name ?? '-' }}
+                    ({{ $manfeeDoc->creator->department ?? '-' }}) </x-label>
             </div>
             {{-- Tombol Kembali --}}
             <div class="form-group">
