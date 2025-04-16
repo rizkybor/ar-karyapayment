@@ -22,6 +22,7 @@ use App\Models\ManfeeDocHistories;
 // use App\Models\MasterBillType;
 
 use App\Exports\ManfeeDocumentExport;
+use App\Models\BankAccount;
 use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
 
@@ -160,6 +161,8 @@ class ManfeeDocumentController extends Controller
         //     return $items->sum('nilai_biaya');
         // });
 
+        $allBankAccounts = BankAccount::all();
+
         // Kecuali Biaya Non Personil
         $subtotals = $manfeeDoc->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
             ->groupBy('expense_type')
@@ -206,7 +209,7 @@ class ManfeeDocumentController extends Controller
         }
 
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi', 'allBankAccounts'));
     }
 
 
@@ -226,6 +229,7 @@ class ManfeeDocumentController extends Controller
         // $subtotals = $manfeeDoc->detailPayments->groupBy('expense_type')->map(function ($items) {
         //     return $items->sum('nilai_biaya');
         // });
+        $allBankAccounts = BankAccount::all();
 
         $subtotals = $manfeeDoc->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
             ->groupBy('expense_type')
@@ -261,7 +265,7 @@ class ManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
-        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_akumulasi', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee', 'account_detailbiaya'));
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_akumulasi', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee', 'account_detailbiaya', 'allBankAccounts'));
     }
 
     /**
@@ -798,5 +802,19 @@ class ManfeeDocumentController extends Controller
 
         return redirect()->route('management-fee.show', $document->id)
             ->with('success', 'Dokumen berhasil dibatalkan.');
+    }
+
+    public function updateBankAccount(Request $request, $id)
+    {
+        $document = ManfeeDocument::findOrFail($id);
+        $request->validate([
+            'bank_account_id' => 'nullable|exists:bank_accounts,id',
+        ]);
+
+        $document->update([
+            'bank_account_id' => $request->bank_account_id
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

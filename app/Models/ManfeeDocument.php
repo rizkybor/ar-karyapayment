@@ -15,6 +15,7 @@ class ManfeeDocument extends Model
 
     protected $fillable = [
         'contract_id',
+        'bank_account_id',
         'invoice_number',
         'receipt_number',
         'letter_number',
@@ -59,6 +60,11 @@ class ManfeeDocument extends Model
     public function contract()
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
+    }
+
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class);
     }
 
     // Akses billType melalui contract

@@ -138,6 +138,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'destroy' => 'destroy',
         ]);
 
+        // Bank
+        Route::post('/{id}/update-bank', [ManfeeDocumentController::class, 'updateBankAccount'])
+            ->name('updateBank');
+
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
 

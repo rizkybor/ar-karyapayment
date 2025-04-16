@@ -24,4 +24,9 @@ class BankAccount extends Model
     {
         return $this->hasMany(NonManfeeDocument::class, 'bank_account_id');
     }
+
+    public function documentsfee()
+    {
+        return $this->hasMany(ManfeeDocument::class, 'bank_account_id');
+    }
 }
