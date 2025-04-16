@@ -103,6 +103,28 @@
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
 
+                @if ($document_status > 0)
+                    <div x-data="{ open: false }" class="relative">
+                        <x-button-action @click="open = !open" color="blue" icon="eye">
+                            {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
+                        </x-button-action>
+
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                            <ul class="py-2 text-gray-700">
+                                @foreach ($printOptions as $option)
+                                    <li>
+                                        <a href="{{ $option['route'] }}" target="_blank"
+                                            class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                            {{ $option['label'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
                 @if ($document_status == 103)
                     <x-button-action color="red" icon="eye"
                         onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
@@ -186,12 +208,14 @@
                         </x-button-action>
                     @endif
 
-                    @if ($document_status == 0)
+                    @if (in_array($document_status, [0, 102]))
                         <x-button-action color="teal" icon="pencil"
                             onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
                             Edit Invoice
                         </x-button-action>
+                    @endif
 
+                    @if ($document_status == 0)
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
