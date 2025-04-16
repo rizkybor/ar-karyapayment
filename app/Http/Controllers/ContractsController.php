@@ -69,7 +69,7 @@ class ContractsController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'type' => 'required',
-            'path' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'path' => 'required|file|mimes:pdf|max:10240',
             'bill_type' => 'nullable|array',
             'address' => 'required',
             'work_unit' => 'required',
@@ -84,16 +84,21 @@ class ContractsController extends Controller
 
         $input['status'] = isset($request->status) ? (int) $request->status : null;
 
-        // Upload File
-        if ($request->hasFile('path')) {
-            $destinationPath = 'files/path/';
-            $path = $request->file('path');
-            $pathName = date('YmdHis') . '_' . uniqid() . '.' . $path->getClientOriginalExtension();
-            $path->move(public_path($destinationPath), $pathName);
-            $input['path'] = $pathName;
-        } else {
-            return redirect()->back()->with('error', 'Gambar wajib diunggah!');
+        // **📂 Ambil File dari Request**
+        $file = $request->file('path');
+        $fileName = $file->getClientOriginalName();
+        $dropboxFolderName = '/contracts/';
+
+        // 🚀 **Panggil fungsi uploadAttachment dari DropboxController**
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        // ❌ Cek apakah upload ke Dropbox gagal
+        if (!$dropboxPath) {
+            return redirect()->back()->with('error', 'Gagal mengunggah file.');
         }
+
+        $input['path'] = $dropboxPath;
 
         // Simpan data kontrak ke database
         $contract = Contracts::create($input);
@@ -119,6 +124,12 @@ class ContractsController extends Controller
         $mstBillType = MasterBillType::where('contract_id', $contract->id)->get();
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
+
+        // Gunakan DropboxController untuk mendapatkan URL file
+        $dropboxController = new DropboxController();
+        $dropboxFolderName = '/contracts/';
+        $contract->path = $dropboxController->getAttachmentUrl($contract->path, $dropboxFolderName);
+
 
         $contract->load(['manfeeDocuments', 'nonManfeeDocuments']);
         $manfeeDocuments = $contract->manfeeDocuments;
@@ -166,38 +177,42 @@ class ContractsController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'type' => 'nullable',
-            'path' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'bill_type' => 'nullable|array', // Ubah menjadi nullable
+            'path' => 'nullable|file|mimes:pdf|max:10240', // Sama seperti store
+            'bill_type' => 'nullable|array',
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
         ]);
 
-        $input = $request->except('path'); // Ambil semua kecuali file gambar
+        $input = $request->except('path');
 
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
         $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
         $input['status'] = isset($request->status) ? (int) $request->status : null;
 
+        // Jika ada file baru di-upload
         if ($request->hasFile('path')) {
-            // Hapus gambar lama jika ada
-            if ($contract->path && file_exists(public_path('files/path/' . $contract->path))) {
-                unlink(public_path('files/path/' . $contract->path));
+            // Tidak perlu unlink karena file tersimpan di Dropbox
+
+            $file = $request->file('path');
+            $fileName = $file->getClientOriginalName();
+            $dropboxFolderName = '/contracts/';
+
+            $dropboxController = new DropboxController();
+            $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+            if (!$dropboxPath) {
+                return redirect()->back()->with('error', 'Gagal mengunggah file.');
             }
 
-            // Simpan gambar baru
-            $destinationPath = 'files/path/';
-            $path = $request->file('path');
-            $pathName = date('YmdHis') . '_' . uniqid() . '.' . $path->getClientOriginalExtension();
-            $path->move(public_path($destinationPath), $pathName);
-            $input['path'] = $pathName;
+            $input['path'] = $dropboxPath;
         }
 
         $contract->update($input);
 
+        // Hapus & update ulang bill_type jika kontrak bertipe management_fee
         MasterBillType::where('contract_id', $contract->id)->delete();
 
-        // Simpan data bill_type hanya jika tipe kontrak adalah management_fee
         if ($request->type === 'management_fee' && !empty($request->bill_type)) {
             foreach ($request->bill_type as $billType) {
                 MasterBillType::create([
@@ -210,14 +225,17 @@ class ContractsController extends Controller
         return redirect()->route('contracts.index')->with('success', 'Data berhasil diperbaharui!');
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Contracts $contract)
     {
-        if ($contract->path && file_exists(public_path('files/path/' . $contract->path))) {
-            unlink(public_path('files/path/' . $contract->path));
-        }
+        $dropboxPath = $contract->path;
+
+        // 🔥 **Panggil fungsi `delete()` dari `DropboxController` untuk hapus di Dropbox**
+        $dropboxController = app(DropboxController::class);
+        $dropboxController->deleteAttachment($dropboxPath);
 
         $contract->delete();
 
