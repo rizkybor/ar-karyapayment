@@ -49,7 +49,7 @@ class CustomResetPassword extends Notification
             ->view('emails.reset-password', [
                 'token' => $this->token,
                 'notifiable' => $notifiable,
-                'logo_url' => 'https://lh3.googleusercontent.com/proxy/-AksYFOPP1Xz85_TSkklmUYBIqSy97KfcDVIkM3ZLFf2rto5JlfbwvWVnLdL18hEoAkoU2Y5ZnFE5SsNZOwBQuMlVmmNE0o32r90WrYdGNx-bThwFTMKxi-4g60Po-UMxDhzTTSk8MlUaHFp_8pi'
+                'logo_url' => config('app.url') . '/images/logo-kpu-ls.png',
             ]);
     }
 }
