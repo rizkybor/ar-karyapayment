@@ -65,7 +65,7 @@
                 </div>
 
                 {{-- Bank Account --}}
-                @if ($isEditable)
+                @if ($isEditable && auth()->user()->hasRole('maker'))
                     <div>
                         <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
                             class="text-gray-800 dark:text-gray-100" />
@@ -87,6 +87,7 @@
                         @enderror
                     </div>
                 @endif
+
             </div>
         </div>
 
