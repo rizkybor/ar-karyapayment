@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Illuminate\View\View $this
+ */
+?>
+
 <x-form-section submit="updateProfileInformation">
     <x-slot name="title">
         {{ __('Profile Information') }}
