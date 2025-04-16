@@ -66,6 +66,20 @@
 
 <body class="bg-white p-8">
 
+    @php
+        $statusIsSix = (int) $document->status === 6;
+        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+        $showDraft = $statusIsSix && $isPembendaharaan;
+    @endphp
+
+    @if (!$showDraft)
+        <!-- Watermark Layer -->
+        <div
+            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+            DRAFT
+        </div>
+    @endif
+
     <table width="100%" border="0" style="border-collapse: collapse;">
         <tr>
             <td style="border: none;">
@@ -110,7 +124,10 @@
 
 
     {{-- Table Detail --}}
-
+    @php
+        $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
+        $rowspan = 7 + $detailPayments->count();
+    @endphp
     <table class="border-table" width="100%">
         <thead>
             <tr>
@@ -121,7 +138,7 @@
         </thead>
         <tbody>
             <tr>
-                <td rowspan="8" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
+                <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
                 <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
                     {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
@@ -132,14 +149,30 @@
                 <!-- Jumlah, rata kanan agar lebih rapi -->
             </tr>
 
-            <tr>
+            {{-- <tr>
                 <td class="no-border">{{ $accumulatedCosts[0]->account_name ?? '-' }}</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-            </tr>
+            </tr> --}}
+
+            @foreach ($detailPayments as $payment)
+                <tr>
+                    <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                    <td class="no-border">Rp.</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">
+                        {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                    </td>
+                    <td class="no-border">&nbsp;</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
+                </tr>
+                @php
+                    $totalBiaya += $payment->nilai_biaya ?? 0;
+                @endphp
+            @endforeach
+
             <tr>
                 <td class="no-border">Jumlah</td>
                 <td class="no-border"><strong>Rp.</strong></td>
@@ -150,7 +183,8 @@
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
             <tr>
-                <td class="no-border">PPN</td>
+                <td class="no-border">
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
                 <td class="no-border">Rp.</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
@@ -198,19 +232,19 @@
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
+                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                    @php
+                    {{-- @php
                         $logoPath = public_path('images/dirut-keuangan.png');
                         $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
                     @endphp
-                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150">
+                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150"> --}}
                 </td>
             </tr>
             <tr>
                 <td class="no-border">No. Rekening</td>
                 <td class="no-border">:</td>
-                <td class="no-border">115.00.9999666.4</td>
+                <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
@@ -221,7 +255,7 @@
             <tr>
                 <td class="no-border">Atas Nama</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Karya Prima Usahatama</td>
+                <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
                     <strong>Sutaryo</strong>

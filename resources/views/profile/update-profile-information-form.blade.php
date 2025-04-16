@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Illuminate\View\View $this
+ */
+?>
+
 <x-form-section submit="updateProfileInformation">
     <x-slot name="title">
         {{ __('Profile Information') }}
@@ -89,7 +95,7 @@
         <!-- NIP -->
         <div class="col-span-6 sm:col-span-4">
             <x-label for="nip" value="{{ __('NIP') }}" />
-            <x-input id="nip" type="number" class="mt-1 block w-full" wire:model.live="state.nip"
+            <x-input id="nip" type="text" class="mt-1 block w-full" wire:model.live="state.nip"
                 autocomplete="nip" />
             <x-input-error for="nip" class="mt-2" />
         </div>

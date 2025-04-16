@@ -25,7 +25,7 @@
                                 <x-input id="contract_number" type="text" name="contract_number"
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan nomer kontrak"
                                     wire:model.live="state.contract_number" required autocomplete="contract_number"
-                                    maxlength="10" />
+                                    maxlength="255" />
                                 <x-input-error for="contract_number" class="mt-2" />
                             </div>
 

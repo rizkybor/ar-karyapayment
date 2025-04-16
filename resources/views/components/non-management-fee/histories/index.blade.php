@@ -1,11 +1,6 @@
-<!-- Tombol untuk Membuka Modal -->
-{{-- <x-button-action color="blue" icon="history" onclick="openHistoryModal({{ $nonManfeeDocument['id'] }})">
-    Lihat History
-</x-button-action> --}}
-
 <!-- Modal History -->
 <div id="historyModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden transition-opacity duration-300 ease-out px-4">
+    class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden transition-opacity duration-300 ease-out px-4">
 
     <div class="relative bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl w-full sm:max-w-lg max-h-[70vh] overflow-hidden
                 transform transition-all duration-300 scale-95 opacity-0 mx-4 sm:mx-0"
@@ -47,6 +42,7 @@
     }
 
     modal.classList.remove("hidden");
+    modal.classList.add("flex");
     setTimeout(() => {
         modal.classList.add("opacity-100");
         modalContent.classList.remove("scale-95", "opacity-0");
@@ -156,6 +152,7 @@ function closeHistoryModal() {
         modalContent.classList.add("scale-95", "opacity-0");
 
         setTimeout(() => {
+            modal.classList.remove("flex");
             modal.classList.add("hidden");
         }, 200);
     }

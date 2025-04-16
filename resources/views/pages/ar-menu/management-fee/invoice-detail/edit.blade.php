@@ -17,7 +17,8 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :document_status="$manfeeDoc['status']" isEditable="true" />
+        <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :bankAccounts="$allBankAccounts" :document_status="$manfeeDoc['status']"
+            isEditable="true" />
 
 
         <div class="grid grid-cols-1 gap-6 mt-6">

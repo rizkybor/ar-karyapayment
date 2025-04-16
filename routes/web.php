@@ -20,6 +20,7 @@ use App\Http\Controllers\NonManfeeHistoryController;
 use App\Http\Controllers\NonManfeeDocumentController;
 use App\Http\Controllers\NonManfeeAttachmentController;
 use App\Http\Controllers\NonManfeeDescriptionController;
+use App\Http\Controllers\NonManfeeDetailPaymentsController;
 use App\Http\Controllers\NonManfeeAccumulatedCostController;
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 
@@ -137,6 +138,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             'destroy' => 'destroy',
         ]);
 
+        // Bank
+        Route::post('/{id}/update-bank', [ManfeeDocumentController::class, 'updateBankAccount'])
+            ->name('updateBank');
+
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
 
@@ -239,8 +244,22 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // non-management-fee.edit
         Route::get('/{id}/edit', [NonManfeeDocumentController::class, 'edit'])->name('edit');
 
+        Route::post('/{id}/update-bank', [NonManfeeDocumentController::class, 'updateBankAccount'])
+            ->name('updateBank');
+
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
+
+        Route::prefix('{id}/edit/detail_payments')->name('detail_payments.')->group(function () {
+            // non-management-fee.detail_payments.show
+            Route::get('/{detail_payment_id}', [NonManfeeDetailPaymentsController::class, 'show'])->name('show');
+            // non-management-fee.detail_payments.store
+            Route::post('/store', [NonManfeeDetailPaymentsController::class, 'store'])->name('store');
+            // non-management-fee.detail_payments.update
+            Route::put('/{detail_payment_id}/update', [NonManfeeDetailPaymentsController::class, 'update'])->name('update');
+            // non-management-fee.detail_payments.destroy
+            Route::delete('/{detail_payment_id}', [NonManfeeDetailPaymentsController::class, 'destroy'])->name('destroy');
+        });
 
         // Prefix untuk accumulated cost
         Route::prefix('{id}/edit/accumulated')->name('accumulated.')->group(function () {

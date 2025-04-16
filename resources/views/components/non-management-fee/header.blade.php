@@ -1,6 +1,7 @@
 @props([
     'transaction_status' => '',
     'document_status' => '',
+    'bankAccounts',
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
@@ -22,6 +23,12 @@
             'route' => route('non-management-fee.print-invoice', $document['id']),
         ],
     ];
+@endphp
+
+@php
+    $statusIsSix = (int) $document_status === 6;
+    $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+    $showDraft = $statusIsSix && $isPembendaharaan;
 @endphp
 
 <div x-data="{ modalOpen: false }">
@@ -49,7 +56,7 @@
 
             <br />
 
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 {{-- Jenis --}}
                 <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
@@ -58,6 +65,30 @@
                         Non Management Fee
                     </p>
                 </div>
+
+                {{-- Bank Account --}}
+                @if ($isEditable)
+                    <div>
+                        <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
+                            class="text-gray-800 dark:text-gray-100" />
+
+                        <select name="bank_account_id" id="bank_account_id"
+                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            onchange="updateBankAccount(this.value)">
+                            <option value="">-- Pilih Akun Bank --</option>
+                            @foreach ($bankAccounts as $bank)
+                                <option value="{{ $bank->id }}"
+                                    {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
+                                    {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->account_name }})
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('bank_account_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -72,6 +103,28 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+                @if ($document_status > 0)
+                    <div x-data="{ open: false }" class="relative">
+                        <x-button-action @click="open = !open" color="blue" icon="eye">
+                            {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
+                        </x-button-action>
+
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                            <ul class="py-2 text-gray-700">
+                                @foreach ($printOptions as $option)
+                                    <li>
+                                        <a href="{{ $option['route'] }}" target="_blank"
+                                            class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                            {{ $option['label'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+
                 @if ($document_status == 103)
                     <x-button-action color="red" icon="eye"
                         onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
@@ -82,7 +135,7 @@
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
                         <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
-                        <div x-data="{ open: false }" class="relative">
+                        {{-- <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
                                 Cetak Dokumen
                             </x-button-action>
@@ -100,7 +153,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
@@ -154,12 +207,14 @@
                         </x-button-action>
                     @endif
 
-                    @if ($document_status == 0)
+                    @if (in_array($document_status, [0, 102]))
                         <x-button-action color="teal" icon="pencil"
                             onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
                             Edit Invoice
                         </x-button-action>
+                    @endif
 
+                    @if ($document_status == 0)
                         <x-button-action color="green" icon="send"
                             data-action="{{ route('non-management-fee.processApproval', $document['id']) }}"
                             data-title="Process Document" data-button-text="Process"
@@ -203,5 +258,37 @@
 
     function closeModal() {
         document.querySelector('#modalOverlay').classList.add('hidden');
+    }
+
+    function updateBankAccount(bankId) {
+        const documentId = "{{ $document->id }}";
+        const token = "{{ csrf_token() }}";
+
+        fetch(`/non-management-fee/${documentId}/update-bank`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    bank_account_id: bankId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // ✅ Show success modal
+                    showAutoCloseAlert('globalAlertModal', 3000, 'Akun bank berhasil diperbarui.', 'success',
+                        'Berhasil!');
+                } else {
+                    // ❌ Show failure modal
+                    showAutoCloseAlert('globalAlertModal', 3000, 'Gagal memperbarui akun bank.', 'error', 'Gagal!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan saat menyimpan.', 'error',
+                    'Kesalahan!');
+            });
     }
 </script>

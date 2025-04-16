@@ -14,6 +14,7 @@ class NonManfeeDocument extends Model
 
     protected $fillable = [
         'contract_id',
+        'bank_account_id',
         'invoice_number',
         'receipt_number',
         'letter_number',
@@ -29,23 +30,23 @@ class NonManfeeDocument extends Model
         'expired_at',
     ];
 
-     // ✅ Event Model untuk Set Expired_at & Auto-Update is_active
-     protected static function boot()
-     {
-         parent::boot();
- 
-         // 1️⃣ Set Default Expired Date H+30 dengan Waktu 00:01:00 saat Dokumen Dibuat
-         static::creating(function ($document) {
-             $document->expired_at = Carbon::now()->addDays(30)->setTime(0, 1, 0);
-         });
- 
-         // 2️⃣ Cek Apakah Dokumen Sudah Expired Setiap Kali Diambil dari Database
-         static::retrieved(function ($document) {
-             if ($document->expired_at && $document->expired_at < Carbon::now() && $document->is_active) {
-                 $document->update(['is_active' => 0]);
-             }
-         });
-     }
+    // ✅ Event Model untuk Set Expired_at & Auto-Update is_active
+    protected static function boot()
+    {
+        parent::boot();
+
+        // 1️⃣ Set Default Expired Date H+30 dengan Waktu 00:01:00 saat Dokumen Dibuat
+        static::creating(function ($document) {
+            $document->expired_at = Carbon::now()->addDays(30)->setTime(0, 1, 0);
+        });
+
+        // 2️⃣ Cek Apakah Dokumen Sudah Expired Setiap Kali Diambil dari Database
+        static::retrieved(function ($document) {
+            if ($document->expired_at && $document->expired_at < Carbon::now() && $document->is_active) {
+                $document->update(['is_active' => 0]);
+            }
+        });
+    }
 
     // Relasi ke User (pembuat dokumen)
     public function creator()
@@ -58,6 +59,11 @@ class NonManfeeDocument extends Model
     {
         return $this->belongsTo(Contracts::class, 'contract_id', 'id');
     }
+
+    public function bankAccount()
+{
+    return $this->belongsTo(BankAccount::class);
+}
 
     public function approvals()
     {
@@ -85,6 +91,12 @@ class NonManfeeDocument extends Model
     public function descriptions()
     {
         return $this->hasMany(NonManfeeDocDescription::class, 'document_id');
+    }
+
+    // ✅ Relasi ke Non Manfee Doc Detail Payments
+    public function detailPayments()
+    {
+        return $this->hasMany(NonManfeeDocDetailPayments::class, 'document_id');
     }
 
     // ✅ Relasi ke Non Manfee Doc Histories

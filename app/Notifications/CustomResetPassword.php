@@ -45,7 +45,7 @@ class CustomResetPassword extends Notification
     {
 
         return (new MailMessage)
-            ->subject('Reset Password - Karya Invoice Application')
+            ->subject('Reset Password - Prime Billing Application')
             ->view('emails.reset-password', [
                 'token' => $this->token,
                 'notifiable' => $notifiable,

@@ -131,6 +131,9 @@
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
                         value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.')) }}"
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
+
+                    <x-input id="comment_ppn" class="block mt-1 w-full" placeholder="Keterangan PPN" name="comment_ppn"
+                        value="{{ old('comment_ppn', $firstAccumulatedCost->comment_ppn ?? '') }}" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
                         {{ number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.') }} %
@@ -183,7 +186,8 @@
             account: document.getElementById('account_id').value,
             total_expense_manfee: document.getElementById('total_expense_manfee').value,
             dpp: document.getElementById('dpp').value,
-            rate_ppn: document.getElementById('rate_ppn').value
+            rate_ppn: document.getElementById('rate_ppn').value,
+            comment_ppn: document.getElementById('comment_ppn').value,
         };
 
         // Fungsi untuk mengecek apakah ada perubahan nilai dari nilai awal
@@ -194,6 +198,7 @@
                 document.getElementById('total_expense_manfee').value !== initialValues
                 .total_expense_manfee ||
                 document.getElementById('dpp').value !== initialValues.dpp ||
+                document.getElementById('comment_ppn').value !== initialValues.comment_ppn ||
                 document.getElementById('rate_ppn').value !== initialValues.rate_ppn
             );
         }
@@ -276,6 +281,9 @@
         // Event listener untuk mengupdate status tombol save ketika account atau DPP berubah
         document.getElementById('account_id').addEventListener('change', updateSaveButtonState);
         document.getElementById('dpp').addEventListener('input', updateSaveButtonState);
+
+        // Comment PPN
+        document.getElementById('comment_ppn').addEventListener('change', updateSaveButtonState);
 
         document.getElementById('nilai_manfee').addEventListener('input', function() {
             let nilaiManfee = unformatRupiah(this.value);

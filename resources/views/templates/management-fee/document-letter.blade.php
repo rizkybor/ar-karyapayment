@@ -65,11 +65,24 @@
 
 <body class="bg-white p-8">
 
+    @php
+        $statusIsSix = (int) $document->status === 6;
+        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+        $showDraft = $statusIsSix && $isPembendaharaan;
+    @endphp
+
+    @if (!$showDraft)
+        <!-- Watermark Layer -->
+        <div
+            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+            DRAFT
+        </div>
+    @endif
+
     <!-- Header -->
     <div class="flex justify-start items-center pb-2" style="margin-bottom: 30px;">
         <img src="file://{{ public_path('images/logo-kpu-ls.png') }}" alt="Logo KPU" style="height: 50px; width: auto;">
     </div>
-
 
     <!-- Surat Detail -->
     <div class="text-smaller">
@@ -165,11 +178,11 @@
         <table border="0">
             <tr>
                 <td style="width: 10%; border: none;">Bank</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? 'PT. Bank Mandiri (Persero) Tbk' }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->bankAccount->bank_name ?? '-' }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none;">No. Rekening</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? '115.00.9999666.4' }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none; vertical-align: top;">Cabang</td>
@@ -207,11 +220,11 @@
         <div>
             <p>Direktur Keuangan dan Administrasi</p>
             <br />
-            @php
+            {{-- @php
                 $logoPath = public_path('images/dirut-keuangan.png');
                 $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
             @endphp
-            <img src="{{ $logoBase64 }}" alt="Logo KPU" width="120">
+            <img src="{{ $logoBase64 }}" alt="Logo KPU" width="120"> --}}
             <br />
             <p><strong>Sutaryo</strong></p>
         </div>

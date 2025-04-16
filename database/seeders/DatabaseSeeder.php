@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             MasterDataSeeder::class,
             ContractInvoiceSeeder::class,
+            BankAccountSeeder::class,
             MasterBillTypeSeeder::class,
             NonManfeeDocumentSeeder::class,
-            NonManfeeDocAccumulatedCostSeeder::class,
             ManfeeDocumentSeeder::class,
         ]);
     }

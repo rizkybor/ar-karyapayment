@@ -20,6 +20,21 @@
 </head>
 
 <body class="p-8">
+
+    @php
+        $statusIsSix = (int) $document->status === 6;
+        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
+        $showDraft = $statusIsSix && $isPembendaharaan;
+    @endphp
+
+    @if (!$showDraft)
+        <!-- Watermark Layer -->
+        <div
+            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
+            DRAFT
+        </div>
+    @endif
+
     <div class="bg-white p-8 border-box"">
         <!-- Header -->
         <div class="flex justify-between items-start border-b pb-2" style="margin-bottom: 20px;">
@@ -112,7 +127,9 @@
 
                     </tr>
                     <tr>
-                        <td class="no-border">PPN</td>
+                        <td class="no-border">
+                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}
+                        </td>
                         <td class="no-border">Rp.</td>
                         <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
                         </td>
@@ -164,19 +181,19 @@
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
+                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                    @php
+                    {{-- @php
                         $logoPath = public_path('images/dirut-keuangan.png');
                         $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
                     @endphp
-                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150">
+                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150"> --}}
                 </td>
             </tr>
             <tr>
                 <td class="no-border">No. Rekening</td>
                 <td class="no-border">:</td>
-                <td class="no-border">115.00.9999666.4</td>
+                <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>

@@ -49,6 +49,7 @@ class ManfeeAccumulatedCostController extends Controller
             'dpp' => 'required|numeric',
             'rate_ppn' => 'required|numeric|min:0|max:999.99',
             'nilai_ppn' => 'required|numeric',
+            'comment_ppn' => 'nullable|string|max:255',
             'total' => 'required|numeric',
         ]);
 
@@ -76,6 +77,7 @@ class ManfeeAccumulatedCostController extends Controller
                 'dpp' => $dpp,
                 'rate_ppn' => $ratePpn,
                 'nilai_ppn' => $nilaiPpn,
+                'comment_ppn' => $request->comment_ppn ?? '',
                 'total' => $total,
             ]
         );

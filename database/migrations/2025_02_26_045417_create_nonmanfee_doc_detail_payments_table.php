@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('non_manfee_doc_accumulated_costs', function (Blueprint $table) {
+        Schema::create('non_manfee_doc_detail_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained('non_manfee_documents')->onDelete('cascade');
-            $table->string('account', 255)->nullable();
+            $table->string('expense_type', 255);
+            $table->string('account', 255);
             $table->string('account_name', 255);
-            $table->string('dpp', 255);
-            $table->decimal('rate_ppn', 5, 2)->default(0.00);;
-            $table->decimal('nilai_ppn', 15, 2)->default(0.00);;
-            $table->decimal('total', 15, 2)->default(0.00);;
+            $table->decimal('nilai_biaya', 15, 2);
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('non_manfee_doc_accumulated_costs');
+        Schema::dropIfExists('non_manfee_doc_detail_payments');
     }
 };

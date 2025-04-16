@@ -19,11 +19,17 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :document_status="$nonManfeeDocument['status']" isEditable="true" />
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :bankAccounts="$allBankAccounts"
+            :document_status="$nonManfeeDocument['status']" isEditable="true" />
 
         <div class="grid grid-cols-1 gap-6 mt-6">
-            {{-- AKUMULASI BIAYA --}}
             @if ($nonManfeeDocument->status == 0 || $nonManfeeDocument->status == 102)
+                {{-- DETAIL BIAYA --}}
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
+                    <x-non-management-fee.detail-biaya.edit :nonManfeeDocument="$nonManfeeDocument" :jenis_biaya="$jenis_biaya" :account_detailbiaya="$account_detailbiaya" />
+                </div>
+
+                {{-- AKUMULASI BIAYA --}}
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                     <x-non-management-fee.accumulated-costs.edit :nonManfeeDocument="$nonManfeeDocument" :optionAccount="$optionAccount"
                         :isEdit="false" />
