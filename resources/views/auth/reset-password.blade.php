@@ -1,6 +1,8 @@
 <x-authentication-layout>
     <x-validation-errors class="mb-4" />
 
+    <h1 class="text-3xl text-gray-800 dark:text-gray-100 font-bold mb-6">{{ __('Create New Password') }}</h1>
+
     <form method="POST" action="{{ route('password.update') }}">
         @csrf
 
