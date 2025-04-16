@@ -1,7 +1,7 @@
 @php
     $meta_title = 'Login Prime Billing - PT. Karya Prima Usahatama';
     $meta_description = 'Masuk ke aplikasi PrimeBilling untuk mengelola tagihan dan dokumen Anda.';
-    $meta_image = asset('images/logo-kpu-ls.png');
+    $meta_image = url('images/logo-kpu-ls.png');
     $meta_url = route('login');
 
     $hour = \Carbon\Carbon::now()->format('H');
