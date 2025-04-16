@@ -127,7 +127,9 @@
 
                     </tr>
                     <tr>
-                        <td class="no-border">PPN</td>
+                        <td class="no-border">
+                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}
+                        </td>
                         <td class="no-border">Rp.</td>
                         <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
                         </td>
