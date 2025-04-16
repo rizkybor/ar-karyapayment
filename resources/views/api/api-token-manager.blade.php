@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Illuminate\View\View $this
+ */
+?>
+
 <div>
     <!-- Generate API Token -->
     <x-form-section submit="createApiToken">

@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var \Illuminate\View\View $this
+ */
+?>
+
 <x-authentication-layout>
     <h1 class="text-3xl text-gray-800 dark:text-gray-100 font-bold mb-6">{{ __('Confirm access') }}</h1>
     <div x-data="{ recovery: false }">
