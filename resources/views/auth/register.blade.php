@@ -37,7 +37,7 @@
                             <div>
                                 <x-label for="nip">{{ __('NIP') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="nip" type="number" name="nip" :value="old('nip')" required
+                                <x-input id="nip" type="text" name="nip" :value="old('nip')" required
                                     oninput="limitNIPLength(this)" placeholder="Masukkan nomor NIP" />
                                 <x-input-error for="nip" class="mt-2" />
                             </div>
