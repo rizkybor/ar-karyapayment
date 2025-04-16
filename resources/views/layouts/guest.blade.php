@@ -8,6 +8,25 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Default Meta Title -->
+    <title>{{ $meta_title ?? config('app.name') }}</title>
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="{{ $meta_title ?? 'Prime Billing - PT. Karya Prima Usahatama' }}" />
+    <meta property="og:description"
+        content="{{ $meta_description ?? 'Kelola dokumen, tagihan, dan approval lebih mudah dengan Prime Billing.' }}" />
+    <meta property="og:image" content="{{ url('images/logo-kpu-ls.png') }}" />
+    <meta property="og:url" content="{{ $meta_url ?? url()->current() }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PrimeBilling" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $meta_title ?? 'Prime Billing - PT. Karya Prima Usahatama' }}">
+    <meta name="twitter:description"
+        content="{{ $meta_description ?? 'Kelola dokumen, tagihan, dan approval lebih mudah dengan PrimeBilling.' }}">
+    <meta name="twitter:image" content="{{ $meta_image ?? asset('images/logo-kpu-ls.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
