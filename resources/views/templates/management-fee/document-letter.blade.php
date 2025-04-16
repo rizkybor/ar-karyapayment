@@ -178,11 +178,11 @@
         <table border="0">
             <tr>
                 <td style="width: 10%; border: none;">Bank</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? 'PT. Bank Mandiri (Persero) Tbk' }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->bankAccount->bank_name ?? '-' }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none;">No. Rekening</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? '115.00.9999666.4' }}</td>
+                <td style="width: 90%; border: none;">: {{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td style="width: 10%; border: none; vertical-align: top;">Cabang</td>

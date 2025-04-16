@@ -242,7 +242,7 @@
             <tr>
                 <td class="no-border">Bank</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Bank Mandiri (Persero) Tbk.</td>
+                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
                     {{-- @php
                         $logoPath = public_path('images/dirut-keuangan.png');
@@ -254,7 +254,7 @@
             <tr>
                 <td class="no-border">No. Rekening</td>
                 <td class="no-border">:</td>
-                <td class="no-border">115.00.9999666.4</td>
+                <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
