@@ -13,7 +13,7 @@
     <meta property="og:title" content="{{ $meta_title ?? 'Prime Billing - PT. Karya Prima Usahatama' }}" />
     <meta property="og:description"
         content="{{ $meta_description ?? 'Kelola dokumen, tagihan, dan approval lebih mudah dengan Prime Billing.' }}" />
-    <meta property="og:image" content="{{ asset('images/logo-kpu-ls.png') }}" />
+    <meta property="og:image" content="{{ url('images/logo-kpu-ls.png') }}" />
     <meta property="og:url" content="{{ $meta_url ?? url()->current() }}" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="PrimeBilling" />
