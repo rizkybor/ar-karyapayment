@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('dpp', 255);
             $table->decimal('rate_ppn', 5, 2);
             $table->decimal('nilai_ppn', 15, 2);
+            $table->string('comment_ppn', 255);
             $table->decimal('total', 15, 2);
             $table->timestamps();
         });
