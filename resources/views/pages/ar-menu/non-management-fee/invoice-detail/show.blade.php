@@ -2,10 +2,17 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <x-label class="text-sm mt-1">Dibuat oleh : {{ $nonManfeeDocument->creator->name ?? '-' }} ({{ $nonManfeeDocument->creator->department ?? '-' }}) </x-label>
-                <h1 class="text-2xl md:text-2xl text-gray-800 dark:text-gray-100 font-bold">Detail Invoice
+              
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nama Kontrak : {{ $nonManfeeDocument->contract->title }} (
+                    {{ $nonManfeeDocument->contract->employee_name }} ) </h1>
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
                     : {{ $nonManfeeDocument['invoice_number'] }}
                 </h1>
+                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal : {{ $nonManfeeDocument->letter_subject }}
+                </h1>
+                <x-label class="text-sm mt-1">Dibuat oleh : {{ $nonManfeeDocument->creator->name ?? '-' }} ({{ $nonManfeeDocument->creator->department ?? '-' }}) </x-label>
+              
+
             </div>
             {{-- Tombol Kembali --}}
             <div class="form-group">

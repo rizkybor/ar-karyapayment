@@ -89,45 +89,12 @@ class NonManfeeDocumentController extends Controller
 
 
         try {
-            Log::info('🟢 Mulai menyimpan NonManfeeDocument', [
-                'input' => $input,
-                'user_id' => auth()->id()
-            ]);
-
             // Simpan dokumen baru
-            $document = NonManfeeDocument::create($input);
+            $nonManfeeDoc = NonManfeeDocument::create($input);
 
-            Log::info('✅ NonManfeeDocument berhasil disimpan', [
-                'document_id' => $document->id,
-                'letter_number' => $document->letter_number,
-            ]);
-
-            // Buat data di NonManfeeDocAccumulatedCost
-            NonManfeeDocAccumulatedCost::create([
-                'document_id' => $document->id,
-                'account' => null,
-                'account_name' => '',
-                'dpp' => '0',
-                'rate_ppn' => 0.00,
-                'nilai_ppn' => 0.00,
-                'total' => 0.00,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-
-            Log::info('✅ NonManfeeDocAccumulatedCost dibuat', [
-                'document_id' => $document->id,
-            ]);
-
-            return redirect()->route('non-management-fee.edit', ['id' => $document->id])
+            return redirect()->route('non-management-fee.edit', ['id' => $nonManfeeDoc->id])
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            Log::error('❌ Gagal menyimpan NonManfeeDocument', [
-                'error_message' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-                'input' => $input
-            ]);
-
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
