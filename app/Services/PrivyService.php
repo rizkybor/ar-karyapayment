@@ -84,7 +84,17 @@ class PrivyService
                 'headers' => $headers,
                 'body' => $payload
             ]);
-            return ['message' => 'Mock register success (local env)'];
+        
+            return [
+                'message' => 'Mock register success (local env)',
+                'data' => [
+                    'reference_number' => $payload['reference_number'] ?? 'PRVID000000001',
+                    'channel_id' => $payload['channel_id'] ?? '001',
+                    'info' => $payload['info'] ?? 'Pendaftaran user mock',
+                    'register_token' => Str::random(32),
+                    'status' => 'waiting_verification'
+                ]
+            ];
         }
 
         $response = Http::withHeaders($headers)->post($url, $payload);
