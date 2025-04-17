@@ -63,6 +63,12 @@ class PrivyService
         $hmac = hash_hmac('sha256', $signatureString, $apiSecret, true);
         $hmacBase64 = base64_encode($hmac);
 
+        $tokenData = $this->getToken();
+        if (!$tokenData || !isset($tokenData['data']['access_token'])) {
+            Log::error('Privy: Token tidak tersedia atau tidak valid.');
+            return ['error' => 'Token not available'];
+        }
+
         $headers = [
             'Content-Type' => 'application/json',
             'Request-ID' => $requestId,
