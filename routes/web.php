@@ -60,7 +60,10 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     });
 });
 
-Route::get('/token', [TestController::class, 'getDataToken'])->name('token');
+Route::prefix('privy')->group(function () {
+    Route::get('/token', [PrivyController::class, 'getToken']);
+    Route::post('/register', [PrivyController::class, 'register']);
+});
 
 // ROUTE RESET PASSWORD
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
