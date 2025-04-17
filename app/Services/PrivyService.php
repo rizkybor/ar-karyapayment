@@ -84,7 +84,7 @@ class PrivyService
                 'headers' => $headers,
                 'body' => $payload
             ]);
-        
+
             return [
                 'message' => 'Mock register success (local env)',
                 'data' => [
@@ -109,5 +109,160 @@ class PrivyService
         ]);
 
         return null;
+    }
+
+    public function resendRegisterUser(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $tokenData = $this->getToken();
+        if (!$tokenData || !isset($tokenData['data']['access_token'])) {
+            Log::error('Privy: Token tidak tersedia untuk resend register.');
+            return ['error' => 'Access token unavailable'];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $tokenData['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/register/resend';
+
+        // Mock response untuk local
+        if (config('app.env') === 'local') {
+            Log::info('MOCK RESEND REGISTER:', [
+                'headers' => $headers,
+                'body' => $payload
+            ]);
+
+            return [
+                'message' => 'Success retrieve data',
+                'data' => [
+                    'reference_number' => $payload['reference_number'],
+                    'register_token' => $payload['register_token'],
+                    'status' => 'waiting_verification',
+                    'channel_id' => $payload['channel_id']
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Privy Resend Register Error', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return null;
+    }
+
+    public function checkRegisterStatus(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $tokenData = $this->getToken();
+        if (!$tokenData || !isset($tokenData['data']['access_token'])) {
+            Log::error('Privy: Token tidak tersedia untuk cek status.');
+            return ['error' => ['code' => 401, 'errors' => ['401 Unauthorized']]];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $tokenData['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/register/status';
+
+        // Mock response untuk local
+        if (config('app.env') === 'local') {
+            Log::info('MOCK CHECK REGISTER STATUS:', [
+                'headers' => $headers,
+                'body' => $payload
+            ]);
+
+            // Contoh response status verified (ganti dengan "rejected" bila ingin test lainnya)
+            return [
+                'message' => 'Success retrieve data',
+                'data' => [
+                    'reference_number' => $payload['reference_number'],
+                    'channel_id' => $payload['channel_id'],
+                    'info' => $payload['info'] ?? 'randomstring',
+                    'register_token' => $payload['register_token'],
+                    'status' => 'verified',
+                    'privy_id' => 'DHIM0472',
+                    'email' => 'dhimas.email@gmail.co',
+                    'phone' => '62895630369573',
+                    'identity' => [
+                        'nama' => 'Dhimas Pramudya',
+                        'nik' => '3302185203930001',
+                        'tanggalLahir' => '1993-03-12',
+                    ]
+                ]
+            ];
+
+            // Contoh response jika ingin simulasikan rejected:
+            /*
+        return [
+            'message' => 'Success retrieve data',
+            'data' => [
+                'reference_number' => $payload['reference_number'],
+                'channel_id' => $payload['channel_id'],
+                'register_token' => $payload['register_token'],
+                'status' => 'rejected',
+                'reject_reason' => [
+                    'reason' => 'Nomor HP sudah terasosiasi dengan PrivyID lain',
+                    'code' => 'RC09',
+                ],
+                'resend' => false
+            ]
+        ];
+        */
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Privy Check Register Status Error', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return [
+            'error' => [
+                'code' => $response->status(),
+                'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+            ]
+        ];
     }
 }
