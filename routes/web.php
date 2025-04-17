@@ -25,6 +25,7 @@ use App\Http\Controllers\NonManfeeAccumulatedCostController;
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PrivyController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
@@ -93,6 +94,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/dropbox/delete/{path}', [DropboxController::class, 'deleteFile'])
         ->where('path', '.*')
         ->name('dropbox.delete');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PrivyId Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/test-privy-token', [PrivyController::class, 'getToken']);
 
     /*
     |--------------------------------------------------------------------------

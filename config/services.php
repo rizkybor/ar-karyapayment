@@ -30,5 +30,14 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'privy' => [
+        'env' => env('PRIVY_ENV', 'staging'),
+        'staging_url' => env('PRIVY_STAGING_URL'),
+        'production_url' => env('PRIVY_PRODUCTION_URL'),
+        'username' => env('PRIVY_USERNAME'),
+        'password' => env('PRIVY_PASSWORD'),
+        'api_key' => env('PRIVY_API_KEY'),
+        'secret_key' => env('PRIVY_SECRET_KEY'),
+    ],
 
 ];
