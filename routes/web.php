@@ -60,10 +60,10 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
     });
 });
 
-Route::prefix('privy')->group(function () {
-    Route::get('/token', [PrivyController::class, 'getToken']);
-    Route::post('/register', [PrivyController::class, 'register']);
-});
+// Route::prefix('privy')->group(function () {
+//     Route::get('/token', [PrivyController::class, 'getToken']);
+//     Route::post('/register', [PrivyController::class, 'register']);
+// });
 
 // ROUTE RESET PASSWORD
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
@@ -103,7 +103,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     | PrivyId Routes
     |--------------------------------------------------------------------------
     */
-    Route::get('/test-privy-token', [PrivyController::class, 'getToken']);
+    Route::prefix('privy')->group(function () {
+        Route::get('/token', [PrivyController::class, 'getToken']);
+        Route::post('/register', [PrivyController::class, 'register']);
+    });
 
     /*
     |--------------------------------------------------------------------------
