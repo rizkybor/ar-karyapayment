@@ -20,6 +20,9 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="PrimeBilling" />
 
+    <!-- FB Card -->
+    <meta property="fb:app_id" content="2713905105477555" />
+
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $meta_title ?? 'Prime Billing - PT. Karya Prima Usahatama' }}">
