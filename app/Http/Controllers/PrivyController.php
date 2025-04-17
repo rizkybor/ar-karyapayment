@@ -81,4 +81,152 @@ class PrivyController extends Controller
 
         return response()->json($result);
     }
+
+    public function uploadDocSignOnly(Request $request, PrivyService $privy)
+    {
+        $request->validate([
+            'reference_number' => 'required|string',
+            'channel_id' => 'required|string',
+            'file' => 'required|file|mimes:pdf|max:5120',
+            'doc_owner' => 'required|array',
+            'document' => 'required|array',
+            'recipients' => 'required|array|min:1',
+        ]);
+
+        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
+
+        // Ambil payload dari request
+        $payload = $request->except('file');
+
+        // Tambahkan document_file ke dalam payload
+        $payload['document']['document_file'] = $base64;
+
+        return response()->json($privy->uploadSignDocument($payload));
+    }
+
+    public function uploadSignEMeterai(Request $request, PrivyService $privy)
+    {
+        $request->validate([
+            'reference_number' => 'required|string',
+            'channel_id' => 'required|string',
+            'file' => 'required|file|mimes:pdf|max:5120',
+            'doc_owner' => 'required|array',
+            'document' => 'required|array',
+            'recipients' => 'required|array|min:1',
+        ]);
+
+        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
+
+        // Ambil payload dari request
+        $payload = $request->except('file');
+
+        // Tambahkan document_file ke dalam payload
+        $payload['document']['document_file'] = $base64;
+
+        return response()->json($privy->uploadSignDocument($payload));
+    }
+
+    public function deleteDocument(Request $request, PrivyService $privy)
+    {
+        $payload = $request->only(['reference_number', 'document_token']);
+
+        // Validasi dasar
+        if (empty($payload['reference_number']) || empty($payload['document_token'])) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['Parameter reference_number dan document_token wajib diisi.']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->deleteDocument($payload);
+
+        return response()->json($result);
+    }
+
+    public function checkDocumentStatus(Request $request, PrivyService $privy)
+    {
+        $payload = $request->only(['reference_number', 'channel_id', 'document_token', 'info']);
+
+        if (
+            empty($payload['reference_number']) ||
+            empty($payload['channel_id']) ||
+            empty($payload['document_token'])
+        ) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['reference_number, channel_id, dan document_token wajib diisi.']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->checkDocumentStatus($payload);
+
+        return response()->json($result);
+    }
+
+    public function checkDocumentHistory(Request $request, PrivyService $privy)
+    {
+        $payload = $request->only(['reference_number', 'channel_id', 'document_token', 'info']);
+
+        // Validasi input wajib
+        if (
+            empty($payload['reference_number']) ||
+            empty($payload['channel_id']) ||
+            empty($payload['document_token'])
+        ) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['reference_number, channel_id, dan document_token wajib diisi.']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->checkDocumentHistory($payload);
+
+        return response()->json($result);
+    }
+
+    public function requestOtp(Request $request, PrivyService $privy)
+    {
+        $payload = $request->only(['channel_id', 'signer_user_id', 'reference_numbers']);
+
+        if (
+            empty($payload['channel_id']) ||
+            empty($payload['signer_user_id']) ||
+            empty($payload['reference_numbers'])
+        ) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['channel_id, signer_user_id, dan reference_numbers wajib diisi']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->requestOtp($payload);
+
+        return response()->json($result);
+    }
+
+    public function validateOtp(Request $request, PrivyService $privy)
+    {
+        $payload = $request->only(['otp_code', 'transaction_id']);
+
+        if (empty($payload['otp_code']) || empty($payload['transaction_id'])) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['otp_code dan transaction_id wajib diisi']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->validateOtp($payload);
+
+        return response()->json($result);
+    }
 }

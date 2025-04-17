@@ -265,4 +265,357 @@ class PrivyService
             ]
         ];
     }
+
+    public function encodePdfToBase64(string $path): string
+    {
+        return 'data:application/pdf;base64,' . base64_encode(file_get_contents($path));
+    }
+
+    public function uploadSignDocument(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            return ['error' => ['code' => 401, 'errors' => ['Token tidak tersedia']]];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing';
+
+        if (app()->environment('local')) {
+            return [
+                'message' => 'Mocked document upload success',
+                'data' => [
+                    'reference_number' => $payload['reference_number'],
+                    'channel_id' => $payload['channel_id'],
+                    'document_token' => Str::random(32),
+                    'status' => 'uploaded',
+                    'signing_url' => 'https://dev.dcidi.io/fakeurl'
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        return $response->successful()
+            ? $response->json()
+            : [
+                'error' => [
+                    'code' => $response->status(),
+                    'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+                ]
+            ];
+    }
+
+    public function deleteDocument(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $tokenData = $this->getToken();
+        if (!$tokenData || !isset($tokenData['data']['access_token'])) {
+            Log::error('Privy: Token tidak tersedia untuk delete document.');
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $tokenData['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/delete';
+
+        // Return mock jika local
+        if (config('app.env') === 'local') {
+            Log::info('MOCK DELETE DOCUMENT:', [
+                'headers' => $headers,
+                'body' => $payload
+            ]);
+
+            return [
+                'message' => 'has been deleted',
+                'data' => [
+                    'document_token' => $payload['document_token'],
+                    'deleted_at' => now()->toIso8601String()
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Privy Delete Document Error', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return [
+            'error' => [
+                'code' => $response->status(),
+                'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+            ]
+        ];
+    }
+
+    public function checkDocumentStatus(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/status';
+
+        // MOCK Response
+        if (config('app.env') === 'local') {
+            return [
+                'message' => 'Success retrieve data',
+                'data' => [
+                    'reference_number' => $payload['reference_number'],
+                    'channel_id' => $payload['channel_id'],
+                    'status' => 'uploaded',
+                    'document_token' => $payload['document_token'],
+                    'signing_url' => 'https://dev.dcidi.io/531c398559',
+                    'signed_document' => null
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        return $response->successful()
+            ? $response->json()
+            : [
+                'error' => [
+                    'code' => $response->status(),
+                    'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+                ]
+            ];
+    }
+
+    public function checkDocumentHistory(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/history';
+
+        if (config('app.env') === 'local') {
+            return [
+                'message' => 'Success retrieve data',
+                'data' => [
+                    'document' => [
+                        [
+                            'name' => '17442_OPR_PETANI_XII_2024.pdf',
+                            'status' => 'blocked',
+                            'document_token' => $payload['document_token'],
+                            'reference_number' => $payload['reference_number'],
+                            'signers' => [
+                                [
+                                    'id' => 123080,
+                                    'privy_id' => 'aii6564',
+                                    'name' => 'Anisa Nurfadila Dwi Karina',
+                                    'signer_type' => 'signer',
+                                    'recipient_type' => 'signer',
+                                    'status' => 'blocked',
+                                    'stamp_status' => null,
+                                    'histories' => [
+                                        [
+                                            'description' => 'link opened',
+                                            'created_at' => now()->toIso8601String()
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        return $response->successful()
+            ? $response->json()
+            : ['error' => ['code' => $response->status(), 'errors' => [json_decode($response->body(), true)]]];
+    }
+
+    public function requestOtp(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            return ['error' => ['code' => 401, 'errors' => ['Token tidak tersedia']]];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/otp/request';
+
+        if (config('app.env') === 'local') {
+            return [
+                'message' => 'Kode OTP akan dikirim ke nomor handphone',
+                'data' => [
+                    'transaction_id' => Str::uuid()->toString(),
+                    'is_validate' => false,
+                    'otp_code' => '15079',
+                    'validation_count' => 0,
+                    'maximum_otp_request' => 3,
+                    'maximum_otp_validation' => 1000,
+                    'otp_reset_validation' => false,
+                    'request_count' => 1
+                ]
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        return $response->successful()
+            ? $response->json()
+            : ['error' => ['code' => $response->status(), 'errors' => [json_decode($response->body(), true)]]];
+    }
+
+    public function validateOtp(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            return ['error' => ['code' => 401, 'errors' => ['Token tidak tersedia']]];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $hmacBase64,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/otp/validation';
+
+        if (config('app.env') === 'local') {
+            return [
+                'message' => 'Terima Kasih. Proses Penandatanganan Elektronik Dokumen Telah Berhasil.',
+                'data' => true
+            ];
+        }
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        return $response->successful()
+            ? $response->json()
+            : ['error' => ['code' => $response->status(), 'errors' => [json_decode($response->body(), true)]]];
+    }
 }
