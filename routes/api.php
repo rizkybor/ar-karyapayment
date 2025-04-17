@@ -19,6 +19,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// TEST 
+/*
+|--------------------------------------------------------------------------
+| PrivyId Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/privy/token', [PrivyController::class, 'getToken']);
 Route::post('/privy/register', [PrivyController::class, 'register']);
+Route::post('/privy/register/resend', [PrivyController::class, 'resendRegister']);
+Route::post('/privy/register/status', [PrivyController::class, 'checkRegisterStatus']);
