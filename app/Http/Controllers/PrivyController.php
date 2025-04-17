@@ -37,4 +37,48 @@ class PrivyController extends Controller
 
         return response()->json($result);
     }
+
+    public function resendRegister(Request $request, PrivyService $privy)
+    {
+        $payload = $request->all();
+
+        // Validasi dasar
+        if (
+            empty($payload['reference_number']) ||
+            empty($payload['channel_id']) ||
+            empty($payload['register_token'])
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Parameter wajib tidak lengkap: reference_number, channel_id, register_token.',
+            ], 422);
+        }
+
+        $result = $privy->resendRegisterUser($payload);
+
+        return response()->json($result);
+    }
+
+    public function checkRegisterStatus(Request $request, PrivyService $privy)
+    {
+        $payload = $request->all();
+
+        // Validasi minimum input
+        if (
+            empty($payload['reference_number']) ||
+            empty($payload['channel_id']) ||
+            empty($payload['register_token'])
+        ) {
+            return response()->json([
+                'error' => [
+                    'code' => 422,
+                    'errors' => ['Data tidak ditemukan']
+                ]
+            ], 422);
+        }
+
+        $result = $privy->checkRegisterStatus($payload);
+
+        return response()->json($result);
+    }
 }

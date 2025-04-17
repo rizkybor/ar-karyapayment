@@ -25,7 +25,7 @@ use App\Http\Controllers\NonManfeeAccumulatedCostController;
 use App\Http\Controllers\NonManfeeDocumentDataTableController;
 
 use App\Http\Controllers\PDFController;
-use App\Http\Controllers\PrivyController;
+// use App\Http\Controllers\PrivyController;
 use App\Http\Controllers\DropboxController;
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
@@ -103,10 +103,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     | PrivyId Routes
     |--------------------------------------------------------------------------
     */
-    Route::prefix('privy')->group(function () {
-        Route::get('/token', [PrivyController::class, 'getToken']);
-        Route::post('/register', [PrivyController::class, 'register']);
-    });
+    // Route::prefix('privy')->group(function () {
+    //     Route::get('/token', [PrivyController::class, 'getToken']);
+    //     Route::post('/register', [PrivyController::class, 'register']);
+    // });
 
     /*
     |--------------------------------------------------------------------------
