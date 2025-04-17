@@ -18,7 +18,17 @@ class PrivyController extends Controller
     public function register(Request $request, PrivyService $privy)
     {
         // $payload = $request->all();
-        
+
+        $pathSelfie = public_path('images/selfie.jpg');
+        $pathKTP = public_path('images/ktp.jpg');
+
+        if (!file_exists($pathSelfie) || !file_exists($pathKTP)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gambar selfie atau KTP tidak ditemukan di server.',
+            ], 400);
+        }
+
         $payload = [
             "reference_number" => "PRVID" . str_pad(random_int(1, 999999999), 9, '0', STR_PAD_LEFT),
             "channel_id"       => "001",
