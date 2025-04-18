@@ -432,13 +432,13 @@ class ManfeeDocumentController extends Controller
         DB::beginTransaction();
         try {
             // 🔍 Ambil dokumen berdasarkan ID
-            $document = ManfeeDocument::with(['attachments', 'accumulatedCosts'])->findOrFail($id);
+            $document = ManfeeDocument::with(['detailPayments', 'accumulatedCosts', 'attachments'])->findOrFail($id);
 
-            // ✅ Cek apakah ada lampiran (attachments)
-            if ($document->attachments->isEmpty()) {
+            // ✅ Cek apakah ada detail biaya (detailPayments)
+            if ($document->detailPayments->isEmpty()) {
                 return back()->with(
                     'error',
-                    "Dokumen tidak dapat diproses karena belum memiliki lampiran."
+                    "Dokumen tidak dapat diproses karena belum memiliki detail biaya."
                 );
             }
 
@@ -447,6 +447,14 @@ class ManfeeDocumentController extends Controller
                 return back()->with(
                     'error',
                     "Dokumen tidak dapat diproses karena tidak ada akun yang terpilih pada akumulasi biaya."
+                );
+            }
+
+            // ✅ Cek apakah ada lampiran (attachments)
+            if ($document->attachments->isEmpty()) {
+                return back()->with(
+                    'error',
+                    "Dokumen tidak dapat diproses karena belum memiliki lampiran."
                 );
             }
 
