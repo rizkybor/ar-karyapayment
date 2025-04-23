@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 Route::get('/privy/token', [PrivyController::class, 'getToken']);
+Route::get('/privy/signature', [PrivyController::class, 'getPrivySignaturePreview']);
 Route::post('/privy/register', [PrivyController::class, 'register']);
 Route::post('/privy/register/resend', [PrivyController::class, 'resendRegister']);
 Route::post('/privy/register/status', [PrivyController::class, 'checkRegisterStatus']);
@@ -38,3 +39,5 @@ Route::post('/privy/delete-document', [PrivyController::class, 'deleteDocument']
 
 Route::post('/privy/request-otp', [PrivyController::class, 'requestOtp']);
 Route::post('/privy/validate-otp', [PrivyController::class, 'validateOtp']);
+
+
