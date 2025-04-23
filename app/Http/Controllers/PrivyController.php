@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\PrivyService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class PrivyController extends Controller
@@ -85,31 +86,60 @@ class PrivyController extends Controller
     public function uploadDocSignOnly(Request $request, PrivyService $privy)
     {
         // 1. Validasi request
-        $request->validate([
-            'reference_number' => 'required|string',
-            'channel_id' => 'required|string',
-            'file' => 'required|file|mimes:pdf|max:5120',
-            'doc_owner' => 'required|json',
-            'document' => 'required|json',
-            'recipients' => 'required|json',
-        ]);
-    
-        // 2. Encode file PDF ke base64
-        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
-    
-        // 3. Bangun payload dengan parsing JSON string
-        $payload = $request->except('file');
-    
-        $payload['doc_owner'] = json_decode($request->input('doc_owner'), true);
-        $payload['document'] = json_decode($request->input('document'), true);
-        $payload['document']['document_file'] = $base64;
-        $payload['recipients'] = json_decode($request->input('recipients'), true);
-    
-        // 4. Kirim ke PrivyService
-        $response = $privy->uploadSignDocument($payload);
-    
-        // 5. Kembalikan response
-        return response()->json($response);
+        try {
+            // 1. Validasi request
+            $request->validate([
+                'reference_number' => 'required|string',
+                'channel_id' => 'required|string',
+                'custom_signature_placement' => 'required|boolean',
+                'doc_process' => 'required|in:0,1', // asumsinya hanya 0 atau 1
+                'visibility' => 'required|boolean',
+
+                // doc_owner
+                'doc_owner' => 'required|array',
+                'doc_owner.privyId' => 'required|string',
+                'doc_owner.enterpriseToken' => 'required|string',
+
+                // document
+                'document' => 'required|array',
+                'document.document_file' => 'required|string',
+                'document.document_name' => 'required|string',
+                'document.sign_process' => 'required|in:0,1',
+                'document.barcode_position' => 'required|in:0,1',
+
+                // recipients
+                'recipients' => 'required|array|min:1',
+                'recipients.*.detail' => 'required|in:true,false,"true","false"',
+                'recipients.*.user_type' => 'required|in:0,1',
+                'recipients.*.autosign' => 'required|in:0,1',
+                'recipients.*.id_user' => 'required|string',
+                'recipients.*.signer_type' => 'required|string',
+                'recipients.*.enterpriseToken' => 'nullable|string',
+                'recipients.*.sign_positions' => 'required|array|min:1',
+                'recipients.*.sign_positions.*.posX' => 'required|string',
+                'recipients.*.sign_positions.*.posY' => 'required|string',
+                'recipients.*.sign_positions.*.signPage' => 'required|string',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Validasi gagal',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        $payload = $request->all();
+
+        try {
+            $response = $privy->uploadSignDocument($payload);
+            return response()->json($response);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'ERROR',
+                'message' => 'Gagal upload dokumen ke Privy',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function uploadSignEMeterai(Request $request, PrivyService $privy)
