@@ -55,24 +55,19 @@ class PrivyService
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
     
-        // 1. Buang field yang tidak ikut signature (ktp, identity, selfie, supporting_docs, document)
+        
         $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs', 'document'];
         $bodyForSignature = collect($payload)->except($excludedKeys)->all();
     
-        // 2. Convert ke JSON (tanpa escape slash), lalu hapus spasi
         $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
         $rawJson = str_replace(' ', '', $rawJson); // sesuai dokumentasi
     
-        // 3. MD5 lalu encode ke base64
         $bodyMd5 = base64_encode(md5($rawJson, true));
     
-        // 4. Bangun signature string
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
     
-        // 5. Generate HMAC SHA-256 dan base64 encode
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
     
-        // 6. Final signature = base64(apiKey:hmacBase64)
         $authString = "{$apiKey}:{$hmacBase64}";
         $finalSignature = base64_encode($authString);
     
