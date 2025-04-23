@@ -84,35 +84,32 @@ class PrivyController extends Controller
 
     public function uploadDocSignOnly(Request $request, PrivyService $privy)
     {
-        return response()->json([
-            'message' => 'API berhasil diakses!',
-            'request' => $request->all()
+        // 1. Validasi request
+        $request->validate([
+            'reference_number' => 'required|string',
+            'channel_id' => 'required|string',
+            'file' => 'required|file|mimes:pdf|max:5120',
+            'doc_owner' => 'required|json',
+            'document' => 'required|json',
+            'recipients' => 'required|json',
         ]);
-
-        // $request->validate([
-        //     'reference_number' => 'required|string',
-        //     'channel_id' => 'required|string',
-        //     'file' => 'required|file|mimes:pdf|max:5120',
-        //     'doc_owner' => 'required|array',
-        //     'document' => 'required|array',
-        //     'recipients' => 'required|array|min:1',
-        // ]);
-
-        // $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
-
-        // // Ambil payload dari request
-        // $payload = $request->except('file');
-
-        // // pastikan field 'document' berupa array
-        // $document = is_string($request->input('document'))
-        //     ? json_decode($request->input('document'), true)
-        //     : $request->input('document');
-        
-        // // tambahkan file ke dalam document
-        // $document['document_file'] = $base64;
-        // $payload['document'] = $document;
-
-        // return response()->json($privy->uploadSignDocument($payload));
+    
+        // 2. Encode file PDF ke base64
+        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
+    
+        // 3. Bangun payload dengan parsing JSON string
+        $payload = $request->except('file');
+    
+        $payload['doc_owner'] = json_decode($request->input('doc_owner'), true);
+        $payload['document'] = json_decode($request->input('document'), true);
+        $payload['document']['document_file'] = $base64;
+        $payload['recipients'] = json_decode($request->input('recipients'), true);
+    
+        // 4. Kirim ke PrivyService
+        $response = $privy->uploadSignDocument($payload);
+    
+        // 5. Kembalikan response
+        return response()->json($response);
     }
 
     public function uploadSignEMeterai(Request $request, PrivyService $privy)
