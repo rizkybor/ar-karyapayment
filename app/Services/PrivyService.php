@@ -47,6 +47,44 @@ class PrivyService
     }
 
 
+    public function generatePrivySignature(array $payload): array
+    {
+        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $requestId = \Illuminate\Support\Str::uuid()->toString();
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        // Encode payload jadi JSON tanpa escape slash
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+        // Generate body md5 (base64)
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+
+        // Build signature string
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+
+        // Generate signature HMAC SHA256
+        $signature = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+
+        return [
+            'request_id' => $requestId,
+            'timestamp' => $timestamp,
+            'signature' => $signature,
+            'body_md5' => $bodyMd5,
+            'raw_signature_string' => $signatureString,
+            'raw_json' => $rawJson,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Request-ID' => $requestId,
+                'Timestamp' => $timestamp,
+                'Signature' => $signature,
+                // NOTE: Tambahkan Authorization saat digunakan
+            ],
+        ];
+    }
+
+
     public function registerUser(array $payload): ?array
     {
         $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');

@@ -16,6 +16,18 @@ class PrivyController extends Controller
         return response()->json($token);
     }
 
+    public function getPrivySignaturePreview(Request $request, PrivyService $privy)
+{
+    $payload = $request->all();
+
+    $signatureData = $privy->generatePrivySignature($payload);
+
+    return response()->json([
+        'message' => 'Signature generated successfully',
+        'signature_info' => $signatureData
+    ]);
+}
+
     public function register(Request $request, PrivyService $privy)
     {
         // Ambil semua data dari body request (Postman raw JSON)
