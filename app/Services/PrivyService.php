@@ -55,32 +55,38 @@ class PrivyService
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
 
-        // Encode payload jadi JSON tanpa escape slash
         $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-
-        // Generate body md5 (base64)
         $bodyMd5 = base64_encode(md5($rawJson, true));
-
-        // Build signature string
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
 
-        // Generate signature HMAC SHA256
-        $signature = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+        $authString = "{$apiKey}:{$hmacBase64}";
+        $finalSignature = base64_encode($authString);
 
         return [
-            'request_id' => $requestId,
-            'timestamp' => $timestamp,
-            'signature' => $signature,
-            'body_md5' => $bodyMd5,
-            'raw_signature_string' => $signatureString,
-            'raw_json' => $rawJson,
+            // 'timestamp' => $timestamp,
+            // 'request_id' => $requestId,
+
+            // Credential Info (⚠️ hanya tampilkan untuk debug lokal)
+            // 'api_key' => $apiKey,
+            // 'api_secret' => $apiSecret,
+
+            // Signature debug
+            // 'signature_raw' => $signatureString,
+            // 'body_md5' => $bodyMd5,
+            // 'hmac_base64' => $hmacBase64,
+            // 'auth_string' => $authString,
+            // 'final_signature' => $finalSignature,
+
+            // Final headers to use
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Request-ID' => $requestId,
                 'Timestamp' => $timestamp,
-                'Signature' => $signature,
-                // NOTE: Tambahkan Authorization saat digunakan
+                'Signature' => $finalSignature,
             ],
+
+            'raw_json' => $rawJson,
         ];
     }
 
