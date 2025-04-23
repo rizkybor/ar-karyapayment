@@ -278,18 +278,39 @@ class PrivyService
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
-
+    
+        // Pastikan payload adalah array (bukan string JSON)
+        if (is_string($payload['doc_owner'])) {
+            $payload['doc_owner'] = json_decode($payload['doc_owner'], true);
+        }
+    
+        if (is_string($payload['document'])) {
+            $payload['document'] = json_decode($payload['document'], true);
+        }
+    
+        if (is_string($payload['recipients'])) {
+            $payload['recipients'] = json_decode($payload['recipients'], true);
+        }
+    
+        // Build JSON string yang akan dipakai untuk signature
         $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
         $bodyMd5 = base64_encode(md5($rawJson, true));
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
-
+    
+        // Ambil token
         $token = $this->getToken();
         if (!$token || !isset($token['data']['access_token'])) {
             Log::error('[Privy] Token not available', ['token_response' => $token]);
-            return ['error' => ['code' => 401, 'errors' => ['Token tidak tersedia']]];
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
         }
-
+    
+        // Siapkan headers
         $headers = [
             'Content-Type' => 'application/json',
             'Request-ID' => $requestId,
@@ -297,17 +318,19 @@ class PrivyService
             'Signature' => $hmacBase64,
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
         ];
-
+    
         $url = privy_base_url() . '/web/api/v2/doc-signing';
-
+    
+        // Logging untuk debugging
         Log::info('[Privy] Uploading document', [
             'url' => $url,
             'headers' => $headers,
+            'rawJson' => $rawJson,
             'payload' => $payload,
         ]);
-
+    
+        // Jika lokal, kembalikan mock response
         if (app()->environment('local')) {
-            Log::info('[Privy] Local environment - returning mock upload');
             return [
                 'message' => 'Mocked document upload success',
                 'data' => [
@@ -319,21 +342,37 @@ class PrivyService
                 ]
             ];
         }
-
-        $response = Http::withHeaders($headers)->post($url, $payload);
-
-        if ($response->successful()) {
-            Log::info('[Privy] Upload successful', ['response' => $response->json()]);
-            return $response->json();
-        } else {
+    
+        try {
+            $response = Http::withHeaders($headers)->post($url, $payload);
+    
+            if ($response->successful()) {
+                Log::info('[Privy] Upload successful', ['response' => $response->json()]);
+                return $response->json();
+            }
+    
+            // Jika gagal, log detailnya
             Log::error('[Privy] Upload failed', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+    
             return [
                 'error' => [
                     'code' => $response->status(),
                     'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+                ]
+            ];
+        } catch (\Throwable $e) {
+            Log::error('[Privy] Upload exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+    
+            return [
+                'error' => [
+                    'code' => 500,
+                    'errors' => ['Exception occurred: ' . $e->getMessage()]
                 ]
             ];
         }
