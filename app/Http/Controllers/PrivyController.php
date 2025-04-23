@@ -17,16 +17,16 @@ class PrivyController extends Controller
     }
 
     public function getPrivySignaturePreview(Request $request, PrivyService $privy)
-{
-    $payload = $request->all();
+    {
+        $payload = $request->all();
 
-    $signatureData = $privy->generatePrivySignature($payload);
+        $signatureData = $privy->generatePrivySignature($payload);
 
-    return response()->json([
-        'message' => 'Signature generated successfully',
-        'signature_info' => $signatureData
-    ]);
-}
+        return response()->json([
+            'message' => 'Signature generated successfully',
+            'signature_info' => $signatureData
+        ]);
+    }
 
     public function register(Request $request, PrivyService $privy)
     {
