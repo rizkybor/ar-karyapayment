@@ -273,6 +273,7 @@ class PrivyService
 
     public function uploadSignDocument(array $payload): ?array
     {
+
         $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
         $requestId = Str::uuid()->toString();
         $apiKey = config('services.privy.api_key');
