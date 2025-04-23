@@ -84,24 +84,35 @@ class PrivyController extends Controller
 
     public function uploadDocSignOnly(Request $request, PrivyService $privy)
     {
-        $request->validate([
-            'reference_number' => 'required|string',
-            'channel_id' => 'required|string',
-            'file' => 'required|file|mimes:pdf|max:5120',
-            'doc_owner' => 'required|array',
-            'document' => 'required|array',
-            'recipients' => 'required|array|min:1',
+        return response()->json([
+            'message' => 'API berhasil diakses!',
+            'request' => $request->all()
         ]);
 
-        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
+        // $request->validate([
+        //     'reference_number' => 'required|string',
+        //     'channel_id' => 'required|string',
+        //     'file' => 'required|file|mimes:pdf|max:5120',
+        //     'doc_owner' => 'required|array',
+        //     'document' => 'required|array',
+        //     'recipients' => 'required|array|min:1',
+        // ]);
 
-        // Ambil payload dari request
-        $payload = $request->except('file');
+        // $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
 
-        // Tambahkan document_file ke dalam payload
-        $payload['document']['document_file'] = $base64;
+        // // Ambil payload dari request
+        // $payload = $request->except('file');
 
-        return response()->json($privy->uploadSignDocument($payload));
+        // // pastikan field 'document' berupa array
+        // $document = is_string($request->input('document'))
+        //     ? json_decode($request->input('document'), true)
+        //     : $request->input('document');
+        
+        // // tambahkan file ke dalam document
+        // $document['document_file'] = $base64;
+        // $payload['document'] = $document;
+
+        // return response()->json($privy->uploadSignDocument($payload));
     }
 
     public function uploadSignEMeterai(Request $request, PrivyService $privy)
