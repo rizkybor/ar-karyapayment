@@ -54,15 +54,28 @@ class PrivyService
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
-
-        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+    
+        // 1. Buang field yang tidak ikut signature (ktp, identity, selfie, supporting_docs, document)
+        $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs', 'document'];
+        $bodyForSignature = collect($payload)->except($excludedKeys)->all();
+    
+        // 2. Convert ke JSON (tanpa escape slash), lalu hapus spasi
+        $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
+        $rawJson = str_replace(' ', '', $rawJson); // sesuai dokumentasi
+    
+        // 3. MD5 lalu encode ke base64
         $bodyMd5 = base64_encode(md5($rawJson, true));
+    
+        // 4. Bangun signature string
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+    
+        // 5. Generate HMAC SHA-256 dan base64 encode
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
-
+    
+        // 6. Final signature = base64(apiKey:hmacBase64)
         $authString = "{$apiKey}:{$hmacBase64}";
         $finalSignature = base64_encode($authString);
-
+    
         return [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -70,8 +83,19 @@ class PrivyService
                 'Timestamp' => $timestamp,
                 'Signature' => $finalSignature,
             ],
-
-            'raw_json' => $rawJson,
+    
+            // Debugging (optional)
+            'debug' => [
+                'timestamp' => $timestamp,
+                'request_id' => $requestId,
+                'api_key' => $apiKey,
+                'signature_string' => $signatureString,
+                'hmac_base64' => $hmacBase64,
+                'auth_string' => $authString,
+                'final_signature' => $finalSignature,
+                'body_md5' => $bodyMd5,
+                'raw_json' => $rawJson,
+            ]
         ];
     }
 
@@ -327,7 +351,14 @@ class PrivyService
         }
 
         // ✅ Signature building
-        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs', 'document'];
+        $bodyForSignature = collect($payload)->except($excludedKeys)->all();
+
+        // Encode JSON dan hapus spasi sesuai dokumen (ganti spasi jadi kosong)
+        $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
+        $rawJson = str_replace(' ', '', $rawJson); // <- sesuai petunjuk dokumen
+
+        // Signature building
         $bodyMd5 = base64_encode(md5($rawJson, true));
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
