@@ -13,6 +13,10 @@ class PrivyService
     {
         $url = privy_base_url() . '/oauth2/api/v1/token';
 
+        Log::info('URL:', [
+            'headers' => $url
+        ]);
+
         // ✅ Gunakan Mock Response jika di lokal
         if (app()->environment('local')) {
             Http::fake([
