@@ -377,9 +377,7 @@ class PrivyService
         }
 
         try {
-            $response = Http::withHeaders($headers)->withOptions([
-                'proxy' => 'http://46.202.138.202:8080',
-            ])->post($url, $payload);
+            $response = Http::withHeaders($headers)->post($url, $payload);
 
             if ($response->successful()) {
                 Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
