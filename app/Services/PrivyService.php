@@ -64,21 +64,6 @@ class PrivyService
         $finalSignature = base64_encode($authString);
 
         return [
-            // 'timestamp' => $timestamp,
-            // 'request_id' => $requestId,
-
-            // Credential Info (⚠️ hanya tampilkan untuk debug lokal)
-            // 'api_key' => $apiKey,
-            // 'api_secret' => $apiSecret,
-
-            // Signature debug
-            // 'signature_raw' => $signatureString,
-            // 'body_md5' => $bodyMd5,
-            // 'hmac_base64' => $hmacBase64,
-            // 'auth_string' => $authString,
-            // 'final_signature' => $finalSignature,
-
-            // Final headers to use
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Request-ID' => $requestId,
@@ -346,6 +331,7 @@ class PrivyService
         $bodyMd5 = base64_encode(md5($rawJson, true));
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+        $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
 
         // ✅ Ambil token
         $token = $this->getToken();
@@ -363,7 +349,7 @@ class PrivyService
         $headers = [
             'Request-ID' => $requestId,
             'Timestamp' => $timestamp,
-            'Signature' => $hmacBase64,
+            'Signature' => $finalSignature,
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
         ];
 
