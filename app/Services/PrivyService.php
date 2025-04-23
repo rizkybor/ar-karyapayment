@@ -286,6 +286,7 @@ class PrivyService
 
         $token = $this->getToken();
         if (!$token || !isset($token['data']['access_token'])) {
+            Log::error('[Privy] Token not available', ['token_response' => $token]);
             return ['error' => ['code' => 401, 'errors' => ['Token tidak tersedia']]];
         }
 
@@ -299,7 +300,14 @@ class PrivyService
 
         $url = privy_base_url() . '/web/api/v2/doc-signing';
 
+        Log::info('[Privy] Uploading document', [
+            'url' => $url,
+            'headers' => $headers,
+            'payload' => $payload,
+        ]);
+
         if (app()->environment('local')) {
+            Log::info('[Privy] Local environment - returning mock upload');
             return [
                 'message' => 'Mocked document upload success',
                 'data' => [
@@ -314,14 +322,21 @@ class PrivyService
 
         $response = Http::withHeaders($headers)->post($url, $payload);
 
-        return $response->successful()
-            ? $response->json()
-            : [
+        if ($response->successful()) {
+            Log::info('[Privy] Upload successful', ['response' => $response->json()]);
+            return $response->json();
+        } else {
+            Log::error('[Privy] Upload failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            return [
                 'error' => [
                     'code' => $response->status(),
                     'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
                 ]
             ];
+        }
     }
 
     public function deleteDocument(array $payload): ?array
