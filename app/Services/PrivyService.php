@@ -408,7 +408,7 @@ class PrivyService
 
         try {
             $response = Http::withHeaders($headers)->withOptions([
-                'proxy' => 'http://46.202.138.202',
+                'proxy' => 'http://46.202.138.202:1080',
                 'timeout' => 30,
             ])->post($url, $payload);
 
