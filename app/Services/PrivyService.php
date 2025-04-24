@@ -352,105 +352,102 @@ class PrivyService
             unset($payload['document']['document_file']);
         }
         
-
-
-
         // ✅ Signature building
         $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs'];
         $bodyForSignature = collect($payload)->except($excludedKeys)->all();
 
-        return [
-            'status' => 'success',
-            'message' => 'Dokumen berhasil di-*mock*-upload ke Privy.',
-            'data' => $excludedKeys,
-            'body' => $bodyForSignature
-        ];
-
-        // // Encode JSON dan hapus spasi sesuai dokumen (ganti spasi jadi kosong)
-        // $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
-        // $rawJson = str_replace(' ', '', $rawJson); // <- sesuai petunjuk dokumen
-
-        // // Signature building
-        // $bodyMd5 = base64_encode(md5($rawJson, true));
-        // $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
-        // $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
-        // $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
-
-        // // ✅ Ambil token
-        // $token = $this->getToken();
-        // if (!$token || !isset($token['data']['access_token'])) {
-        //     Log::error('[Privy] Token tidak tersedia', ['token_response' => $token]);
-        //     return [
-        //         'error' => [
-        //             'code' => 401,
-        //             'errors' => ['Token tidak tersedia']
-        //         ]
-        //     ];
-        // }
-
-        // // ✅ Headers TANPA set manual Content-Type
-        // $headers = [
-        //     'Request-ID' => $requestId,
-        //     'Timestamp' => $timestamp,
-        //     'Signature' => $finalSignature,
-        //     'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        // return [
+        //     'status' => 'success',
+        //     'message' => 'Dokumen berhasil di-*mock*-upload ke Privy.',
+        //     'data' => $excludedKeys,
+        //     'body' => $bodyForSignature
         // ];
 
-        // $url = privy_base_url() . '/web/api/v2/doc-signing';
+        // Encode JSON dan hapus spasi sesuai dokumen (ganti spasi jadi kosong)
+        $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
+        $rawJson = str_replace(' ', '', $rawJson); // <- sesuai petunjuk dokumen
 
-        // Log::info('[Privy] Mengirim dokumen ke Privy API', [
-        //     'url' => $url,
-        //     'headers' => $headers,
-        //     'payload' => $payload,
-        //     'rawJson' => $rawJson,
-        // ]);
+        // Signature building
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+        $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
 
-        // // ✅ Return MOCK di local
-        // if (app()->environment('local')) {
-        //     return [
-        //         'message' => 'Mocked document upload success',
-        //         'data' => [
-        //             'reference_number' => $payload['reference_number'] ?? 'MOCK123',
-        //             'channel_id' => $payload['channel_id'] ?? 'TEST',
-        //             'document_token' => Str::random(32),
-        //             'status' => 'uploaded',
-        //             'signing_url' => 'https://dev.dcidi.io/mock-sign-url'
-        //         ]
-        //     ];
-        // }
+        // ✅ Ambil token
+        $token = $this->getToken();
+        if (!$token || !isset($token['data']['access_token'])) {
+            Log::error('[Privy] Token tidak tersedia', ['token_response' => $token]);
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
+        }
 
-        // try {
-        //     $response = Http::withHeaders($headers)->post($url, $payload);
+        // ✅ Headers TANPA set manual Content-Type
+        $headers = [
+            'Request-ID' => $requestId,
+            'Timestamp' => $timestamp,
+            'Signature' => $finalSignature,
+            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+        ];
 
-        //     if ($response->successful()) {
-        //         Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
-        //         return $response->json();
-        //     }
+        $url = privy_base_url() . '/web/api/v2/doc-signing';
 
-        //     Log::error('[Privy] Upload gagal', [
-        //         'status' => $response->status(),
-        //         'body' => $response->body()
-        //     ]);
+        Log::info('[Privy] Mengirim dokumen ke Privy API', [
+            'url' => $url,
+            'headers' => $headers,
+            'payload' => $payload,
+            'rawJson' => $rawJson,
+        ]);
 
-        //     return [
-        //         'error' => [
-        //             'code' => $response->status(),
-        //             'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
-        //         ]
-        //     ];
-        // } catch (\Throwable $e) {
-        //     Log::error('[Privy] Exception saat upload dokumen', [
-        //         'message' => $e->getMessage(),
-        //         'trace' => $e->getTraceAsString()
-        //     ]);
+        // ✅ Return MOCK di local
+        if (app()->environment('local')) {
+            return [
+                'message' => 'Mocked document upload success',
+                'data' => [
+                    'reference_number' => $payload['reference_number'] ?? 'MOCK123',
+                    'channel_id' => $payload['channel_id'] ?? 'TEST',
+                    'document_token' => Str::random(32),
+                    'status' => 'uploaded',
+                    'signing_url' => 'https://dev.dcidi.io/mock-sign-url'
+                ]
+            ];
+        }
 
-        //     return [
-        //         'error' => [
-        //             'code' => 500,
-        //             'errors' => ['Exception: ' . $e->getMessage()]
-        //         ]
-        //     ];
-        // }
+        try {
+            $response = Http::withHeaders($headers)->post($url, $payload);
+
+            if ($response->successful()) {
+                Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
+                return $response->json();
+            }
+
+            Log::error('[Privy] Upload gagal', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            return [
+                'error' => [
+                    'code' => $response->status(),
+                    'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+                ]
+            ];
+        } catch (\Throwable $e) {
+            Log::error('[Privy] Exception saat upload dokumen', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [
+                'error' => [
+                    'code' => 500,
+                    'errors' => ['Exception: ' . $e->getMessage()]
+                ]
+            ];
+        }
     }
 
     public function deleteDocument(array $payload): ?array
