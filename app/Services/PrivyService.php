@@ -58,23 +58,23 @@ class PrivyService
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
-    
-        
+
+
         $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs', 'document'];
         $bodyForSignature = collect($payload)->except($excludedKeys)->all();
-    
+
         $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
         $rawJson = str_replace(' ', '', $rawJson); // sesuai dokumentasi
-    
+
         $bodyMd5 = base64_encode(md5($rawJson, true));
-    
+
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
-    
+
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
-    
+
         $authString = "{$apiKey}:{$hmacBase64}";
         $finalSignature = base64_encode($authString);
-    
+
         return [
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -82,7 +82,7 @@ class PrivyService
                 'Timestamp' => $timestamp,
                 'Signature' => $finalSignature,
             ],
-    
+
             // Debugging (optional)
             'debug' => [
                 'timestamp' => $timestamp,
@@ -407,7 +407,10 @@ class PrivyService
         }
 
         try {
-            $response = Http::withHeaders($headers)->post($url, $payload);
+            $response = Http::withHeaders($headers)->withOptions([
+                'proxy' => 'http://46.202.138.202:8080',
+                'timeout' => 30,
+            ])->post($url, $payload);
 
             if ($response->successful()) {
                 Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
