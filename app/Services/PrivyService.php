@@ -326,7 +326,7 @@ class PrivyService
     {
 
         $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
-        $requestId = Str::uuid()->toString();
+        // $requestId = Str::uuid()->toString();
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
@@ -365,7 +365,7 @@ class PrivyService
 
         // Encode JSON dan hapus spasi sesuai dokumen (ganti spasi jadi kosong)
         $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
-        $rawJson = str_replace(' ', '', $rawJson); // <- sesuai petunjuk dokumen
+        $rawJson = str_replace(' ', '', $rawJson);
 
         // Signature building
         $bodyMd5 = base64_encode(md5($rawJson, true));
@@ -387,7 +387,6 @@ class PrivyService
 
         // ✅ Headers TANPA set manual Content-Type
         $headers = [
-            'Request-ID' => $requestId,
             'Timestamp' => $timestamp,
             'Signature' => $finalSignature,
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
