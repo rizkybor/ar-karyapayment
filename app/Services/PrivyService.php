@@ -348,13 +348,20 @@ class PrivyService
             }
         }
 
-        if (isset($payload['document']['document_file'])) {
-            unset($payload['document']['document_file']);
+
+
+        // Simpan payload asli untuk dikirim
+        $originalPayload = $payload;
+
+        // Salin payload khusus untuk signature
+        $payloadForSignature = $payload;
+
+        if (isset($payloadForSignature['document']['document_file'])) {
+            unset($payloadForSignature['document']['document_file']);
         }
-        
-        // ✅ Signature building
+
         $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs'];
-        $bodyForSignature = collect($payload)->except($excludedKeys)->all();
+        $bodyForSignature = collect($payloadForSignature)->except($excludedKeys)->all();
 
         // return [
         //     'status' => 'success',
@@ -397,8 +404,8 @@ class PrivyService
         Log::info('[Privy] Mengirim dokumen ke Privy API', [
             'url' => $url,
             'headers' => $headers,
-            'payload' => $payload,
-            'rawJson' => $rawJson,
+            'payload' => $originalPayload,
+            'payload_signatures' => $payloadForSignature
         ]);
 
         // ✅ Return MOCK di local
@@ -416,7 +423,7 @@ class PrivyService
         }
 
         try {
-            $response = Http::withHeaders($headers)->post($url, $payload);
+            $response = Http::withHeaders($headers)->post($url, $originalPayload);
 
             if ($response->successful()) {
                 Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
