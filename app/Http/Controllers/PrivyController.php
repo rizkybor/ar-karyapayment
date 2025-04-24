@@ -101,36 +101,37 @@ class PrivyController extends Controller
         try {
             // 1. Validasi request
             $request->validate([
-                'reference_number' => 'required|string',
+                'reference_number' => 'required|string|alpha_num', // karena error sebelumnya: must consist of alpha-numeric characters
                 'channel_id' => 'required|string',
-                'custom_signature_placement' => 'required|boolean',
-                'doc_process' => 'required|in:0,1', // asumsinya hanya 0 atau 1
+                'doc_process' => 'required|in:0,1',
+                'info' => 'nullable|string',
                 'visibility' => 'required|boolean',
-
+            
                 // doc_owner
                 'doc_owner' => 'required|array',
                 'doc_owner.privyId' => 'required|string',
                 'doc_owner.enterpriseToken' => 'required|string',
-
+            
                 // document
                 'document' => 'required|array',
                 'document.document_file' => 'required|string',
                 'document.document_name' => 'required|string',
+                'document.notify_user' => 'required|in:0,1',
                 'document.sign_process' => 'required|in:0,1',
                 'document.barcode_position' => 'required|in:0,1',
-
+            
                 // recipients
                 'recipients' => 'required|array|min:1',
-                'recipients.*.detail' => 'required|in:true,false,"true","false"',
-                'recipients.*.user_type' => 'required|in:0,1',
+                'recipients.*.posX' => 'required|string',
+                'recipients.*.posY' => 'required|string',
+                'recipients.*.signPage' => 'required|string',
+                'recipients.*.signer_type' => 'required|string',
+                'recipients.*.detail' => 'required|in:0,1,"0","1"',
                 'recipients.*.autosign' => 'required|in:0,1',
                 'recipients.*.id_user' => 'required|string',
-                'recipients.*.signer_type' => 'required|string',
                 'recipients.*.enterpriseToken' => 'nullable|string',
-                'recipients.*.sign_positions' => 'required|array|min:1',
-                'recipients.*.sign_positions.*.posX' => 'required|string',
-                'recipients.*.sign_positions.*.posY' => 'required|string',
-                'recipients.*.sign_positions.*.signPage' => 'required|string',
+                'recipients.*.user_type' => 'required|in:0,1',
+                'recipients.*.notify_user' => 'required|in:0,1',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
