@@ -407,10 +407,7 @@ class PrivyService
         }
 
         try {
-            $response = Http::withHeaders($headers)->withOptions([
-                'proxy' => 'https://103.165.152.162:443',
-                'timeout' => 30,
-            ])->post($url, $payload);
+            $response = Http::withHeaders($headers)->post($url, $payload);
 
             if ($response->successful()) {
                 Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
