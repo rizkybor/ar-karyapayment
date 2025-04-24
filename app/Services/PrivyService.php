@@ -13,10 +13,6 @@ class PrivyService
     {
         $url = privy_base_url() . '/oauth2/api/v1/token';
 
-        Log::info('URL:', [
-            'headers' => $url
-        ]);
-
         // ✅ Gunakan Mock Response jika di lokal
         if (app()->environment('local')) {
             Http::fake([
@@ -424,6 +420,10 @@ class PrivyService
 
         try {
             $response = Http::withHeaders($headers)->post($url, $originalPayload);
+
+            Log::info('Response API', [
+                'response' => $response,
+            ]);
 
             if ($response->successful()) {
                 Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
