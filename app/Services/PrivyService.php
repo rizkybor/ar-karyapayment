@@ -348,12 +348,15 @@ class PrivyService
             }
         }
 
-
+        if (isset($payload['document']['document_file'])) {
+            unset($payload['document']['document_file']);
+        }
+        
 
 
 
         // ✅ Signature building
-        $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs', 'document'];
+        $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs'];
         $bodyForSignature = collect($payload)->except($excludedKeys)->all();
 
         return [
