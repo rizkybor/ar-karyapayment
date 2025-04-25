@@ -8,11 +8,17 @@ use Exception;
 class AccurateTransactionService
 {
     private $client;
+    private $apiSecret;
+    private $accessToken;
+    private $baseUrl;
 
     public function __construct()
     {
         // Initialize Guzzle Client
         $this->client = new Client();
+        $this->apiSecret = config('services.accurate.api_secret');
+        $this->accessToken = config('services.accurate.access_token');
+        $this->baseUrl = config('services.accurate.base_url');
     }
 
     /**
@@ -20,11 +26,8 @@ class AccurateTransactionService
      */
     private function makeSignature($timestamp)
     {
-        // The Signature Secret key from your environment variables
-        $secretKey = env('SIGNATURE_KEY'); // Make sure to set this in your .env file
-
         // Generate the HMAC SHA-256 hash
-        $hashedSignature = hash_hmac('sha256', $timestamp, $secretKey, true);
+        $hashedSignature = hash_hmac('sha256', $timestamp, $this->apiSecret, true);
         // Base64 encode the hashed signature
         return base64_encode($hashedSignature);
     }
@@ -34,8 +37,7 @@ class AccurateTransactionService
      */
     public function getDataPenerimaan($page = 1, $pageSize = 10, $sort = 'transDate|desc')
     {
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -43,12 +45,12 @@ class AccurateTransactionService
         $signature = $this->makeSignature($timestamp);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
-        $url = 'https://zeus.accurate.id/accurate/api/other-deposit/list.do?' . http_build_query([
+        $url = $this->baseUrl . '/other-deposit/list.do?' . http_build_query([
             'fields' => 'id,number,transDate,bank,chequeNo,description,amount',
             'sp.page' => $page,
             'sp.pageSize' => $pageSize,
@@ -64,8 +66,7 @@ class AccurateTransactionService
      */
     public function getDetailsPenerimaanView($idPayment)
     {
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -73,107 +74,20 @@ class AccurateTransactionService
         $signature = $this->makeSignature($timestamp);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
-        $url = 'https://zeus.accurate.id/accurate/api/other-deposit/detail.do?id=' . $idPayment;
+        $url = $this->baseUrl . '/other-deposit/detail.do?id=' . $idPayment;
         $response = $this->client->get($url, ['headers' => $headers]);
         return $response->getBody()->getContents();
     }
 
-
-    /**
-     * Post data from the external API. (di HIT pada saat approval dirut.keuangan >> pajak)
-     */
-    public function postDataPenerimaan(array $postData)
+    public function postDataInvoice($payload)
     {
-
-        /**
-         * Example body request $detailAccounts.
-         */
-
-        // Assign Detail Account by Table Data
-        //   $detailAccounts = [];
-        //   foreach ($tableData as $data) {
-        //        // angka hanya PPH yang berjenis Hutang Pajak
-        //        $amount = in_array($data['account'], ["210201", "210202", "210203","210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
-
-        //       $detailAccounts[] = [
-        //           'accountNo' => $data['account'],
-        //           'amount' => $amount,
-        //           'expenseName' => $data['account_name'],
-        //           '_status' => 'insert',
-        //           'dataClassification10Name' => '',
-        //           'dataClassification1Name' => '',
-        //           'dataClassification2Name' => '',
-        //           'dataClassification3Name' => '',
-        //           'dataClassification4Name' => '',
-        //           'dataClassification5Name' => '',
-        //           'dataClassification6Name' => '',
-        //           'dataClassification7Name' => '',
-        //           'dataClassification8Name' => '',
-        //           'dataClassification9Name' => '',
-        //           'departmentName' => '',
-        //           'id' => '',
-        //           'memo' => ''
-        //       ];
-        //   }
-
-        /**
-         * Example body request.
-         */
-
-        // $example = [
-        //     'bankNo' => $bankNumberDatas['d']['no'],
-        //     'detailAccount' => $detailAccounts,
-        //     'payee' => $penerima,
-        //     'transDate' => $formattedDate,
-        //     'branchId' => '',
-        //     'branchName' => '',
-        //     'chequeDate' => '',
-        //     'chequeNo' => $noCek,
-        //     'description' => $catatan,
-        //     'id' => '',
-        //     'number' => $noBuktiFull,
-        //     'rate' => '',
-        //     'typeAutoNumber' => ''
-        // ];
-
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
-            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
-        }
-
-        $timestamp = now()->format('d/m/Y H:i:s');
-        $signature = $this->makeSignature($timestamp);
-
-        $headers = [
-            'Authorization' => 'Bearer ' . $token,
-            'X-Api-Timestamp' => $timestamp,
-            'X-Api-Signature' => $signature,
-            'Content-Type' => 'application/json'
-        ];
-        $url = 'https://zeus.accurate.id/accurate/api/other-deposit/save.do';
-        try {
-            $response = $this->client->post($url, [
-                'headers' => $headers,
-                'json' => $postData
-            ]);
-
-            if ($response->getStatusCode() === 200) {
-                return $response;
-            } else {
-                throw new Exception('Unexpected status code: ' . $response->getStatusCode());
-            }
-        } catch (Exception $e) {
-            throw new Exception('Failed to send request: ' . $e->getMessage());
-        }
-    }
-
-    public function postDataInvoice(array $postData, $tableData, $tableTax)
-    {
+        $tableData = $payload['detailPayments'];
+        $tableTax = $payload['taxFiles'];
 
         /**
          * Example body request $detailAccounts.
@@ -183,23 +97,23 @@ class AccurateTransactionService
         $detailAccounts = [];
         foreach ($tableData as $data) {
             // angka hanya PPH yang berjenis Hutang Pajak
-            $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
+            // $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
 
             $detailAccounts[] = [
                 "_status" => "insert",
-                "itemId" => 207,
+                "itemId" => 207, // belum diketahui
                 "detailName" => "Uang Muka Gaji TAD",
-                "quantity" => 1,
+                "quantity" => 1, // belum ada
                 "unitPrice" => 2000,
-                "useTax1" => true,
-                "detailTaxName" => "PPN 10%",
+                "useTax1" => true, // belum ada
+                "detailTaxName" => "PPN 10%", // belum ada
                 "totalPrice" => 2000,
-                "departmentId" => 151,
-                "projectId" => 457
+                "departmentId" => 151, // belum ada
+                "projectId" => 457 // belum ada
             ];
         }
 
-
+        // belum ada
         $detailTaxes = [];
         foreach ($tableTax as $data) {
             $detailTaxes[] = [
@@ -232,19 +146,19 @@ class AccurateTransactionService
             "optLock" => "",
             "forceCalculateTaxRate" => true,
             "forceCalculatePercentTaxable" => true,
-            "number" => "NOMO INVOICE",
-            "poNumber" => "",
-            "customerId" => 2200,
+            "number" => $payload['data']->invoice_number ?? '',
+            "poNumber" => $payload['contract']->contract_number ?? '',
+            "customerId" => 2200, // belum ada
             "currencyId" => 50,
             "paymentTermId" => 54,
-            "toAddress" => "RAYA SERPONG PRIYANG Blok 000 No.000 RT:010 RW:008 Kel.PONDOK JAGUNG Kec.SERPONG\nUTARA Kota/Kab.TANGERANG SELATAN BANTEN 15326\nTangerang Selatan Tangerang 15326\nIndonesia",
+            "toAddress" => $payload['contract']->address ?? '',
             "transDate" => now()->format('d/m/Y'),
             "description" => "DESCRIPTION",
             "tax1Id" => 50,
             "taxable" => true,
-            "subTotal" => 7000,
+            "subTotal" => $payload['detailPayments'][0]->nilai_biaya ?? '',
             "tax1Amount" => 220,
-            "totalAmount" => 7220,
+            "totalAmount" => $payload['detailPayments'][0]->nilai_biaya ?? '',
             "detailItem" => $detailAccounts,
             "detailTax" => $detailTaxes,
             "retailWpName" => "Alfison",
@@ -255,8 +169,10 @@ class AccurateTransactionService
             "branchId" => 50
         ];
 
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        // dd($postData,'<<< cek post data accurate');
+
+
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -264,12 +180,12 @@ class AccurateTransactionService
         $signature = $this->makeSignature($timestamp);
 
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature,
             'Content-Type' => 'application/json'
         ];
-        $url = 'https://zeus.accurate.id/accurate/api/sales-invoice/save.do';
+        $url = $this->baseUrl . '/sales-invoice/save.do';
         try {
             $response = $this->client->post($url, [
                 'headers' => $headers,

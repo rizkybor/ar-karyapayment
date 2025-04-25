@@ -39,5 +39,9 @@ return [
         'api_key' => env('PRIVY_API_KEY'),
         'secret_key' => env('PRIVY_SECRET_KEY'),
     ],
-
+    'accurate' => [
+        'api_secret' => env('ACCURATE_API_SECRET'),
+        'access_token' => env('ACCURATE_ACCESS_TOKEN'),
+        'base_url' => env('ACCURATE_BASE_URL'),
+    ],
 ];

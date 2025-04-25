@@ -8,11 +8,17 @@ use Exception;
 class AccurateMasterOptionService
 {
     private $client;
+    private $apiSecret;
+    private $accessToken;
+    private $baseUrl;
 
     public function __construct()
     {
         // Initialize Guzzle Client
         $this->client = new Client();
+        $this->apiSecret = config('services.accurate.api_secret');
+        $this->accessToken = config('services.accurate.access_token');
+        $this->baseUrl = config('services.accurate.base_url');
     }
 
     /**
@@ -20,21 +26,16 @@ class AccurateMasterOptionService
      */
     private function makeSignature($timestamp)
     {
-        // The Signature Secret key from your environment variables
-        $secretKey = env('ACCURATE_SIGNATURE_SECRET'); // Make sure to set this in your .env file
-
         // Generate the HMAC SHA-256 hash
-        $hashedSignature = hash_hmac('sha256', $timestamp, $secretKey, true);
-        // Base64 encode the hashed signatureSIGNATURE_KEY
+        $hashedSignature = hash_hmac('sha256', $timestamp, $this->apiSecret, true);
+        // Base64 encode the hashed signature
         return base64_encode($hashedSignature);
     }
 
     // GET TRANSFER LIST 
     public function getBankTransferList()
     {
-        // Mendapatkan token dari file .env
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -46,13 +47,13 @@ class AccurateMasterOptionService
 
         // Header untuk request
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
         // URL endpoint API Accurate
-        $url = 'https://zeus.accurate.id/accurate/api/glaccount/list.do';
+        $url = $this->baseUrl . '/glaccount/list.do';
 
         // Parameter query
         $queryParams = [
@@ -76,9 +77,7 @@ class AccurateMasterOptionService
     // GET ASSETS LIST
     public function getAssetList()
     {
-        // Mendapatkan token dari file .env
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -90,13 +89,13 @@ class AccurateMasterOptionService
 
         // Header untuk request
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
         // URL endpoint API Accurate
-        $url = 'https://zeus.accurate.id/accurate/api/glaccount/list.do';
+        $url = $this->baseUrl . '/glaccount/list.do';
 
         // Parameter query
         $queryParams = [
@@ -119,9 +118,7 @@ class AccurateMasterOptionService
     // GET ACCOUNT NON FEE LIST
     public function getAccountNonFeeList()
     {
-        // Mendapatkan token dari file .env
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -133,13 +130,13 @@ class AccurateMasterOptionService
 
         // Header untuk request
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
         // URL endpoint API Accurate
-        $url = 'https://zeus.accurate.id/accurate/api/glaccount/list.do';
+        $url = $this->baseUrl . '/glaccount/list.do';
 
         // Parameter query
         $queryParams = [
@@ -162,9 +159,7 @@ class AccurateMasterOptionService
     // GET INVENTORY LIST
     public function getInventoryList()
     {
-        // Mendapatkan token dari file .env
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -176,13 +171,13 @@ class AccurateMasterOptionService
 
         // Header untuk request
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
         // URL endpoint API Accurate
-        $url = 'https://zeus.accurate.id/accurate/api/item/list.do';
+        $url = $this->baseUrl . '/item/list.do';
 
         // Parameter query
         $queryParams = [
@@ -202,9 +197,7 @@ class AccurateMasterOptionService
     // GET BANK DETAILS 
     public function bankDetails($bankId)
     {
-        // Mendapatkan token dari file .env
-        $token = env('ACCURATE_ACCESS_TOKEN');
-        if (!$token) {
+        if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
 
@@ -216,13 +209,13 @@ class AccurateMasterOptionService
 
         // Header untuk request
         $headers = [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
 
         // URL endpoint API Accurate
-        $url = 'https://zeus.accurate.id/accurate/api/glaccount/detail.do';
+        $url = $this->baseUrl . '/glaccount/detail.do';
 
         // Parameter query
         $queryParams = [
