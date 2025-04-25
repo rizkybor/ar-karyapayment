@@ -320,62 +320,45 @@ class PrivyService
 
     public function uploadSignDocument(array $payload): ?array
     {
-
         $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
-        // $requestId = Str::uuid()->toString();
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
-
+    
         // ✅ Decode json jika masih string
-        foreach (['doc_owner', 'document', 'recipients'] as $key) {
-            if (isset($payload[$key]) && is_string($payload[$key])) {
-                $decoded = json_decode($payload[$key], true);
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    $payload[$key] = $decoded;
-                } else {
-                    return [
-                        'error' => [
-                            'code' => 400,
-                            'errors' => ["Payload '{$key}' harus berupa objek JSON yang valid."]
-                        ]
-                    ];
-                }
-            }
-        }
-
-
-
-        // Simpan payload asli untuk dikirim
+        // foreach (['doc_owner', 'document', 'recipients'] as $key) {
+        //     if (isset($payload[$key]) && is_string($payload[$key])) {
+        //         $decoded = json_decode($payload[$key], true);
+        //         if (json_last_error() === JSON_ERROR_NONE) {
+        //             $payload[$key] = $decoded;
+        //         } else {
+        //             return [
+        //                 'error' => [
+        //                     'code' => 400,
+        //                     'errors' => ["Payload '{$key}' harus berupa objek JSON yang valid."]
+        //                 ]
+        //             ];
+        //         }
+        //     }
+        // }
+    
+        // ✅ Simpan payload utuh untuk dikirim
         $originalPayload = $payload;
-
-        // Salin payload khusus untuk signature
-        $payloadForSignature = $payload;
-
-        if (isset($payloadForSignature['document']['document_file'])) {
-            unset($payloadForSignature['document']['document_file']);
-        }
-
-        $excludedKeys = ['ktp', 'identity', 'selfie', 'supporting_docs'];
-        $bodyForSignature = collect($payloadForSignature)->except($excludedKeys)->all();
-
-        // return [
-        //     'status' => 'success',
-        //     'message' => 'Dokumen berhasil di-*mock*-upload ke Privy.',
-        //     'data' => $excludedKeys,
-        //     'body' => $bodyForSignature
-        // ];
-
-        // Encode JSON dan hapus spasi sesuai dokumen (ganti spasi jadi kosong)
-        $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
-        $rawJson = str_replace(' ', '', $rawJson);
-
-        // Signature building
+    
+        // ✅ Untuk signature: hapus seluruh field `document`
+        $payloadForSignature = collect($payload)->except(['document'])->all();
+    
+        // ✅ Signature building
+        ksort($payloadForSignature); // optional, for consistent key ordering
+    
+        $rawJson = json_encode($payloadForSignature, JSON_UNESCAPED_SLASHES);
+        $rawJson = preg_replace('/\s+/', '', $rawJson);
+    
         $bodyMd5 = base64_encode(md5($rawJson, true));
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
         $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
-
+    
         // ✅ Ambil token
         $token = $this->getToken();
         if (!$token || !isset($token['data']['access_token'])) {
@@ -387,23 +370,25 @@ class PrivyService
                 ]
             ];
         }
-
-        // ✅ Headers TANPA set manual Content-Type
+    
         $headers = [
             'Timestamp' => $timestamp,
             'Signature' => $finalSignature,
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
         ];
-
+    
         $url = privy_base_url() . '/web/api/v2/doc-signing';
-
+    
         Log::info('[Privy] Mengirim dokumen ke Privy API', [
             'url' => $url,
             'headers' => $headers,
             'payload' => $originalPayload,
-            'payload_signatures' => $payloadForSignature
+            'payload_signatures' => $payloadForSignature,
+            'raw_json_signature' => $rawJson,
+            'signature_string' => $signatureString,
+            'final_signature' => $finalSignature,
         ]);
-
+    
         // ✅ Return MOCK di local
         if (app()->environment('local')) {
             return [
@@ -417,24 +402,19 @@ class PrivyService
                 ]
             ];
         }
-
+    
         try {
             $response = Http::withHeaders($headers)->post($url, $originalPayload);
-
+    
             Log::info('Response API', [
-                'response' => $response,
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
-
+    
             if ($response->successful()) {
-                Log::info('[Privy] Upload berhasil', ['response' => $response->json()]);
                 return $response->json();
             }
-
-            Log::error('[Privy] Upload gagal', [
-                'status' => $response->status(),
-                'body' => $response->body()
-            ]);
-
+    
             return [
                 'error' => [
                     'code' => $response->status(),
@@ -446,7 +426,7 @@ class PrivyService
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-
+    
             return [
                 'error' => [
                     'code' => 500,
