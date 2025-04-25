@@ -419,7 +419,13 @@ class NonManfeeDocumentController extends Controller
                 );
             }
 
-            $document = NonManfeeDocument::findOrFail($id);
+            $document = NonManfeeDocument::with([
+                'detailPayments',
+                'taxFiles',
+                'contract',
+                'creator',
+                'bankAccount'
+            ])->findOrFail($id);
             $user = Auth::user();
             $userRole = $user->role;
             $department = $user->department;
@@ -447,10 +453,46 @@ class NonManfeeDocumentController extends Controller
                         "Faktur pajak belum ada, upload faktur pajak dahulu sebelum anda melakukan approval"
                     );
                 }
+            
+                // ✅ Simulasi data untuk Accurate
+                $tableData = [
+                    [
+                        'account' => '210201',
+                        'amount' => 5000,
+                    ],
+                    [
+                        'account' => '110101',
+                        'amount' => 2000,
+                    ],
+                ];
+            
+                $tableTax = [
+                    [
+                        'taxId' => 50,
+                        'taxType' => 'PPN',
+                        'taxDescription' => 'Pajak Pertambahan Nilai',
+                    ],
+                ];
+            
+                // ✅ Kirim ke AccurateService
+                try {
+                    $dataAccurate = [
+                        'data' => $document,
+                        'contract' => $document->contract,
+                        'creator' => $document->creator,
+                        'bankAccount' => $document->bankAccount,
+                        'detailPayments' => $document->detailPayments,
+                        'taxFiles' => $document->taxFiles,
+                    ];
 
-                // Assign Privy Services
-                // Assign Accurate Services
-
+                    $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
+                    $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
+                    // dd($responseBody,'<<< cek response body hasil accurate');
+                } catch (\Exception $e) {
+                    return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
+                }
+            
+                // ✅ Lanjutkan proses approval
                 $nextRole = 'pembendaharaan';
                 $statusCode = '6'; // done
                 $nextApprovers = User::where('role', $nextRole)->get();
