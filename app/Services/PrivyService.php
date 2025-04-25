@@ -325,35 +325,11 @@ class PrivyService
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
     
-        // ✅ Decode json jika masih string
-        // foreach (['doc_owner', 'document', 'recipients'] as $key) {
-        //     if (isset($payload[$key]) && is_string($payload[$key])) {
-        //         $decoded = json_decode($payload[$key], true);
-        //         if (json_last_error() === JSON_ERROR_NONE) {
-        //             $payload[$key] = $decoded;
-        //         } else {
-        //             return [
-        //                 'error' => [
-        //                     'code' => 400,
-        //                     'errors' => ["Payload '{$key}' harus berupa objek JSON yang valid."]
-        //                 ]
-        //             ];
-        //         }
-        //     }
-        // }
-    
-        // ✅ Simpan payload utuh untuk dikirim
         $originalPayload = $payload;
-    
-        // ✅ Untuk signature: hapus seluruh field `document`
         $payloadForSignature = collect($payload)->except(['document'])->all();
-    
-        // ✅ Signature building
-        ksort($payloadForSignature); // optional, for consistent key ordering
-    
+        ksort($payloadForSignature);
         $rawJson = json_encode($payloadForSignature, JSON_UNESCAPED_SLASHES);
         $rawJson = preg_replace('/\s+/', '', $rawJson);
-    
         $bodyMd5 = base64_encode(md5($rawJson, true));
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
@@ -377,14 +353,13 @@ class PrivyService
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
         ];
     
-        $url = privy_base_url() . '/web/api/v2/doc-signing';
+        $url = privy_base_url() . 'web/api/v2/doc-signing';
     
         Log::info('[Privy] Mengirim dokumen ke Privy API', [
             'url' => $url,
             'headers' => $headers,
             'payload' => $originalPayload,
             'payload_signatures' => $payloadForSignature,
-            'raw_json_signature' => $rawJson,
             'signature_string' => $signatureString,
             'final_signature' => $finalSignature,
         ]);
