@@ -179,10 +179,83 @@ class AccurateMasterOptionService
         // URL endpoint API Accurate
         $url = $this->baseUrl . '/item/list.do';
 
-        // Parameter query
-        $queryParams = [
-            'fields' => 'id,no,name,itemType',
+        // Data array kamu
+        $accountTypes = [
+            "INVENTORY",
+            "NON_INVENTORY",
+            "SERVICE",
+            "GROUP"
         ];
+
+        // Bikin query param
+        $queryParams = [
+            'fields' => 'id,no,name,accountType',
+            'filter.leafOnly' => 'true',
+            'field.accountType.op' => 'EQUAL',
+            'sp.start' => 0,
+            'sp.pageSize' => 100,
+            'sp.sort' => 'name|asc'
+        ];
+
+        // Loop array buat masukin filter.accountType.val[n]
+        foreach ($accountTypes as $index => $accountType) {
+            $queryParams["filter.accountType.val[$index]"] = $accountType;
+        }
+
+        // Mengirim request GET ke API Accurate
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query' => $queryParams
+        ]);
+
+        // Mengembalikan isi response dari request
+        return $response->getBody()->getContents();
+    }
+
+    public function testAccount()
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        // Membuat timestamp saat ini
+        $timestamp = now()->format('d/m/Y H:i:s');
+
+        // Membuat signature
+        $signature = $this->makeSignature($timestamp);
+
+        // Header untuk request
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature
+        ];
+
+        // URL endpoint API Accurate
+        $url = $this->baseUrl . '/item/list.do';
+
+        // Data array kamu
+        $accountTypes = [
+            "INVENTORY",
+            "NON_INVENTORY",
+            "SERVICE",
+            "GROUP"
+        ];
+
+        // Bikin query param
+        $queryParams = [
+            'fields' => 'id,no,name,accountType',
+            'filter.leafOnly' => 'true',
+            'field.accountType.op' => 'EQUAL',
+            'sp.start' => 0,
+            'sp.pageSize' => 100,
+            'sp.sort' => 'name|asc'
+        ];
+
+        // Loop array buat masukin filter.accountType.val[n]
+        foreach ($accountTypes as $index => $accountType) {
+            $queryParams["filter.accountType.val[$index]"] = $accountType;
+        }
 
         // Mengirim request GET ke API Accurate
         $response = $this->client->get($url, [
