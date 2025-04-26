@@ -24,42 +24,92 @@
     <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-            {{-- Akun (Dropdown) --}}
-            <div class="col-span-1">
-                <x-label for="akun" value="{{ __('Akun') }}" />
-                <select id="akun" name="akun"
-                    class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
-                    font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
-                    {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
-                    onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
-                    <option value="">Pilih Akun</option>
-                    @foreach ($optionAccount as $akun)
-                        <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
-                            {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
-                            ({{ $akun['no'] }})
-                            {{ $akun['name'] }}
-                        </option>
-                    @endforeach
-                </select>
+            {{-- Akun (Dropdown Custom Sesuai Permintaan) --}}
+            <div class="flex flex-col">
 
-                {{-- Hidden input untuk menyimpan nama akun --}}
-                <input type="hidden" id="nama_akun" name="nama_akun"
-                    value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
+                {{-- <div class="col-span-1">
+                    <x-label for="akun" value="{{ __('Akun') }}" />
+                    <select id="akun" name="akun"
+                        class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
+                        font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
+                        {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
+                        onchange="checkChanges()" {{ !$isEdit ? 'disabled' : '' }}>
+                        <option value="">Pilih Akun</option>
+                        @foreach ($optionAccount as $akun)
+                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
+                                {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
+                                ({{ $akun['no'] }})
+                                {{ $akun['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+    
+                    <input type="hidden" id="nama_akun" name="nama_akun"
+                        value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
+                </div> --}}
+
+                <x-label for="akunInput" value="{{ __('Akun') }}" />
+
+                @if ($isEdit)
+                    <div class="relative mt-1">
+                        {{-- Input untuk mengetik nama akun --}}
+                        <input type="text" id="akunInput" placeholder="Cari/Pilih Barang & Jasa..."
+                            value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}{{ optional($firstAccumulatedCost)->account ? ' (' . optional($firstAccumulatedCost)->account . ')' : '' }}"
+                            class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+           bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+           focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                            oninput="filterDropdown()" onclick="toggleDropdown()" autocomplete="off" />
+
+                        {{-- Dropdown List --}}
+                        <ul id="akunDropdown"
+                            class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                   rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+                            @foreach ($optionAccount as $akun)
+                                <li class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                    onclick="selectAkun('{{ $akun['no'] }}', '{{ $akun['name'] }}')">
+                                    <div class="font-semibold text-gray-800 dark:text-gray-200">{{ $akun['name'] }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $akun['no'] }}</div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- Hidden input untuk menyimpan kode dan nama akun --}}
+                    <input type="hidden" name="akun" id="akunHidden"
+                        value="{{ old('akun', $firstAccumulatedCost->account ?? '') }}">
+                    <input type="hidden" id="nama_akun" name="nama_akun"
+                        value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
+                @else
+                    {{-- View Mode, hanya tampilkan teks --}}
+                    <p class="text-gray-800 dark:text-gray-200 mt-2">
+                        {{ $firstAccumulatedCost->account_name ?? '' }}
+                        @if (!empty($firstAccumulatedCost->account))
+                            ({{ $firstAccumulatedCost->account }})
+                        @endif
+                    </p>
+                @endif
             </div>
 
             {{-- DPP Pekerjaan --}}
-            <div class="col-span-1">
+            <div class="flex flex-col">
                 <x-label for="dpp_pekerjaan" value="{{ __('DPP Pekerjaan (Rp)') }}" />
+
                 @if ($isEdit)
                     <x-input id="dpp_pekerjaan" class="block mt-1 w-full" type="text" name="dpp_pekerjaan"
                         value="{{ old('dpp_pekerjaan', number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.')) }}"
                         oninput="formatCurrency(this); calculateValues(); checkChanges()" />
                 @else
-                    <p class="text-gray-800 dark:text-gray-200">
+                    <p class="text-gray-800 dark:text-gray-200 mt-2">
                         Rp. {{ number_format($firstAccumulatedCost->dpp ?? 0, 0, ',', '.') }}
                     </p>
                 @endif
             </div>
+        </div>
+
+        <br />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
             {{-- RATE PPN --}}
             <div class="col-span-1 sm:col-span-1">
@@ -69,7 +119,7 @@
                         value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? 0, 2, '.', '')) }}"
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
 
-                        <x-input id="comment_ppn" class="block mt-1 w-full" placeholder="Keterangan PPN" name="comment_ppn"
+                    <x-input id="comment_ppn" class="block mt-1 w-full" placeholder="Keterangan PPN" name="comment_ppn"
                         value="{{ old('comment_ppn', $firstAccumulatedCost->comment_ppn ?? '') }}" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
@@ -128,12 +178,16 @@
         };
 
         window.checkChanges = function() {
-            let akunSelect = document.getElementById("akun");
-            let akunValue = akunSelect?.value || '';
-            let selectedOption = akunSelect.options[akunSelect.selectedIndex];
-            let akunName = selectedOption.getAttribute("data-name") || '';
+            let akunInput = document.getElementById("akunInput");
+            let akunHidden = document.getElementById("akunHidden");
 
-            // Update hidden input
+            // Kalau input akunHidden tidak ada, berarti View Mode — skip pengecekan akun
+            if (!akunInput || !akunHidden) return;
+
+            let akunValue = akunHidden?.value || '';
+            let akunName = akunInput?.value || '';
+
+            // Update nama akun hidden
             document.getElementById("nama_akun").value = akunName;
 
             let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') ||
@@ -187,5 +241,39 @@
 
         calculateValues();
         checkChanges();
+    });
+
+    function toggleDropdown() {
+        const isEdit = {{ $isEdit ? 'true' : 'false' }};
+        if (!isEdit) return; // Kalau View, jangan buka dropdown
+
+        document.getElementById('akunDropdown').classList.toggle('hidden');
+    }
+
+    function selectAkun(no, name) {
+        document.getElementById('akunInput').value = name;
+        document.getElementById('akunHidden').value = no;
+        document.getElementById('nama_akun').value = name;
+        document.getElementById('akunDropdown').classList.add('hidden');
+        checkChanges();
+    }
+
+    function filterDropdown() {
+        const input = document.getElementById('akunInput').value.toLowerCase();
+        const items = document.querySelectorAll('#akunDropdown li');
+
+        items.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(input) ? 'block' : 'none';
+        });
+    }
+
+    // Close dropdown kalau klik di luar input dan dropdown
+    document.addEventListener('click', function(event) {
+        const input = document.getElementById('akunInput');
+        const dropdown = document.getElementById('akunDropdown');
+        if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add('hidden');
+        }
     });
 </script>
