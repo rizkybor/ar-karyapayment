@@ -43,7 +43,7 @@
             <div class="col-span-1 sm:col-span-2 lg:col-span-3">
                 <x-label for="account" value="{{ __('Akun') }}" />
                 @if ($isEdit)
-                    <select id="account_id" name="account"
+                    {{-- <select id="account_id" name="account"
                         class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
                         font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
                         {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
@@ -59,7 +59,37 @@
                         @endforeach
                     </select>
                     <input type="hidden" id="account_name_input" name="account_name"
-                        value="{{ old('account_name', $firstAccumulatedCost->account_name ?? '') }}">
+                        value="{{ old('account_name', $firstAccumulatedCost->account_name ?? '') }}"> --}}
+
+                    <div class="relative mt-1">
+                        {{-- Input untuk mengetik nama akun --}}
+                        <input type="text" id="akunInput" placeholder="Cari/Pilih Barang & Jasa..."
+                            value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}{{ optional($firstAccumulatedCost)->account ? ' (' . optional($firstAccumulatedCost)->account . ')' : '' }}"
+                            class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+               bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+               focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                            oninput="filterDropdown()" onclick="toggleDropdown()" autocomplete="off" />
+
+                        {{-- Dropdown List --}}
+                        <ul id="akunDropdown"
+                            class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                       rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+                            @foreach ($account_akumulasi as $akun)
+                                <li class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                    onclick="selectAkun('{{ $akun['no'] }}', '{{ $akun['name'] }}')">
+                                    <div class="font-semibold text-gray-800 dark:text-gray-200">{{ $akun['name'] }}
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $akun['no'] }}</div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- Hidden input untuk menyimpan kode dan nama akun --}}
+                    <input type="hidden" name="account" id="akunHidden"
+                        value="{{ old('akun', $firstAccumulatedCost->account ?? '') }}">
+                    <input type="hidden" id="nama_akun" name="account_name"
+                        value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
                         {{ $firstAccumulatedCost?->account ? "({$firstAccumulatedCost->account}) {$firstAccumulatedCost->account_name}" : 'Belum memilih akun' }}
@@ -183,7 +213,8 @@
         // Simpan nilai awal untuk mendeteksi perubahan input
         let initialValues = {
             nilai_manfee: document.getElementById('nilai_manfee').value,
-            account: document.getElementById('account_id').value,
+            account: document.getElementById('akunHidden')?.value || '',
+            account_name: document.getElementById('nama_akun')?.value || '',
             total_expense_manfee: document.getElementById('total_expense_manfee').value,
             dpp: document.getElementById('dpp').value,
             rate_ppn: document.getElementById('rate_ppn').value,
@@ -192,9 +223,13 @@
 
         // Fungsi untuk mengecek apakah ada perubahan nilai dari nilai awal
         function hasChanges() {
+            const currentAccount = document.getElementById('akunHidden')?.value || '';
+            const currentAccountName = document.getElementById('nama_akun')?.value || '';
+
             return (
                 document.getElementById('nilai_manfee').value !== initialValues.nilai_manfee ||
-                document.getElementById('account_id').value !== initialValues.account ||
+                currentAccount !== initialValues.account ||
+                currentAccountName !== initialValues.account_name ||
                 document.getElementById('total_expense_manfee').value !== initialValues
                 .total_expense_manfee ||
                 document.getElementById('dpp').value !== initialValues.dpp ||
@@ -279,7 +314,14 @@
         });
 
         // Event listener untuk mengupdate status tombol save ketika account atau DPP berubah
-        document.getElementById('account_id').addEventListener('change', updateSaveButtonState);
+        if (document.getElementById('akunHidden')) {
+            document.getElementById('akunHidden').addEventListener('change', updateSaveButtonState);
+        }
+
+        if (document.getElementById('nama_akun')) {
+            document.getElementById('nama_akun').addEventListener('change', updateSaveButtonState);
+        }
+
         document.getElementById('dpp').addEventListener('input', updateSaveButtonState);
 
         // Comment PPN
@@ -306,4 +348,71 @@
         // Inisialisasi status tombol save pada awal halaman dimuat
         updateSaveButtonState();
     });
+
+    // New functions from the second example
+    function toggleDropdown() {
+        const isEdit = {{ $isEdit ? 'true' : 'false' }};
+        if (!isEdit) return; // Kalau View, jangan buka dropdown
+
+        document.getElementById('akunDropdown').classList.toggle('hidden');
+    }
+
+    function selectAkun(no, name) {
+        document.getElementById('akunInput').value = name + ' (' + no + ')';
+        document.getElementById('akunHidden').value = no;
+        document.getElementById('nama_akun').value = name;
+        document.getElementById('akunDropdown').classList.add('hidden');
+
+        // Panggil fungsi untuk update tombol save
+        updateSaveButtonState();
+    }
+
+    function filterDropdown() {
+        const input = document.getElementById('akunInput').value.toLowerCase();
+        const items = document.querySelectorAll('#akunDropdown li');
+
+        items.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(input) ? 'block' : 'none';
+        });
+    }
+
+    // Close dropdown kalau klik di luar input dan dropdown
+    document.addEventListener('click', function(event) {
+        const input = document.getElementById('akunInput');
+        const dropdown = document.getElementById('akunDropdown');
+        if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    function validateRatePPN(input) {
+        input.value = input.value.replace(/[^0-9.,]/g, '');
+        input.value = input.value.replace(/,/g, '.');
+
+        let parts = input.value.split('.');
+        if (parts.length > 2) {
+            input.value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        checkChanges();
+    };
+
+    function formatCurrency(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value === '') return;
+        input.value = new Intl.NumberFormat("id-ID").format(value);
+        checkChanges();
+    };
+
+    function calculateValues() {
+        let dppPekerjaan = parseFloat(document.getElementById("dpp_pekerjaan").value.replace(/\./g,
+            '') || 0);
+        let ratePpn = parseFloat(document.getElementById("rate_ppn").value.replace(',', '.') || 0);
+
+        let nilaiPpn = (dppPekerjaan * ratePpn) / 100;
+        document.getElementById("nilai_ppn").value = new Intl.NumberFormat("id-ID").format(nilaiPpn);
+
+        let jumlah = dppPekerjaan + nilaiPpn;
+        document.getElementById("jumlah").value = new Intl.NumberFormat("id-ID").format(jumlah);
+    };
 </script>
