@@ -138,6 +138,30 @@ class NonManfeeDocumentController extends Controller
 
         $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
 
+        // // uji coba
+        // $apiResponseTest = $this->accurateOption->testAccount();
+        // $array = json_decode($apiResponseTest, true);
+
+       
+        // // Daftar nama yang ingin diflagging
+        // $searchNames = ['Reimburse Gaji TAD', 'PPh 23'];
+
+        // // Tambahkan flagging Y/N ke setiap item
+        // $dataWithFlag = array_filter(array_map(function ($item) use ($searchNames) {
+        //     if (in_array($item['name'], $searchNames)) {
+        //         $item['flag'] = 'Y';
+        //         return $item;
+        //     }
+        //     return null; // buang yang tidak cocok
+        // }, $array['d']));
+
+        // // Reset ulang index array (optional, supaya rapi)
+        // $dataWithFlag = array_values($dataWithFlag);
+
+        // // Dump array
+        // dd($array, $dataWithFlag);
+
+
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
         $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
@@ -192,7 +216,7 @@ class NonManfeeDocumentController extends Controller
             'descriptions',
             'taxFiles'
         ])->findOrFail($id);
-        
+
         $allBankAccounts = BankAccount::all();
 
         $subtotals = $nonManfeeDocument->detailPayments->where('expense_type', '!=', 'Biaya Non Personil')
@@ -453,7 +477,7 @@ class NonManfeeDocumentController extends Controller
                         "Faktur pajak belum ada, upload faktur pajak dahulu sebelum anda melakukan approval"
                     );
                 }
-            
+
                 // ✅ Simulasi data untuk Accurate
                 $tableData = [
                     [
@@ -465,7 +489,7 @@ class NonManfeeDocumentController extends Controller
                         'amount' => 2000,
                     ],
                 ];
-            
+
                 $tableTax = [
                     [
                         'taxId' => 50,
@@ -473,7 +497,7 @@ class NonManfeeDocumentController extends Controller
                         'taxDescription' => 'Pajak Pertambahan Nilai',
                     ],
                 ];
-            
+
                 // ✅ Kirim ke AccurateService
                 try {
                     $dataAccurate = [
@@ -491,7 +515,7 @@ class NonManfeeDocumentController extends Controller
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
-            
+
                 // ✅ Lanjutkan proses approval
                 $nextRole = 'pembendaharaan';
                 $statusCode = '6'; // done
