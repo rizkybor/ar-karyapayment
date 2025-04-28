@@ -299,6 +299,11 @@
                 subtotalBiayaNonPersonil);
         }
 
+        // Tambahkan ini di bagian DOMContentLoaded
+        document.getElementById('akunHidden').addEventListener('change', function() {
+            updateSaveButtonState();
+        });
+
         // Event listener untuk mengupdate nilai saat total_expense_manfee berubah
         document.getElementById('total_expense_manfee').addEventListener('change', function() {
             calculateManfee();
@@ -363,8 +368,8 @@
         document.getElementById('nama_akun').value = name;
         document.getElementById('akunDropdown').classList.add('hidden');
 
-        // Panggil fungsi untuk update tombol save
-        updateSaveButtonState();
+        // Trigger change event pada hidden input
+        document.getElementById('akunHidden').dispatchEvent(new Event('change'));
     }
 
     function filterDropdown() {
