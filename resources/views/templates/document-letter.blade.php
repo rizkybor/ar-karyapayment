@@ -203,7 +203,7 @@
             </tr>
             <tr>
                 <td style="width: 10%; border: none;">Email</td>
-                <td style="width: 90%; border: none;">: {{ $bagian ?? 'contact@kpusahatama.co.id' }}</td>
+                <td style="width: 90%; border: none;">: {{ $bagian ?? 'contact@pt-kpusahatama.com' }}</td>
             </tr>
         </table>
     </div>
@@ -240,7 +240,7 @@
                     RUKO KETAPANG INDAH BLOK A2 NO.8<br>Jl. K.H. Zainul Arifin<br>Jakarta Barat - 11140<br>Indonesia
                 </td>
                 <td style="width: 30%; border: none;">
-                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: contact@kpusahaatama.co.id
+                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: contact@pt-kpusahatama.com
                 </td>
             </tr>
         </table>
