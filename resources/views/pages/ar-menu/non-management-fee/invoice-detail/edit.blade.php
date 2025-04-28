@@ -38,7 +38,7 @@
         <div class="border border-white-300 dark:border-white-700 my-6"></div>
 
         {{-- HEADER --}}
-        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :bankAccounts="$allBankAccounts" :document_status="$nonManfeeDocument['status']"
+        <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document="$nonManfeeDocument" :bankAccounts="$allBankAccounts" :document_status="$nonManfeeDocument['status']" :payment_status="$payment_status"
             isEditable="true" />
 
         <div class="grid grid-cols-1 gap-6 mt-6">

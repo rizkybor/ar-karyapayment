@@ -168,6 +168,11 @@ class NonManfeeDocumentController extends Controller
 
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
+    
+        $apiResponsePayment = $this->accurateOption->getDataPenjualan($nonManfeeDocument->invoice_number);
+        $payment_status_json = json_decode($apiResponsePayment, true)['d'];
+        
+        $payment_status = $payment_status_json[0]['statusName'] ?? null;
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -200,7 +205,8 @@ class NonManfeeDocumentController extends Controller
             'account_akumulasi',
             'subtotals',
             'subtotalBiayaNonPersonil',
-            'allBankAccounts'
+            'allBankAccounts',
+            'payment_status'
         ));
     }
 
@@ -263,7 +269,8 @@ class NonManfeeDocumentController extends Controller
             'account_detailbiaya',
             'subtotals',
             'subtotalBiayaNonPersonil',
-            'allBankAccounts'
+            'allBankAccounts',
+            'payment_status'
         ));
     }
 
