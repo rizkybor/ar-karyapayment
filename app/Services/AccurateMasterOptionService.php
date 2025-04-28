@@ -302,4 +302,42 @@ class AccurateMasterOptionService
         ]);
         return $response->getBody()->getContents();
     }
+
+    public function getDataPenjualan($searchKeyword)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+    
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+    
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature
+        ];
+    
+        $url = $this->baseUrl . '/sales-invoice/list.do';
+    
+        $queryParams = [
+            'fields' => 'id,name,number,statusName',
+            'sp.pageSize' => 100,
+            'sp.start' => 0,
+            'sp.limit' => 100,
+        ];
+    
+        // Kalau user mau mencari berdasarkan number
+        if ($searchKeyword) {
+            $queryParams['filter.keywords.op'] = 'EQUAL'; // bisa juga pakai CONTAIN kalau mau partial search
+            $queryParams['filter.keywords.val[0]'] = $searchKeyword;
+        }
+    
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query' => $queryParams
+        ]);
+        
+        return $response->getBody()->getContents();
+    }
 }
