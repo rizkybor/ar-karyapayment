@@ -142,7 +142,7 @@ class NonManfeeDocumentController extends Controller
         // $apiResponseTest = $this->accurateOption->testAccount();
         // $array = json_decode($apiResponseTest, true);
 
-       
+
         // // Daftar nama yang ingin diflagging
         // $searchNames = ['Reimburse Gaji TAD', 'PPh 23'];
 
@@ -168,10 +168,10 @@ class NonManfeeDocumentController extends Controller
 
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
-    
+
         $apiResponsePayment = $this->accurateOption->getDataPenjualan($nonManfeeDocument->invoice_number);
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
-        
+
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
@@ -243,6 +243,11 @@ class NonManfeeDocumentController extends Controller
 
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
+
+        $apiResponsePayment = $this->accurateOption->getDataPenjualan($nonManfeeDocument->invoice_number);
+        $payment_status_json = json_decode($apiResponsePayment, true)['d'];
+
+        $payment_status = $payment_status_json[0]['statusName'] ?? null;
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();

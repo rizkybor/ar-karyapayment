@@ -1,5 +1,6 @@
 @props([
     'transaction_status' => '',
+    'payment_status' => '',
     'document_status' => '',
     'isEditable' => false,
     'isShowPage' => false,
@@ -56,11 +57,19 @@
 
             <div class="grid grid-cols-2 gap-4 mt-4">
                 {{-- Jenis --}}
-                <div>
+                {{-- <div>
                     <x-label for="transaction_status" value="{{ __('Jenis') }}"
                         class="text-gray-800 dark:text-gray-100" />
                     <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
                         Management Fee
+                    </p>
+                </div> --}}
+
+                <div>
+                    <x-label for="transaction_status" value="{{ __('Status Pembayaran') }}"
+                        class="text-gray-800 dark:text-gray-100" />
+                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
+                        {{ $payment_status ? $payment_status : '-' }}
                     </p>
                 </div>
 
