@@ -380,84 +380,95 @@
                 ],
                 infoCallback: function(settings, start, end, max, total, pre) {
                     return `
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Showing <span class="font-medium">${start}</span> to
-                            <span class="font-medium">${end}</span> of
-                            <span class="font-medium">${total}</span> documents
-                        </p>
-                    `;
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            Showing <span class="font-medium">${start}</span> to
+            <span class="font-medium">${end}</span> of
+            <span class="font-medium">${total}</span> documents
+        </p>
+    `;
                 },
                 drawCallback: function(settings) {
-                    let pageInfo = table.page.info(); // Ambil informasi pagination
-                    let currentPage = pageInfo.page + 1; // Page index mulai dari 0, jadi +1
+                    let api = this.api();
+                    let pageInfo = api.page.info();
+                    let currentPage = pageInfo.page + 1;
                     let totalPages = pageInfo.pages;
 
 
+                    // Generate pagination controls
                     let paginationHtml = `
-                        <div class="flex justify-center">
-                            <nav class="flex" role="navigation" aria-label="Navigation">
-                                <div class="mr-2">
-                                    ${currentPage > 1 ? `
-                                                                                    <button onclick="table.page(${currentPage - 2}).draw(false)" 
-                                                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                        </svg>
-                                                                                    </button>` : `
-                                                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                        </svg>
-                                                                                    </span>`}
-                                </div>
-                                <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
+        <div class="flex justify-center">
+            <nav class="flex" role="navigation" aria-label="Navigation">
+                <div class="mr-2">
+                    ${currentPage > 1 ? `
+                                            <button data-page="${currentPage - 2}" 
+                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </button>` : `
+                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                </svg>
+                                            </span>`}
+                </div>
+                <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
+                    // Generate page numbers
                     for (let i = 1; i <= totalPages; i++) {
                         if (i === currentPage) {
                             paginationHtml += `
-                                <li>
-                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
-                                        border border-gray-200 dark:border-gray-700/60 text-violet-500">
-                                        ${i}
-                                    </span>
-                                </li>`;
+                <li>
+                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+                        border border-gray-200 dark:border-gray-700/60 text-violet-500">
+                        ${i}
+                    </span>
+                </li>`;
                         } else {
                             paginationHtml += `
-                                <li>
-                                    <button onclick="table.page(${i - 1}).draw(false)" 
-                                        class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
-                                        hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
-                                        text-gray-600 dark:text-gray-300">
-                                        ${i}
-                                    </button>
-                                </li>`;
+                <li>
+                    <button data-page="${i - 1}" 
+                        class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+                        hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
+                        text-gray-600 dark:text-gray-300">
+                        ${i}
+                    </button>
+                </li>`;
                         }
                     }
 
                     paginationHtml += `
-                                </ul>
-                                <div class="ml-2">
-                                    ${currentPage < totalPages ? `
-                                                                            <button onclick="table.page(${currentPage}).draw(false)" 
-                                                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                </svg>
-                                                                            </button>` : `
-                                                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                </svg>
-                                                                            </span>`}
-                                </div>
-                            </nav>
-                        </div>`;
+                </ul>
+                <div class="ml-2">
+                    ${currentPage < totalPages ? `
+                                    <button data-page="${currentPage}" 
+                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                        </svg>
+                                    </button>` : `
+                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                        </svg>
+                                    </span>`}
+                </div>
+            </nav>
+            </div>`;
 
+                    // Update pagination container
                     $('#tablePagination').html(paginationHtml);
+
+                    $('#tablePagination').off('click', 'button[data-page]').on('click',
+                        'button[data-page]',
+                        function() {
+                            let page = $(this).data('page');
+                            table.page(page).draw('page');
+                        });
                 }
             });
 
