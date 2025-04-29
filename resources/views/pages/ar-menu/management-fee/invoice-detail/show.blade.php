@@ -36,7 +36,7 @@
 
         {{-- HEADER --}}
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document_status="$manfeeDoc['status']" :latestApprover=$latestApprover :document="$manfeeDoc"
-            isShowPage="true" />
+            :payment_status="$payment_status" isShowPage="true" />
 
         {{-- Get error message --}}
         @if (session()->has('error'))

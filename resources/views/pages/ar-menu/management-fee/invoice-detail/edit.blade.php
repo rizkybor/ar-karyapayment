@@ -4,21 +4,21 @@
             <div class="mb-4 sm:mb-0">
                 {{-- <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Edit Detail Invoice
                     #{{ $manfeeDoc->invoice_number }}</h1> --}}
-                    <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                        Edit Invoice
-    
-                    </h1>
-                    <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nama Kontrak :
-                        {{ $manfeeDoc->contract->title }} (
-                        {{ $manfeeDoc->contract->employee_name }} ) </h1>
-                    <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
-                        : {{ $manfeeDoc['invoice_number'] }}
-                    </h1>
-                    <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal :
-                        {{ $manfeeDoc->letter_subject }}
-                    </h1>
-                    <x-label class="text-sm mt-1">Dibuat oleh : {{ $manfeeDoc->creator->name ?? '-' }}
-                        ({{ $manfeeDoc->creator->department ?? '-' }}) </x-label>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
+                    Edit Invoice
+
+                </h1>
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nama Kontrak :
+                    {{ $manfeeDoc->contract->title }} (
+                    {{ $manfeeDoc->contract->employee_name }} ) </h1>
+                <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
+                    : {{ $manfeeDoc['invoice_number'] }}
+                </h1>
+                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal :
+                    {{ $manfeeDoc->letter_subject }}
+                </h1>
+                <x-label class="text-sm mt-1">Dibuat oleh : {{ $manfeeDoc->creator->name ?? '-' }}
+                    ({{ $manfeeDoc->creator->department ?? '-' }}) </x-label>
             </div>
             <div class="form-group">
                 <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
@@ -33,7 +33,7 @@
 
         {{-- HEADER --}}
         <x-management-fee.header :transaction_status="$manfeeDoc['is_active']" :document="$manfeeDoc" :bankAccounts="$allBankAccounts" :document_status="$manfeeDoc['status']"
-            isEditable="true" />
+            :payment_status="$payment_status" isEditable="true" />
 
 
         <div class="grid grid-cols-1 gap-6 mt-6">

@@ -190,6 +190,11 @@ class ManfeeDocumentController extends Controller
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
+        $apiResponsePayment = $this->accurateOption->getDataPenjualan($manfeeDoc->invoice_number);
+        $payment_status_json = json_decode($apiResponsePayment, true)['d'];
+
+        $payment_status = $payment_status_json[0]['statusName'] ?? null;
+
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
 
@@ -209,7 +214,7 @@ class ManfeeDocumentController extends Controller
         }
 
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi', 'allBankAccounts'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi', 'allBankAccounts', 'payment_status'));
     }
 
 
@@ -252,6 +257,11 @@ class ManfeeDocumentController extends Controller
         $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
+        $apiResponsePayment = $this->accurateOption->getDataPenjualan($manfeeDoc->invoice_number);
+        $payment_status_json = json_decode($apiResponsePayment, true)['d'];
+
+        $payment_status = $payment_status_json[0]['statusName'] ?? null;
+
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
 
@@ -265,7 +275,7 @@ class ManfeeDocumentController extends Controller
             $taxFile->path = $dropboxController->getAttachmentUrl($taxFile->path, $dropboxFolderName);
         }
 
-        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_akumulasi', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee', 'account_detailbiaya', 'allBankAccounts'));
+        return view('pages.ar-menu.management-fee.invoice-detail.edit', compact('manfeeDoc', 'jenis_biaya', 'account_akumulasi', 'subtotals', 'subtotalBiayaNonPersonil', 'rate_manfee', 'account_detailbiaya', 'allBankAccounts', 'payment_status'));
     }
 
     /**
