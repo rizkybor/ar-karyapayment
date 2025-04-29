@@ -91,11 +91,12 @@
                             </thead>
                             <!-- Table body -->
                             <tbody class="text-sm divide-y divide-gray-100 dark:divide-gray-700/60">
-                                @php $i = 1; @endphp
-                                @foreach ($contracts as $contract)
+                                @foreach ($contracts as $index => $contract)
                                     <tr>
                                         <td class="p-2 whitespace-nowrap">
-                                            <div class="text-center">{{ $i++ }}</div>
+                                            <div class="text-center">
+                                                {{ ($contracts->currentPage() - 1) * $contracts->perPage() + $loop->iteration }}
+                                            </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-left">{{ $contract->contract_number }}</div>
@@ -115,8 +116,8 @@
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center">
-                                                {{ ucwords(str_replace('_', ' ', $contract->type)) }}</div>
-
+                                                {{ ucwords(str_replace('_', ' ', $contract->type)) }}
+                                            </div>
                                         </td>
                                         <td class="p-2 whitespace-nowrap">
                                             <div class="text-center flex items-center justify-center gap-2">
@@ -135,8 +136,6 @@
                                                     <x-button-action color="red" icon="trash" type="submit">
                                                     </x-button-action>
                                                 </form>
-
-
                                             </div>
                                         </td>
                                     </tr>

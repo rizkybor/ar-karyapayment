@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Contracts;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ContractInvoiceSeeder extends Seeder
 {
@@ -14,104 +15,135 @@ class ContractInvoiceSeeder extends Seeder
     public function run(): void
     {
         $categories = ['SPK', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
+        $workUnits = ['keuangan', 'sdm', 'pengadaan', 'operasional', 'teknik'];
+        $types = ['management_fee', 'non_management_fee'];
+        $companies = [
+            'PT. Nusanida',
+            'PT. Telkom',
+            'PT. Indo Jaya',
+            'PT. Pasific',
+            'PT. Indo Jaya Maritim',
+            'PT. Taffware Indo',
+            'PT. Energi Prima',
+            'CV. Mandiri Teknik',
+            'PT. Bangun Jaya Abadi',
+            'UD. Sumber Rejeki',
+            'PT. Global Network',
+            'CV. Cipta Karya',
+            'PT. Surya Mandiri',
+            'PT. Bina Karya Utama',
+            'CV. Anugerah Jaya',
+            'PT. Multi Artha',
+            'PT. Graha Indah',
+            'CV. Mitra Sejahtera',
+            'PT. Nusantara Jaya',
+            'PT. Adhi Karya',
+            'CV. Bintang Terang'
+        ];
 
-        Contracts::insert([
-            [
-                'contract_number' => 'ADSAKDSA23',
-                'employee_name' => 'PT. Nusanida',
-                'value' => 12500000,
-                'start_date' => Carbon::now()->subMonths(3),
-                'end_date' => Carbon::now()->addMonths(9),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk.png',
-                'address' => 'Jl. Merdeka No. 10, Jakarta',
-                'work_unit' => 'keuangan',
+        $contracts = [];
+
+        for ($i = 1; $i <= 21; $i++) {
+            $startDate = Carbon::now()->subMonths(rand(1, 12));
+            $endDate = $startDate->copy()->addMonths(rand(3, 24));
+
+            $contracts[] = [
+                'contract_number' => 'CNTR-' . strtoupper(Str::random(3)) . $i . date('Y'),
+                'employee_name' => $companies[array_rand($companies)],
+                'value' => rand(10000000, 100000000),
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'type' => $types[array_rand($types)],
+                'path' => 'contract-' . $i . '.pdf',
+                'address' => 'Jl. ' . Str::random(8) . ' No. ' . rand(1, 100) . ', ' . ['Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang'][array_rand(['Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang'])],
+                'work_unit' => $workUnits[array_rand($workUnits)],
                 'status' => null,
-                'title' => 'Pekerjaan Revitalisasi Area Taman Belakang Kantor PT PGAS Solution Area Head Cirebon',
+                'title' => $this->generateContractTitle(),
                 'category' => $categories[array_rand($categories)],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'contract_number' => 'ADSAKDSA24',
-                'employee_name' => 'PT. Telkom',
-                'value' => 15000000,
-                'start_date' => Carbon::now()->subMonths(6),
-                'end_date' => Carbon::now()->addMonths(6),
-                'type' => 'non_management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Sudirman No. 20, Bandung',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Pekerjaan Pengadaan Jaringan Fiber Optik PT Telkom',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'contract_number' => 'ADSAKDSA25',
-                'employee_name' => 'PT. Indo Jaya',
-                'value' => 20000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'non_management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Diponegoro No. 15, Surabaya',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Proyek Pembangunan Gedung Kantor PT Indo Jaya',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'contract_number' => 'ADSAKDSA26',
-                'employee_name' => 'PT. Pasific',
-                'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Ansaman Raya No. 15, Surabaya',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Pengadaan Peralatan Kantor PT Pasific untuk mendukung operasional dan efisiensi kerja',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'contract_number' => 'ADSAKDSA27',
-                'employee_name' => 'PT. Indo Jaya Maritim',
-                'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Rohaya, No 12',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Kontrak Pengerjaan Kapal PT Indo Jaya Maritim guna memperkuat armada laut perusahaan',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'contract_number' => 'ADSAKDSA28',
-                'employee_name' => 'PT. Taffware Indo',
-                'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Jaya Energi, No 37',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Penyediaan Alat Elektronik PT Taffware Indo demi meningkatkan kualitas dan produktivitas',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ];
+        }
+
+        Contracts::insert($contracts);
+    }
+
+    private function generateContractTitle(): string
+    {
+        $activities = [
+            'Pekerjaan Revitalisasi',
+            'Pengadaan Jaringan',
+            'Pembangunan Gedung',
+            'Penyediaan Peralatan',
+            'Pengerjaan Kapal',
+            'Pemeliharaan Sistem',
+            'Instalasi Jaringan',
+            'Renovasi Kantor',
+            'Pengembangan Software',
+            'Pelatihan Karyawan',
+            'Audit Sistem',
+            'Konsultasi Manajemen',
+            'Pemasangan CCTV',
+            'Perbaikan Infrastruktur',
+            'Pengadaan Material',
+            'Jasa Konsultansi',
+            'Pembangunan Jalan',
+            'Perawatan Mesin',
+            'Desain Arsitektur',
+            'Pengelolaan Limbah',
+            'Sistem Keamanan'
+        ];
+
+        $targets = [
+            'Area Kantor',
+            'Gedung Utama',
+            'Jaringan Fiber Optik',
+            'Sistem IT',
+            'Armada Laut',
+            'Fasilitas Produksi',
+            'Data Center',
+            'Kantor Cabang',
+            'Sistem Keamanan',
+            'Infrastruktur Jaringan',
+            'Gudang Penyimpanan',
+            'Laboratorium',
+            'Ruang Server',
+            'Area Parkir',
+            'Sistem Kelistrikan',
+            'Gedung Perkantoran',
+            'Pabrik Produksi',
+            'Sistem Pemadam Kebakaran',
+            'Ruang Meeting',
+            'Area Taman',
+            'Fasilitas Olahraga'
+        ];
+
+        $companies = [
+            'PT PGAS Solution',
+            'PT Telkom Indonesia',
+            'PT Bank Mandiri',
+            'PT Pertamina',
+            'PT PLN',
+            'PT Jasa Marga',
+            'PT Adhi Karya',
+            'PT Wijaya Karya',
+            'PT Pembangunan Perumahan',
+            'PT Astra International',
+            'PT Unilever Indonesia',
+            'PT Indofood',
+            'PT Kalbe Farma',
+            'PT Semen Indonesia',
+            'PT Kereta Api Indonesia',
+            'PT Garuda Indonesia',
+            'PT Pelabuhan Indonesia',
+            'PT Jasa Raharja',
+            'PT Pos Indonesia',
+            'PT Angkasa Pura',
+            'PT Telkomsel'
+        ];
+
+        return $activities[array_rand($activities)] . ' ' .
+            $targets[array_rand($targets)] . ' ' .
+            $companies[array_rand($companies)];
     }
 }
