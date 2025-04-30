@@ -154,7 +154,8 @@
             <td class="w-32">{{ $document->receipt_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+            <td class="w-24 text-right pl-2" style="text-align: right;">
+                {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td class="w-6">2.</td>
@@ -163,7 +164,8 @@
             <td class="w-32">{{ $document->invoice_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+            <td class="w-24 text-right pl-2" style="text-align: right;">
+                {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
     </table>
 
