@@ -81,25 +81,50 @@
             </div>
         </form>
     </div>
+
+    <!-- Tambahkan input hidden untuk base number -->
+    <input type="hidden" id="base_number" value="{{ $baseNumber }}">
+
     <script>
         function updateContractDetails(selectElement) {
             let selectedOption = selectElement.options[selectElement.selectedIndex];
-
-            // Update Nama Pemberi Kerja
             let employeeName = selectedOption.getAttribute("data-employee") || "";
+
+            // Update employee name field
             document.getElementById("employee_name").value = employeeName;
 
-            // Update Type Tagihan
+            // Update bill types
             let billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
             let billTypeSelect = document.getElementById("bill_type");
             billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
-
             billTypes.forEach(billType => {
                 let option = document.createElement("option");
-                option.value = billType; // Mengisi value dengan bill_type
+                option.value = billType;
                 option.textContent = billType;
                 billTypeSelect.appendChild(option);
             });
+
+            // Extract company initial
+            let companyInitial = 'SOL';
+            if (employeeName) {
+                const ptMatch = employeeName.match(/PT\.\s*([^\s,]+)/i);
+                companyInitial = ptMatch ? ptMatch[1] : employeeName.split(' ')[0];
+            }
+
+            // Get PHP variables
+            const baseNumber = document.getElementById('base_number').value;
+            const monthRoman = '{{ $monthRoman }}';
+            const year = '{{ $year }}';
+
+            // Update document numbers
+            document.getElementById('letter_number').value =
+                `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
+
+            document.getElementById('invoice_number').value =
+                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
+
+            document.getElementById('receipt_number').value =
+                `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
         }
     </script>
 </x-app-layout>

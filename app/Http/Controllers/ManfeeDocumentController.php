@@ -60,11 +60,9 @@ class ManfeeDocumentController extends Controller
         $lastNumber = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
-
         if (!$lastNumber) {
             $lastNumeric = 100;
         } else {
-
             preg_match('/^(\d{6})/', $lastNumber, $matches);
             $lastNumeric = $matches[1] ?? '000100';
             $lastNumeric = intval($lastNumeric);
@@ -75,12 +73,22 @@ class ManfeeDocumentController extends Controller
         }
 
         $nextNumber = $lastNumeric + 10;
+        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
-        $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%06d/MF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
+        // Generate default numbers with SOL
+        $letterNumber = sprintf("%s/MF/KEU/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("%s/MF/KW/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("%s/MF/INV/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
 
-        return view('pages/ar-menu/management-fee/create', compact('contracts', 'letterNumber', 'invoiceNumber', 'receiptNumber'));
+        return view('pages/ar-menu/management-fee/create', compact(
+            'contracts',
+            'letterNumber',
+            'invoiceNumber',
+            'receiptNumber',
+            'baseNumber',
+            'monthRoman',
+            'year'
+        ));
     }
 
     /**
@@ -88,45 +96,42 @@ class ManfeeDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        // dd("Request diterima:", $request->all());
-
         $request->validate([
             'contract_id' => 'required|exists:contracts,id',
             'period' => 'required',
             'letter_subject' => 'required',
             'manfee_bill' => 'required',
+            'letter_number' => 'required',
+            'invoice_number' => 'required',
+            'receipt_number' => 'required',
         ]);
+
+        // Ambil data kontrak untuk mendapatkan nama perusahaan
+        $contract = Contracts::find($request->contract_id);
+        $employeeName = $contract->employee_name;
+
+        // Ekstrak inisial perusahaan
+        $companyInitial = 'SOL';
+        if (preg_match('/PT\.\s*([^\s,]+)/i', $employeeName, $matches)) {
+            $companyInitial = $matches[1];
+        } elseif (!empty($employeeName)) {
+            $companyInitial = explode(' ', $employeeName)[0];
+        }
 
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        $lastNumber = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
+        // Gunakan nomor yang sudah di-generate di form
+        $input = $request->only([
+            'contract_id',
+            'period',
+            'letter_subject',
+            'manfee_bill',
+            'letter_number',
+            'invoice_number',
+            'receipt_number'
+        ]);
 
-
-        if (!$lastNumber) {
-            $lastNumeric = 100;
-        } else {
-
-            preg_match('/^(\d{6})/', $lastNumber, $matches);
-            $lastNumeric = $matches[1] ?? '000100';
-            $lastNumeric = intval($lastNumeric);
-
-            if ($lastNumeric % 10 !== 0) {
-                $lastNumeric = ceil($lastNumeric / 10) * 10;
-            }
-        }
-
-        $nextNumber = $lastNumeric + 10;
-
-        $letterNumber = sprintf("%06d/MF/KEU/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%06d/MF/KW/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%06d/MF/INV/KPU/SOL/%s/%s", $nextNumber, $monthRoman, $year);
-
-        $input = $request->only(['contract_id', 'period', 'letter_subject', 'manfee_bill']);
-        $input['letter_number'] = $letterNumber;
-        $input['invoice_number'] = $invoiceNumber;
-        $input['receipt_number'] = $receiptNumber;
         $input['category'] = 'management_fee';
         $input['status'] = $request->status ?? 0;
         $input['is_active'] = true;
@@ -135,10 +140,8 @@ class ManfeeDocumentController extends Controller
 
         try {
             $manfeeDoc = ManfeeDocument::create($input);
-
-            return redirect()->route('management-fee.edit',  $manfeeDoc)->with('success', 'Data berhasil disimpan!');
+            return redirect()->route('management-fee.edit', $manfeeDoc)->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            // dd($e);
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
