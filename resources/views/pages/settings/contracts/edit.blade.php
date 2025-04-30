@@ -24,7 +24,7 @@
                                 <x-input id="contract_number"
                                     value="{{ old('contract_number', $contract->contract_number) }}" type="text"
                                     name="contract_number" class="mt-1 block w-full min-h-[40px]"
-                                    placeholder="Masukkan nomer kontrak" required maxlength="10" />
+                                    placeholder="Masukkan nomer kontrak" required maxlength="255" />
                                 <x-input-error for="contract_number" class="mt-2" />
                             </div>
 
