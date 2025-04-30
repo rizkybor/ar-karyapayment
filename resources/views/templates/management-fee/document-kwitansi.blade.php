@@ -46,7 +46,7 @@
                                 style="height: 50px; width: auto; display: block; margin-left: 10px; margin-top: 10px;">
                         </th>
                         <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
-                            No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}
+                            No. {{ $document->invoice_number ?? 'Nomor surat tidak ada' }}
                         </th>
                     </tr>
                 </thead>

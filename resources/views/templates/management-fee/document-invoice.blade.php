@@ -90,8 +90,7 @@
         <tr>
             <td class="header" style="border: none;">
                 <h3 style="text-decoration: underline; letter-spacing: 3px;">INVOICE</h3>
-
-                <h3>No. {{ $document->invoice_number ?? 'Nomor surat tidak ada' }}</h3>
+                <h3>No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}</h3>
             </td>
         </tr>
     </table>
