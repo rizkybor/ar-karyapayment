@@ -170,7 +170,9 @@
             @endforeach
 
             <tr>
-                <td class="no-border">Management Fee</td>
+                <td class="no-border">
+                    Management Fee {{ rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') }}%
+                </td>
                 <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                 <td
                     style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 5rem">

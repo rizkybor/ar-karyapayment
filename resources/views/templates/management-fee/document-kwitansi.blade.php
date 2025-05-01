@@ -108,7 +108,11 @@
                     @endforeach
                     <tr>
                         <td class="no-border">
-                            Management Fee</td>
+                            Management Fee {{ rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') }}%
+                        </td>
+                        {{-- @php
+                            dd($accumulatedCosts);
+                        @endphp --}}
                         <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                         <td class="no-border" style="text-align: right; padding-right: 5rem">
                             {{ number_format($accumulatedCosts->sum('nilai_manfee'), 0, ',', '.') }}
