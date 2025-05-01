@@ -92,7 +92,7 @@ class NonManfeeDocumentDataTableController extends Controller
                 $statusMapping = [
                     'draft' => '0',
                     'checked by kadiv' => '1',
-                    'checked by pembendaharaan' => '2',
+                    'checked by perbendaharaan' => '2',
                     'checked by mgr. anggaran' => '3',
                     'checked by dir. keuangan' => '4',
                     'checked by pajak' => '5',

@@ -496,7 +496,7 @@ class ManfeeDocumentController extends Controller
             $nextRole = null;
             $nextApprovers = collect();
 
-            // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
+            // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'perbendaharaan'
             if ($document->last_reviewers === 'pajak') {
                 // ✅ Cek apakah ada faktur pajak (tax files)
                 if ($document->taxFiles->isEmpty()) {
@@ -544,7 +544,7 @@ class ManfeeDocumentController extends Controller
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
                 // ✅ Lanjutkan proses approval
-                $nextRole = 'pembendaharaan';
+                $nextRole = 'perbendaharaan';
                 $statusCode = '6'; // done
                 $nextApprovers = User::where('role', $nextRole)->get();
             }
@@ -674,11 +674,11 @@ class ManfeeDocumentController extends Controller
         }
 
         $flow = [
-            'kadiv'               => 'pembendaharaan',
-            'pembendaharaan'      => 'manager_anggaran',
+            'kadiv'               => 'perbendaharaan',
+            'perbendaharaan'      => 'manager_anggaran',
             'manager_anggaran'    => 'direktur_keuangan',
             'direktur_keuangan'   => 'pajak',
-            'pajak'               => 'pembendaharaan'
+            'pajak'               => 'perbendaharaan'
         ];
 
         return $flow[$currentRole] ?? null;
@@ -692,7 +692,7 @@ class ManfeeDocumentController extends Controller
         return [
             '0'   => 'draft',
             '1'   => 'kadiv',
-            '2'   => 'pembendaharaan',
+            '2'   => 'perbendaharaan',
             '3'   => 'manager_anggaran',
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
