@@ -92,7 +92,7 @@
                                         <div class="font-semibold text-center">Expired Status</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
-                                        <div class="font-semibold text-center">Expired Date</div>
+                                        <div class="font-semibold text-center">Expired Revisi FP</div>
                                     </th>
                                     <th class="p-2 whitespace-nowrap">
                                         <div class="font-semibold text-center">Total</div>
