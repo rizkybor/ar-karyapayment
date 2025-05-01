@@ -128,7 +128,7 @@
                     </tr>
                     <tr>
                         <td class="no-border">
-                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}
+                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
                         </td>
                         <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                         <td class="no-border" style="text-align: right; padding-right: 5rem">
