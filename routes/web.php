@@ -261,6 +261,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/{id}/update-bank', [NonManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
 
+        Route::put('/{id}/perihal-update', [NonManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
+        Route::put('/{id}/reference-document-update', [NonManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
+
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
 

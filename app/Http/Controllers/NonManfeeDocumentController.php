@@ -910,4 +910,32 @@ class NonManfeeDocumentController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function perihalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'letter_subject' => 'required|string|max:255',
+        ]);
+
+        $doc = NonManfeeDocument::findOrFail($id);
+        $doc->update([
+            'letter_subject' => $request->letter_subject,
+        ]);
+
+        return redirect()->back()->with('success', 'Perihal berhasil diperbarui.');
+    }
+
+    public function referenceUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'reference_document' => 'nullable|string|max:255',
+        ]);
+
+        $doc = NonManfeeDocument::findOrFail($id);
+        $doc->update([
+            'reference_document' => $request->reference_document,
+        ]);
+
+        return redirect()->back()->with('success', 'Referensi dokumen berhasil diperbarui.');
+    }
 }

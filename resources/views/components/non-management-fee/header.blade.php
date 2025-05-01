@@ -112,7 +112,7 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
-                @if ($document_status > 0)
+                @if ($document_status >= 0)
                     <div x-data="{ open: false }" class="relative">
                         <x-button-action @click="open = !open" color="blue" icon="eye">
                             {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
