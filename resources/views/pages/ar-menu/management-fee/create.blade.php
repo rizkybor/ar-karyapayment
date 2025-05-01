@@ -86,45 +86,75 @@
     <input type="hidden" id="base_number" value="{{ $baseNumber }}">
 
     <script>
-        function updateContractDetails(selectElement) {
-            let selectedOption = selectElement.options[selectElement.selectedIndex];
-            let employeeName = selectedOption.getAttribute("data-employee") || "";
+        function getCompanyInitial(employeeName) {
+            if (!employeeName) return 'SOL';
 
-            // Update employee name field
+            // Hapus PT. dari nama perusahaan
+            const companyName = employeeName.replace(/^PT\.\s*/i, '');
+
+            // Split nama menjadi kata-kata
+            const words = companyName.trim().split(/\s+/);
+
+            // Jika hanya 1 kata
+            if (words.length === 1) {
+                return words[0];
+            }
+
+            // Jika lebih dari 1 kata
+            let initials = '';
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0) {
+                    initials += words[i][0].toUpperCase();
+                }
+            }
+
+            return initials;
+        }
+
+        function updateContractDetails(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const employeeName = selectedOption.getAttribute("data-employee") || "";
+
+            // Update nama pemberi kerja
             document.getElementById("employee_name").value = employeeName;
 
-            // Update bill types
-            let billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
-            let billTypeSelect = document.getElementById("bill_type");
+            // Update tipe tagihan
+            const billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
+            const billTypeSelect = document.getElementById("bill_type");
             billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
             billTypes.forEach(billType => {
-                let option = document.createElement("option");
+                const option = document.createElement("option");
                 option.value = billType;
                 option.textContent = billType;
                 billTypeSelect.appendChild(option);
             });
 
-            // Extract company initial
-            let companyInitial = 'SOL';
-            if (employeeName) {
-                const ptMatch = employeeName.match(/PT\.\s*([^\s,]+)/i);
-                companyInitial = ptMatch ? ptMatch[1] : employeeName.split(' ')[0];
-            }
-
-            // Get PHP variables
-            const baseNumber = document.getElementById('base_number').value;
+            // Generate nomor dokumen
+            const baseNumber = '{{ $baseNumber }}';
             const monthRoman = '{{ $monthRoman }}';
             const year = '{{ $year }}';
+            const companyInitial = getCompanyInitial(employeeName);
 
-            // Update document numbers
             document.getElementById('letter_number').value =
                 `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
-
             document.getElementById('invoice_number').value =
                 `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
-
             document.getElementById('receipt_number').value =
                 `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
         }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const contractSelect = document.getElementById('contract_id');
+            contractSelect.addEventListener('change', function() {
+                updateContractDetails(this);
+            });
+
+            // Jika ada kontrak yang dipilih (setelah validasi gagal)
+            @if (old('contract_id'))
+                contractSelect.value = '{{ old('contract_id') }}';
+                updateContractDetails(contractSelect);
+            @endif
+        });
     </script>
 </x-app-layout>
