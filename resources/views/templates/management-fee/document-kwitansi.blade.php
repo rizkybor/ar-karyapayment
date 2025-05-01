@@ -45,12 +45,18 @@
                             <img src="file://{{ public_path('images/logo-kpu-ls.png') }}" alt="Logo KPU"
                                 style="height: 50px; width: auto; display: block; margin-left: 10px; margin-top: 10px;">
                         </th>
-                        <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
+                        {{-- <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
                             No. {{ $document->invoice_number ?? 'Nomor surat tidak ada' }}
-                        </th>
+                        </th> --}}
+                    </tr>
+                    <tr>
+                        <td class="header" style="border: none; text-align: center;">
+                            <h3 style="text-decoration: underline; letter-spacing: 3px;">KWITANSI</h3>
+                            <h3>No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}</h3>
+                        </td>
                     </tr>
                 </thead>
-                <tbody>
+                {{-- <tbody>
                     <tr>
                         <td></td>
                         <td style="padding: 1; vertical-align: top;">
@@ -61,7 +67,17 @@
                             </div>
                         </td>
                     </tr>
-                </tbody>
+                </tbody> --}}
+            </table>
+
+            <table border="1" style="border-collapse: collapse; width: 50%; margin-left: 0; margin-top: 24px;">
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px; text-align: left;">
+                        Sudah Terima Dari :<br>
+                        <strong>{{ $contract->employee_name ?? 'NULL' }}</strong><br>
+                        {{ $contract->address ?? 'NULL' }}
+                    </td>
+                </tr>
             </table>
         </div>
 
