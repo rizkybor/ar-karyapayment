@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('category', 255);
             $table->string('employee_name', 255);
             $table->decimal('value', 15, 2);
+            $table->date('contract_date');
             $table->date('start_date');
             $table->date('end_date');
             $table->string('type', 50);
