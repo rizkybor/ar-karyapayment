@@ -889,8 +889,8 @@ class NonManfeeDocumentController extends Controller
 
         return [
             'letter_number'  => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'invoice_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'receipt_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'invoice_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'receipt_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
             'base_number'    => $baseNumber,
             'month_roman'    => $monthRoman,
             'year'           => $year,

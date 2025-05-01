@@ -124,9 +124,9 @@
             document.getElementById('letter_number').value =
                 `${base_number}/NF/KEU/KPU/${companyInitial}/${month_roman}/${year}`;
             document.getElementById('invoice_number').value =
-                `${base_number}/NF/KW/KPU/${companyInitial}/${month_roman}/${year}`;
-            document.getElementById('receipt_number').value =
                 `${base_number}/NF/INV/KPU/${companyInitial}/${month_roman}/${year}`;
+            document.getElementById('receipt_number').value =
+                `${base_number}/NF/KW/KPU/${companyInitial}/${month_roman}/${year}`;
         }
 
         // Inisialisasi saat halaman dimuat

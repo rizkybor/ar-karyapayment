@@ -20,18 +20,25 @@
 </head>
 
 <body class="p-8">
-
     @php
-        $statusIsSix = (int) $document->status === 6;
+        $status = (int) $document->status;
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
-        $showDraft = $statusIsSix && $isPerbendaharaan;
+        $showDraft = $status === 6 && $isPerbendaharaan;
+        $isRejected = $status === 103;
     @endphp
 
     @if (!$showDraft)
-        <!-- Watermark Layer -->
         <div
-            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-            DRAFT
+            style="position: fixed;
+           top: 35%;
+           left: 12%;
+           z-index: -1;
+           opacity: 0.08;
+           font-size: {{ $isRejected ? '100px' : '150px' }};
+           transform: rotate(-30deg);
+           font-weight: bold;
+           color: {{ $isRejected ? '#dc2626' : '#000' }};">
+            {{ $isRejected ? 'REJECTED' : 'DRAFT' }}
         </div>
     @endif
 
@@ -45,12 +52,18 @@
                             <img src="file://{{ public_path('images/logo-kpu-ls.png') }}" alt="Logo KPU"
                                 style="height: 50px; width: auto; display: block; margin-left: 10px; margin-top: 10px;">
                         </th>
-                        <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
+                        {{-- <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
                             No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}
-                        </th>
+                        </th> --}}
+                    </tr>
+                    <tr>
+                        <td class="header" style="border: none; text-align: center;">
+                            <h3 style="text-decoration: underline; letter-spacing: 3px;">KWITANSI</h3>
+                            <h3>No. {{ $document->receipt_number ?? 'Nomor surat tidak ada' }}</h3>
+                        </td>
                     </tr>
                 </thead>
-                <tbody>
+                {{-- <tbody>
                     <tr>
                         <td></td>
                         <td style="padding: 1; vertical-align: top;">
@@ -61,7 +74,17 @@
                             </div>
                         </td>
                     </tr>
-                </tbody>
+                </tbody> --}}
+            </table>
+
+            <table border="1" style="border-collapse: collapse; width: 50%; margin-left: 0; margin-top: 24px;">
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px; text-align: left;">
+                        Sudah Terima Dari :<br>
+                        <strong>{{ $contract->employee_name ?? 'NULL' }}</strong><br>
+                        {{ $contract->address ?? 'NULL' }}
+                    </td>
+                </tr>
             </table>
         </div>
 
@@ -99,50 +122,54 @@
 
                     </tr> --}}
                     @php
-                    $totalBiaya = 0;
+                        $totalBiaya = 0;
                     @endphp
                     @foreach ($detailPayments as $payment)
                         <tr>
                             <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
-                            <td class="no-border">Rp.</td>
-                            <td class="no-border">{{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}</td>
+                            <td class="no-border"
+                                style="text-align: right; white-space: nowrap;">Rp.</td>
+                            <td class="no-border" style="text-align: right; padding-right: 2rem;">
+                                {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                            </td>
                         </tr>
                         @php
                             $totalBiaya += $payment->nilai_biaya ?? 0;
                         @endphp
                     @endforeach
+
                     <tr>
                         <td class="no-border">Jumlah</td>
-                        <td class="no-border"><strong>Rp.</strong></td>
-                        <td class="no-border">
+                        <td class="no-border" style="text-align: right;"><strong>Rp.</strong>
+                        </td>
+                        <td class="no-border" style="text-align: right; padding-right: 2rem;">
                             <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
                         </td>
                         <td class="no-border">&nbsp;</td>
-
                     </tr>
+
                     <tr>
-                        <td class="no-border">{{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
-                        <td class="no-border">Rp.</td>
-                        <td class="no-border">{{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
-
+                        <td class="no-border">
+                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                        </td>
+                        <td class="no-border" style="text-align: right;">Rp.</td>
+                        <td class="no-border" style="text-align: right; padding-right: 2rem;">
+                            {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                        </td>
                     </tr>
+
                     <tr>
                         <td class="no-border">Jumlah Total</td>
-                        <td style="border: none; position: relative;">
+                        <td
+                        style="text-align: right; font-weight: bold;">
                             <strong>Rp.</strong>
-                            <div
-                                style="position: absolute; top: 0; right: 0; width: 50%; height: 1px; background: black;">
-                            </div>
                         </td>
                         <td
-                            style="border-left: none; border-bottom: none; border-top:none; border-right: 1px solid black;  position: relative;">
+                        style="display: inline-block; width: 85%; border-top: 1px solid #000000; padding-top: 0.5rem; font-weight: bold; text-align: right; padding-right: 2rem;">
                             <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
-                            <div
-                                style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;">
-                            </div>
                         </td>
-
                     </tr>
+
                 </table>
             </div>
 
@@ -165,8 +192,8 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta,
-                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
