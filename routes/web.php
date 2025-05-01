@@ -5,6 +5,7 @@ use App\Http\Controllers\TestController;
 // use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoicePrintStatusController;
 
 use App\Http\Controllers\ManfeeTaxController;
 use App\Http\Controllers\ManfeeHistoryController;
@@ -125,6 +126,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // END ROUTE NOTIFICATION
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])->name('invoice.print.status');
+    Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])->name('invoice.print.status.data');
 
 
     // ROUTE CONTRACTS (Super Admin)
