@@ -198,7 +198,8 @@
             </tr>
             <tr>
                 <td class="no-border">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                </td>
                 <td class="no-border" style="text-align: right; padding-left: 3rem;">Rp.</td>
                 <td
                     style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 5rem">
@@ -227,7 +228,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="3" style="text-align: right;">PPN</td>
+                <td colspan="3" style="text-align: right;">
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                </td>
                 <td style="border-bottom: none; border-right: none;">Rp.</td>
                 <td style="text-align: right; border-left: none;">
                     {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
