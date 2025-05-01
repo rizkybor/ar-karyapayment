@@ -22,6 +22,8 @@ class NonManfeeDocument extends Model
         'letter_subject',
         'category',
         'status',
+        'status_print',
+        'reference_document',
         'reason_rejected',
         'path_rejected',
         'last_reviewers',

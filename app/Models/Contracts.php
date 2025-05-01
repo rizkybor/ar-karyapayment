@@ -17,6 +17,7 @@ class Contracts extends Model
         'category',
         'employee_name',
         'value',
+        'contract_date',
         'start_date',
         'end_date',
         'type',

@@ -15,103 +15,67 @@ class ContractInvoiceSeeder extends Seeder
     {
         $categories = ['SPK', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
 
-        Contracts::insert([
+        $now = Carbon::now();
+
+        $data = [
             [
                 'contract_number' => 'ADSAKDSA23',
                 'employee_name' => 'PT. Nusanida',
                 'value' => 12500000,
-                'start_date' => Carbon::now()->subMonths(3),
-                'end_date' => Carbon::now()->addMonths(9),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk.png',
-                'address' => 'Jl. Merdeka No. 10, Jakarta',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Pekerjaan Revitalisasi Area Taman Belakang Kantor PT PGAS Solution Area Head Cirebon',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subMonths(3),
+                'end_date' => $now->copy()->addMonths(9),
             ],
             [
                 'contract_number' => 'ADSAKDSA24',
                 'employee_name' => 'PT. Telkom',
                 'value' => 15000000,
-                'start_date' => Carbon::now()->subMonths(6),
-                'end_date' => Carbon::now()->addMonths(6),
-                'type' => 'non_management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Sudirman No. 20, Bandung',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Pekerjaan Pengadaan Jaringan Fiber Optik PT Telkom',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subMonths(6),
+                'end_date' => $now->copy()->addMonths(6),
             ],
             [
                 'contract_number' => 'ADSAKDSA25',
                 'employee_name' => 'PT. Indo Jaya',
                 'value' => 20000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'non_management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Diponegoro No. 15, Surabaya',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Proyek Pembangunan Gedung Kantor PT Indo Jaya',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subYear(),
+                'end_date' => $now->copy()->addMonths(3),
             ],
             [
                 'contract_number' => 'ADSAKDSA26',
                 'employee_name' => 'PT. Pasific',
                 'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Ansaman Raya No. 15, Surabaya',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Pengadaan Peralatan Kantor PT Pasific untuk mendukung operasional dan efisiensi kerja',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subYear(),
+                'end_date' => $now->copy()->addMonths(3),
             ],
             [
                 'contract_number' => 'ADSAKDSA27',
                 'employee_name' => 'PT. Indo Jaya Maritim',
                 'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Rohaya, No 12',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Kontrak Pengerjaan Kapal PT Indo Jaya Maritim guna memperkuat armada laut perusahaan',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subYear(),
+                'end_date' => $now->copy()->addMonths(3),
             ],
             [
                 'contract_number' => 'ADSAKDSA28',
                 'employee_name' => 'PT. Taffware Indo',
                 'value' => 50000000,
-                'start_date' => Carbon::now()->subYear(),
-                'end_date' => Carbon::now()->addMonths(3),
-                'type' => 'management_fee',
-                'path' => 'awdkasdk12.png',
-                'address' => 'Jl. Jaya Energi, No 37',
-                'work_unit' => 'keuangan',
-                'status' => null,
-                'title' => 'Penyediaan Alat Elektronik PT Taffware Indo demi meningkatkan kualitas dan produktivitas',
-                'category' => $categories[array_rand($categories)],
-                'created_at' => now(),
-                'updated_at' => now(),
+                'start_date' => $now->copy()->subYear(),
+                'end_date' => $now->copy()->addMonths(3),
             ],
-        ]);
+        ];
+
+        foreach ($data as &$item) {
+            $startDate = $item['start_date'];
+            $item['contract_date'] = $startDate->copy()->subDays(rand(0, 10)); // ⬅️ tidak lebih dari start_date
+            $item['type'] = in_array($item['contract_number'], ['ADSAKDSA24', 'ADSAKDSA25']) ? 'non_management_fee' : 'management_fee';
+            $item['path'] = 'awdkasdk12.png';
+            $item['address'] = 'Jl. Contoh Alamat No. ' . rand(1, 50);
+            $item['work_unit'] = 'keuangan';
+            $item['status'] = null;
+            $item['title'] = 'Judul Kontrak untuk ' . $item['employee_name'];
+            $item['category'] = $categories[array_rand($categories)];
+            $item['created_at'] = now();
+            $item['updated_at'] = now();
+        }
+
+        Contracts::insert($data);
     }
 }

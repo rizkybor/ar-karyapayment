@@ -81,6 +81,8 @@ class ManfeeDocumentSeeder extends Seeder
                 'letter_subject' => 'Tagihan Pembayaran ' . strtoupper(Str::random(5)),
                 'category'       => 'management_fee',
                 'status'         => 0,
+                'status_print'      => false,
+                'reference_document'=> null,
                 'reason_rejected' => '',
                 'path_rejected' => '',
                 'last_reviewers' => null,

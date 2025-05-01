@@ -53,14 +53,13 @@ class NonManfeeDocumentController extends Controller
     public function create()
     {
         $contracts = Contracts::where('type', 'non_management_fee')->get();
-        $numbers = $this->generateDocumentNumbers(); // default 'NMF'
 
-        return view('pages/ar-menu/non-management-fee/create', [
+        // Mengambil semua nomor dokumen dan info tambahan
+        $numbers = $this->generateDocumentNumbers('NF');
+
+        return view('pages/ar-menu/non-management-fee/create', array_merge([
             'contracts' => $contracts,
-            'letterNumber' => $numbers['letter_number'],
-            'invoiceNumber' => $numbers['invoice_number'],
-            'receiptNumber' => $numbers['receipt_number'],
-        ]);
+        ], $numbers));
     }
 
     /**
@@ -75,24 +74,34 @@ class NonManfeeDocumentController extends Controller
             'letter_subject' => 'required',
         ]);
 
-        $numbers = $this->generateDocumentNumbers();
+        // $numbers = $this->generateDocumentNumbers();
 
-        $input = $request->all();
-        $input['letter_number'] = $numbers['letter_number'];
-        $input['invoice_number'] = $numbers['invoice_number'];
-        $input['receipt_number'] = $numbers['receipt_number'];
+        $input = $request->only([
+            'contract_id',
+            'period',
+            'letter_subject',
+            'manfee_bill',
+            'letter_number',
+            'invoice_number',
+            'receipt_number',
+            'bank_account_id',
+            'reference_document',
+            'reason_rejected',
+            'path_rejected',
+            'last_reviewers',
+        ]);
+
         $input['category'] = 'management_non_fee';
-        $input['status'] = $input['status'] ?? 0;
+        $input['status'] = $request->status ?? 0;
+        $input['status_print'] = false;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
         $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
-
         try {
             // Simpan dokumen baru
             $nonManfeeDoc = NonManfeeDocument::create($input);
-
-            return redirect()->route('non-management-fee.edit', ['id' => $nonManfeeDoc->id])
+            return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -856,7 +865,7 @@ class NonManfeeDocumentController extends Controller
             ->with('success', 'Dokumen berhasil dibatalkan.');
     }
 
-    private function generateDocumentNumbers(string $prefix = 'NMF'): array
+    private function generateDocumentNumbers(string $prefix = 'NF'): array
     {
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
@@ -870,18 +879,21 @@ class NonManfeeDocumentController extends Controller
             preg_match('/^(\d{6})/', $lastNumber, $matches);
             $lastNumeric = intval($matches[1] ?? 100);
 
-            // Pembulatan kelipatan 10
             if ($lastNumeric % 10 !== 0) {
                 $lastNumeric = ceil($lastNumeric / 10) * 10;
             }
         }
 
         $nextNumber = $lastNumeric + 10;
+        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         return [
-            'letter_number' => sprintf("%06d/%s/KEU/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
-            'invoice_number' => sprintf("%06d/%s/INV/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
-            'receipt_number' => sprintf("%06d/%s/KW/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
+            'letter_number'  => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'invoice_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'receipt_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'base_number'    => $baseNumber,
+            'month_roman'    => $monthRoman,
+            'year'           => $year,
         ];
     }
 
