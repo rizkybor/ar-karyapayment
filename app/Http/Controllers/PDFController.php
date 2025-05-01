@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\NonManfeeDocument;
 use App\Models\ManfeeDocument;
-
+use ZipArchive;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PDFController extends Controller
@@ -215,6 +215,68 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('templates.document-kwitansi', $data);
 
         return $pdf->stream($filename);
+    }
+
+    public function nonManfeeZip($document_id)
+    {
+        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+    
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+    
+        // Buat nama file dasar
+        $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+    
+        // Buat folder temp di storage/app/temp
+        $tempDir = storage_path('app/temp_' . uniqid());
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
+    
+        // Buat file PDF
+        $letterPdfPath = $tempDir . "/Surat_{$baseName}.pdf";
+        $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
+        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
+    
+        // Surat
+        $pdfLetter = PDF::loadView('templates.document-letter', $data);
+        $pdfLetter->save($letterPdfPath);
+    
+        // Invoice
+        $pdfInvoice = PDF::loadView('templates.document-invoice', $data);
+        $pdfInvoice->save($invoicePdfPath);
+    
+        // Kwitansi
+        $firstCost = $document->accumulatedCosts->first();
+        if (!$firstCost) {
+            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        }
+        $data['terbilang'] = $this->nilaiToString($firstCost->total);
+        $pdfKwitansi = PDF::loadView('templates.document-kwitansi', $data);
+        $pdfKwitansi->save($kwitansiPdfPath);
+    
+        // Buat ZIP
+        $zipPath = storage_path("app/NonManfee_{$baseName}.zip");
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            $zip->addFile($letterPdfPath, basename($letterPdfPath));
+            $zip->addFile($invoicePdfPath, basename($invoicePdfPath));
+            $zip->addFile($kwitansiPdfPath, basename($kwitansiPdfPath));
+            $zip->close();
+        }
+    
+        // Hapus file temp PDF
+        unlink($letterPdfPath);
+        unlink($invoicePdfPath);
+        unlink($kwitansiPdfPath);
+        rmdir($tempDir);
+    
+        // Kirim ZIP ke browser
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 
     /*

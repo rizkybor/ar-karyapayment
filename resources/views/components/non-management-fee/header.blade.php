@@ -23,6 +23,10 @@
             'label' => 'Invoice',
             'route' => route('non-management-fee.print-invoice', $document['id']),
         ],
+        [
+            'label' => 'All Zip Document',
+            'route' => route('non-management-fee.download-zip', $document['id']),
+        ],
     ];
 @endphp
 
