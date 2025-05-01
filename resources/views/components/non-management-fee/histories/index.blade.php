@@ -95,11 +95,11 @@
             const statusMap = {
                 '0': 'Draft',
                 '1': 'Checked by Kadiv',
-                '2': 'Checked by Pembendaharaan',
+                '2': 'Checked by Perbendaharaan',
                 '3': 'Checked by Mgr. Anggaran',
                 '4': 'Checked by Dir. Keuangan',
                 '5': 'Checked by Pajak',
-                '6': 'Done at Pembendaharaan',
+                '6': 'Done at Perbendaharaan',
                 '100': 'Finished', // status belum digunakan
                 '101': 'Canceled', // status belum digunakan
                 '102': 'Revised',

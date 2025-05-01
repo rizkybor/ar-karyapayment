@@ -66,8 +66,8 @@
 <body class="bg-white p-8">
     @php
         $statusIsSix = (int) $document->status === 6;
-        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-        $showDraft = $statusIsSix && $isPembendaharaan;
+        $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+        $showDraft = $statusIsSix && $isPerbendaharaan;
     @endphp
 
     @if (!$showDraft)

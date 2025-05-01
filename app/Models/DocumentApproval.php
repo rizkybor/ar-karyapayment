@@ -94,7 +94,7 @@ class DocumentApproval extends Model
 
             '0'   => 'Draft',
             '1'   => 'Checked by Kepala Divisi',
-            '2'   => 'Checked by Pembendaharaan',
+            '2'   => 'Checked by Perbendaharaan',
             '3'   => 'Checked by Manager Keuangan',
             '4'   => 'Checked by Direktur Keuangan',
             '5'   => 'Checked by Pajak',

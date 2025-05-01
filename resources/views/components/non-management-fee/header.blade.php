@@ -28,8 +28,8 @@
 
 @php
     $statusIsSix = (int) $document_status === 6;
-    $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-    $showDraft = $statusIsSix && $isPembendaharaan;
+    $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+    $showDraft = $statusIsSix && $isPerbendaharaan;
 @endphp
 
 <div x-data="{ modalOpen: false }">
@@ -142,7 +142,7 @@
                 @endif
 
                 @if (auth()->user()->role !== 'maker')
-                    @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
+                    @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
                         <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
                         {{-- <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
