@@ -21,23 +21,11 @@ class InvoicePrintStatusController extends Controller
     
         // Query untuk manfee
         $manfeeQuery = ManfeeDocument::query()
-            ->selectRaw("'Manfee' as type, invoice_number, status_print, created_at")
-            ->where(function ($query) use ($user) {
-                $query->where('created_by', $user->id)
-                    ->orWhereHas('approvals', function ($q) use ($user) {
-                        $q->where('approver_id', $user->id);
-                    });
-            });
+            ->selectRaw("'Manfee' as type, invoice_number, status_print, created_at");
     
         // Query untuk non-manfee
         $nonManfeeQuery = NonManfeeDocument::query()
-            ->selectRaw("'Non Manfee' as type, invoice_number, status_print, created_at")
-            ->where(function ($query) use ($user) {
-                $query->where('created_by', $user->id)
-                    ->orWhereHas('approvals', function ($q) use ($user) {
-                        $q->where('approver_id', $user->id);
-                    });
-            });
+            ->selectRaw("'Non Manfee' as type, invoice_number, status_print, created_at");
     
         // Union kedua query
         $mergedQuery = $manfeeQuery->unionAll($nonManfeeQuery);
