@@ -129,6 +129,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])->name('invoice.print.status');
     Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])->name('invoice.print.status.data');
+    Route::post('/invoice/print/status/update', [InvoicePrintStatusController::class, 'updatePrintStatus'])
+    ->name('invoice.print.status.update');
 
 
     // ROUTE CONTRACTS (Super Admin)

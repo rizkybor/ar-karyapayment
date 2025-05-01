@@ -5,6 +5,13 @@
             <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
                 Status Print Invoice
             </h1>
+
+             <!-- Right: Buttons -->
+             <div class="flex gap-2 mt-4 sm:mt-0">
+                <x-button-action color="green" id="exportSelected">
+                    Print Success
+                </x-button-action>
+            </div>
         </div>
 
         <!-- Table Card -->
@@ -42,6 +49,8 @@
                         <thead
                             class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 dark:bg-opacity-50">
                             <tr>
+                                <th class="p-2 whitespace-nowrap"><input type="checkbox" id="selectAll"
+                                        class="form-checkbox h-5 w-5 text-blue-600"></th>
                                 <th class="p-2 whitespace-nowrap text-center">No</th>
                                 <th class="p-2 whitespace-nowrap text-left">No Invoice</th>
                                 <th class="p-2 whitespace-nowrap text-center">Status Print</th>
@@ -88,6 +97,16 @@
                 pagingType: "simple",
                 responsive: true,
                 columns: [{
+                        data: 'id',
+                        name: 'id',
+                        orderable: false,
+                        searchable: false,
+                        className: 'p-2 whitespace-nowrap',
+                        render: function(data) {
+                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}">`;
+                        }
+                    },
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         className: 'text-center',
@@ -97,12 +116,12 @@
                     {
                         data: 'invoice_number',
                         name: 'invoice_number',
-                        className: 'text-left'
+                        className: 'text-left p-2 whitespace-nowrap text-sm'
                     },
                     {
                         data: 'status_print',
                         name: 'status_print',
-                        className: 'text-center',
+                        className: 'text-center p-2 whitespace-nowrap text-sm',
                         render: function(data) {
                             return data == 1 ?
                                 '<span class="text-green-600 font-semibold">Sudah</span>' :
@@ -112,7 +131,7 @@
                     {
                         data: 'type',
                         name: 'type',
-                        className: 'text-center'
+                        className: 'text-center p-2 whitespace-nowrap text-sm'
                     }
                 ],
                 infoCallback: function(settings, start, end, max, total, pre) {
@@ -135,19 +154,19 @@
                         <nav class="flex" role="navigation" aria-label="Navigation">
                             <div class="mr-2">
                                 ${currentPage > 1 ? `
-                                            <button data-page="${currentPage - 2}"
-                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                </svg>
-                                            </button>` : `
-                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                    <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                </svg>
-                                            </span>`}
+                                                    <button data-page="${currentPage - 2}"
+                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                        </svg>
+                                                    </button>` : `
+                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                        </svg>
+                                                    </span>`}
                             </div>
                             <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -173,19 +192,19 @@
                             </ul>
                             <div class="ml-2">
                                 ${currentPage < totalPages ? `
-                                            <button data-page="${currentPage}"
-                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                </svg>
-                                            </button>` : `
-                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                </svg>
-                                            </span>`}
+                                                    <button data-page="${currentPage}"
+                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                        </svg>
+                                                    </button>` : `
+                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                            <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                        </svg>
+                                                    </span>`}
                             </div>
                         </nav>
                     </div>`;
@@ -200,17 +219,66 @@
                             let page = $(this).data('page');
                             api.page(page).draw('page');
                         });
+
+                    // Re-bind per-row checkbox logic to update #selectAll
+                    $('input.rowCheckbox').off('change').on('change', function () {
+                        const totalCheckbox = $('input.rowCheckbox').length;
+                        const checkedCheckbox = $('input.rowCheckbox:checked').length;
+
+                        // Update #selectAll based on checked status
+                        $('#selectAll').prop('checked', totalCheckbox === checkedCheckbox);
+                    });
                 }
             });
-            
-            // ✅ Tambahkan ini untuk mengaktifkan pencarian manual
+
+            // ✅ Event Listener untuk Export Selected
+            $('#exportSelected').on('click', function() {
+                let selected = [];
+                $('.rowCheckbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
+
+                if (selected.length === 0) {
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        'Pilih minimal satu data untuk diperbarui!', 'warning', 'Ops!');
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ route('invoice.print.status.update') }}",
+                    type: 'POST',
+                    data: {
+                        ids: selected,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log(response,'<< cek')
+                        showAutoCloseAlert('globalAlertModal', 3000,
+                            'Status berhasil diperbarui!', 'success', 'Berhasil!');
+                        $('#invoicePrintStatusTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        showAutoCloseAlert('globalAlertModal', 3000,
+                            'Terjadi kesalahan saat memperbarui data.', 'danger', 'Gagal!');
+                    }
+                });
+            });
+
+            // ✅ Custom Search Bar
             $('#searchTable').on('keyup', function() {
                 table.search(this.value).draw();
             });
 
-            // ✅ Tambahkan ini untuk filter jumlah rows (dropdown)
+            // ✅ Custom Dropdown Entries
             $('#perPage').on('change', function() {
                 table.page.len($(this).val()).draw();
+            });
+
+            // ✅ Checkbox Select All
+            $('#selectAll').on('click', function () {
+                const isChecked = this.checked;
+                const rows = $('#invoicePrintStatusTable').DataTable().rows({ search: 'applied' }).nodes();
+                $('input.rowCheckbox', rows).prop('checked', isChecked).trigger('change');
             });
         });
     </script>
