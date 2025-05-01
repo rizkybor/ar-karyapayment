@@ -24,7 +24,7 @@
             'route' => route('non-management-fee.print-invoice', $document['id']),
         ],
         [
-            'label' => 'Convert All Document to ZIP',
+            'label' => 'Export All Document to ZIP',
             'route' => route('non-management-fee.download-zip', $document['id']),
         ],
     ];

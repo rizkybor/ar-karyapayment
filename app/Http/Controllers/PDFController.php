@@ -219,6 +219,10 @@ class PDFController extends Controller
 
     public function nonManfeeZip($document_id)
     {
+        if (auth()->user()->role !== 'perbendaharaan') {
+            return back()->with('error', 'Maaf, Anda tidak memiliki akses!');
+        }
+
         $document = NonManfeeDocument::with([
             'contract',
             'detailPayments',
@@ -227,6 +231,10 @@ class PDFController extends Controller
             'taxFiles',
             'bankAccount'
         ])->findOrFail($document_id);
+
+        if ((int) $document->status !== 6) {
+            return back()->with('error', 'Dokumen hanya dapat diunduh jika sudah Done');
+        }
 
         $data = [
             'document' => $document,
