@@ -104,7 +104,7 @@
                 <td style="width: 90%; border: none; vertical-align: top;">
                     <div style="display: inline-block; vertical-align: top;">:</div>
                     <div style="display: inline-block; width: calc(100% - 10px);">
-                        <strong>Permohonan Pembayaran {{ $document->letter_subject ?? '-' }} -
+                        <strong>{{ $document->letter_subject ?? '-' }} -
                             {{ $document->period ?? '-' }}</strong>
                     </div>
                 </td>
