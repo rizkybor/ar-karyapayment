@@ -28,9 +28,11 @@
                         </option>
                     @endforeach
                 </select>
-                <div class="text-sm text-red-500 mt-1">
+
+                {{-- untuk testing value  --}}
+                {{-- <div class="text-sm text-red-500 mt-1">
                     Selected: <span x-text="selectedExpenseType"></span>
-                </div>
+                </div> --}}
             </div>
 
             <div class="flex justify-end items-center mb-3">
