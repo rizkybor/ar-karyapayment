@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\NonManfeeDocument;
 use App\Models\ManfeeDocument;
-
+use ZipArchive;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PDFController extends Controller
@@ -141,6 +141,12 @@ class PDFController extends Controller
         return null; // Jika URL tidak ditemukan
     }
 
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) View
+|--------------------------------------------------------------------------
+*/
+
     public function nonManfeeLetter($document_id)
     {
         $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
@@ -216,6 +222,172 @@ class PDFController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64
+|--------------------------------------------------------------------------
+*/
+
+    public function nonManfeeLetterBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts
+        ];
+
+        $pdf = PDF::loadView('templates.document-letter', $data);
+        $pdfOutput = $pdf->output();
+        $base64 = base64_encode($pdfOutput);
+
+        return $base64;
+    }
+
+    public function nonManfeeInvoiceBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.document-invoice', $data);
+
+        $pdfOutput = $pdf->output(); // binary
+        return base64_encode($pdfOutput); // hasil base64
+    }
+
+    public function nonManfeeKwitansiBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with([
+            'contract',
+            'detailPayments',
+            'accumulatedCosts',
+            'bankAccount'
+        ])->findOrFail($document_id);
+
+        // Pastikan ada accumulated cost
+        $firstCost = $document->accumulatedCosts->first();
+
+        if (!$firstCost) {
+            throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
+        }
+
+        // Hitung nilai terbilang
+        $terbilang = $this->nilaiToString($firstCost->total);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'terbilang' => $terbilang,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.document-kwitansi', $data);
+
+        return base64_encode($pdf->output());
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi, Attachment & Taxes) EXTRACT ALL ZIP
+|--------------------------------------------------------------------------
+*/
+
+    public function nonManfeeZip($document_id)
+    {
+        if (auth()->user()->role !== 'perbendaharaan') {
+            return back()->with('error', 'Maaf, Anda tidak memiliki akses!');
+        }
+
+        $document = NonManfeeDocument::with([
+            'contract',
+            'detailPayments',
+            'accumulatedCosts',
+            'attachments',
+            'taxFiles',
+            'bankAccount'
+        ])->findOrFail($document_id);
+
+        if ((int) $document->status !== 6) {
+            return back()->with('error', 'Dokumen hanya dapat diunduh jika sudah Done');
+        }
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+        $tempDir = storage_path('app/temp_' . uniqid());
+        if (!file_exists($tempDir)) mkdir($tempDir, 0777, true);
+
+        // Generate PDFs
+        $letterPdfPath = $tempDir . "/Surat_{$baseName}.pdf";
+        $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
+        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
+
+        PDF::loadView('templates.document-letter', $data)->save($letterPdfPath);
+        PDF::loadView('templates.document-invoice', $data)->save($invoicePdfPath);
+
+        $firstCost = $document->accumulatedCosts->first();
+        if (!$firstCost) return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+
+        $data['terbilang'] = $this->nilaiToString($firstCost->total);
+        PDF::loadView('templates.document-kwitansi', $data)->save($kwitansiPdfPath);
+
+        // Dropbox files
+        $dropbox = new DropboxController();
+        $attachments = $document->attachments->pluck('path')->toArray();
+        $taxes = $document->taxFiles->pluck('path')->toArray();
+
+        $attachmentFiles = $dropbox->downloadMultipleFromDropbox($attachments, '/attachments/');
+        $taxFiles = $dropbox->downloadMultipleFromDropbox($taxes, '/taxes/');
+
+        // Create ZIP
+        $rawInvoiceName = $this->sanitizeFileName($document->invoice_number);
+        $zipPath = storage_path("app/{$rawInvoiceName}.zip");
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            // Add PDFs
+            $zip->addFile($letterPdfPath, basename($letterPdfPath));
+            $zip->addFile($invoicePdfPath, basename($invoicePdfPath));
+            $zip->addFile($kwitansiPdfPath, basename($kwitansiPdfPath));
+
+            // Add Dropbox files
+            foreach (array_merge($attachmentFiles, $taxFiles) as $file) {
+                if (file_exists($file['path'])) {
+                    $zip->addFile($file['path'], $file['name']);
+                }
+            }
+
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat ZIP.');
+        }
+
+        // Cleanup
+        foreach ([$letterPdfPath, $invoicePdfPath, $kwitansiPdfPath] as $file) {
+            if (file_exists($file)) unlink($file);
+        }
+        foreach (array_merge($attachmentFiles, $taxFiles) as $file) {
+            if (file_exists($file['path'])) unlink($file['path']);
+        }
+        if (file_exists($tempDir)) rmdir($tempDir);
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
 
     /*
 |--------------------------------------------------------------------------

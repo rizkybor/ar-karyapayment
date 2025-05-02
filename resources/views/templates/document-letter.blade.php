@@ -65,16 +65,24 @@
 
 <body class="bg-white p-8">
     @php
-        $statusIsSix = (int) $document->status === 6;
-        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-        $showDraft = $statusIsSix && $isPembendaharaan;
+        $status = (int) $document->status;
+        $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+        $showDraft = $status === 6 && $isPerbendaharaan;
+        $isRejected = $status === 103;
     @endphp
 
     @if (!$showDraft)
-        <!-- Watermark Layer -->
         <div
-            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-            DRAFT
+            style="position: fixed;
+               top: 35%;
+               left: 12%;
+               z-index: -1;
+               opacity: 0.08;
+               font-size: {{ $isRejected ? '100px' : '150px' }};
+               transform: rotate(-30deg);
+               font-weight: bold;
+               color: {{ $isRejected ? '#dc2626' : '#000' }};">
+            {{ $isRejected ? 'REJECTED' : 'DRAFT' }}
         </div>
     @endif
 
@@ -137,10 +145,10 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan nomor kontrak {{ $contract->contract_number ?? 'NULL' }} antara
+        Berdasarkan nomor {{ $contract->contract_number ?? 'NULL' }}
+        ({{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('d F Y') }}) antara
         {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
-        {{ $contract->title ?? 'NULL' }}
-        ({{ \Carbon\Carbon::parse($contract->created_at)->translatedFormat('d F Y') }}), dengan ini kami mengajukan
+        {{ $contract->title ?? 'NULL' }} {{ $document->reference_document ?? '' }}, dengan ini kami mengajukan
         permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
     </div>
 

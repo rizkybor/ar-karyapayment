@@ -33,6 +33,10 @@
                         {{-- Nilai Kontrak --}}
                         <div><strong>Nilai Kontrak:</strong> Rp {{ number_format($contract->value, 0, ',', '.') }}</div>
 
+                        {{-- Tanggal Kontrak --}}
+                        <div><strong>Tanggal Kontrak:</strong>
+                            {{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('l, d F Y') }}</div>
+
                         {{-- Tanggal Mulai --}}
                         <div><strong>Tanggal Mulai:</strong>
                             {{ \Carbon\Carbon::parse($contract->start_date)->translatedFormat('l, d F Y') }}</div>

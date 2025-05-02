@@ -116,7 +116,7 @@
 
                     <x-input id="total_expense_manfee" class="block mt-1 w-full" type="text"
                         name="total_expense_manfee"
-                        value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 0, ',', '.')) }}"
+                        value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.')) }}"
                         onchange="calculateManfee();  checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
@@ -159,7 +159,7 @@
                 <x-label for="rate_ppn" value="{{ __('Rate PPN (%)') }}" />
                 @if ($isEdit)
                     <x-input id="rate_ppn" class="block mt-1 w-full" type="text" name="rate_ppn"
-                        value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.')) }}"
+                        value="{{ old('rate_ppn', number_format($firstAccumulatedCost->rate_ppn ?? 0, 1, '.', '.')) }}"
                         oninput="validateRatePPN(this); calculateValues(); checkChanges()" maxlength="5" />
 
                     <x-input id="comment_ppn" class="block mt-1 w-full" placeholder="Keterangan PPN" name="comment_ppn"

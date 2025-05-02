@@ -98,6 +98,43 @@ class DropboxController extends Controller
         }
     }
 
+    public function downloadMultipleFromDropbox(array $paths, string $folder): array
+    {
+        try {
+            $accessToken = DropboxService::getAccessToken();
+
+            if ($accessToken instanceof \Illuminate\Http\RedirectResponse) {
+                return [];
+            }
+
+            $client = new Client($accessToken);
+            $localFiles = [];
+
+            foreach ($paths as $dropboxPath) {
+                $filename = basename($dropboxPath);
+                $localTempPath = storage_path('app/temp_dl_' . uniqid() . '_' . $filename);
+
+                // Ensure the path exists in Dropbox folder
+                $list = $client->listFolder($folder);
+                $fileExists = collect($list['entries'])->firstWhere('path_lower', strtolower($dropboxPath));
+                if (!$fileExists) continue;
+
+                $content = $client->download($dropboxPath);
+                file_put_contents($localTempPath, $content);
+                $localFiles[] = [
+                    'path' => $localTempPath,
+                    'name' => $filename
+                ];
+            }
+
+            return $localFiles;
+        } catch (Exception $e) {
+            Log::error("[DROPBOX] Gagal download file: " . $e->getMessage());
+            return [];
+        }
+    }
+
+
     /**
      * 🔄 **Upload File ke Dropbox fixed folder /uploads (MODE TESTING)**
      */

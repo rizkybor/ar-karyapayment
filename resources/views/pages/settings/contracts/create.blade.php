@@ -38,14 +38,27 @@
                             </div>
 
                             <div>
-                                <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
+                                {{-- <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
                                 <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
                                     @foreach ($category as $item)
                                         <option value="{{ $item }}">{{ $item }}</option>
                                     @endforeach
                                 </select>
 
-                                <x-input-error for="category" class="mt-2" />
+                                <x-input-error for="category" class="mt-2" /> --}}
+
+                                <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
+                                <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach ($category as $item)
+                                        <option value="{{ $item }}" {{ old('category') === $item ? 'selected' : '' }}>
+                                            {{ $item }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category')
+                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
@@ -62,6 +75,14 @@
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan Nilai Kontrak"
                                     oninput="formatRupiah(this)" onblur="removeFormat(this)" required />
                                 <x-input-error for="value" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-label for="contract_date" value="{{ __('Tanggal Kontrak') }}" />
+                                <x-input id="contract_date" type="date" name="contract_date"
+                                    class="mt-1 block w-full min-h-[40px]" required autocomplete="contract_date"
+                                    oninput="setMinStartDate()" />
+                                <x-input-error for="contract_date" class="mt-2" />
                             </div>
 
                             <!-- Input Hidden untuk Database -->
@@ -200,9 +221,14 @@
 
 
         // # Format Tanggal Dibatasin
+        function setMinStartDate() {
+            let startDate = document.getElementById("contract_date").value;
+            document.getElementById("start_date").setAttribute("min", startDate);
+        }
+
         function setMinEndDate() {
-            let startDate = document.getElementById("start_date").value;
-            document.getElementById("end_date").setAttribute("min", startDate);
+            let endDate = document.getElementById("start_date").value;
+            document.getElementById("end_date").setAttribute("min", endDate);
         }
 
         // # Input Tipe Pembayaran

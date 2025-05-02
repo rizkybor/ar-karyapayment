@@ -26,6 +26,9 @@ use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
 use App\Notifications\InvoiceApprovalNotification;
 
+use App\Services\PrivyService;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PrivyController;
 
 class NonManfeeDocumentController extends Controller
 {
@@ -39,6 +42,7 @@ class NonManfeeDocumentController extends Controller
         $this->accurateService = $accurateService;
         $this->accurateOption = $accurateOption;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -53,14 +57,13 @@ class NonManfeeDocumentController extends Controller
     public function create()
     {
         $contracts = Contracts::where('type', 'non_management_fee')->get();
-        $numbers = $this->generateDocumentNumbers(); // default 'NMF'
 
-        return view('pages/ar-menu/non-management-fee/create', [
+        // Mengambil semua nomor dokumen dan info tambahan
+        $numbers = $this->generateDocumentNumbers('NF');
+
+        return view('pages/ar-menu/non-management-fee/create', array_merge([
             'contracts' => $contracts,
-            'letterNumber' => $numbers['letter_number'],
-            'invoiceNumber' => $numbers['invoice_number'],
-            'receiptNumber' => $numbers['receipt_number'],
-        ]);
+        ], $numbers));
     }
 
     /**
@@ -75,24 +78,34 @@ class NonManfeeDocumentController extends Controller
             'letter_subject' => 'required',
         ]);
 
-        $numbers = $this->generateDocumentNumbers();
+        // $numbers = $this->generateDocumentNumbers();
 
-        $input = $request->all();
-        $input['letter_number'] = $numbers['letter_number'];
-        $input['invoice_number'] = $numbers['invoice_number'];
-        $input['receipt_number'] = $numbers['receipt_number'];
+        $input = $request->only([
+            'contract_id',
+            'period',
+            'letter_subject',
+            'manfee_bill',
+            'letter_number',
+            'invoice_number',
+            'receipt_number',
+            'bank_account_id',
+            'reference_document',
+            'reason_rejected',
+            'path_rejected',
+            'last_reviewers',
+        ]);
+
         $input['category'] = 'management_non_fee';
-        $input['status'] = $input['status'] ?? 0;
+        $input['status'] = $request->status ?? 0;
+        $input['status_print'] = false;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
         $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
-
         try {
             // Simpan dokumen baru
             $nonManfeeDoc = NonManfeeDocument::create($input);
-
-            return redirect()->route('non-management-fee.edit', ['id' => $nonManfeeDoc->id])
+            return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -136,7 +149,22 @@ class NonManfeeDocumentController extends Controller
             ->latest('updated_at')
             ->first();
 
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $nonManfeeDocument->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // // uji coba
         // $apiResponseTest = $this->accurateOption->testAccount();
@@ -218,6 +246,7 @@ class NonManfeeDocumentController extends Controller
         // Ambil data Non Manfee Document berdasarkan ID dengan relasi
         $nonManfeeDocument = NonManfeeDocument::with([
             'accumulatedCosts',
+            'detailPayments',
             'attachments',
             'descriptions',
             'taxFiles'
@@ -235,7 +264,22 @@ class NonManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $nonManfeeDocument->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
@@ -317,8 +361,8 @@ class NonManfeeDocumentController extends Controller
     //         $nextApprovers = collect();
 
     //         if ($document->last_reviewers === 'pajak') {
-    //             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
-    //             $nextRole = 'pembendaharaan';
+    //             // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'perbendaharaan'
+    //             $nextRole = 'perbendaharaan';
     //             $statusCode = '6';
     //             $nextApprovers = User::where('role', $nextRole)->get();
     //         }
@@ -432,6 +476,21 @@ class NonManfeeDocumentController extends Controller
     //     }
     // }
 
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
+    {
+        $request = new Request([
+            'base64_pdf' => $base64,
+            'type_sign' => $typeSign,
+            "posX" => $posX,
+            "posY" => $posY
+        ]);
+
+        $privyController = app()->make(PrivyController::class);
+        $privyService = app()->make(PrivyService::class);
+
+        return $privyController->generateDocument($request, $privyService,);
+    }
+
     public function processApproval(Request $request, $id)
     {
         DB::beginTransaction();
@@ -480,7 +539,7 @@ class NonManfeeDocumentController extends Controller
             $nextRole = null;
             $nextApprovers = collect();
 
-            // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'pembendaharaan'
+            // 🔹 3️⃣ Jika reviewer terakhir adalah 'pajak', kirim kembali ke 'perbendaharaan'
             if ($document->last_reviewers === 'pajak') {
                 // ✅ Cek apakah ada faktur pajak (tax files)
                 if ($document->taxFiles->isEmpty()) {
@@ -510,8 +569,8 @@ class NonManfeeDocumentController extends Controller
                     ],
                 ];
 
-                // ✅ Kirim ke AccurateService
                 try {
+                    // ✅ Proccess AccurateService
                     $dataAccurate = [
                         'data' => $document,
                         'contract' => $document->contract,
@@ -523,13 +582,31 @@ class NonManfeeDocumentController extends Controller
 
                     $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
                     $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
-                    // dd($responseBody,'<<< cek response body hasil accurate');
+ 
+                    // ✅ Proccess Privy Service
+                    // get base 64 from pdf template
+                    $pdfController = app()->make(PDFController::class);
+                    $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
+
+                    // PRIVY SERVICES
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
+                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
+                    
+                    $letterPrivy = $createLetter->getData();
+                    $invoicePrivy = $createInvoice->getData();
+                    $kwitansiPrivy = $createKwitansi->getData();
+
+                    dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
+
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
 
                 // ✅ Lanjutkan proses approval
-                $nextRole = 'pembendaharaan';
+                $nextRole = 'perbendaharaan';
                 $statusCode = '6'; // done
                 $nextApprovers = User::where('role', $nextRole)->get();
             }
@@ -659,11 +736,11 @@ class NonManfeeDocumentController extends Controller
         }
 
         $flow = [
-            'kadiv'               => 'pembendaharaan',
-            'pembendaharaan'      => 'manager_anggaran',
+            'kadiv'               => 'perbendaharaan',
+            'perbendaharaan'      => 'manager_anggaran',
             'manager_anggaran'    => 'direktur_keuangan',
             'direktur_keuangan'   => 'pajak',
-            'pajak'               => 'pembendaharaan'
+            'pajak'               => 'perbendaharaan'
         ];
 
         return $flow[$currentRole] ?? null;
@@ -677,7 +754,7 @@ class NonManfeeDocumentController extends Controller
         return [
             '0'   => 'draft',
             '1'   => 'kadiv',
-            '2'   => 'pembendaharaan',
+            '2'   => 'perbendaharaan',
             '3'   => 'manager_anggaran',
             '4'   => 'direktur_keuangan',
             '5'   => 'pajak',
@@ -856,7 +933,7 @@ class NonManfeeDocumentController extends Controller
             ->with('success', 'Dokumen berhasil dibatalkan.');
     }
 
-    private function generateDocumentNumbers(string $prefix = 'NMF'): array
+    private function generateDocumentNumbers(string $prefix = 'NF'): array
     {
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
@@ -870,18 +947,21 @@ class NonManfeeDocumentController extends Controller
             preg_match('/^(\d{6})/', $lastNumber, $matches);
             $lastNumeric = intval($matches[1] ?? 100);
 
-            // Pembulatan kelipatan 10
             if ($lastNumeric % 10 !== 0) {
                 $lastNumeric = ceil($lastNumeric / 10) * 10;
             }
         }
 
         $nextNumber = $lastNumeric + 10;
+        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         return [
-            'letter_number' => sprintf("%06d/%s/KEU/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
-            'invoice_number' => sprintf("%06d/%s/INV/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
-            'receipt_number' => sprintf("%06d/%s/KW/KPU/SOL/%s/%s", $nextNumber, $prefix, $monthRoman, $year),
+            'letter_number'  => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'invoice_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'receipt_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'base_number'    => $baseNumber,
+            'month_roman'    => $monthRoman,
+            'year'           => $year,
         ];
     }
 
@@ -897,5 +977,33 @@ class NonManfeeDocumentController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function perihalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'letter_subject' => 'required|string|max:255',
+        ]);
+
+        $doc = NonManfeeDocument::findOrFail($id);
+        $doc->update([
+            'letter_subject' => $request->letter_subject,
+        ]);
+
+        return redirect()->back()->with('success', 'Perihal berhasil diperbarui.');
+    }
+
+    public function referenceUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'reference_document' => 'nullable|string|max:255',
+        ]);
+
+        $doc = NonManfeeDocument::findOrFail($id);
+        $doc->update([
+            'reference_document' => $request->reference_document,
+        ]);
+
+        return redirect()->back()->with('success', 'Referensi dokumen berhasil diperbarui.');
     }
 }

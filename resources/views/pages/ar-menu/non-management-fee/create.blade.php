@@ -2,7 +2,8 @@
     <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
-                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Buat Invoice Non Management Fee</h1>
+                <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Buat Invoice Non Management
+                    Fee</h1>
             </div>
         </div>
         <form action="{{ route('non-management-fee.store') }}" method="POST" enctype="multipart/form-data">
@@ -26,13 +27,13 @@
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $letterNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $letter_number }}" />
                             <x-input-error for="letter_number" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="invoice_number" value="{{ __('No Invoice') }}" />
                             <x-input id="invoice_number" name="invoice_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $invoiceNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $invoice_number }}" />
                             <x-input-error for="invoice_number" class="mt-2" />
                         </div>
                         <div>
@@ -44,7 +45,7 @@
                         <div>
                             <x-label for="receipt_number" value="{{ __('No Kwitansi') }}" />
                             <x-input id="receipt_number" name="receipt_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $receiptNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $receipt_number }}" />
                             <x-input-error for="receipt_number" class="mt-2" />
                         </div>
                         <div class="sm:row-span-2">
@@ -52,6 +53,11 @@
                             <x-input-wide id="letter_subject" name="letter_subject" placeholder="Masukkan Perihal Surat"
                                 type="text" class="mt-1 block w-full min-h-[40px]" />
                             <x-input-error for="letter_subject" class="mt-2" />
+
+                            <x-label class="mt-2" for="reference_document" value="{{ __('Referensi Dokumen') }}" />
+                            <x-input id="reference_document" name="reference_document" placeholder="Optional"
+                                type="text" class="mt-1 block w-full min-h-[40px]" />
+                            <x-input-error for="reference_document" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="employee_name" value="{{ __('Nama Pemberi Kerja') }}" />
@@ -72,13 +78,69 @@
             </div>
         </form>
     </div>
+
+    <!-- Tambahkan input hidden untuk base number -->
+    <input type="hidden" id="base_number" value="{{ $base_number }}">
+
     <script>
+        function getCompanyInitial(employeeName) {
+            if (!employeeName) return 'SOL';
+
+            // Hapus PT. dari nama perusahaan
+            const companyName = employeeName.replace(/^PT\.\s*/i, '');
+
+            // Split nama menjadi kata-kata
+            const words = companyName.trim().split(/\s+/);
+
+            // Jika hanya 1 kata
+            if (words.length === 1) {
+                return words[0];
+            }
+
+            // Jika lebih dari 1 kata
+            let initials = '';
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0) {
+                    initials += words[i][0].toUpperCase();
+                }
+            }
+
+            return initials;
+        }
+
         function updateContractDetails(selectElement) {
             let selectedOption = selectElement.options[selectElement.selectedIndex];
 
             // Update Nama Pemberi Kerja
             let employeeName = selectedOption.getAttribute("data-employee") || "";
             document.getElementById("employee_name").value = employeeName;
+
+            // Generate nomor dokumen
+            const base_number = '{{ $base_number }}';
+            const month_roman = '{{ $month_roman }}';
+            const year = '{{ $year }}';
+            const companyInitial = getCompanyInitial(employeeName);
+
+            document.getElementById('letter_number').value =
+                `${base_number}/NF/KEU/KPU/${companyInitial}/${month_roman}/${year}`;
+            document.getElementById('invoice_number').value =
+                `${base_number}/NF/INV/KPU/${companyInitial}/${month_roman}/${year}`;
+            document.getElementById('receipt_number').value =
+                `${base_number}/NF/KW/KPU/${companyInitial}/${month_roman}/${year}`;
         }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const contractSelect = document.getElementById('contract_id');
+            contractSelect.addEventListener('change', function() {
+                updateContractDetails(this);
+            });
+
+            // Jika ada kontrak yang dipilih (setelah validasi gagal)
+            @if (old('contract_id'))
+                contractSelect.value = '{{ old('contract_id') }}';
+                updateContractDetails(contractSelect);
+            @endif
+        });
     </script>
 </x-app-layout>

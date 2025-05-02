@@ -170,44 +170,48 @@
             saveButton.disabled = true;
         }
 
+        let akunNo = document.getElementById("akunHidden")?.value || '';
+        let akunName = document.getElementById("nama_akun")?.value || '';
+
         let initialData = {
-            akun: document.getElementById("akun")?.value || '',
-            nama_akun: document.getElementById("nama_akun")?.value || '',
+            akun: akunNo,
+            nama_akun: `${akunName} (${akunNo})`, // harus cocok dengan isi input akunInput
             dpp_pekerjaan: document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '',
-            rate_ppn: document.getElementById("rate_ppn")?.value || ''
+            rate_ppn: document.getElementById("rate_ppn")?.value || '',
+            comment_ppn: document.getElementById("comment_ppn")?.value || '',
+            nilai_ppn: document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '',
+            jumlah: document.getElementById("jumlah")?.value.replace(/\./g, '') || ''
         };
 
         window.checkChanges = function() {
-            let akunInput = document.getElementById("akunInput");
-            let akunHidden = document.getElementById("akunHidden");
+    let akunValue = document.getElementById("akunHidden")?.value || '';
+    let akunNameFull = `${document.getElementById("nama_akun")?.value || ''} (${akunValue})`;
 
-            // Kalau input akunHidden tidak ada, berarti View Mode — skip pengecekan akun
-            if (!akunInput || !akunHidden) return;
+    let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
+    let commentPpnValue = document.getElementById("comment_ppn")?.value || '';
+    let nilaiPpnValue = document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '';
+    let jumlahValue = document.getElementById("jumlah")?.value.replace(/\./g, '') || '';
 
-            let akunValue = akunHidden?.value || '';
-            let akunName = akunInput?.value || '';
+    let dppPekerjaan = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '';
 
-            // Update nama akun hidden
-            document.getElementById("nama_akun").value = akunName;
+    let hasChanged =
+        akunValue !== initialData.akun ||
+        akunName !== initialData.nama_akun ||
+        dppPekerjaan !== initialData.dpp_pekerjaan ||
+        ratePpnValue !== initialData.rate_ppn ||
+        commentPpnValue !== initialData.comment_ppn ||
+        nilaiPpnValue !== initialData.nilai_ppn ||
+        jumlahValue !== initialData.jumlah;
 
-            let dppPekerjaanValue = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') ||
-                '';
-            let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
-
-            let hasChanged = akunValue !== initialData.akun ||
-                akunName !== initialData.nama_akun ||
-                dppPekerjaanValue !== initialData.dpp_pekerjaan ||
-                ratePpnValue !== initialData.rate_ppn;
-
-            if (saveButton) {
-                saveButton.disabled = !hasChanged;
-                saveButton.classList.toggle("bg-gray-400", !hasChanged);
-                saveButton.classList.toggle("cursor-not-allowed", !hasChanged);
-                saveButton.classList.toggle("opacity-50", !hasChanged);
-                saveButton.classList.toggle("bg-violet-500", hasChanged);
-                saveButton.classList.toggle("hover:bg-violet-600", hasChanged);
-            }
-        };
+    if (saveButton) {
+        saveButton.disabled = !hasChanged;
+        saveButton.classList.toggle("bg-gray-400", !hasChanged);
+        saveButton.classList.toggle("cursor-not-allowed", !hasChanged);
+        saveButton.classList.toggle("opacity-50", !hasChanged);
+        saveButton.classList.toggle("bg-violet-500", hasChanged);
+        saveButton.classList.toggle("hover:bg-violet-600", hasChanged);
+    }
+};
 
         window.validateRatePPN = function(input) {
             input.value = input.value.replace(/[^0-9.,]/g, '');
@@ -251,7 +255,7 @@
     }
 
     function selectAkun(no, name) {
-        document.getElementById('akunInput').value = name;
+        document.getElementById('akunInput').value = `${name} (${no})`;
         document.getElementById('akunHidden').value = no;
         document.getElementById('nama_akun').value = name;
         document.getElementById('akunDropdown').classList.add('hidden');

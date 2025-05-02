@@ -92,7 +92,7 @@ class NonManfeeDocumentDataTableController extends Controller
                 $statusMapping = [
                     'draft' => '0',
                     'checked by kadiv' => '1',
-                    'checked by pembendaharaan' => '2',
+                    'checked by perbendaharaan' => '2',
                     'checked by mgr. anggaran' => '3',
                     'checked by dir. keuangan' => '4',
                     'checked by pajak' => '5',
@@ -116,8 +116,50 @@ class NonManfeeDocumentDataTableController extends Controller
             })
 
             ->filterColumn('expired_at', function ($query, $keyword) {
-                if (strtolower($keyword) === 'expired') {
+                $keyword = strtolower($keyword);
+            
+                if ($keyword === 'expired') {
                     $query->where('expired_at', '<', now());
+                    return;
+                }
+            
+                // Coba cocokkan format tanggal (misal: 01-06-2025 atau 2025-06-01)
+                if (strtotime($keyword)) {
+                    $query->whereDate('expired_at', '=', date('Y-m-d', strtotime($keyword)));
+                    return;
+                }
+            
+                // Pencarian berdasarkan angka tanggal
+                if (preg_match('/^\d{1,2}$/', $keyword)) {
+                    $query->whereDay('expired_at', $keyword);
+                    return;
+                }
+            
+                // Pencarian berdasarkan angka bulan (01–12)
+                if (preg_match('/^(0?[1-9]|1[0-2])$/', $keyword)) {
+                    $query->whereMonth('expired_at', $keyword);
+                    return;
+                }
+            
+                // Pencarian berdasarkan tahun
+                if (preg_match('/^\d{4}$/', $keyword)) {
+                    $query->whereYear('expired_at', $keyword);
+                    return;
+                }
+            
+                // Pencarian berdasarkan nama bulan (bahasa Indonesia)
+                $monthNames = [
+                    'januari' => 1, 'februari' => 2, 'maret' => 3,
+                    'april' => 4, 'mei' => 5, 'juni' => 6,
+                    'juli' => 7, 'agustus' => 8, 'september' => 9,
+                    'oktober' => 10, 'november' => 11, 'desember' => 12,
+                ];
+            
+                foreach ($monthNames as $name => $num) {
+                    if (str_contains($keyword, $name)) {
+                        $query->whereMonth('expired_at', $num);
+                        break;
+                    }
                 }
             })
 

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('department')->nullable(); // Operasi, Keuangan, Pengadaan dan Administrasi Umum, Hukum, SDM, HSSE, Komersial dan Pengembangan Bisnis
-            $table->string('position')->nullable(); // Direktur Utama, Direktur Keuangan, Pembendaharaan, Kepala Departemen, Staff
+            $table->string('position')->nullable(); // Direktur Utama, Direktur Keuangan, Perbendaharaan, Kepala Departemen, Staff
             $table->string('role')->nullable();
             $table->string('employee_status')->nullable();
             $table->string('gender')->nullable();

@@ -28,8 +28,8 @@
 
 @php
     $statusIsSix = (int) $document_status === 6;
-    $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-    $showDraft = $statusIsSix && $isPembendaharaan;
+    $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+    $showDraft = $statusIsSix && $isPerbendaharaan;
 @endphp
 
 <div x-data="{ modalOpen: false }">
@@ -113,27 +113,27 @@
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
 
-                @if ($document_status > 0)
-                    <div x-data="{ open: false }" class="relative">
-                        <x-button-action @click="open = !open" color="blue" icon="eye">
-                            {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
-                        </x-button-action>
+                {{-- @if ($document_status > 0) --}}
+                <div x-data="{ open: false }" class="relative">
+                    <x-button-action @click="open = !open" color="blue" icon="eye">
+                        {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
+                    </x-button-action>
 
-                        <div x-show="open" @click.away="open = false"
-                            class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
-                            <ul class="py-2 text-gray-700">
-                                @foreach ($printOptions as $option)
-                                    <li>
-                                        <a href="{{ $option['route'] }}" target="_blank"
-                                            class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
-                                            {{ $option['label'] }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                        <ul class="py-2 text-gray-700">
+                            @foreach ($printOptions as $option)
+                                <li>
+                                    <a href="{{ $option['route'] }}" target="_blank"
+                                        class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                        {{ $option['label'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                @endif
+                </div>
+                {{-- @endif --}}
 
                 @if ($document_status == 103)
                     <x-button-action color="red" icon="eye"
@@ -143,7 +143,7 @@
                 @endif
 
                 @if (auth()->user()->role !== 'maker')
-                    @if (auth()->user()->role === 'pembendaharaan' && $document_status == 6)
+                    @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
 
                         <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
                         <div x-data="{ open: false }" class="relative">
@@ -168,6 +168,12 @@
 
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
+
+                          <!-- Upload Faktur Pajak Button -->
+                          <x-button-action color="teal" icon="pencil"
+                          onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
+                         Update Lampiran
+                      </x-button-action>
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
@@ -247,6 +253,10 @@
 
 <!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
 <script>
+    const isMaker = @json(auth()->user()->hasRole('maker'));
+</script>
+
+<script>
     function openModal(button) {
         let actionRoute = button.getAttribute('data-action');
         let modalTitle = button.getAttribute('data-title');
@@ -274,6 +284,18 @@
     function updateBankAccount(bankId) {
         const documentId = "{{ $document->id }}";
         const token = "{{ csrf_token() }}";
+
+         // 🚫 Validasi: role harus maker
+         if (!isMaker) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya', 'error', 'Akses Ditolak!');
+            return;
+        }
+
+        // 🚫 Validasi: pastikan ada bank yang dipilih
+        if (!bankId) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning', 'Perhatian!');
+            return;
+        }
 
         fetch(`/management-fee/${documentId}/update-bank`, {
                 method: 'POST',

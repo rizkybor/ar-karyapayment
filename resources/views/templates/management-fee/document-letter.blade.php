@@ -67,8 +67,8 @@
 
     @php
         $statusIsSix = (int) $document->status === 6;
-        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-        $showDraft = $statusIsSix && $isPembendaharaan;
+        $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+        $showDraft = $statusIsSix && $isPerbendaharaan;
     @endphp
 
     @if (!$showDraft)
@@ -104,7 +104,7 @@
                 <td style="width: 90%; border: none; vertical-align: top;">
                     <div style="display: inline-block; vertical-align: top;">:</div>
                     <div style="display: inline-block; width: calc(100% - 10px);">
-                        <strong>Permohonan Pembayaran {{ $document->letter_subject ?? '-' }} -
+                        <strong>{{ $document->letter_subject ?? '-' }} -
                             {{ $document->period ?? '-' }}</strong>
                     </div>
                 </td>
@@ -154,7 +154,8 @@
             <td class="w-32">{{ $document->receipt_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+            <td class="w-24 text-right pl-2" style="text-align: right;">
+                {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td class="w-6">2.</td>
@@ -163,7 +164,8 @@
             <td class="w-32">{{ $document->invoice_number ?? 'NULL' }}</td>
             <td class="w-16 text-right pl-2">Sebesar</td>
             <td class="w-10 text-right pl-2">Rp</td>
-            <td class="w-24 text-right pl-2">{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+            <td class="w-24 text-right pl-2" style="text-align: right;">
+                {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
         </tr>
     </table>
 

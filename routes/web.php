@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 // use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\ContractsController;
+use App\Http\Controllers\ContractCategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoicePrintStatusController;
 
 use App\Http\Controllers\ManfeeTaxController;
 use App\Http\Controllers\ManfeeHistoryController;
@@ -126,11 +128,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])->name('invoice.print.status');
+    Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])->name('invoice.print.status.data');
+    Route::post('/invoice/print/status/update', [InvoicePrintStatusController::class, 'updatePrintStatus'])
+        ->name('invoice.print.status.update');
+
 
     // ROUTE CONTRACTS (Super Admin)
     Route::middleware(['role:super_admin'])->group(function () {
         Route::resource('/contracts', ContractsController::class);
+        Route::resource('/contract-categories', ContractCategoryController::class);
     });
+
+    // Route::apiResource('contracts-categories', ContractCategoryController::class);
 
 
     /*
@@ -155,6 +165,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Bank
         Route::post('/{id}/update-bank', [ManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
+
+        Route::put('/{id}/perihal-update', [ManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
+        Route::put('/{id}/reference-document-update', [ManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
 
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');
@@ -261,6 +274,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/{id}/update-bank', [NonManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
 
+        Route::put('/{id}/perihal-update', [NonManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
+        Route::put('/{id}/reference-document-update', [NonManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
+
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
 
@@ -322,6 +338,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/{id}/print-surat', [PDFController::class, 'nonManfeeLetter'])->name('print-surat');;
         Route::get('/{id}/print-invoice', [PDFController::class, 'nonManfeeInvoice'])->name('print-invoice');;
         Route::get('/{id}/print-kwitansi', [PDFController::class, 'nonManfeeKwitansi'])->name('print-kwitansi');;
+        Route::get('/{id}/download-zip', [PDFController::class, 'nonManfeeZip'])
+            ->name('download-zip');
 
         // Route History
         Route::prefix('histories')->name('histories.')->group(function () {

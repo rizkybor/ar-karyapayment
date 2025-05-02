@@ -5,7 +5,7 @@
     $statuses = [
         '0' => 'Draft',
         '1' => 'Checked by Kepala Divisi',
-        '2' => 'Checked by Pembendaharaan',
+        '2' => 'Checked by Perbendaharaan',
         '3' => 'Checked by Manager Anggaran',
         '4' => 'Checked by Direktur Keuangan',
         '5' => 'Checked by Pajak',
@@ -20,7 +20,7 @@
     $statusColors = [
         'Draft' => 'bg-gray-200 text-gray-800',
         'Checked by Kepala Divisi' => 'bg-blue-200 text-blue-800',
-        'Checked by Pembendaharaan' => 'bg-yellow-200 text-yellow-800',
+        'Checked by Perbendaharaan' => 'bg-yellow-200 text-yellow-800',
         'Checked by Manager Anggaran' => 'bg-orange-200 text-orange-800',
         'Checked by Direktur Keuangan' => 'bg-indigo-200 text-indigo-800',
         'Checked by Pajak' => 'bg-teal-200 text-teal-800',

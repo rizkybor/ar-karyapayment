@@ -27,8 +27,8 @@ class UserSeeder extends Seeder
         //     ['name' => 'Kadiv Pengadaan', 'email' => 'kadiv.pengadaan@example.com', 'role' => 'kadiv', 'department' => 'Departmen Pengadaan dan Administrasi Umum', 'position' => 'Kepala Departemen'],
         //     ['name' => 'Kadiv SDM', 'email' => 'kadiv.sdm@example.com', 'role' => 'kadiv', 'department' => 'Departmen SDM', 'position' => 'Kepala Departemen'],
 
-        //     // Pembendaharaan
-        //     ['name' => 'Pembendaharaan User', 'email' => 'pembendaharaan@example.com', 'role' => 'pembendaharaan', 'department' => 'Departmen Keuangan', 'position' => 'Pembendaharaan'],
+        //     // Perbendaharaan
+        //     ['name' => 'Perbendaharaan User', 'email' => 'perbendaharaan@example.com', 'role' => 'perbendaharaan', 'department' => 'Departmen Keuangan', 'position' => 'Perbendaharaan'],
 
         //     // Pajak
         //     ['name' => 'Pajak User', 'email' => 'pajak@example.com', 'role' => 'pajak', 'department' => 'Departmen Keuangan', 'position' => 'Pajak'],
@@ -278,8 +278,8 @@ class UserSeeder extends Seeder
                 'email' => 'pevilian.ags@gmail.com',
                 'nip' => '05202961',
                 'department' => 'Departemen Keuangan',
-                'position' => 'Staff Anggaran & Pembendaharaan',
-                'role' => 'pembendaharaan',
+                'position' => 'Staff Anggaran & Perbendaharaan',
+                'role' => 'perbendaharaan',
                 'employee_status' => 'Organik',
                 'gender' => 'female',
                 'identity_number' => '3174034308960005'
@@ -289,7 +289,7 @@ class UserSeeder extends Seeder
                 'email' => 'Mutiara.ab22@gmail.com',
                 'nip' => '04170024',
                 'department' => 'Departemen Keuangan',
-                'position' => 'Manager Anggaran & Pembendaharaan',
+                'position' => 'Manager Anggaran & Perbendaharaan',
                 'role' => 'manager_anggaran',
                 'employee_status' => 'Organik',
                 'gender' => 'female',

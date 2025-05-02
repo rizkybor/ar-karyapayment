@@ -224,22 +224,57 @@
                                 </ul>
                             </div>
                         </li>
+
+                        <!-- Dashboar Ki -->
+                        @role('perbendaharaan')
+                            <li
+                                class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
+                            bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
+                            @if (in_array(Request::segment(1), ['invoice-print-status'])) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif">
+                                <a href="{{ route('invoice.print.status') }}"
+                                    class="block text-gray-800 dark:text-gray-100 truncate transition 
+                            @if (!in_array(Request::segment(1), ['invoice-print-status'])) hover:text-gray-900 dark:hover:text-white @endif">
+                                    <div class="flex items-center justify-between">
+                                        <div class="grow flex items-center">
+                                            <svg class="shrink-0 fill-current 
+                                            @if (in_array(Request::segment(1), ['invoice-print-status'])) text-violet-500 
+                                            @else text-gray-400 dark:text-gray-500 @endif"
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24">
+                                                <path
+                                                    d="M17 17H7v-3H3v6h4v3h10v-3h4v-6h-4v3ZM7 4v4h10V4h3a1 1 0 0 1 1 1v7H3V5a1 1 0 0 1 1-1h3Zm2 0h6v2H9V4Z" />
+                                            </svg>
+                                            <span
+                                                class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                Invoice Print Status
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        @endrole
                     @endif
 
                     <!-- Settings -->
                     <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                     bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                    @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
-                        x-data="{ open: {{ Request::is('user*') || Request::is('contracts*') || Request::is('register*') ? 1 : 0 }} }">
+                    @if (Request::is('user*') ||
+                            Request::routeIs('contracts*') ||
+                            Request::routeIs('contract-categories*') ||
+                            Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
+                        x-data="{ open: {{ Request::is('user*') || Request::routeIs('contracts*') || Request::routeIs('contract-categories*') || Request::is('register*') ? 1 : 0 }} }">
 
                         <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                        @if (!Request::is('user*') && !Request::is('contracts*') && !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
+                        @if (!Request::is('user*') && !Request::routeIs('contracts*') && !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
                             href="#0" @click.prevent="open = !open; sidebarExpanded = true">
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 fill-current 
-                                    @if (Request::is('user*') || Request::is('contracts*') || Request::is('register*')) text-violet-500 
+                                    @if (Request::is('user*') ||
+                                            Request::is('contracts*') ||
+                                            Request::is('contract-categories*') ||
+                                            Request::is('register*')) text-violet-500 
                                     @else 
                                         text-gray-400 dark:text-gray-500 @endif"
                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -273,11 +308,22 @@
                                 @role('super_admin')
                                     <li class="mb-1 last:mb-0">
                                         <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                        @if (Request::is('contracts*')) !text-violet-500 @endif"
+                                    @if (Request::routeIs('contracts*')) !text-violet-500 @endif"
                                             href="{{ route('contracts.index') }}">
                                             <span
                                                 class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                                 Contracts
+                                            </span>
+                                        </a>
+                                    </li>
+
+                                    <li class="mb-1 last:mb-0">
+                                        <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
+                                    @if (Request::routeIs('contract-categories*')) !text-violet-500 @endif"
+                                            href="{{ route('contract-categories.index') }}">
+                                            <span
+                                                class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                Contract Categories
                                             </span>
                                         </a>
                                     </li>

@@ -67,16 +67,24 @@
 <body class="bg-white p-8">
 
     @php
-        $statusIsSix = (int) $document->status === 6;
-        $isPembendaharaan = auth()->user()->role === 'pembendaharaan';
-        $showDraft = $statusIsSix && $isPembendaharaan;
+        $status = (int) $document->status;
+        $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
+        $showDraft = $status === 6 && $isPerbendaharaan;
+        $isRejected = $status === 103;
     @endphp
 
     @if (!$showDraft)
-        <!-- Watermark Layer -->
         <div
-            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-            DRAFT
+            style="position: fixed;
+           top: 35%;
+           left: 12%;
+           z-index: -1;
+           opacity: 0.08;
+           font-size: {{ $isRejected ? '100px' : '150px' }};
+           transform: rotate(-30deg);
+           font-weight: bold;
+           color: {{ $isRejected ? '#dc2626' : '#000' }};">
+            {{ $isRejected ? 'REJECTED' : 'DRAFT' }}
         </div>
     @endif
 
@@ -161,10 +169,17 @@
             @foreach ($detailPayments as $payment)
                 <tr>
                     <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
-                    <td class="no-border">Rp.</td>
-                    <td style="border-left: none; border-top: none; border-bottom: none;">
+
+                    {{-- Rp. --}}
+                    <td class="no-border" style="text-align: right; padding-right: 0.5rem; white-space: nowrap;">Rp.
+                    </td>
+
+                    {{-- Nilai --}}
+                    <td
+                        style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
                         {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
                     </td>
+
                     <td class="no-border">&nbsp;</td>
                     <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
                 </tr>
@@ -175,33 +190,56 @@
 
             <tr>
                 <td class="no-border">Jumlah</td>
-                <td class="no-border"><strong>Rp.</strong></td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">
+                <td class="no-border" style="text-align: right; padding-right: 0.5rem;"><strong>Rp.</strong></td>
+                <td
+                    style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
                     <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
                 </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
+
             <tr>
                 <td class="no-border">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : $accumulatedCosts[0]->comment_ppn }}</td>
-                <td class="no-border">Rp.</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">
-                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                </td>
+                <td class="no-border" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
+                <td
+                    style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
+                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
             </tr>
+
             <tr>
                 <td class="no-border-top-side">Jumlah Total</td>
-                <td class="no-border-top-side">Rp.</td>
+                <td class="no-border-top-side" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
                 <td
-                    style="border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative;">
+                    style="
+            border-left: none;
+            border-top: none;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+            text-align: right;
+            padding: 5px 3rem 5px 0;
+            position: relative;">
                     {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
-                    <div style="position: absolute; top: 0; left: 0; width: 50%; height: 1px; background: black;"></div>
+                    <div
+                        style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 80%;
+                height: 1px;
+                background: black;">
+                    </div>
                 </td>
                 <td class="no-border-top-side">&nbsp;</td>
                 <td style="border-left: none; border-top: none;">&nbsp;</td>
             </tr>
+
+
             <tr>
                 <td colspan="3" style="text-align: right;">Jumlah</td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
@@ -210,7 +248,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="3" style="text-align: right;">PPN</td>
+                <td colspan="3" style="text-align: right;">
+                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                </td>
                 <td style="border-bottom: none; border-right: none;">Rp</td>
                 <td style="text-align: right; border-left: none;">
                     {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
@@ -225,8 +265,8 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta,
-                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
