@@ -82,8 +82,6 @@ class ContractsController extends Controller
 
         $input = $request->all();
 
-        dd($input);
-
         // Format Tanggal
         $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
