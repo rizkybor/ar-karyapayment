@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 // use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\ContractsController;
+use App\Http\Controllers\ContractCategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoicePrintStatusController;
 
@@ -136,7 +137,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // ROUTE CONTRACTS (Super Admin)
     Route::middleware(['role:super_admin'])->group(function () {
         Route::resource('/contracts', ContractsController::class);
+        Route::resource('/contract-categories', ContractCategoryController::class);
     });
+
+    // Route::apiResource('contracts-categories', ContractCategoryController::class);
 
 
     /*

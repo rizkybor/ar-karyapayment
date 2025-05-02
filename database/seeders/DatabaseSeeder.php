@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             MasterBillTypeSeeder::class,
             NonManfeeDocumentSeeder::class,
             ManfeeDocumentSeeder::class,
+            ContractCategorySeeder::class
         ]);
     }
 }
