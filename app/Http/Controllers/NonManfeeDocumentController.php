@@ -105,7 +105,6 @@ class NonManfeeDocumentController extends Controller
             ->day(15)
             ->setTime(0, 1, 0);
             
-        dd($input);
         try {
             // Simpan dokumen baru
             $nonManfeeDoc = NonManfeeDocument::create($input);
