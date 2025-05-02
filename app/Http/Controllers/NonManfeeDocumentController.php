@@ -26,6 +26,9 @@ use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
 use App\Notifications\InvoiceApprovalNotification;
 
+use App\Services\PrivyService;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PrivyController;
 
 class NonManfeeDocumentController extends Controller
 {
@@ -39,6 +42,7 @@ class NonManfeeDocumentController extends Controller
         $this->accurateService = $accurateService;
         $this->accurateOption = $accurateOption;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -472,6 +476,21 @@ class NonManfeeDocumentController extends Controller
     //     }
     // }
 
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
+    {
+        $request = new Request([
+            'base64_pdf' => $base64,
+            'type_sign' => $typeSign,
+            "posX" => $posX,
+            "posY" => $posY
+        ]);
+
+        $privyController = app()->make(PrivyController::class);
+        $privyService = app()->make(PrivyService::class);
+
+        return $privyController->generateDocument($request, $privyService,);
+    }
+
     public function processApproval(Request $request, $id)
     {
         DB::beginTransaction();
@@ -550,8 +569,8 @@ class NonManfeeDocumentController extends Controller
                     ],
                 ];
 
-                // ✅ Kirim ke AccurateService
                 try {
+                    // ✅ Proccess AccurateService
                     $dataAccurate = [
                         'data' => $document,
                         'contract' => $document->contract,
@@ -563,7 +582,25 @@ class NonManfeeDocumentController extends Controller
 
                     $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
                     $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
-                    // dd($responseBody,'<<< cek response body hasil accurate');
+ 
+                    // ✅ Proccess Privy Service
+                    // get base 64 from pdf template
+                    $pdfController = app()->make(PDFController::class);
+                    $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
+
+                    // PRIVY SERVICES
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
+                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
+                    
+                    $letterPrivy = $createLetter->getData();
+                    $invoicePrivy = $createInvoice->getData();
+                    $kwitansiPrivy = $createKwitansi->getData();
+
+                    dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
+
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }

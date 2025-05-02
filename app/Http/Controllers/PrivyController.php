@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Services\PrivyService;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
 
 class PrivyController extends Controller
 {
@@ -95,43 +97,65 @@ class PrivyController extends Controller
         return response()->json($result);
     }
 
-    public function uploadDocSignOnly(Request $request, PrivyService $privy)
+    // Payload Privy Pattern 
+    public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY)
     {
-        // 1. Validasi request
+        // Generate reference_number: REFYYYYMMDDprimeXXXX
+        $today = Carbon::now();
+        $referenceNumber = 'REF' . $today->format('Ymd') . 'prime' . strtoupper(Str::random(4));
+
+        $payload = [
+            "reference_number" => $referenceNumber,
+            "channel_id" => "KUU001",
+            "custom_signature_placement" => true,
+            "doc_process" => $typeSign,
+            "visibility" => true,
+            "doc_owner" => [
+                "privyId" => env('PRIVY_ID'),
+                "enterpriseToken" => env('PRIVY_ENTERPRISE_TOKEN'),
+            ],
+            "document" => [
+                "document_file" => "data:application/pdf;base64," . $base64Pdf,
+                "document_name" => "test",
+                "sign_process" => "1",
+                "barcode_position" => "1",
+            ],
+            "recipients" => [
+                [
+                    "detail" => "true",
+                    "user_type" => "0",
+                    "autosign" => "1",
+                    "id_user" => env('PRIVY_ID_USER'),
+                    "signer_type" => "Signer",
+                    "enterpriseToken" => "",
+                    "sign_positions" => [
+                        [
+                            "posX" => $posX,
+                            "posY" => $posY,
+                            "signPage" => "1",
+                        ],
+                        [
+                            "posX" => "200",
+                            "posY" => "200",
+                            "signPage" => "1",
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
+        return $payload;
+    }
+
+    public function generateDocument(Request $request, $privy)
+    {
         try {
-            // 1. Validasi request
+            // Validasi input minimal
             $request->validate([
-                'reference_number' => 'required|string|alpha_num', // karena error sebelumnya: must consist of alpha-numeric characters
-                'channel_id' => 'required|string',
-                'doc_process' => 'required|in:0,1',
-                'info' => 'nullable|string',
-                'visibility' => 'required|boolean',
-            
-                // doc_owner
-                'doc_owner' => 'required|array',
-                'doc_owner.privyId' => 'required|string',
-                'doc_owner.enterpriseToken' => 'required|string',
-            
-                // document
-                'document' => 'required|array',
-                'document.document_file' => 'required|string',
-                'document.document_name' => 'required|string',
-                'document.notify_user' => 'required|in:0,1',
-                'document.sign_process' => 'required|in:0,1',
-                'document.barcode_position' => 'required|in:0,1',
-            
-                // recipients
-                'recipients' => 'required|array|min:1',
-                'recipients.*.posX' => 'required|string',
-                'recipients.*.posY' => 'required|string',
-                'recipients.*.signPage' => 'required|string',
-                'recipients.*.signer_type' => 'required|string',
-                'recipients.*.detail' => 'required|in:0,1,"0","1"',
-                'recipients.*.autosign' => 'required|in:0,1',
-                'recipients.*.id_user' => 'required|string',
-                'recipients.*.enterpriseToken' => 'nullable|string',
-                'recipients.*.user_type' => 'required|in:0,1',
-                'recipients.*.notify_user' => 'required|in:0,1',
+                'base64_pdf' => 'required|string',
+                'type_sign' => 'required|in:0,1',
+                'posX' => 'required|string',
+                'posY' => 'required|string'
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -141,10 +165,18 @@ class PrivyController extends Controller
             ], 422);
         }
 
-        $payload = $request->all();
+        // Ambil input
+        $base64Pdf = $request->base64_pdf;
+        $typeSign = $request->type_sign;
+        $posX = $request->posX;
+        $posY = $request->posY;
+
+        // Bangun payload secara otomatis
+        $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY);
 
         try {
-            $response = $privy->uploadSignDocument($payload);
+            // Kirim ke Privy
+            $response = $privy->uploadDocument($payload);
             return response()->json($response);
         } catch (\Throwable $e) {
             return response()->json([
@@ -153,28 +185,6 @@ class PrivyController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-    }
-
-    public function uploadSignEMeterai(Request $request, PrivyService $privy)
-    {
-        $request->validate([
-            'reference_number' => 'required|string',
-            'channel_id' => 'required|string',
-            'file' => 'required|file|mimes:pdf|max:5120',
-            'doc_owner' => 'required|array',
-            'document' => 'required|array',
-            'recipients' => 'required|array|min:1',
-        ]);
-
-        $base64 = $privy->encodePdfToBase64($request->file('file')->getPathname());
-
-        // Ambil payload dari request
-        $payload = $request->except('file');
-
-        // Tambahkan document_file ke dalam payload
-        $payload['document']['document_file'] = $base64;
-
-        return response()->json($privy->uploadSignDocument($payload));
     }
 
     public function deleteDocument(Request $request, PrivyService $privy)
