@@ -179,6 +179,19 @@
         }
 
         function updateContractDetailsManual(contractNumber, employeeName) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+            // Update tipe tagihan
+            const billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
+            const billTypeSelect = document.getElementById("bill_type");
+            billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
+            billTypes.forEach(billType => {
+                const option = document.createElement("option");
+                option.value = billType;
+                option.textContent = billType;
+                billTypeSelect.appendChild(option);
+            });
+
             const baseNumber = '{{ $baseNumber }}';
             const monthRoman = '{{ $monthRoman }}';
             const year = '{{ $year }}';
