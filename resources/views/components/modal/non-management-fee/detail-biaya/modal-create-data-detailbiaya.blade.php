@@ -1,7 +1,7 @@
 @props(['nonManfeeDocument', 'jenis_biaya', 'account_detailbiaya'])
 
 <!-- Modal for Adding Cost Details -->
-<div x-data="{ modalOpen: false }">
+<div x-data="{ modalOpen: false }" x-init="$watch('$root.selectedExpenseType', value => selectedExpenseType = value)">
     <x-button-action class="px-4 py-2 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         color="violet" @click="modalOpen = true" x-bind:disabled="!selectedExpenseType">
         <span x-text="selectedExpenseType ? `+ Detail ${selectedExpenseType}` : 'Pilih Jenis Biaya'"></span>
@@ -17,13 +17,21 @@
             <form action="{{ route('non-management-fee.detail_payments.store', ['id' => $nonManfeeDocument->id]) }}" method="POST">
                 @csrf
                 <div class="mb-4">
-                    {{-- <label for="expense_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jenis
-                        Biaya</label> --}}
-                    <select id="expense_type" name="expense_type" class="hidden" x-model="selectedExpenseType">
-                        <option value="">Pilih Jenis Biaya</option>
-                        @foreach ($jenis_biaya as $jenis_biayas)
-                            <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}</option>
+
+                    <select id="expense_type_edit_{{ $detailPaymentId->id }}" x-ref="expenseSelect" name="expense_type" x-data x-init="
+                        new TomSelect($refs.expenseSelect, {
+                            create: true,
+                            maxItems: 1,
+                        });
+                    " class="block w-full rounded-md dark:bg-gray-700 dark:text-white">
+                        @foreach ($jenis_biaya as $jenis)
+                            <option value="{{ $jenis }}" {{ $detailPaymentId->expense_type == $jenis ? 'selected' : '' }}>
+                                {{ $jenis }}
+                            </option>
                         @endforeach
+                        @if (!in_array($detailPaymentId->expense_type, $jenis_biaya))
+                            <option value="{{ $detailPaymentId->expense_type }}" selected>{{ $detailPaymentId->expense_type }}</option>
+                        @endif
                     </select>
 
                 </div>
@@ -53,15 +61,6 @@
                         class="mt-1 block w-full rounded-md border-gray-300 bg-gray-200 dark:bg-gray-700 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required readonly>
                 </div>
-
-                <!-- Uraian Dinamis -->
-                {{-- <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                        for="uraian">Uraian</label>
-                    <input type="text" id="uraian" name="uraian"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                        required>
-                </div> --}}
 
                 <!-- Nilai Biaya -->
                 <div class="mb-4">

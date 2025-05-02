@@ -1,26 +1,7 @@
 @props(['nonManfeeDocument', 'jenis_biaya', 'account_detailbiaya'])
 
 
-<div x-data="{
-    modalOpen: false,
-    selectedExpenseType: '',
-    filterTable() {
-        const rows = document.querySelectorAll('#detail-biaya-table tbody tr');
-        console.log('Selected Expense Type:', this.selectedExpenseType); // Debug selected value
-        rows.forEach(row => {
-            const expenseType = row.querySelector('td:nth-child(4)').textContent.trim();
-            console.log('Row Expense Type:', expenseType); // Debug row value
-            if (this.selectedExpenseType === '' || expenseType === this.selectedExpenseType) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    },
-    changeSelectedExpenseType() {
-        this.filterTable();
-    }
-}">
+<div x-data="expenseFilter">
     <div class="flex justify-between items-center mb-3">
         <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" @click="modalOpen = true">
             + Detail Biaya
@@ -161,3 +142,34 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("expenseFilter", () => ({
+            modalOpen: false,
+            selectedExpenseType: '',
+            filterTable() {
+                const rows = document.querySelectorAll('#detail-biaya-table tbody tr');
+                rows.forEach(row => {
+                    const expenseType = row.querySelector('td:nth-child(4)').textContent.trim();
+                    if (this.selectedExpenseType === '' || expenseType === this.selectedExpenseType) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            },
+            changeSelectedExpenseType(value = '') {
+                this.selectedExpenseType = value;
+                this.filterTable();
+            },
+            init() {
+                const select = new TomSelect('#expense_type', {
+                    create: true,
+                    onChange: (value) => this.changeSelectedExpenseType(value),
+                });
+            }
+        }));
+    });
+</script>

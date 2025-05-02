@@ -21,6 +21,8 @@ class NonManfeeDetailPaymentsController extends Controller
      */
     public function store(Request $request, $id)
     {
+        // dd($request->all());
+
         $request->validate([
             'expense_type' => 'required',
             'account' => 'required',
@@ -28,8 +30,6 @@ class NonManfeeDetailPaymentsController extends Controller
             // 'uraian' => 'required',
             'nilai_biaya' => 'required',
         ]);
-
-        // dd($request->all());
 
         $rupiahBiaya = (float) str_replace('.', '', $request->nilai_biaya);
 
