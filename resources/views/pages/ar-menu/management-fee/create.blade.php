@@ -11,19 +11,36 @@
             <div class="mt-5 mb-5 md:mt-0 md:col-span-2">
                 <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div>
+
+                        {{-- new autocompleted --}}
+                        <div class="relative">
                             <x-label for="type" value="{{ __('Kontrak') }}" />
-                            <select id="contract_id" name="contract_id" class="mt-1 block w-full form-select"
-                                onchange="updateContractDetails(this)">
-                                <option value="">Pilih Kontrak</option>
+                            <input type="text" id="contractInput" placeholder="Ketik/Pilih Kontrak..."
+                                class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+                                focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                                oninput="filterContractDropdown()" onclick="toggleContractDropdown()"
+                                autocomplete="off" />
+
+                            <input type="hidden" id="contract_id" name="contract_id"
+                                value="{{ old('contract_id') }}" />
+
+                            <ul id="contractDropdown"
+                                class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
                                 @foreach ($contracts as $contract)
-                                    <option value="{{ $contract->id }}" data-employee="{{ $contract->employee_name }}"
-                                        data-bill-types="{{ $contract->billTypes->pluck('bill_type')->toJson() }}">
-                                        {{ $contract->contract_number }}
-                                    </option>
+                                    <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                        onclick="selectContract('{{ $contract->id }}', '{{ $contract->contract_number }}', '{{ $contract->employee_name }}', '{{ $contract->billTypes->pluck('bill_type')->toJson() }}')">
+                                        <div class="font-semibold text-gray-800 dark:text-gray-200">
+                                            {{ $contract->contract_number }}</div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $contract->employee_name }}</div>
+                                    </li>
                                 @endforeach
-                            </select>
+                            </ul>
                         </div>
+
+
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
@@ -91,50 +108,60 @@
     <input type="hidden" id="base_number" value="{{ $baseNumber }}">
 
     <script>
+        function toggleContractDropdown() {
+            document.getElementById("contractDropdown").classList.toggle("hidden");
+        }
+
+        function filterContractDropdown() {
+            let input = document.getElementById("contractInput").value.toLowerCase();
+            let items = document.querySelectorAll("#contractDropdown li");
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        function selectContract(id, contractNumber, employeeName, billTypesJson) {
+            document.getElementById("contractInput").value = contractNumber;
+            document.getElementById("contract_id").value = id;
+            document.getElementById("employee_name").value = employeeName;
+
+            try {
+                const billTypes = JSON.parse(billTypesJson);
+                const billTypeSelect = document.getElementById("bill_type");
+                billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
+                billTypes.forEach(billType => {
+                    const option = document.createElement("option");
+                    option.value = billType;
+                    option.textContent = billType;
+                    billTypeSelect.appendChild(option);
+                });
+            } catch (e) {
+                console.warn("Gagal parse billTypes", e);
+            }
+
+            updateContractDetailsManual(contractNumber, employeeName);
+            document.getElementById("contractDropdown").classList.add("hidden");
+        }
+
         function getCompanyInitial(employeeName) {
             if (!employeeName) return 'SOL';
-
-            // Hapus PT. dari nama perusahaan
             const companyName = employeeName.replace(/^PT\.\s*/i, '');
-
-            // Split nama menjadi kata-kata
             const words = companyName.trim().split(/\s+/);
-
-            // Jika hanya 1 kata
             if (words.length === 1) {
                 return words[0];
             }
-
-            // Jika lebih dari 1 kata
             let initials = '';
             for (let i = 0; i < words.length; i++) {
                 if (words[i].length > 0) {
                     initials += words[i][0].toUpperCase();
                 }
             }
-
             return initials;
         }
 
-        function updateContractDetails(selectElement) {
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const employeeName = selectedOption.getAttribute("data-employee") || "";
-
-            // Update nama pemberi kerja
-            document.getElementById("employee_name").value = employeeName;
-
-            // Update tipe tagihan
-            const billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
-            const billTypeSelect = document.getElementById("bill_type");
-            billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
-            billTypes.forEach(billType => {
-                const option = document.createElement("option");
-                option.value = billType;
-                option.textContent = billType;
-                billTypeSelect.appendChild(option);
-            });
-
-            // Generate nomor dokumen
+        function updateContractDetailsManual(contractNumber, employeeName) {
             const baseNumber = '{{ $baseNumber }}';
             const monthRoman = '{{ $monthRoman }}';
             const year = '{{ $year }}';
@@ -143,23 +170,18 @@
             document.getElementById('letter_number').value =
                 `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
             document.getElementById('invoice_number').value =
-                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
-            document.getElementById('receipt_number').value =
                 `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
+            document.getElementById('receipt_number').value =
+                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
         }
 
-        // Inisialisasi saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            const contractSelect = document.getElementById('contract_id');
-            contractSelect.addEventListener('change', function() {
-                updateContractDetails(this);
-            });
-
-            // Jika ada kontrak yang dipilih (setelah validasi gagal)
-            @if (old('contract_id'))
-                contractSelect.value = '{{ old('contract_id') }}';
-                updateContractDetails(contractSelect);
-            @endif
+        // Hide dropdown if clicked outside
+        document.addEventListener('click', function(event) {
+            const input = document.getElementById('contractInput');
+            const dropdown = document.getElementById('contractDropdown');
+            if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add("hidden");
+            }
         });
     </script>
 </x-app-layout>
