@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Contracts;
+use App\Models\ContractCategory;
 use App\Models\MasterType;
 use App\Models\MasterBillType;
 use App\Models\MasterWorkUnit;
@@ -44,12 +45,14 @@ class ContractsController extends Controller
         $mstWorkUnit = MasterWorkUnit::all();
 
         // data dummy category
-        $category = [
-            'Surat Perintah Kerja (SPK)',
-            'Perjanjian',
-            'Purchase Order',
-            'Berita Acara Kesepakatan',
-        ];
+        // $category = [
+        //     'Surat Perintah Kerja (SPK)',
+        //     'Perjanjian',
+        //     'Purchase Order',
+        //     'Berita Acara Kesepakatan',
+        // ];
+
+        $category = ContractCategory::pluck('name');
 
         return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit', 'category'));
     }
@@ -78,6 +81,8 @@ class ContractsController extends Controller
         ]);
 
         $input = $request->all();
+
+        dd($input);
 
         // Format Tanggal
         $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
