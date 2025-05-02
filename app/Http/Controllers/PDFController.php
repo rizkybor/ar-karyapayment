@@ -141,6 +141,12 @@ class PDFController extends Controller
         return null; // Jika URL tidak ditemukan
     }
 
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) View
+|--------------------------------------------------------------------------
+*/
+
     public function nonManfeeLetter($document_id)
     {
         $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
@@ -216,6 +222,84 @@ class PDFController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64
+|--------------------------------------------------------------------------
+*/
+
+    public function nonManfeeLetterBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts
+        ];
+
+        $pdf = PDF::loadView('templates.document-letter', $data);
+        $pdfOutput = $pdf->output();
+        $base64 = base64_encode($pdfOutput);
+
+        return $base64;
+    }
+
+    public function nonManfeeInvoiceBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.document-invoice', $data);
+
+        $pdfOutput = $pdf->output(); // binary
+        return base64_encode($pdfOutput); // hasil base64
+    }
+
+    public function nonManfeeKwitansiBase64($document_id): string
+    {
+        $document = NonManfeeDocument::with([
+            'contract',
+            'detailPayments',
+            'accumulatedCosts',
+            'bankAccount'
+        ])->findOrFail($document_id);
+
+        // Pastikan ada accumulated cost
+        $firstCost = $document->accumulatedCosts->first();
+
+        if (!$firstCost) {
+            throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
+        }
+
+        // Hitung nilai terbilang
+        $terbilang = $this->nilaiToString($firstCost->total);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'terbilang' => $terbilang,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.document-kwitansi', $data);
+
+        return base64_encode($pdf->output());
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi, Attachment & Taxes) EXTRACT ALL ZIP
+|--------------------------------------------------------------------------
+*/
 
     public function nonManfeeZip($document_id)
     {

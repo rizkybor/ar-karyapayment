@@ -318,13 +318,13 @@ class PrivyService
         return 'data:application/pdf;base64,' . base64_encode(file_get_contents($path));
     }
 
-    public function uploadSignDocument(array $payload): ?array
+    public function uploadDocument(array $payload): ?array
     {
         $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
-    
+
         $originalPayload = $payload;
         $payloadForSignature = collect($payload)->except(['document'])->all();
         ksort($payloadForSignature);
@@ -334,7 +334,7 @@ class PrivyService
         $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
         $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
         $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
-    
+
         // ✅ Ambil token
         $token = $this->getToken();
         if (!$token || !isset($token['data']['access_token'])) {
@@ -346,50 +346,49 @@ class PrivyService
                 ]
             ];
         }
-    
+
         $headers = [
             'Timestamp' => $timestamp,
             'Signature' => $finalSignature,
             'Authorization' => 'Bearer ' . $token['data']['access_token'],
         ];
-    
+
         $url = privy_base_url() . 'web/api/v2/doc-signing';
-    
-        Log::info('[Privy] Mengirim dokumen ke Privy API', [
-            'url' => $url,
-            'headers' => $headers,
-            'payload' => $originalPayload,
-            'payload_signatures' => $payloadForSignature,
-            'signature_string' => $signatureString,
-            'final_signature' => $finalSignature,
-        ]);
-    
-        // ✅ Return MOCK di local
-        if (app()->environment('local')) {
-            return [
-                'message' => 'Mocked document upload success',
-                'data' => [
-                    'reference_number' => $payload['reference_number'] ?? 'MOCK123',
-                    'channel_id' => $payload['channel_id'] ?? 'TEST',
-                    'document_token' => Str::random(32),
-                    'status' => 'uploaded',
-                    'signing_url' => 'https://dev.dcidi.io/mock-sign-url'
-                ]
-            ];
-        }
-    
+
+        // Log::info('[Privy] Mengirim dokumen ke Privy API', [
+        //     'url' => $url,
+        //     'headers' => $headers,
+        //     'payload' => $originalPayload,
+        //     'payload_signatures' => $payloadForSignature,
+        //     'signature_string' => $signatureString,
+        //     'final_signature' => $finalSignature,
+        // ]);
+
         try {
             $response = Http::withHeaders($headers)->post($url, $originalPayload);
-    
+
             Log::info('Response API', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
-    
+
             if ($response->successful()) {
-                return $response->json();
+                $responseData = $response->json();
+            
+                return [
+                    'message' => 'Success retrieve data',
+                    'data' => [
+                        'reference_number'   => $responseData['data']['reference_number'] ?? null,
+                        'channel_id'         => $responseData['data']['channel_id'] ?? null,
+                        'document_token'     => $responseData['data']['document_token'] ?? null,
+                        'status'             => $responseData['data']['status'] ?? null,
+                        'message'            => $responseData['data']['message'] ?? null,
+                        'unsigned_document'  => $responseData['data']['unsigned_document'] ?? null,
+                        'signed_document'    => $responseData['data']['signed_document'] ?? null,
+                    ],
+                ];
             }
-    
+
             return [
                 'error' => [
                     'code' => $response->status(),
@@ -401,7 +400,7 @@ class PrivyService
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-    
+
             return [
                 'error' => [
                     'code' => 500,
