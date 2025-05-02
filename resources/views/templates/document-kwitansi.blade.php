@@ -234,7 +234,7 @@
                 <td class="no-border-top-side">
                     :</td>
                 <td class="no-border-top-side">
-                    contact@pt-kpusahatama.com</td>
+                    invoice_center@pt-kpusahatama.com</td>
                 <td colspan="2" style="border-top: none;"></td>
             </tr>
         </table>
@@ -253,7 +253,7 @@
                 </td>
                 <td style="width: 30%; border: none; vertical-align: top;">
                     <strong>T</strong>: +62 21-6343 558 <br>
-                    <strong>E</strong>: contact@pt-kpusahatama.com
+                    <strong>E</strong>: invoice_center@pt-kpusahatama.com
                 </td>
             </tr>
         </table>
