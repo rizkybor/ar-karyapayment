@@ -100,8 +100,12 @@ class NonManfeeDocumentController extends Controller
         $input['status_print'] = false;
         $input['is_active'] = true;
         $input['created_by'] = auth()->id();
-        $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
-
+        $input['expired_at'] = Carbon::now()
+            ->addMonthNoOverflow()
+            ->day(15)
+            ->setTime(0, 1, 0);
+            
+        dd($input);
         try {
             // Simpan dokumen baru
             $nonManfeeDoc = NonManfeeDocument::create($input);
@@ -583,7 +587,7 @@ class NonManfeeDocumentController extends Controller
 
                     $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
                     $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
- 
+
                     // ✅ Proccess Privy Service
                     // get base 64 from pdf template
                     $pdfController = app()->make(PDFController::class);
@@ -595,13 +599,12 @@ class NonManfeeDocumentController extends Controller
                     $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
                     $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
                     $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
-                    
+
                     $letterPrivy = $createLetter->getData();
                     $invoicePrivy = $createInvoice->getData();
                     $kwitansiPrivy = $createKwitansi->getData();
 
                     dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
-
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }

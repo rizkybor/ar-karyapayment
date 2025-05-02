@@ -39,7 +39,9 @@ class NonManfeeDocument extends Model
 
         // 1️⃣ Set Default Expired Date H+30 dengan Waktu 00:01:00 saat Dokumen Dibuat
         static::creating(function ($document) {
-            $document->expired_at = Carbon::now()->addDays(30)->setTime(0, 1, 0);
+            $document->expired_at = Carbon::now()->addMonthNoOverflow()
+                ->day(15)
+                ->setTime(0, 1, 0);
         });
 
         // 2️⃣ Cek Apakah Dokumen Sudah Expired Setiap Kali Diambil dari Database
@@ -63,9 +65,9 @@ class NonManfeeDocument extends Model
     }
 
     public function bankAccount()
-{
-    return $this->belongsTo(BankAccount::class);
-}
+    {
+        return $this->belongsTo(BankAccount::class);
+    }
 
     public function approvals()
     {

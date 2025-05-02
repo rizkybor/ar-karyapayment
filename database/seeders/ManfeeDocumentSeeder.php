@@ -42,7 +42,9 @@ class ManfeeDocumentSeeder extends Seeder
             $created_at = Carbon::now();
 
             // ✅ Set expired_at H+30 dengan waktu tetap 00:01:00
-            $expired_at = $created_at->copy()->addDays(30)->setTime(0, 1, 0);
+            $expired_at = $created_at->copy()->addMonthNoOverflow()
+                ->day(15)
+                ->setTime(0, 1, 0);
 
             // 🔢 Hitung nomor urut dengan kelipatan 10 dimulai dari 110
             $nomorUrut = str_pad(110 + ($i - 1) * 10, 6, '0', STR_PAD_LEFT);
@@ -82,7 +84,7 @@ class ManfeeDocumentSeeder extends Seeder
                 'category'       => 'management_fee',
                 'status'         => 0,
                 'status_print'      => false,
-                'reference_document'=> null,
+                'reference_document' => null,
                 'reason_rejected' => '',
                 'path_rejected' => '',
                 'last_reviewers' => null,
