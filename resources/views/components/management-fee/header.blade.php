@@ -247,6 +247,10 @@
 
 <!-- JavaScript untuk Update Form Action, Title, Button Submit, dan Warna -->
 <script>
+    const isMaker = @json(auth()->user()->hasRole('maker'));
+</script>
+
+<script>
     function openModal(button) {
         let actionRoute = button.getAttribute('data-action');
         let modalTitle = button.getAttribute('data-title');
@@ -274,6 +278,18 @@
     function updateBankAccount(bankId) {
         const documentId = "{{ $document->id }}";
         const token = "{{ csrf_token() }}";
+
+         // 🚫 Validasi: role harus maker
+         if (!isMaker) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya', 'error', 'Akses Ditolak!');
+            return;
+        }
+
+        // 🚫 Validasi: pastikan ada bank yang dipilih
+        if (!bankId) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning', 'Perhatian!');
+            return;
+        }
 
         fetch(`/management-fee/${documentId}/update-bank`, {
                 method: 'POST',

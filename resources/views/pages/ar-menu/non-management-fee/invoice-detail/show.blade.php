@@ -10,7 +10,7 @@
                 </h1>
                 <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal : {{ $nonManfeeDocument->letter_subject ?? '-' }}
                 </h1>
-                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Referensi Dokumen : {{ $nonManfeeDocument->reference_document ?? '-' }}
+                {{-- <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Referensi Dokumen : {{ $nonManfeeDocument->reference_document ?? '-' }} --}}
                 </h1>
                 <x-label class="text-sm mt-1">Dibuat oleh : {{ $nonManfeeDocument->creator->name ?? '-' }} ({{ $nonManfeeDocument->creator->department ?? '-' }}) </x-label>
               
