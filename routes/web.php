@@ -130,7 +130,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])->name('invoice.print.status');
     Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])->name('invoice.print.status.data');
     Route::post('/invoice/print/status/update', [InvoicePrintStatusController::class, 'updatePrintStatus'])
-    ->name('invoice.print.status.update');
+        ->name('invoice.print.status.update');
 
 
     // ROUTE CONTRACTS (Super Admin)
@@ -161,6 +161,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // Bank
         Route::post('/{id}/update-bank', [ManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
+
+        Route::put('/{id}/perihal-update', [ManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
+        Route::put('/{id}/reference-document-update', [ManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
 
         // Details
         Route::get('/{id}/show', [ManfeeDocumentController::class, 'show'])->name('show');

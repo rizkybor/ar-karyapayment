@@ -53,6 +53,11 @@
                             <x-input-wide id="letter_subject" name="letter_subject" placeholder="Masukkan Perihal Surat"
                                 type="text" class="mt-1 block w-full min-h-[40px]" />
                             <x-input-error for="letter_subject" class="mt-2" />
+
+                            <x-label class="mt-2" for="reference_document" value="{{ __('Referensi Dokumen') }}" />
+                            <x-input id="reference_document" name="reference_document" placeholder="Optional"
+                                type="text" class="mt-1 block w-full min-h-[40px]" />
+                            <x-input-error for="reference_document" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="employee_name" value="{{ __('Nama Pemberi Kerja') }}" />

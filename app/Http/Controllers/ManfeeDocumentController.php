@@ -129,7 +129,8 @@ class ManfeeDocumentController extends Controller
             'manfee_bill',
             'letter_number',
             'invoice_number',
-            'receipt_number'
+            'receipt_number',
+            'reference_document'
         ]);
 
         $input['category'] = 'management_fee';
@@ -299,6 +300,34 @@ class ManfeeDocumentController extends Controller
         $manfeeDocument->delete();
 
         return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
+    }
+
+    public function perihalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'letter_subject' => 'required|string|max:255',
+        ]);
+
+        $doc = ManfeeDocument::findOrFail($id);
+        $doc->update([
+            'letter_subject' => $request->letter_subject,
+        ]);
+
+        return redirect()->back()->with('success', 'Perihal berhasil diperbarui.');
+    }
+
+    public function referenceUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'reference_document' => 'nullable|string|max:255',
+        ]);
+
+        $doc = ManfeeDocument::findOrFail($id);
+        $doc->update([
+            'reference_document' => $request->reference_document,
+        ]);
+
+        return redirect()->back()->with('success', 'Referensi dokumen berhasil diperbarui.');
     }
 
     /**
