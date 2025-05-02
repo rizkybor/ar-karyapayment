@@ -38,14 +38,27 @@
                             </div>
 
                             <div>
-                                <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
+                                {{-- <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
                                 <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
                                     @foreach ($category as $item)
                                         <option value="{{ $item }}">{{ $item }}</option>
                                     @endforeach
                                 </select>
 
-                                <x-input-error for="category" class="mt-2" />
+                                <x-input-error for="category" class="mt-2" /> --}}
+
+                                <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
+                                <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach ($category as $item)
+                                        <option value="{{ $item }}" {{ old('category') === $item ? 'selected' : '' }}>
+                                            {{ $item }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category')
+                                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div>
