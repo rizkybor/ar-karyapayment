@@ -59,7 +59,7 @@ class PrivyService
         $bodyForSignature = collect($payload)->except($excludedKeys)->all();
 
         $rawJson = json_encode($bodyForSignature, JSON_UNESCAPED_SLASHES);
-        $rawJson = str_replace(' ', '', $rawJson);
+        $rawJson = preg_replace('/\s+/', '', $rawJson);
 
         $bodyMd5 = base64_encode(md5($rawJson, true));
 
