@@ -3,13 +3,14 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
             <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                Status Print Invoice
+                Checklist Print Invoice
             </h1>
+
 
              <!-- Right: Buttons -->
              <div class="flex gap-2 mt-4 sm:mt-0">
                 <x-button-action color="green" id="exportSelected">
-                    Print Success
+                    Beri Tanda Cetak
                 </x-button-action>
             </div>
         </div>
@@ -17,7 +18,7 @@
         <!-- Table Card -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-xl">
             <header class="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex items-center justify-between">
-                <h2 class="font-semibold dark:text-gray-100 py-3">Manfee & Non-Manfee Invoice</h2>
+                <h2 class="font-semibold dark:text-gray-100 py-3">Fitur ini digunakan sebagai flagging Invoice (Management Fee & Non Management Fee) yang sudah pernah di cetak.</h2>
             </header>
             <div class="p-3">
                 <!-- Table Controls -->
