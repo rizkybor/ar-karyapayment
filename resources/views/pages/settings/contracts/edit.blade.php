@@ -67,6 +67,17 @@
                                     value="{{ old('value', $contract->value) ?? 0 }}">
                             </div>
 
+                            <div>
+                                <div>
+                                    <x-label for="contract_date" value="Tanggal Kontrak" />
+                                    <x-input id="contract_date"
+                                        value="{{ old('contract_date', $contract->contract_date) }}" type="date"
+                                        name="contract_date" class="mt-1 block w-full min-h-[40px]"
+                                        oninput="setMinStartDate()" />
+                                    <x-input-error for="contract_date" class="mt-2" />
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <x-label for="start_date" value="Tanggal Mulai" />
@@ -305,6 +316,12 @@
             if (input.value === "" || input.value === "Rp ") {
                 input.value = "Rp 0"; // Jika kosong, tetap tampilkan Rp
             }
+        }
+
+        // # Format Tanggal Dibatasin
+        function setMinStartDate() {
+            let startDate = document.getElementById("contract_date").value;
+            document.getElementById("start_date").setAttribute("min", startDate);
         }
 
         // Format Tanggal
