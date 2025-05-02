@@ -40,7 +40,7 @@
                             </ul>
                         </div>
 
-                        
+
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
@@ -152,10 +152,11 @@
 
         function getCompanyInitial(employeeName) {
             if (!employeeName) return 'SOL';
-            const companyName = employeeName.replace(/^PT\.\s*/i, '');
+            const companyName = employeeName.replace(/^PT\.?\s*/i, '');
             const words = companyName.trim().split(/\s+/);
+
             if (words.length === 1) {
-                return words[0];
+                return words[0].toUpperCase();
             }
             let initials = '';
             for (let i = 0; i < words.length; i++) {

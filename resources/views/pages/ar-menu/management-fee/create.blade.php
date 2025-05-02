@@ -145,12 +145,29 @@
             document.getElementById("contractDropdown").classList.add("hidden");
         }
 
+        // function getCompanyInitial(employeeName) {
+        //     if (!employeeName) return 'SOL';
+        //     const companyName = employeeName.replace(/^PT\.\s*/i, '');
+        //     const words = companyName.trim().split(/\s+/);
+        //     if (words.length === 1) {
+        //         return words[0];
+        //     }
+        //     let initials = '';
+        //     for (let i = 0; i < words.length; i++) {
+        //         if (words[i].length > 0) {
+        //             initials += words[i][0].toUpperCase();
+        //         }
+        //     }
+        //     return initials;
+        // }
+
         function getCompanyInitial(employeeName) {
             if (!employeeName) return 'SOL';
-            const companyName = employeeName.replace(/^PT\.\s*/i, '');
+            const companyName = employeeName.replace(/^PT\.?\s*/i, '');
             const words = companyName.trim().split(/\s+/);
+
             if (words.length === 1) {
-                return words[0];
+                return words[0].toUpperCase();
             }
             let initials = '';
             for (let i = 0; i < words.length; i++) {
