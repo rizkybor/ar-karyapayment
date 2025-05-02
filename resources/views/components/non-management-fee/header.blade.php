@@ -172,6 +172,12 @@
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
+                        <!-- Upload Faktur Pajak Button -->
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
+                           Update Lampiran
+                        </x-button-action>
+
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
                             onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">

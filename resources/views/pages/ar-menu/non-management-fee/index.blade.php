@@ -327,6 +327,25 @@
                                 </div>`;
                             }
 
+                            if (statusText === "Done" && userRole === "perbendaharaan") {
+                                buttons += `
+                                <div class="relative group">
+                                    <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
+                                            onclick="window.location.href='${editUrl}'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                d="M11 17h2M15.354 5.354l3.292 3.292a1 1 0 010 1.414L7.414 21H4v-3.414l11.646-11.646a1 1 0 011.414 0z"/>
+                                        </svg>
+                                    </button>
+
+                                    <!-- Tooltip -->
+                                    <span class="absolute w-auto px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-md 
+                                                opacity-0 group-hover:opacity-100 transition-opacity duration-200 -top-8 left-1/2 transform -translate-x-1/2">
+                                        Edit Data
+                                    </span>
+                                </div>`;
+                            }
+
                             // ✅ Jika status adalah "Draft" atau "Revised" & BUKAN "Checked by Pajak", tampilkan tombol Edit untuk role "maker"
                             if (statusText === "Draft" || statusText === "Revised" && userRole ===
                                 "maker") {
