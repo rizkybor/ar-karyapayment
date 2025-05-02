@@ -18,7 +18,7 @@
                 @csrf
                 <div class="mb-4">
 
-                    <select id="expense_type_edit_{{ $detailPaymentId->id }}" x-ref="expenseSelect" name="expense_type" x-data x-init="
+                    {{-- <select id="expense_type_edit_{{ $detailPaymentId->id }}" x-ref="expenseSelect" name="expense_type" x-data x-init="
                         new TomSelect($refs.expenseSelect, {
                             create: true,
                             maxItems: 1,
@@ -32,7 +32,7 @@
                         @if (!in_array($detailPaymentId->expense_type, $jenis_biaya))
                             <option value="{{ $detailPaymentId->expense_type }}" selected>{{ $detailPaymentId->expense_type }}</option>
                         @endif
-                    </select>
+                    </select> --}}
 
                 </div>
                 <div class="mb-4">
