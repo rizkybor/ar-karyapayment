@@ -66,6 +66,7 @@ class ContractsController extends Controller
             'category' => 'required',
             'employee_name' => 'required',
             'value' => 'required',
+            'contract_date' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'type' => 'required',
@@ -79,6 +80,7 @@ class ContractsController extends Controller
         $input = $request->all();
 
         // Format Tanggal
+        $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
         $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
 
@@ -174,6 +176,7 @@ class ContractsController extends Controller
             'category' => 'required',
             'employee_name' => 'required',
             'value' => 'required',
+            'contract_date' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'type' => 'nullable',
@@ -186,6 +189,7 @@ class ContractsController extends Controller
 
         $input = $request->except('path');
 
+        $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');
         $input['end_date'] = Carbon::parse($request->end_date)->format('Y-m-d');
         $input['status'] = isset($request->status) ? (int) $request->status : null;

@@ -64,6 +64,14 @@
                                 <x-input-error for="value" class="mt-2" />
                             </div>
 
+                            <div>
+                                <x-label for="contract_date" value="{{ __('Tanggal Kontrak') }}" />
+                                <x-input id="contract_date" type="date" name="contract_date"
+                                    class="mt-1 block w-full min-h-[40px]" required autocomplete="contract_date"
+                                    oninput="setMinStartDate()" />
+                                <x-input-error for="contract_date" class="mt-2" />
+                            </div>
+
                             <!-- Input Hidden untuk Database -->
                             <input type="hidden" name="value" id="value_hidden">
 
@@ -200,9 +208,14 @@
 
 
         // # Format Tanggal Dibatasin
+        function setMinStartDate() {
+            let startDate = document.getElementById("contract_date").value;
+            document.getElementById("start_date").setAttribute("min", startDate);
+        }
+
         function setMinEndDate() {
-            let startDate = document.getElementById("start_date").value;
-            document.getElementById("end_date").setAttribute("min", startDate);
+            let endDate = document.getElementById("start_date").value;
+            document.getElementById("end_date").setAttribute("min", endDate);
         }
 
         // # Input Tipe Pembayaran
