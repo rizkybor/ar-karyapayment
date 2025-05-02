@@ -20,13 +20,17 @@
                     Biaya</label>
                 <select id="expense_type" name="expense_type"
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:ring focus:ring-blue-500"
-                    x-model="selectedExpenseType" @change="changeSelectedExpenseType">
+                    x-model="selectedExpenseType"
+                    @change="changeSelectedExpenseType($event.target.value)">
                     <option value="">Semua Jenis Biaya</option>
                     @foreach ($jenis_biaya as $jenis_biayas)
                         <option value="{{ $jenis_biayas }}">{{ $jenis_biayas }}
                         </option>
                     @endforeach
                 </select>
+                <div class="text-sm text-red-500 mt-1">
+                    Selected: <span x-text="selectedExpenseType"></span>
+                </div>
             </div>
 
             <div class="flex justify-end items-center mb-3">
@@ -160,7 +164,7 @@
                     }
                 });
             },
-            changeSelectedExpenseType(value = '') {
+            changeSelectedExpenseType(value) {
                 this.selectedExpenseType = value;
                 this.filterTable();
             },

@@ -14,25 +14,12 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Tambah Detail <span x-text="selectedExpenseType ? selectedExpenseType : 'Pilih Jenis Biaya'"></span>
             </h3>
-            <form action="{{ route('non-management-fee.detail_payments.store', ['id' => $nonManfeeDocument->id]) }}" method="POST">
+            <form action="{{ route('non-management-fee.detail_payments.store', ['id' => $nonManfeeDocument->id]) }}"
+                method="POST">
                 @csrf
                 <div class="mb-4">
 
-                    {{-- <select id="expense_type_edit_{{ $detailPaymentId->id }}" x-ref="expenseSelect" name="expense_type" x-data x-init="
-                        new TomSelect($refs.expenseSelect, {
-                            create: true,
-                            maxItems: 1,
-                        });
-                    " class="block w-full rounded-md dark:bg-gray-700 dark:text-white">
-                        @foreach ($jenis_biaya as $jenis)
-                            <option value="{{ $jenis }}" {{ $detailPaymentId->expense_type == $jenis ? 'selected' : '' }}>
-                                {{ $jenis }}
-                            </option>
-                        @endforeach
-                        @if (!in_array($detailPaymentId->expense_type, $jenis_biaya))
-                            <option value="{{ $detailPaymentId->expense_type }}" selected>{{ $detailPaymentId->expense_type }}</option>
-                        @endif
-                    </select> --}}
+                    <input type="hidden" name="expense_type" x-model="selectedExpenseType">
 
                 </div>
                 <div class="mb-4">

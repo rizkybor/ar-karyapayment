@@ -145,7 +145,22 @@ class NonManfeeDocumentController extends Controller
             ->latest('updated_at')
             ->first();
 
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $nonManfeeDocument->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // // uji coba
         // $apiResponseTest = $this->accurateOption->testAccount();
@@ -227,6 +242,7 @@ class NonManfeeDocumentController extends Controller
         // Ambil data Non Manfee Document berdasarkan ID dengan relasi
         $nonManfeeDocument = NonManfeeDocument::with([
             'accumulatedCosts',
+            'detailPayments',
             'attachments',
             'descriptions',
             'taxFiles'
@@ -244,7 +260,22 @@ class NonManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $nonManfeeDocument->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
