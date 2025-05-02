@@ -284,9 +284,10 @@ class NonManfeeDocumentController extends Controller
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
         $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
+        $account_detailbiaya = json_decode($apiResponseAkumulasi, true)['d'];
 
-        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
-        $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
+        // $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
+        // $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
         $apiResponsePayment = $this->accurateOption->getDataPenjualan($nonManfeeDocument->invoice_number);
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
