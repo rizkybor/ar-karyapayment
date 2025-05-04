@@ -30,7 +30,7 @@
                         onchange="updateAccountName()">
                         <option value="" disabled selected>Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
-                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
+                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}" data-id="{{ $akun['id'] }}"
                                 {{ old('akun', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
@@ -39,6 +39,7 @@
                     </select>
                 </div>
 
+                <input type="hidden" id="accountId" name="accountId" value="">
                 <input type="hidden" id="account_name" name="account_name" value="">
 
                 <div class="mb-4">
@@ -92,5 +93,6 @@
         let selectedOption = accountSelect.options[accountSelect.selectedIndex];
         document.getElementById("account_name").value = selectedOption.getAttribute("data-name");
         document.getElementById("account_show").value = selectedOption.getAttribute("data-name");
+        document.getElementById("accountId").value = selectedOption.getAttribute("data-id");
     }
 </script>
