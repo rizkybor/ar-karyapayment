@@ -13,7 +13,7 @@ class ContractInvoiceSeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = ['SPK', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
+        $categories = ['Surat Perjanjian Kerja (SPK)', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
 
         $now = Carbon::now();
 
