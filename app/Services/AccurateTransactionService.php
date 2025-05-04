@@ -87,7 +87,7 @@ class AccurateTransactionService
 
     public function postDataInvoice($payload)
     {
-        // dd($payload);
+        dd($payload);
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
 
@@ -484,10 +484,10 @@ class AccurateTransactionService
 
             if ($response->getStatusCode() === 200) {
                 $responseBody = json_decode((string) $response->getBody(), true);
-            
+
                 $success = $responseBody['s'] ?? null;
                 $messages = $responseBody['d'] ?? [];
-            
+
                 // Log lengkap untuk audit trail
                 Log::info('Accurate Sales Invoice Response', [
                     'timestamp' => now()->toDateTimeString(),
@@ -498,12 +498,12 @@ class AccurateTransactionService
                     'success_flag' => $success,
                     'messages' => $messages,
                 ]);
-            
+
                 // Jika gagal (s === false)
                 if ($success === false) {
                     throw new Exception('Gagal simpan invoice: ' . implode('; ', $messages));
                 }
-            
+
                 return $responseBody;
             } else {
                 Log::error('Accurate Invoice Unexpected Status Code', [
@@ -632,6 +632,42 @@ class AccurateTransactionService
             }
         } catch (Exception $e) {
             throw new Exception('Failed to save customer: ' . $e->getMessage());
+        }
+    }
+
+    public function getItemDetail(array $params)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization'     => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp'   => $timestamp,
+            'X-Api-Signature'   => $signature,
+        ];
+
+        // Minimal harus ada salah satu dari 'id' atau 'no'
+        if (!isset($params['id']) && !isset($params['no'])) {
+            throw new Exception("Parameter 'id' atau 'no' wajib diisi.");
+        }
+
+        // Siapkan query parameter hanya untuk 'id' dan 'no'
+        $queryParams = array_filter([
+            'id' => $params['id'] ?? null,
+            'no' => $params['no'] ?? null,
+        ]);
+
+        $url = $this->baseUrl . '/item/detail.do?' . http_build_query($queryParams);
+
+        try {
+            $response = $this->client->get($url, ['headers' => $headers]);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (Exception $e) {
+            throw new Exception('Failed to get item detail: ' . $e->getMessage());
         }
     }
 }
