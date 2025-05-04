@@ -9,7 +9,7 @@ class ContractCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = ['Jasa', 'Barang', 'Konsultan', 'Lainnya'];
+        $categories = ['Surat Perjanjian Kerja (SPK)', 'Perjanjian', 'Purchase Order', 'Berita Acara Kesepakatan'];
 
         foreach ($categories as $name) {
             ContractCategory::create(['name' => $name]);
