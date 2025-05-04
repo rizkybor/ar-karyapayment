@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Exception;
 
@@ -86,19 +87,15 @@ class AccurateTransactionService
 
     public function postDataInvoice($payload)
     {
+        // dd($payload);
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
 
-        /**
-         * Example body request $detailAccounts.
-         */
-
         // Assign Detail Account by Table Data
         $detailAccounts = [];
+        // angka hanya PPH yang berjenis Hutang Pajak
+        // $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
         foreach ($tableData as $data) {
-            // angka hanya PPH yang berjenis Hutang Pajak
-            // $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
-
             $detailAccounts[] = [
                 "_status" => "insert",
                 "id" => "",
@@ -108,13 +105,13 @@ class AccurateTransactionService
                 "groupSeqId" => "",
                 "inputGroupSeq" => "",
                 "inputGroupSeqId" => "",
-                "itemId" => 207, // belum diketahui
-                "detailName" => "Uang Muka Gaji TAD",
+                "itemId" => 207, // item dari account
+                "detailName" => $data['expense_type'] ?? '',
                 "quantity" => 1,
                 "controlQuantity" => 0,
                 "itemUnitId" => 100,
                 "unitRatio" => 1,
-                "unitPrice" => 2000,
+                "unitPrice" => (int) $data['nilai_biaya'] ?? '',
                 "canChangeDetailGroup" => false,
                 "isFromMemorize" => false,
                 "dynamicGroup" => false,
@@ -134,7 +131,7 @@ class AccurateTransactionService
                 "tax3" => "",
                 "taxableAmount3" => 0,
                 "detailTaxName" => "PPN 10%", // belum ada
-                "totalPrice" => 2000,
+                "totalPrice" => (int) $data['nilai_biaya'] ?? '',
                 "department" => "",
                 "departmentId" => 151, // belum ada
                 "project" => "",
@@ -223,7 +220,7 @@ class AccurateTransactionService
                 "oldPriceMinQty" => 0,
                 "oldDiscountMinQty" => 0,
                 "isLoading" => false,
-                "customerId" => 8800
+                "customerId" => $data['customer']['id'] ?? ''
             ];
         }
 
@@ -246,7 +243,7 @@ class AccurateTransactionService
                 "pphPs4TypeId" => "",
                 "taxDescription" => "Pajak Pertambahan Nilai",
                 "taxableAmount" => 2000,
-                "taxRate" => 11,
+                "taxRate" => (int)$payload['accumulatedCosts']->first()->rate_ppn,
                 "taxAmount" => 220,
                 "remove" => false,
                 "detailInvoiceId" => "",
@@ -305,7 +302,7 @@ class AccurateTransactionService
             "transDate" => now()->format('d/m/Y'),
             "shipDate" => now()->format('d/m/Y'),
             "dueDate" => now()->format('d/m/Y'),
-            "description" => "DESCRIPTION",
+            "description" => "from Prime Billing",
             "tax1Id" => 50,
             "tax2Id" => "",
             "tax2IdId" => "",
@@ -323,15 +320,15 @@ class AccurateTransactionService
             "lastCashDiscount" => 0,
             "tax1Amount" => 220,
             "tax2Amount" => 0,
-            "tax1AmountBase" => 33000, // pecrecntage accumulate total
+            "tax1AmountBase" => 33000,
             "tax2AmountBase" => 0,
             "tax4AmountBase" => 0,
             "tax3Amount" => 0,
             "tax4Amount" => 0,
-            "tax1Rate" => 11, // pecrecntage accumulate
+            "tax1Rate" => (int)$payload['accumulatedCosts']->first()->rate_ppn,
             "tax2Rate" => 0,
             "tax4Rate" => 0,
-            "percentTaxable" => 100, // pecrecntage accumulate
+            "percentTaxable" => 100,
             "totalExpense" => 0,
             "totalAmount" =>  round($payload['detailPayments'][0]->nilai_biaya) ?? '',
             "detailItem" => $detailAccounts,
@@ -386,7 +383,7 @@ class AccurateTransactionService
             "taxDate" => now()->format('d/m/Y'),
             "taxNumber" => "",
             "documentCode" => "CTAS_INVOICE",
-            "taxType" => $payload['customer']['customerTaxTypeName'] ?? '',
+            "taxType" => 'BKN_PEMUNGUT_PPN',
             "documentTransaction" => "",
             "documentTransactionId" => "",
             "notesIdTax" => "",
@@ -426,7 +423,7 @@ class AccurateTransactionService
             "paymentTermIsInstallment" => false,
             "totalAmountWithUniqueAmount" => 0,
             "taxAutoNumber" => true,
-            "branchId" => $payload['customer']['branchId'] ?? null,
+            "branchId" => $payload['customer']['branchId'] ?? 50,
             "receiptHistoryId" => 0,
             "taxReceiptHistoryId" => 0,
             "returnHistoryId" => 0,
@@ -485,11 +482,34 @@ class AccurateTransactionService
                 'json' => $postData
             ]);
 
-            dd($response, '<<<< cek');
-
             if ($response->getStatusCode() === 200) {
-                return $response;
+                $responseBody = json_decode((string) $response->getBody(), true);
+            
+                $success = $responseBody['s'] ?? null;
+                $messages = $responseBody['d'] ?? [];
+            
+                // Log lengkap untuk audit trail
+                Log::info('Accurate Sales Invoice Response', [
+                    'timestamp' => now()->toDateTimeString(),
+                    'url' => $url,
+                    'headers' => $headers,
+                    // 'payload' => $postData,
+                    'response' => $responseBody,
+                    'success_flag' => $success,
+                    'messages' => $messages,
+                ]);
+            
+                // Jika gagal (s === false)
+                if ($success === false) {
+                    throw new Exception('Gagal simpan invoice: ' . implode('; ', $messages));
+                }
+            
+                return $responseBody;
             } else {
+                Log::error('Accurate Invoice Unexpected Status Code', [
+                    'status_code' => $response->getStatusCode(),
+                    'body' => (string) $response->getBody(),
+                ]);
                 throw new Exception('Unexpected status code: ' . $response->getStatusCode());
             }
         } catch (Exception $e) {

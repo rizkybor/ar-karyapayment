@@ -523,7 +523,8 @@ class NonManfeeDocumentController extends Controller
                 'taxFiles',
                 'contract',
                 'creator',
-                'bankAccount'
+                'bankAccount',
+                'accumulatedCosts'
             ])->findOrFail($id);
             $user = Auth::user();
             $userRole = $user->role;
@@ -553,31 +554,12 @@ class NonManfeeDocumentController extends Controller
                     );
                 }
 
-                // ✅ Simulasi data untuk Accurate
-                $tableData = [
-                    [
-                        'account' => '210201',
-                        'amount' => 5000,
-                    ],
-                    [
-                        'account' => '110101',
-                        'amount' => 2000,
-                    ],
-                ];
-
-                $tableTax = [
-                    [
-                        'taxId' => 50,
-                        'taxType' => 'PPN',
-                        'taxDescription' => 'Pajak Pertambahan Nilai',
-                    ],
-                ];
-
                 try {
                     // ✅ Proccess AccurateService
                     $dataAccurate = [
                         'data' => $document,
                         'contract' => $document->contract,
+                        'accumulatedCosts' => $document->accumulatedCosts,
                         'creator' => $document->creator,
                         'bankAccount' => $document->bankAccount,
                         'detailPayments' => $document->detailPayments,
@@ -609,11 +591,11 @@ class NonManfeeDocumentController extends Controller
                     ]);
 
                     $dataAccurate['customer'] = $customerDetailResponse['d'];
-                    
+
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    dd($apiResponsePostAccurate);
+                    dd($apiResponsePostAccurate, 'after hit accurate');
 
 
                     // ✅ Proccess Privy Service
