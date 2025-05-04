@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Exception;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -110,7 +111,7 @@ class NonManfeeDocumentController extends Controller
             $nonManfeeDoc = NonManfeeDocument::create($input);
             return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
                 ->with('success', 'Data berhasil disimpan!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -473,7 +474,7 @@ class NonManfeeDocumentController extends Controller
     //         DB::commit();
 
     //         return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
-    //     } catch (\Exception $e) {
+    //     } catch (Exception $e) {
     //         DB::rollBack();
     //         Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
     //         return back()->with('error', "Terjadi kesalahan saat memproses approval.");
@@ -592,6 +593,25 @@ class NonManfeeDocumentController extends Controller
 
                     $dataAccurate['customer'] = $customerDetailResponse['d'];
 
+                    $itemsDetail = [];
+                    foreach ($dataAccurate['detailPayments'] as $detailPayment) {
+                        $accountId = $detailPayment->accountId ?? null;
+
+                        if ($accountId) {
+                            try {
+                                $itemDetail = $this->accurateService->getItemDetail([
+                                    'id' => $accountId
+                                ]);
+                                $itemsDetail[] = $itemDetail['d'];
+                            } catch (Exception $e) {
+                                // log error jika perlu
+                                Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                            }
+                        }
+                    }
+
+                    $dataAccurate['itemsAccurate'] = $itemsDetail;
+
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
@@ -615,7 +635,7 @@ class NonManfeeDocumentController extends Controller
                     $kwitansiPrivy = $createKwitansi->getData();
 
                     dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
 
@@ -727,7 +747,7 @@ class NonManfeeDocumentController extends Controller
             DB::commit();
 
             return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat memproses approval.");
@@ -870,7 +890,7 @@ class NonManfeeDocumentController extends Controller
 
             DB::commit();
             return back()->with('success', "Dokumen telah dikembalikan ke {$targetApprover->name} untuk pengecekan ulang.");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
