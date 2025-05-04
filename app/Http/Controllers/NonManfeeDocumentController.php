@@ -593,29 +593,33 @@ class NonManfeeDocumentController extends Controller
 
                     $dataAccurate['customer'] = $customerDetailResponse['d'];
 
-                    $itemsDetail = [];
-                    foreach ($dataAccurate['detailPayments'] as $detailPayment) {
+                    $detailPayments = $dataAccurate['detailPayments'];
+
+                    foreach ($detailPayments as $index => $detailPayment) {
                         $accountId = $detailPayment->accountId ?? null;
 
                         if ($accountId) {
                             try {
                                 $itemDetail = $this->accurateService->getItemDetail([
-                                    'id' => $accountId
+                                    'id' => $accountId,
                                 ]);
-                                $itemsDetail[] = $itemDetail['d'];
+
+                                // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
+                                $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
                             } catch (Exception $e) {
-                                // log error jika perlu
                                 Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                                $detailPayments[$index]['item_detail'] = null;
                             }
                         }
                     }
 
-                    $dataAccurate['itemsAccurate'] = $itemsDetail;
+                    // Replace detailPayments di $dataAccurate dengan yang sudah di-update
+                    $dataAccurate['detailPayments'] = $detailPayments;
 
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    dd($apiResponsePostAccurate, 'after hit accurate');
+                    dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
 
 
                     // ✅ Proccess Privy Service

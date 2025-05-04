@@ -87,9 +87,9 @@ class AccurateTransactionService
 
     public function postDataInvoice($payload)
     {
-        dd($payload);
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
+        // dd($tableData);
 
         // Assign Detail Account by Table Data
         $detailAccounts = [];
@@ -105,12 +105,12 @@ class AccurateTransactionService
                 "groupSeqId" => "",
                 "inputGroupSeq" => "",
                 "inputGroupSeqId" => "",
-                "itemId" => 207, // item dari account
+                "itemId" => $data->item_detail['id'] ?? '',
                 "detailName" => $data['expense_type'] ?? '',
                 "quantity" => 1,
                 "controlQuantity" => 0,
-                "itemUnitId" => 100,
-                "unitRatio" => 1,
+                "" => 100,
+                "uniitemUnitIdtRatio" => 1,
                 "unitPrice" => (int) $data['nilai_biaya'] ?? '',
                 "canChangeDetailGroup" => false,
                 "isFromMemorize" => false,
@@ -133,9 +133,9 @@ class AccurateTransactionService
                 "detailTaxName" => "PPN 10%", // belum ada
                 "totalPrice" => (int) $data['nilai_biaya'] ?? '',
                 "department" => "",
-                "departmentId" => 151, // belum ada
+                "departmentId" => "",
                 "project" => "",
-                "projectId" => 457,
+                "projectId" => "",
                 "salesmanListId" => 0,
                 "salesmanName" => "",
                 "posSalesType" => "",
@@ -180,15 +180,15 @@ class AccurateTransactionService
                 "salesOrderPoNumber" => "",
                 "deliveryOrderPoNumber" => "",
                 "optionDynamicGroupId" => 0,
-                "charField1" => "",
-                "charField2" => "",
-                "charField3" => "",
-                "charField4" => "",
-                "charField5" => "",
-                "charField6" => "",
-                "charField7" => "",
-                "charField8" => "",
-                "charField9" => "",
+                "charField1" => $data->item_detail['charField1'] ?? '',
+                "charField2" => $data->item_detail['charField2'] ?? '',
+                "charField3" => $data->item_detail['charField3'] ?? '',
+                "charField4" => $data->item_detail['charField4'] ?? '',
+                "charField5" => $data->item_detail['charField5'] ?? '',
+                "charField6" => $data->item_detail['charField6'] ?? '',
+                "charField7" => $data->item_detail['charField7'] ?? '',
+                "charField8" => $data->item_detail['charField8'] ?? '',
+                "charField9" => $data->item_detail['charField9'] ?? '',
                 "charField10" => "",
                 "charField11" => "",
                 "charField12" => "",
@@ -204,8 +204,8 @@ class AccurateTransactionService
                 "numericField7" => 0,
                 "numericField8" => 0,
                 "numericField9" => 0,
-                "numericField10" => 0,
-                "dateField1" => "",
+                "numericField10" => $data->item_detail['numericField10'] ?? '',
+                "dateField1" => $data->item_detail['dateField1'] ?? '',
                 "dateField2" => "",
                 "dataClassification1Id" => "",
                 "dataClassification2Id" => "",
@@ -459,8 +459,6 @@ class AccurateTransactionService
             "epaymentSettingId" => "",
             "ignoreWarning" => false
         ];
-
-        dd(json_encode($postData));
 
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
