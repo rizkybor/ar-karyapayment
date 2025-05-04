@@ -16,7 +16,7 @@ class ManfeeDocDetailPayments extends Model
         'expense_type',
         'account',
         'account_name',
-        // 'uraian',
+        'accountId',
         'nilai_biaya',
     ];
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('expense_type', 255);
             $table->string('account', 255);
             $table->string('account_name', 255);
+            $table->string('accountId', 255);
             $table->decimal('nilai_biaya', 15, 2);
             $table->timestamps();
         });
