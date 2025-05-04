@@ -231,16 +231,37 @@
             checkChanges();
         };
 
+        // window.calculateValues = function() {
+        //     let dppPekerjaan = parseFloat(document.getElementById("dpp_pekerjaan").value.replace(/\./g,
+        //         '') || 0);
+        //     let ratePpn = parseFloat(document.getElementById("rate_ppn").value.replace(',', '.') || 0);
+
+        //     let nilaiPpn = (dppPekerjaan * ratePpn) / 100;
+        //     document.getElementById("nilai_ppn").value = new Intl.NumberFormat("id-ID").format(nilaiPpn);
+
+        //     let jumlah = dppPekerjaan + nilaiPpn;
+        //     document.getElementById("jumlah").value = new Intl.NumberFormat("id-ID").format(jumlah);
+        // };
+
         window.calculateValues = function() {
-            let dppPekerjaan = parseFloat(document.getElementById("dpp_pekerjaan").value.replace(/\./g,
-                '') || 0);
-            let ratePpn = parseFloat(document.getElementById("rate_ppn").value.replace(',', '.') || 0);
+            const dppElement = document.getElementById("dpp_pekerjaan");
+            const rateElement = document.getElementById("rate_ppn");
+            const nilaiPpnElement = document.getElementById("nilai_ppn");
+            const jumlahElement = document.getElementById("jumlah");
 
-            let nilaiPpn = (dppPekerjaan * ratePpn) / 100;
-            document.getElementById("nilai_ppn").value = new Intl.NumberFormat("id-ID").format(nilaiPpn);
+            if (!dppElement || !rateElement || !nilaiPpnElement || !jumlahElement) {
+                console.warn("Element tidak ditemukan, pastikan input tersedia.");
+                return;
+            }
 
-            let jumlah = dppPekerjaan + nilaiPpn;
-            document.getElementById("jumlah").value = new Intl.NumberFormat("id-ID").format(jumlah);
+            const dppPekerjaan = parseFloat(dppElement.value.replace(/\./g, '') || 0);
+            const ratePpn = parseFloat(rateElement.value.replace(',', '.') || 0);
+
+            const nilaiPpn = (dppPekerjaan * ratePpn) / 100;
+            nilaiPpnElement.value = new Intl.NumberFormat("id-ID").format(nilaiPpn);
+
+            const jumlah = dppPekerjaan + nilaiPpn;
+            jumlahElement.value = new Intl.NumberFormat("id-ID").format(jumlah);
         };
 
         calculateValues();
@@ -273,11 +294,21 @@
     }
 
     // Close dropdown kalau klik di luar input dan dropdown
+    // document.addEventListener('click', function(event) {
+    //     const input = document.getElementById('akunInput');
+    //     const dropdown = document.getElementById('akunDropdown');
+    //     if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+    //         dropdown.classList.add('hidden');
+    //     }
+    // });
     document.addEventListener('click', function(event) {
-        const input = document.getElementById('akunInput');
-        const dropdown = document.getElementById('akunDropdown');
-        if (!input.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
+    const input = document.getElementById('akunInput');
+    const dropdown = document.getElementById('akunDropdown');
+
+    if (!input || !dropdown) return;
+
+    if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
 </script>

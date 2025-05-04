@@ -6,6 +6,7 @@
     expense_type: '{{ old('expense_type', $detailPaymentId->expense_type) }}',
     account: '{{ old('account', $detailPaymentId->account) }}',
     account_name: '{{ old('account_name', $detailPaymentId->account_name) }}',
+    accountId: '{{ old('accountId', $detailPaymentId->accountId ?? '') }}',
     nilai_biaya: '{{ old('nilai_biaya', number_format($detailPaymentId->nilai_biaya, 0, ',', '.')) }}',
     init() {
         // Format nilai biaya saat modal dibuka
@@ -53,18 +54,24 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 text-left">Account</label>
                     <select name="account" x-model="account"
-                        @change="account_name = $event.target.selectedOptions[0].dataset.name"
+                        @change="
+                            account_name = $event.target.selectedOptions[0].dataset.name
+                            accountId = $event.target.selectedOptions[0].dataset.id;
+                            "
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                         required>
                         <option value="">Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
                             <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
+                                data-id="{{ $akun['id'] }}"
                                 {{ old('account', $detailPaymentId->account) == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
                             </option>
                         @endforeach
                     </select>
+
+                    <input type="hidden" name="accountId" x-model="accountId">
                     <input type="hidden" name="account_name" x-model="account_name">
                 </div>
 
