@@ -176,7 +176,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'PERMATA ALPANJA BHIMA',
-                'email' => 'alpanja.permata@gmail.com',
+                'email' => 'cngsupport@pt-kpusahatama.com',
                 'nip' => '06235196',
                 'department' => 'Departemen Komersial/CNG',
                 'position' => ' Administrasi CNG',

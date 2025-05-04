@@ -101,15 +101,129 @@ class AccurateTransactionService
 
             $detailAccounts[] = [
                 "_status" => "insert",
+                "id" => "",
+                "idId" => "",
+                "seq" => 1,
+                "groupSeq" => "",
+                "groupSeqId" => "",
+                "inputGroupSeq" => "",
+                "inputGroupSeqId" => "",
                 "itemId" => 207, // belum diketahui
                 "detailName" => "Uang Muka Gaji TAD",
-                "quantity" => 1, // belum ada
+                "quantity" => 1,
+                "controlQuantity" => 0,
+                "itemUnitId" => 100,
+                "unitRatio" => 1,
                 "unitPrice" => 2000,
-                "useTax1" => true, // belum ada
+                "canChangeDetailGroup" => false,
+                "isFromMemorize" => false,
+                "dynamicGroup" => false,
+                "detailDynamicGroup" => false,
+                "detailDynamicGroupPrice" => 0,
+                "detailDynamicGroupTotalPrice" => 0,
+                "itemDiscPercent" => "",
+                "itemCashDiscount" => 0,
+                "lastItemDiscPercent" => "",
+                "lastItemCashDiscount" => 0,
+                "useTax1" => true,
+                "useTax2" => false,
+                "useTax3" => false,
+                "useTax4" => false,
+                "tax3Id" => "",
+                "tax3IdId" => "",
+                "tax3" => "",
+                "taxableAmount3" => 0,
                 "detailTaxName" => "PPN 10%", // belum ada
                 "totalPrice" => 2000,
+                "department" => "",
                 "departmentId" => 151, // belum ada
-                "projectId" => 457 // belum ada
+                "project" => "",
+                "projectId" => 457,
+                "salesmanListId" => 0,
+                "salesmanName" => "",
+                "posSalesType" => "",
+                "posSalesTypeId" => "",
+                "hasPosSalesType" => false,
+                "warehouse" => "",
+                "warehouseId" => "",
+                "availableStock" => 0,
+                "availableStockUnit" => 0,
+                "warehouseStock" => 0,
+                "warehouseStockUnit" => 0,
+                "totalCaptionSerialNumber" => "0+No+Seri/Produksi.+Isikan+1+lagi",
+                "salesQuotationDetail" => "",
+                "salesQuotationDetailId" => "",
+                "salesQuotation" => "",
+                "salesQuotationId" => "",
+                "salesOrderDetail" => "",
+                "salesOrderDetailId" => "",
+                "salesOrder" => "",
+                "salesOrderId" => "",
+                "deliveryOrderDetail" => "",
+                "deliveryOrderDetailId" => "",
+                "deliveryOrder" => "",
+                "deliveryOrderId" => "",
+                "purchaseInvoiceDetail" => "",
+                "purchaseInvoiceDetailId" => "",
+                "purchaseInvoice" => "",
+                "purchaseInvoiceId" => "",
+                "itemDiscountAccountId" => "",
+                "itemDiscountAccountIdId" => "",
+                "amortizeAccount" => "",
+                "amortizeAccountId" => "",
+                "amortizeMonth" => 0,
+                "startAmortizeMonth" => 5,
+                "startAmortizeYear" => 2025,
+                "startAmortizeType" => "SET",
+                "hasAmortize" => false,
+                "detailNotes" => "",
+                "detailSerialNumberId" => 0,
+                "deliveredQuantity" => 0,
+                "processQuantityDesc" => "",
+                "salesOrderPoNumber" => "",
+                "deliveryOrderPoNumber" => "",
+                "optionDynamicGroupId" => 0,
+                "charField1" => "",
+                "charField2" => "",
+                "charField3" => "",
+                "charField4" => "",
+                "charField5" => "",
+                "charField6" => "",
+                "charField7" => "",
+                "charField8" => "",
+                "charField9" => "",
+                "charField10" => "",
+                "charField11" => "",
+                "charField12" => "",
+                "charField13" => "",
+                "charField14" => "",
+                "charField15" => "",
+                "numericField1" => 0,
+                "numericField2" => 0,
+                "numericField3" => 0,
+                "numericField4" => 0,
+                "numericField5" => 0,
+                "numericField6" => 0,
+                "numericField7" => 0,
+                "numericField8" => 0,
+                "numericField9" => 0,
+                "numericField10" => 0,
+                "dateField1" => "",
+                "dateField2" => "",
+                "dataClassification1Id" => "",
+                "dataClassification2Id" => "",
+                "dataClassification3Id" => "",
+                "dataClassification4Id" => "",
+                "dataClassification5Id" => "",
+                "dataClassification6Id" => "",
+                "dataClassification7Id" => "",
+                "dataClassification8Id" => "",
+                "dataClassification9Id" => "",
+                "dataClassification10Id" => "",
+                "oldPriceMinQty" => 0,
+                "oldDiscountMinQty" => 0,
+                "isLoading" => false,
+                "customerId" => 8800
             ];
         }
 
@@ -117,13 +231,29 @@ class AccurateTransactionService
         $detailTaxes = [];
         foreach ($tableTax as $data) {
             $detailTaxes[] = [
+                "id" => "",
+                "idId" => "",
+                "seq" => "",
+                "seqId" => "",
                 "_status" => "insert",
                 "taxId" => 50,
                 "taxType" => "PPN",
+                "pph23Type" => "",
+                "pph23TypeId" => "",
+                "pph15Type" => "",
+                "pph15TypeId" => "",
+                "pphPs4Type" => "",
+                "pphPs4TypeId" => "",
                 "taxDescription" => "Pajak Pertambahan Nilai",
                 "taxableAmount" => 2000,
                 "taxRate" => 11,
                 "taxAmount" => 220,
+                "remove" => false,
+                "detailInvoiceId" => "",
+                "detailInvoiceIdId" => "",
+                "detailInvoiceNo" => "",
+                "detailInvoiceNoId" => "",
+                "purchaseDetail" => false,
                 "new" => true
             ];
         }
@@ -131,7 +261,6 @@ class AccurateTransactionService
         /**
          * Example body request.
          */
-
         $postData = [
             "uniqueDataNumber" => now()->timestamp, // atau bisa pakai uniqid()
             "needDetailResult" => false,
@@ -143,34 +272,198 @@ class AccurateTransactionService
             "createdBy" => "",
             "createdById" => "",
             "id" => "",
+            "idId" => "",
             "optLock" => "",
+            "optLockId" => "",
             "forceCalculateTaxRate" => true,
             "forceCalculatePercentTaxable" => true,
             "number" => $payload['data']->invoice_number ?? '',
+            "salesOrderPoNumber" => "",
+            "deliveryOrderPoNumber" => "",
+            "countAutoNumber" => 1,
+            "recurringDetailId" => "",
+            "recurringDetailIdId" => "",
             "poNumber" => $payload['contract']->contract_number ?? '',
-            "customerId" => 2200, // belum ada
-            "currencyId" => 50,
-            "paymentTermId" => 54,
+            "customerId" => $payload['customer']['id'] ?? '',
+            "customerName" => "",
+            "customerNameId" => "",
+            "currencyId" => $payload['customer']['currency']['id'] ?? '',
+            "masterSalesmanName" => "",
+            "cashierEmployeeName" => "",
+            "masterPosSalesType" => "",
+            "masterPosSalesTypeId" => "",
+            "arAccount" => "",
+            "arAccountId" => "",
+            "rate" => 1,
+            "fiscalRate" => 1,
+            "fob" => "",
+            "fobId" => "",
+            "paymentTermId" => $payload['customer']['term']['id'] ?? '',
+            "shipment" => "",
+            "shipmentId" => "",
             "toAddress" => $payload['contract']->address ?? '',
             "transDate" => now()->format('d/m/Y'),
+            "shipDate" => now()->format('d/m/Y'),
+            "dueDate" => now()->format('d/m/Y'),
             "description" => "DESCRIPTION",
             "tax1Id" => 50,
+            "tax2Id" => "",
+            "tax2IdId" => "",
+            "tax4Id" => "",
+            "tax4IdId" => "",
+            "tax2" => "",
+            "tax4" => "",
             "taxable" => true,
-            "subTotal" => $payload['detailPayments'][0]->nilai_biaya ?? '',
+            "inclusiveTax" => false,
+            "multiTaxRate" => false,
+            "subTotal" =>  round($payload['detailPayments'][0]->nilai_biaya) ?? '',
+            "cashDiscPercent" => "",
+            "cashDiscount" => 0,
+            "lastCashDiscPercent" => "",
+            "lastCashDiscount" => 0,
             "tax1Amount" => 220,
-            "totalAmount" => $payload['detailPayments'][0]->nilai_biaya ?? '',
+            "tax2Amount" => 0,
+            "tax1AmountBase" => 33000, // pecrecntage accumulate total
+            "tax2AmountBase" => 0,
+            "tax4AmountBase" => 0,
+            "tax3Amount" => 0,
+            "tax4Amount" => 0,
+            "tax1Rate" => 11, // pecrecntage accumulate
+            "tax2Rate" => 0,
+            "tax4Rate" => 0,
+            "percentTaxable" => 100, // pecrecntage accumulate
+            "totalExpense" => 0,
+            "totalAmount" =>  round($payload['detailPayments'][0]->nilai_biaya) ?? '',
             "detailItem" => $detailAccounts,
+            "detailExpenseId" => 0,
+            "detailDownPaymentId" => 0,
+            "detailSchedulePaymentId" => 0,
+            "journalId" => "",
+            "journalIdId" => "",
+            "transactionCurrencyId" => "",
+            "transactionCurrencyIdId" => "",
+            "openingBalance" => false,
+            "reverseInvoice" => false,
+            "comment" => "",
+            "attachments" => "[]",
+            "canSelfPaidPph" => false,
             "detailTax" => $detailTaxes,
-            "retailWpName" => "Alfison",
-            "documentCode" => "CTAS_INVOICE",
-            "taxType" => "CTAS_KEPADA_SELAIN_PEMUNGUT_PPN",
+            "primeReceipt" => 0,
+            "taxReceipt" => 0,
+            "primeReturn" => 0,
+            "taxReturn" => 0,
+            "primeOwing" => 0,
+            "taxOwing" => 0,
+            "suggestedDiscount" => 0,
+            "status" => "",
+            "statusName" => "",
+            "hasStatusHistory" => false,
+            "retailWpName" => $payload['customer']['wpName'] ?? '',
+            "retailIdCard" => "",
+            "invoiceDiscountAccountId" => "",
+            "invoiceDiscountAccountIdId" => "",
+            "invoiceDp" => false,
+            "inputDownPayment" => 0,
+            "orderDownPayment" => "",
+            "orderDownPaymentId" => "",
+            "outstanding" => true,
+            "owingForPayment" => 0,
+            "customerHasDownPayment" => false,
+            "userPrinted" => "",
+            "userPrintedId" => "",
+            "printUserName" => "",
+            "printedTime" => "",
+            "customerHasProjectContractor" => false,
+            "projectContractor" => "",
+            "projectContractorId" => "",
+            "projectAmount" => 0,
+            "projectAddendum" => 0,
+            "projectProgress" => "",
+            "projectProgressId" => "",
+            "projectPaymentPortion" => "",
+            "projectPaymentPortionId" => "",
+            "projectPaymentAmount" => 0,
             "taxDate" => now()->format('d/m/Y'),
+            "taxNumber" => "",
+            "documentCode" => "CTAS_INVOICE",
+            "taxType" => $payload['customer']['customerTaxTypeName'] ?? '',
+            "documentTransaction" => "",
+            "documentTransactionId" => "",
+            "notesIdTax" => "",
+            "notesIdTaxId" => "",
+            "taxNumberType" => "MAIN_NUMBER",
+            "reversePercentShipped" => 0,
+            "reversePercentShippedPoint" => "0%",
+            "charField1" => "",
+            "charField2" => "",
+            "charField3" => "",
+            "charField4" => "",
+            "charField5" => "",
+            "charField6" => "",
+            "charField7" => "",
+            "charField8" => "",
+            "charField9" => "",
+            "charField10" => "",
+            "numericField1" => 0,
+            "numericField2" => 0,
+            "numericField3" => 0,
+            "numericField4" => 0,
+            "numericField5" => 0,
+            "numericField6" => 0,
+            "numericField7" => 0,
+            "numericField8" => 0,
+            "numericField9" => 0,
+            "numericField10" => 0,
+            "dateField1" => "",
+            "dateField2" => "",
+            "approvalDetailListId" => 0,
+            "approvalStatus" => "",
             "saveAsStatusType" => "UNAPPROVED",
-            "branchId" => 50
+            "efakturPdfFilePath" => "",
+            "uniqueAmount" => 0,
+            "paymentWithUniqueAmount" => false,
+            "paymentWithVirtualAccount" => false,
+            "paymentTermIsInstallment" => false,
+            "totalAmountWithUniqueAmount" => 0,
+            "taxAutoNumber" => true,
+            "branchId" => $payload['customer']['branchId'] ?? null,
+            "receiptHistoryId" => 0,
+            "taxReceiptHistoryId" => 0,
+            "returnHistoryId" => 0,
+            "deliveryOrderHistoryId" => 0,
+            "exchangeInvoiceId" => "",
+            "exchangeInvoiceIdId" => "",
+            "deliveryPackingId" => "",
+            "deliveryPackingIdId" => "",
+            "exchangeInvoiceNumber" => "",
+            "deliveryPackingNumber" => "",
+            "commentsId" => 0,
+            "vaNumber" => "",
+            "vaNumberObject" => "",
+            "vaNumberObjectId" => "",
+            "hasVaCompanyCode" => false,
+            "epaymentCode" => "",
+            "epaymentType" => "",
+            "externalId" => "",
+            "subComp" => "",
+            "subCompObject" => "",
+            "subCompObjectId" => "",
+            "vaNumberListId" => 0,
+            "defaultVA" => "",
+            "epaymentAmount" => 0,
+            "epaymentStatus" => "",
+            "epaymentStatusName" => "",
+            "paymentName" => "",
+            "posCreateDate" => "",
+            "settingId" => 0,
+            "layoutDocId" => 0,
+            "expiredDate" => "",
+            "epaymentSetting" => "",
+            "epaymentSettingId" => "",
+            "ignoreWarning" => false
         ];
 
-        // dd($postData,'<<< cek post data accurate');
-
+        dd(json_encode($postData));
 
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
@@ -192,6 +485,8 @@ class AccurateTransactionService
                 'json' => $postData
             ]);
 
+            dd($response, '<<<< cek');
+
             if ($response->getStatusCode() === 200) {
                 return $response;
             } else {
@@ -199,6 +494,124 @@ class AccurateTransactionService
             }
         } catch (Exception $e) {
             throw new Exception('Failed to send request: ' . $e->getMessage());
+        }
+    }
+
+
+    public function getAllCustomers(array $filters = [], int $pageSize = 100)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature,
+        ];
+
+        $allCustomers = [];
+        $page = 1;
+
+        do {
+            // gabungkan filter + pagination
+            $query = array_merge([
+                'fields' => 'id,name,customerNo,npwpNo',
+                'sp.page' => $page,
+                'sp.pageSize' => $pageSize
+            ], $filters);
+
+            $url = $this->baseUrl . '/customer/list.do?' . http_build_query($query);
+
+            try {
+                $response = $this->client->get($url, ['headers' => $headers]);
+                $result = json_decode($response->getBody()->getContents(), true);
+
+                if (!isset($result['d'])) {
+                    break;
+                }
+
+                $allCustomers = array_merge($allCustomers, $result['d']);
+
+                $totalPages = $result['sp']['totalPages'] ?? 1;
+                $page++;
+            } catch (Exception $e) {
+                throw new Exception("Failed on page {$page}: " . $e->getMessage());
+            }
+        } while ($page <= $totalPages);
+
+        return $allCustomers;
+    }
+
+    public function getCustomerDetail(array $params)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature,
+        ];
+
+        // Minimal harus ada salah satu dari 'id' atau 'customerNo'
+        if (!isset($params['id']) && !isset($params['customerNo'])) {
+            throw new Exception("Parameter 'id' atau 'customerNo' wajib diisi.");
+        }
+
+        $url = $this->baseUrl . '/customer/detail.do?' . http_build_query($params);
+
+        try {
+            $response = $this->client->get($url, ['headers' => $headers]);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (Exception $e) {
+            throw new Exception('Failed to get customer detail: ' . $e->getMessage());
+        }
+    }
+
+
+    public function saveCustomer(string $name)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature,
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ];
+
+        $formParams = [
+            'name' => $name
+        ];
+
+        $url = $this->baseUrl . '/customer/save.do';
+
+        try {
+            $response = $this->client->post($url, [
+                'headers' => $headers,
+                'form_params' => $formParams
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                return json_decode($response->getBody()->getContents(), true);
+            } else {
+                throw new Exception('Unexpected status code: ' . $response->getStatusCode());
+            }
+        } catch (Exception $e) {
+            throw new Exception('Failed to save customer: ' . $e->getMessage());
         }
     }
 }

@@ -104,7 +104,7 @@ class NonManfeeDocumentController extends Controller
             ->addMonthNoOverflow()
             ->day(15)
             ->setTime(0, 1, 0);
-            
+
         try {
             // Simpan dokumen baru
             $nonManfeeDoc = NonManfeeDocument::create($input);
@@ -584,8 +584,37 @@ class NonManfeeDocumentController extends Controller
                         'taxFiles' => $document->taxFiles,
                     ];
 
-                    $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
-                    $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
+                    // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
+                    $customersCheck = $this->accurateService->getAllCustomers([
+                        'filter.keywords.op' => 'EQUAL',
+                        'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                    ]);
+
+                    if (empty($customersCheck)) {
+                        // ❌ Jika customer TIDAK ditemukan
+                        $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
+
+                        $getCustomers = $this->accurateService->getAllCustomers([
+                            'filter.keywords.op' => 'EQUAL',
+                            'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                        ]);
+                        $customer = $getCustomers[0];
+                    } else {
+                        // ✅ Jika customer ditemukan
+                        $customer = $customersCheck[0];
+                    }
+
+                    $customerDetailResponse = $this->accurateService->getCustomerDetail([
+                        'customerNo' => $customer['customerNo']
+                    ]);
+
+                    $dataAccurate['customer'] = $customerDetailResponse['d'];
+                    
+                    // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
+                    $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
+
+                    dd($apiResponsePostAccurate);
+
 
                     // ✅ Proccess Privy Service
                     // get base 64 from pdf template
