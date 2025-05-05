@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Exception;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,10 @@ use App\Exports\ManfeeDocumentExport;
 use App\Models\BankAccount;
 use App\Services\AccurateTransactionService;
 use App\Services\AccurateMasterOptionService;
+
+use App\Services\PrivyService;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\PrivyController;
 
 class ManfeeDocumentController extends Controller
 {
@@ -330,144 +335,23 @@ class ManfeeDocumentController extends Controller
         return redirect()->back()->with('success', 'Referensi dokumen berhasil diperbarui.');
     }
 
-    /**
-     * Proses Document with Approval Level
-     */
-    // public function processApproval(Request $request, $id)
-    // {
-    //     DB::beginTransaction();
-    //     try {
-    //         $document = ManfeeDocument::findOrFail($id);
-    //         $user = Auth::user();
-    //         $userRole = $user->role;
-    //         $department = $user->department;
-    //         $previousStatus = $document->status;
-    //         $currentRole = optional($document->latestApproval)->approver_role ?? 'maker';
-    //         $message = $request->input('messages');
+    // Privy
 
-    //         // 🔹 1️⃣ Validasi: Apakah dokumen sudah di tahap akhir approval?
-    //         if ($document->last_reviewers === 'pajak') {
-    //             return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
-    //         }
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
+    {
+        $request = new Request([
+            'base64_pdf' => $base64,
+            'type_sign' => $typeSign,
+            "posX" => $posX,
+            "posY" => $posY
+        ]);
 
-    //         // 🔹 2️⃣ Cek apakah dokumen dalam status revisi
-    //         $isRevised = $document->status === '102';
+        $privyController = app()->make(PrivyController::class);
+        $privyService = app()->make(PrivyService::class);
 
-    //         // 🔹 3️⃣  Jika revisi, lewati validasi karena `userRole` dan `currentRole` pasti berbeda
-    //         if (!$isRevised && (!$userRole || $userRole !== $currentRole)) {
-    //             return back()->with('error', "Anda tidak memiliki izin untuk menyetujui dokumen ini.");
-    //         }
+        return $privyController->generateDocument($request, $privyService,);
+    }
 
-    //         $nextRole = null;
-    //         $nextApprovers = collect();
-    //         if ($isRevised) {
-    //             // 🔹 4️⃣ Ambil APPROVER TERAKHIR secara keseluruhan
-    //             $lastApprover = DocumentApproval::where('document_id', $document->id)
-    //                 ->where('document_type', ManfeeDocument::class)
-    //                 ->latest('approved_at') // Urutkan berdasarkan waktu approval terbaru
-    //                 ->first();
-
-    //             if (!$lastApprover) {
-    //                 return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
-    //             }
-
-    //             $nextRole = $lastApprover->approver_role;
-    //             $nextApprovers = User::where('role', $nextRole)->get();
-    //         } else {
-    //             // 🔹 5️⃣ Jika bukan revisi, tentukan ROLE BERIKUTNYA seperti biasa
-    //             $nextRole = $this->getNextApprovalRole($currentRole, $department, $isRevised);
-    //             if (!$nextRole) {
-    //                 return back()->with('info', "Dokumen ini sudah berada di tahap akhir approval.");
-    //             }
-
-    //             // 🔹 6️⃣ Ambil user dengan role berikutnya
-    //             $nextApprovers = User::where('role', $nextRole)
-    //                 ->when($nextRole === 'kadiv', function ($query) use ($department) {
-    //                     return $query->whereRaw("LOWER(department) = ?", [strtolower($department)]);
-    //                 })
-    //                 ->get();
-    //         }
-
-    //         if ($nextApprovers->isEmpty()) {
-    //             Log::warning("Approval gagal: Tidak ada user dengan role {$nextRole} untuk dokumen ID {$document->id}");
-    //             return back()->with('error', "Tidak ada user dengan role {$nextRole}" .
-    //                 ($nextRole === 'kadiv' ? " di departemen {$department}." : "."));
-    //         }
-
-    //         // 🔹 7️⃣ Ambil status dokumen berdasarkan nextRole
-    //         $statusCode = array_search($nextRole, $this->approvalStatusMap());
-
-    //         if ($statusCode === false) {
-    //             Log::warning("Approval Status Map tidak mengenali role: {$nextRole}");
-    //             $statusCode = 'unknown';
-    //         }
-
-    //         // 🔹 8️⃣ Simpan approval untuk user berikutnya
-    //         foreach ($nextApprovers as $nextApprover) {
-    //             DocumentApproval::create([
-    //                 'document_id'    => $document->id,
-    //                 'document_type'  => ManfeeDocument::class,
-    //                 'approver_id'    => $nextApprover->id,
-    //                 'approver_role'  => $nextRole,
-    //                 'submitter_id'   => $document->created_by,
-    //                 'submitter_role' => $userRole,
-    //                 'status'         => (string) $statusCode,
-    //                 'approved_at'    => now(),
-    //             ]);
-    //         }
-
-    //         // 🔹 9️⃣ Perbarui status dokumen
-    //         $document->update([
-    //             'last_reviewers' => $nextRole,
-    //             'status'         => (string) $statusCode,
-    //         ]);
-
-    //         // 🔹 🔟 Simpan ke History
-    //         ManfeeDocHistories::create([
-    //             'document_id'     => $document->id,
-    //             'performed_by'    => $user->id,
-    //             'role'            => $userRole,
-    //             'previous_status' => $previousStatus,
-    //             'new_status'      => (string) $statusCode,
-    //             'action'          => $isRevised ? 'Revised Approval' : 'Approved',
-    //             'notes'           => $message ? "{$message}." : "Dokumen diproses oleh {$user->name}.",
-    //         ]);
-
-    //         // 🔹 🔟 Kirim Notifikasi
-    //         $notification = Notification::create([
-    //             'type'            => InvoiceApprovalNotification::class,
-    //             'notifiable_type' => ManfeeDocument::class,
-    //             'notifiable_id'   => $document->id,
-    //             'messages'        => $message
-    //                 ? "{$message}. Lihat detail: " . route('management-fee.show', $document->id)
-    //                 : "Dokumen diproses oleh {$user->name}.",
-    //             'sender_id'       => $user->id,
-    //             'sender_role'     => $userRole,
-    //             'read_at'         => null,
-    //             'created_at'      => now(),
-    //             'updated_at'      => now(),
-    //         ]);
-
-    //         // 🔹 🔟 Kirim notifikasi ke setiap user dengan role berikutnya
-    //         foreach ($nextApprovers as $nextApprover) {
-    //             NotificationRecipient::create([
-    //                 'notification_id' => $notification->id,
-    //                 'user_id'         => $nextApprover->id,
-    //                 'read_at'         => null,
-    //                 'created_at'      => now(),
-    //                 'updated_at'      => now(),
-    //             ]);
-    //         }
-
-    //         DB::commit();
-
-    //         return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
-    //         return back()->with('error', "Terjadi kesalahan saat memproses approval.");
-    //     }
-    // }
 
     public function processApproval(Request $request, $id)
     {
@@ -505,7 +389,8 @@ class ManfeeDocumentController extends Controller
                 'taxFiles',
                 'contract',
                 'creator',
-                'bankAccount'
+                'bankAccount',
+                'accumulatedCosts'
             ])->findOrFail($id);
             $user = Auth::user();
             $userRole = $user->role;
@@ -535,40 +420,90 @@ class ManfeeDocumentController extends Controller
                     );
                 }
 
-                // ✅ Simulasi data untuk Accurate
-                $tableData = [
-                    [
-                        'account' => '210201',
-                        'amount' => 5000,
-                    ],
-                    [
-                        'account' => '110101',
-                        'amount' => 2000,
-                    ],
-                ];
-
-                $tableTax = [
-                    [
-                        'taxId' => 50,
-                        'taxType' => 'PPN',
-                        'taxDescription' => 'Pajak Pertambahan Nilai',
-                    ],
-                ];
-
                 // ✅ Kirim ke AccurateService
                 try {
                     $dataAccurate = [
                         'data' => $document,
                         'contract' => $document->contract,
+                        'accumulatedCosts' => $document->accumulatedCosts,
                         'creator' => $document->creator,
                         'bankAccount' => $document->bankAccount,
                         'detailPayments' => $document->detailPayments,
                         'taxFiles' => $document->taxFiles,
                     ];
 
-                    $apiResponseAkumulasi = $this->accurateService->postDataInvoice($dataAccurate);
-                    $responseBody = json_decode($apiResponseAkumulasi->getBody(), true);
-                    // dd($responseBody,'<<< cek response body hasil accurate');
+                    // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
+                    $customersCheck = $this->accurateService->getAllCustomers([
+                        'filter.keywords.op' => 'EQUAL',
+                        'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                    ]);
+
+                    if (empty($customersCheck)) {
+                        // ❌ Jika customer TIDAK ditemukan
+                        $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
+
+                        $getCustomers = $this->accurateService->getAllCustomers([
+                            'filter.keywords.op' => 'EQUAL',
+                            'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                        ]);
+                        $customer = $getCustomers[0];
+                    } else {
+                        // ✅ Jika customer ditemukan
+                        $customer = $customersCheck[0];
+                    }
+
+                    $customerDetailResponse = $this->accurateService->getCustomerDetail([
+                        'customerNo' => $customer['customerNo']
+                    ]);
+
+                    $dataAccurate['customer'] = $customerDetailResponse['d'];
+
+                    $detailPayments = $dataAccurate['detailPayments'];
+
+                    foreach ($detailPayments as $index => $detailPayment) {
+                        $accountId = $detailPayment->accountId ?? null;
+
+                        if ($accountId) {
+                            try {
+                                $itemDetail = $this->accurateService->getItemDetail([
+                                    'id' => $accountId,
+                                ]);
+
+                                // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
+                                $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
+                            } catch (Exception $e) {
+                                Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                                $detailPayments[$index]['item_detail'] = null;
+                            }
+                        }
+                    }
+
+                    // Replace detailPayments di $dataAccurate dengan yang sudah di-update
+                    $dataAccurate['detailPayments'] = $detailPayments;
+
+                    // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
+                    $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
+
+                    dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
+
+
+                    // ✅ Proccess Privy Service
+                    // get base 64 from pdf template
+                    $pdfController = app()->make(PDFController::class);
+                    $base64letter = $pdfController->manfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
+
+                    // PRIVY SERVICES
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84');
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47');
+                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55');
+
+                    $letterPrivy = $createLetter->getData();
+                    $invoicePrivy = $createInvoice->getData();
+                    $kwitansiPrivy = $createKwitansi->getData();
+
+                    dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }

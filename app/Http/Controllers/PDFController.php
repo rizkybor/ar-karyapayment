@@ -473,6 +473,78 @@ class PDFController extends Controller
 
     /*
 |--------------------------------------------------------------------------
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64
+|--------------------------------------------------------------------------
+*/
+
+    public function manfeeLetterBase64($document_id): string
+    {
+        $document = ManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts
+        ];
+
+        $pdf = PDF::loadView('templates.management-fee.document-letter', $data);
+        $pdfOutput = $pdf->output();
+        $base64 = base64_encode($pdfOutput);
+
+        return $base64;
+    }
+
+    public function manfeeInvoiceBase64($document_id): string
+    {
+        $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.management-fee.document-invoice', $data);
+
+        $pdfOutput = $pdf->output(); // binary
+        return base64_encode($pdfOutput); // hasil base64
+    }
+
+    public function manfeeKwitansiBase64($document_id): string
+    {
+        $document = ManfeeDocument::with([
+            'contract',
+            'detailPayments',
+            'accumulatedCosts',
+            'bankAccount'
+        ])->findOrFail($document_id);
+
+        // Pastikan ada accumulated cost
+        $firstCost = $document->accumulatedCosts->first();
+
+        if (!$firstCost) {
+            throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
+        }
+
+        // Hitung nilai terbilang
+        $terbilang = $this->nilaiToString($firstCost->total);
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'terbilang' => $terbilang,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $pdf = PDF::loadView('templates.management-fee.document-kwitansi', $data);
+
+        return base64_encode($pdf->output());
+    }
+
+    /*
+|--------------------------------------------------------------------------
 | Management Fee PDF (Letter, Invoice, Kwitansi, Attachment & Taxes) EXTRACT ALL ZIP
 |--------------------------------------------------------------------------
 */
