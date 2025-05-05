@@ -441,12 +441,12 @@ class PDFController extends Controller
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
 
-        if (!$firstCost) {
-            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
-        }
+        // if (!$firstCost) {
+        //     return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        // }
 
         // Hitung nilai terbilang dari total
-        $terbilang = $this->nilaiToString($firstCost->total);
+        $terbilang = $firstCost ? $this->nilaiToString($firstCost->total) : '-';
 
         $data = [
             'document' => $document,
