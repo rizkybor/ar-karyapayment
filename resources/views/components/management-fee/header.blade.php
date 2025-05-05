@@ -123,7 +123,7 @@
 
                 {{-- @if ($document_status > 0) --}}
                 <div x-data="{ open: false }" class="relative">
-                    <x-button-action @click="open = !open" color="blue" icon="eye">
+                    <x-button-action @click="open = !open" color="blue" icon="{{ $showDraft ? 'print' : 'eye' }}">
                         {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
                     </x-button-action>
 
@@ -152,8 +152,7 @@
 
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
-
-                        <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
+                        {{-- <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
                         <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
                                 Cetak Dokumen
@@ -172,7 +171,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
