@@ -171,12 +171,15 @@
 
             <tr>
                 <td class="no-border">
-                    Management Fee {{ rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') }}%
+                    Management Fee
+                    {{ optional($accumulatedCosts[0] ?? null)->total_expense_manfee
+                        ? rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') . '%'
+                        : '-' }}
                 </td>
                 <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                 <td
                     style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 5rem">
-                    {{ number_format($accumulatedCosts->sum('nilai_manfee'), 0, ',', '.') }}
+                    {{ number_format($accumulatedCosts->sum('nilai_manfee') ?? 0, 0, ',', '.') }}
                 </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
@@ -191,7 +194,7 @@
                 <td class="no-border" style="text-align: right; padding-left: 3rem; font-weight: bold;">Rp.</td>
                 <td
                     style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: none; padding: 5px; position: relative; text-align: right; padding-right: 5rem;">
-                    {{ number_format($grandTotal, 0, ',', '.') }}
+                    {{ number_format($grandTotal ?? 0, 0, ',', '.') }}
                     <div style="position: absolute; top: 0; left: 25%; width: 50%; height: 1px; background: black;">
                     </div>
                 </td>
@@ -200,12 +203,15 @@
             </tr>
             <tr>
                 <td class="no-border">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                    {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
+                        ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
+                        : 'PPN' }}
                 </td>
                 <td class="no-border" style="text-align: right; padding-left: 3rem;">Rp.</td>
                 <td
                     style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 5rem">
-                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
+                    {{ number_format($accumulatedCosts->sum('nilai_ppn') ?? 0, 0, ',', '.') }}
+                </td>
                 <td class="no-border">&nbsp;</td>
                 <td style="border-left: none; border-top: none; border-bottom: none;">
                     &nbsp;</td>
@@ -215,7 +221,7 @@
                 <td class="no-border" style="text-align: right; padding-left: 3rem; font-weight: bold;">Rp.</td>
                 <td
                     style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative; text-align: right; padding-right: 5rem;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
+                    {{ number_format($accumulatedCosts->sum('total') ?? 0, 0, ',', '.') }}
                     <div style="position: absolute; top: 0; left: 25%; width: 50%; height: 1px; background: black;">
                     </div>
                 </td>
@@ -226,22 +232,25 @@
                 <td colspan="3" style="text-align: right;"><strong>Jumlah</strong></td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp.</strong></td>
                 <td style="text-align: right; border-left: none;">
-                    <strong> {{ number_format($grandTotal, 0, ',', '.') }}</strong>
+                    <strong>{{ number_format($grandTotal ?? 0, 0, ',', '.') }}</strong>
                 </td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                    {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
+                        ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
+                        : 'PPN' }}
                 </td>
                 <td style="border-bottom: none; border-right: none;">Rp.</td>
                 <td style="text-align: right; border-left: none;">
-                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
+                    {{ number_format($accumulatedCosts->sum('nilai_ppn') ?? 0, 0, ',', '.') }}
+                </td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
                 <td style="border-bottom: none; border-right: none;"><strong>Rp.</strong></td>
-                <td style="text-align: right;border-left: none;">
-                    <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
+                <td style="text-align: right; border-left: none;">
+                    <strong>{{ number_format($accumulatedCosts->sum('total') ?? 0, 0, ',', '.') }}</strong>
                 </td>
             </tr>
             <tr>
