@@ -192,8 +192,8 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta,
-                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
