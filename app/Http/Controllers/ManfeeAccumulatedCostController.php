@@ -47,7 +47,7 @@ class ManfeeAccumulatedCostController extends Controller
             'total_expense_manfee' => 'required|string|max:255',
             'nilai_manfee' => 'required|numeric',
             'dpp' => 'required|numeric',
-            'rate_ppn' => 'required|numeric|min:0|max:999.99',
+            'rate_ppn' => 'required|numeric|min:11|max:999.99',
             'nilai_ppn' => 'required|numeric',
             'comment_ppn' => 'nullable|string|max:255',
             'total' => 'required|numeric',
