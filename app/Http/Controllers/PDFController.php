@@ -471,6 +471,100 @@ class PDFController extends Controller
         return $pdf->stream($filename);
     }
 
+    /*
+|--------------------------------------------------------------------------
+| Management Fee PDF (Letter, Invoice, Kwitansi, Attachment & Taxes) EXTRACT ALL ZIP
+|--------------------------------------------------------------------------
+*/
+
+    public function ManfeeZip($document_id)
+    {
+        if (auth()->user()->role !== 'perbendaharaan') {
+            return back()->with('error', 'Maaf, Anda tidak memiliki akses!');
+        }
+
+        $document = ManfeeDocument::with([
+            'contract',
+            'detailPayments',
+            'accumulatedCosts',
+            'attachments',
+            'taxFiles',
+            'bankAccount'
+        ])->findOrFail($document_id);
+
+        if ((int) $document->status !== 6) {
+            return back()->with('error', 'Dokumen hanya dapat diunduh jika sudah Done');
+        }
+
+        $data = [
+            'document' => $document,
+            'contract' => $document->contract,
+            'accumulatedCosts' => $document->accumulatedCosts,
+            'detailPayments' => $document->detailPayments
+        ];
+
+        $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+        $tempDir = storage_path('app/temp_' . uniqid());
+        if (!file_exists($tempDir)) mkdir($tempDir, 0777, true);
+
+        // Generate PDFs
+        $letterPdfPath = $tempDir . "/Surat_{$baseName}.pdf";
+        $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
+        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
+
+        PDF::loadView('templates.document-letter', $data)->save($letterPdfPath);
+        PDF::loadView('templates.document-invoice', $data)->save($invoicePdfPath);
+
+        $firstCost = $document->accumulatedCosts->first();
+        if (!$firstCost) return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+
+        $data['terbilang'] = $this->nilaiToString($firstCost->total);
+        PDF::loadView('templates.document-kwitansi', $data)->save($kwitansiPdfPath);
+
+        // Dropbox files
+        $dropbox = new DropboxController();
+        $attachments = $document->attachments->pluck('path')->toArray();
+        $taxes = $document->taxFiles->pluck('path')->toArray();
+
+        $attachmentFiles = $dropbox->downloadMultipleFromDropbox($attachments, '/attachments/');
+        $taxFiles = $dropbox->downloadMultipleFromDropbox($taxes, '/taxes/');
+
+        // Create ZIP
+        $rawInvoiceName = $this->sanitizeFileName($document->invoice_number);
+        $zipPath = storage_path("app/{$rawInvoiceName}.zip");
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            // Add PDFs
+            $zip->addFile($letterPdfPath, basename($letterPdfPath));
+            $zip->addFile($invoicePdfPath, basename($invoicePdfPath));
+            $zip->addFile($kwitansiPdfPath, basename($kwitansiPdfPath));
+
+            // Add Dropbox files
+            foreach (array_merge($attachmentFiles, $taxFiles) as $file) {
+                if (file_exists($file['path'])) {
+                    $zip->addFile($file['path'], $file['name']);
+                }
+            }
+
+            $zip->close();
+        } else {
+            return back()->with('error', 'Gagal membuat ZIP.');
+        }
+
+        // Cleanup
+        foreach ([$letterPdfPath, $invoicePdfPath, $kwitansiPdfPath] as $file) {
+            if (file_exists($file)) unlink($file);
+        }
+        foreach (array_merge($attachmentFiles, $taxFiles) as $file) {
+            if (file_exists($file['path'])) unlink($file['path']);
+        }
+        if (file_exists($tempDir)) rmdir($tempDir);
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+
 
     /*
 |--------------------------------------------------------------------------

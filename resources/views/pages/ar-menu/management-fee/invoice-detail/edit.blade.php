@@ -168,7 +168,7 @@
                 {{-- <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                     <x-management-fee.descriptions.edit :manfeeDoc="$manfeeDoc" />
                 </div> --}}
-            @elseif ($nonManfeeDocument->status == 6 && auth()->user()->hasRole('perbendaharaan'))
+            @elseif ($manfeeDoc->status == 6 && auth()->user()->hasRole('perbendaharaan'))
                 {{-- LAMPIRAN khusus role perbendaharaan di status 6 --}}
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4">
                     <x-management-fee.attachments.edit :manfeeDoc="$manfeeDoc" />

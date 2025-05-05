@@ -24,6 +24,14 @@
             'route' => route('management-fee.print-invoice', $document['id']),
         ],
     ];
+
+    if (Auth::user()->hasRole('perbendaharaan') && (int) $document->status === 6) {
+        $printOptions[] = [
+            'label' => 'Export All Document to ZIP',
+            'route' => route('management-fee.download-zip', $document['id']),
+        ];
+    }
+
 @endphp
 
 @php
@@ -169,11 +177,11 @@
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
-                          <!-- Upload Faktur Pajak Button -->
-                          <x-button-action color="teal" icon="pencil"
-                          onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
-                         Update Lampiran
-                      </x-button-action>
+                        <!-- Upload Faktur Pajak Button -->
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
+                            Update Lampiran
+                        </x-button-action>
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
@@ -285,15 +293,18 @@
         const documentId = "{{ $document->id }}";
         const token = "{{ csrf_token() }}";
 
-         // 🚫 Validasi: role harus maker
-         if (!isMaker) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya', 'error', 'Akses Ditolak!');
+        // 🚫 Validasi: role harus maker
+        if (!isMaker) {
+            showAutoCloseAlert('globalAlertModal', 3000,
+                'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya',
+                'error', 'Akses Ditolak!');
             return;
         }
 
         // 🚫 Validasi: pastikan ada bank yang dipilih
         if (!bankId) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning', 'Perhatian!');
+            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning',
+                'Perhatian!');
             return;
         }
 
