@@ -82,8 +82,8 @@ class ManfeeDocumentController extends Controller
 
         // Generate default numbers with SOL
         $letterNumber = sprintf("%s/MF/KEU/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
-        $invoiceNumber = sprintf("%s/MF/KW/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
-        $receiptNumber = sprintf("%s/MF/INV/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
+        $invoiceNumber = sprintf("%s/MF/INV/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
+        $receiptNumber = sprintf("%s/MF/KW/KPU/Auto/%s/%s", $baseNumber, $monthRoman, $year);
 
         return view('pages/ar-menu/management-fee/create', compact(
             'contracts',
