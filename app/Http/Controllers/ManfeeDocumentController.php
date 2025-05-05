@@ -190,7 +190,22 @@ class ManfeeDocumentController extends Controller
             ->latest('updated_at') // Ambil hanya yang paling baru
             ->first();
 
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $manfeeDoc->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
@@ -257,7 +272,23 @@ class ManfeeDocumentController extends Controller
 
 
         $rate_manfee = ['9', '10', '11', '12', '13'];
-        $jenis_biaya = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        # untuk value dropdown dalam detail biaya
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+
+        // Ambil semua expense_type unik dari detailPayments
+        $existing_expense_types = $manfeeDoc->detailPayments
+            ->pluck('expense_type')
+            ->unique()
+            ->filter()
+            ->values();
+
+        // Gabungkan default dan yang ada di DB jika belum termasuk
+        $jenis_biaya = collect($jenis_biaya_default)
+            ->merge($existing_expense_types)
+            ->unique()
+            ->values()
+            ->all();
 
         // 🚀 **Gunakan Accurate Service untuk mendapatkan URL file**
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();

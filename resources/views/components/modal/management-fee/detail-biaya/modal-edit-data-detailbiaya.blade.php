@@ -62,7 +62,8 @@
                         required>
                         <option value="">Pilih Akun</option>
                         @foreach ($account_detailbiaya as $akun)
-                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}" data-id="{{ $akun['id'] }}"
+                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
+                                data-id="{{ $akun['id'] }}"
                                 {{ old('account', $detailPaymentId->account) == $akun['no'] ? 'selected' : '' }}>
                                 ({{ $akun['no'] }})
                                 {{ $akun['name'] }}
@@ -70,7 +71,7 @@
                         @endforeach
                     </select>
 
-                    <input type="hidden" name="accountId" x-model="accountId">                    
+                    <input type="hidden" name="accountId" x-model="accountId">
                     <input type="hidden" name="account_name" x-model="account_name">
                 </div>
 
