@@ -294,7 +294,7 @@ class ManfeeDocumentController extends Controller
         $apiResponseAkumulasi = $this->accurateOption->getInventoryList();
         $account_akumulasi = json_decode($apiResponseAkumulasi, true)['d'];
 
-        $apiResponseDetail = $this->accurateOption->getAccountNonFeeList();
+        $apiResponseDetail = $this->accurateOption->getInventoryList();
         $account_detailbiaya = json_decode($apiResponseDetail, true)['d'];
 
         $apiResponsePayment = $this->accurateOption->getDataPenjualan($manfeeDoc->invoice_number);
