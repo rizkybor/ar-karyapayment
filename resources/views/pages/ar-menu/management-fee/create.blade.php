@@ -108,6 +108,47 @@
     <input type="hidden" id="base_number" value="{{ $baseNumber }}">
 
     <script>
+        function getCompanyInitial(employeeName) {
+            if (!employeeName) return 'SOL';
+
+            // Hilangkan PT. dan spasi berlebih
+            const companyName = employeeName.replace(/^PT\.?\s*/i, '').trim();
+
+            // Split menjadi kata-kata
+            const words = companyName.split(/\s+/);
+
+            // Jika 1 kata, gunakan kata tersebut (maksimal 8 karakter)
+            if (words.length === 1) {
+                return words[0].substring(0, 8).toUpperCase();
+            }
+
+            // Jika lebih dari 1 kata, ambil inisial masing-masing kata (maksimal 3 kata)
+            let initials = '';
+            const maxWords = Math.min(words.length, 3);
+            for (let i = 0; i < maxWords; i++) {
+                if (words[i].length > 0) {
+                    initials += words[i][0].toUpperCase();
+                }
+            }
+
+            return initials;
+        }
+
+        // Fungsi untuk update nomor dokumen
+        function updateDocumentNumbers(employeeName) {
+            const baseNumber = document.getElementById('base_number').value;
+            const monthRoman = '{{ $monthRoman }}';
+            const year = '{{ $year }}';
+            const companyInitial = getCompanyInitial(employeeName);
+
+            document.getElementById('letter_number').value =
+                `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
+            document.getElementById('invoice_number').value =
+                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
+            document.getElementById('receipt_number').value =
+                `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
+        }
+
         function toggleContractDropdown() {
             document.getElementById("contractDropdown").classList.toggle("hidden");
         }
@@ -122,11 +163,13 @@
             });
         }
 
+        // Fungsi saat memilih kontrak
         function selectContract(id, contractNumber, employeeName, billTypesJson) {
             document.getElementById("contractInput").value = contractNumber;
             document.getElementById("contract_id").value = id;
             document.getElementById("employee_name").value = employeeName;
 
+            // Update tipe tagihan
             try {
                 const billTypes = JSON.parse(billTypesJson);
                 const billTypeSelect = document.getElementById("bill_type");
@@ -141,25 +184,26 @@
                 console.warn("Gagal parse billTypes", e);
             }
 
-            updateContractDetailsManual(contractNumber, employeeName);
+            // Update nomor dokumen
+            updateDocumentNumbers(employeeName);
             document.getElementById("contractDropdown").classList.add("hidden");
         }
 
-        // function getCompanyInitial(employeeName) {
-        //     if (!employeeName) return 'SOL';
-        //     const companyName = employeeName.replace(/^PT\.\s*/i, '');
-        //     const words = companyName.trim().split(/\s+/);
-        //     if (words.length === 1) {
-        //         return words[0];
-        //     }
-        //     let initials = '';
-        //     for (let i = 0; i < words.length; i++) {
-        //         if (words[i].length > 0) {
-        //             initials += words[i][0].toUpperCase();
-        //         }
-        //     }
-        //     return initials;
-        // }
+        function getCompanyInitial(employeeName) {
+            if (!employeeName) return 'SOL';
+            const companyName = employeeName.replace(/^PT\.\s*/i, '');
+            const words = companyName.trim().split(/\s+/);
+            if (words.length === 1) {
+                return words[0];
+            }
+            let initials = '';
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].length > 0) {
+                    initials += words[i][0].toUpperCase();
+                }
+            }
+            return initials;
+        }
 
         function getCompanyInitial(employeeName) {
             if (!employeeName) return 'SOL';
