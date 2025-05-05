@@ -51,6 +51,15 @@ class ManfeeAccumulatedCostController extends Controller
             'nilai_ppn' => 'required|numeric',
             'comment_ppn' => 'nullable|string|max:255',
             'total' => 'required|numeric',
+        ], [
+            'account.required' => 'Akun wajib diisi.',
+            'account.string' => 'Akun harus berupa teks.',
+            'account.max' => 'Akun tidak boleh lebih dari 255 karakter.',
+
+            'rate_ppn.required' => 'Rate PPN harus diisi.',
+            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
+            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 11.',
+            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
 
         // Ambil nilai dari request
