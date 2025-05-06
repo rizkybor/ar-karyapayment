@@ -15,9 +15,9 @@ class CreatePrivyUsersTable extends Migration
             $table->string('privy_register_token')->nullable();
             $table->string('privy_id')->nullable();
             $table->string('privy_channel_id')->nullable();
-            $table->string('privy_status')->nullable(); // e.g. waiting_verification, verified, rejected
-            $table->json('privy_identity')->nullable(); // { nik, nama, tanggal_lahir }
-            $table->json('privy_reject_reason')->nullable(); // { code, reason }
+            $table->string('privy_status')->nullable();
+            $table->json('privy_identity')->nullable();
+            $table->json('privy_reject_reason')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

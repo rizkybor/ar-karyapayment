@@ -515,26 +515,26 @@ class ManfeeDocumentController extends Controller
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
+                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
 
 
-                    // ✅ Proccess Privy Service
-                    // get base 64 from pdf template
-                    $pdfController = app()->make(PDFController::class);
-                    $base64letter = $pdfController->manfeeLetterBase64($document->id);
-                    $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
-                    $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
+                    // // ✅ Proccess Privy Service
+                    // // get base 64 from pdf template
+                    // $pdfController = app()->make(PDFController::class);
+                    // $base64letter = $pdfController->manfeeLetterBase64($document->id);
+                    // $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
+                    // $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
 
-                    // PRIVY SERVICES
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84');
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47');
-                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55');
+                    // // PRIVY SERVICES
+                    // $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84');
+                    // $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47');
+                    // $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55');
 
-                    $letterPrivy = $createLetter->getData();
-                    $invoicePrivy = $createInvoice->getData();
-                    $kwitansiPrivy = $createKwitansi->getData();
+                    // $letterPrivy = $createLetter->getData();
+                    // $invoicePrivy = $createInvoice->getData();
+                    // $kwitansiPrivy = $createKwitansi->getData();
 
-                    dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
+                    // dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
                 } catch (\Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
