@@ -123,13 +123,12 @@ class AccurateTransactionService
                 "lastItemCashDiscount" => 0,
                 "useTax1" => $data['expense_type'] == "Biaya Personil" ? false : true,
                 "useTax2" => false,
-                "useTax3" => false,
+                "useTax3" => $data->item_detail['tax3Id'] ? true : false,
                 "useTax4" => false,
-                "tax3Id" => "",
-                "tax3IdId" => "",
-                "tax3" => "",
+                "tax3Id" => $data->item_detail['tax3Id'] ?? '',
+                "tax3" => $data->item_detail['tax3'] ?? '',
                 "taxableAmount3" => 0,
-                "detailTaxName" => "PPN 10%", // belum ada
+                "detailTaxName" => $data->item_detail['tax3Id'] ? "PPN 10%, PPh 23 2%" : "PPN 10%",
                 "totalPrice" => (int) $data['nilai_biaya'] ?? '',
                 "department" => "",
                 "departmentId" => "",
@@ -556,6 +555,7 @@ class AccurateTransactionService
             "ignoreWarning" => false
         ];
 
+        // dd($postData['detailItem']);
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
