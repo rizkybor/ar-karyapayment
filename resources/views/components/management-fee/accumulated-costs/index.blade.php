@@ -92,7 +92,7 @@
                         onchange="calculateManfee();  checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? null, 0, ',', '.') }}%
+                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.') }}%
                     </p>
                 @endif
 
@@ -138,7 +138,7 @@
                         value="{{ old('comment_ppn', $firstAccumulatedCost->comment_ppn ?? '') }}" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.') }} %
+                        {{ number_format($firstAccumulatedCost->rate_ppn ?? 0, 1, '.', '.') }} %
                     </p>
                 @endif
             </div>
