@@ -9,11 +9,18 @@ use App\Models\ContractCategory;
 use App\Models\MasterType;
 use App\Models\MasterBillType;
 use App\Models\MasterWorkUnit;
+use App\Services\AccurateMasterOptionService;
 
 use Carbon\Carbon;
 
 class ContractsController extends Controller
 {
+    protected $accurate;
+
+    public function __construct(AccurateMasterOptionService $accurate)
+    {
+        $this->accurate = $accurate;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -165,7 +172,24 @@ class ContractsController extends Controller
             'Purchase Order',
             'Berita Acara Kesepakatan',
         ];
-        return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit', 'category'));
+
+        try {
+            // Department List
+            $getResponseDepartmentsAccurate = $this->accurate->getDepartmentList();
+            $departmentList = $getResponseDepartmentsAccurate['d'];
+
+            // Project List
+            $getResponseProject = $this->accurate->getProjectList();
+            $dataProjectList = $getResponseProject['d'];
+
+            // Data Classification  / Segmen Usaha
+            $getResponsedataClassificationAccurate = $this->accurate->getDataClassificationList();
+            $dataClassificationList = $getResponsedataClassificationAccurate['d'];
+        } catch (\Exception $e) {
+            return back()->withErrors('Gagal memuat data Accurate: ' . $e->getMessage());
+        }
+
+        return view('pages/settings/contracts/edit', compact('contract', 'mstType', 'mstBillType', 'mstWorkUnit', 'category', 'departmentList', 'dataProjectList', 'dataClassificationList'));
     }
 
     /**
@@ -188,9 +212,16 @@ class ContractsController extends Controller
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
+            'departmentId' => 'nullable',
+            'projectId' => 'nullable',
+            'segmenUsahaId' => 'nullable',
         ]);
 
         $input = $request->except('path');
+
+        $input['departmentId']   = $request->input('departmentId') ?: null;
+        $input['projectId']      = $request->input('projectId') ?: null;
+        $input['segmenUsahaId']  = $request->input('segmenUsahaId') ?: null;
 
         $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
         $input['start_date'] = Carbon::parse($request->start_date)->format('Y-m-d');

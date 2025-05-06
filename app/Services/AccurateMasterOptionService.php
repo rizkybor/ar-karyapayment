@@ -308,36 +308,137 @@ class AccurateMasterOptionService
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
-    
+
         $timestamp = now()->format('d/m/Y H:i:s');
         $signature = $this->makeSignature($timestamp);
-    
+
         $headers = [
             'Authorization' => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp' => $timestamp,
             'X-Api-Signature' => $signature
         ];
-    
+
         $url = $this->baseUrl . '/sales-invoice/list.do';
-    
+
         $queryParams = [
             'fields' => 'id,name,number,statusName',
             'sp.pageSize' => 100,
             'sp.start' => 0,
             'sp.limit' => 100,
         ];
-    
+
         // Kalau user mau mencari berdasarkan number
         if ($searchKeyword) {
-            $queryParams['filter.keywords.op'] = 'EQUAL'; // bisa juga pakai CONTAIN kalau mau partial search
+            $queryParams['filter.keywords.op'] = 'EQUAL';
             $queryParams['filter.keywords.val[0]'] = $searchKeyword;
         }
-    
+
         $response = $this->client->get($url, [
             'headers' => $headers,
             'query' => $queryParams
         ]);
-        
+
         return $response->getBody()->getContents();
+    }
+
+    public function getDepartmentList()
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization'     => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp'   => $timestamp,
+            'X-Api-Signature'   => $signature
+        ];
+
+        $url = $this->baseUrl . '/department/list.do';
+
+        $queryParams = [
+            'sp.page'                 => 1,
+            'sp.pageSize'             => 20,
+            'sp.sort'                 => 'name|asc'
+        ];
+
+        // Kirim request ke Accurate
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query'   => $queryParams
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getDataClassificationList()
+    {
+        if (!$this->accessToken) {
+            throw new Exception('Access Token atau Session ID belum diset.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization'     => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp'   => $timestamp,
+            'X-Api-Signature'   => $signature
+        ];
+
+        $queryParams = [
+            'sp.page'                 => 1,
+            'sp.pageSize'             => 20,
+            'sp.sort'                 => 'name|asc'
+        ];
+
+        $url = $this->baseUrl . '/data-classification/list.do';
+
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query'   => $queryParams,
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getProjectList()
+    {
+        if (!$this->accessToken) {
+            throw new Exception('Access Token atau Session ID belum diset.');
+        }
+    
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+    
+        $headers = [
+            'Authorization'     => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp'   => $timestamp,
+            'X-Api-Signature'   => $signature
+        ];
+    
+        $url = $this->baseUrl . '/project/list.do';
+    
+        // Parameter berdasarkan dokumentasi dan contoh request
+        $queryParams = [
+            // filter opsional berdasarkan tanggal selesai
+            // 'filter.finishDate.op'     => 'EQUAL',
+            // 'filter.finishDate.val[0]' => '2023-12-31',
+    
+            'sp.page'       => 1,
+            'sp.pageSize'   => 100,
+            'sp.start'      => 0,       // kalau pakai paginasi offset
+            'keywords'      => '',      // pencarian umum (deprecated tapi masih bisa)
+            // 'customerId' => 79,       // hanya jika memang diperlukan
+        ];
+    
+        $response = $this->client->get($url, [
+            'headers' => $headers,
+            'query'   => $queryParams
+        ]);
+    
+        return json_decode($response->getBody()->getContents(), true);
     }
 }

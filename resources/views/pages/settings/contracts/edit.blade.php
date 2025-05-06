@@ -210,20 +210,225 @@
                                     @endforeach
                                 </select>
                             </div>
+
+
+                            <hr />
+
+                            <x-label>*Informasi Tambahan untuk keterangan Departemen, Proyek, Segmen Usaha
+                            </x-label>
+
+                            {{-- Autocomplete Department --}}
+                            <div class="relative">
+                                <x-label for="departmentInput" value="Departemen" />
+                                <input type="text" id="departmentInput" placeholder="Ketik/Pilih Departemen..."
+                                    class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+                                    focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                                    oninput="filterDepartmentDropdown()" onclick="toggleDepartmentDropdown()"
+                                    autocomplete="off" />
+
+                                <input type="hidden" id="department_id" name="departmentId"
+                                    value="{{ old('departmentId', $contract->departmentId) }}" />
+
+                                <ul id="departmentDropdown"
+                                    class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                    rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+
+                                    {{-- Opsi kosong --}}
+                                    <li class="px-4 py-2 cursor-pointer text-gray-500 italic hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                        onclick="selectDepartment('', '')">
+                                        Kosongkan departemen
+                                    </li>
+
+                                    @foreach ($departmentList as $dept)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                            onclick="selectDepartment('{{ $dept['id'] }}', '{{ $dept['name'] }}')">
+                                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $dept['name'] }}
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+
+                            <div class="relative mt-2">
+                                <x-label for="projectInput" value="Proyek" />
+                                <input type="text" id="projectInput" placeholder="Ketik/Pilih Proyek..."
+                                    class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+                                    focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                                    oninput="filterProjectDropdown()" onclick="toggleProjectDropdown()"
+                                    autocomplete="off" />
+
+                                <input type="hidden" id="project_id" name="projectId"
+                                    value="{{ old('projectId', $contract->projectId) }}" />
+
+                                <ul id="projectDropdown"
+                                    class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                    rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+
+                                    {{-- Opsi kosong --}}
+                                    <li class="px-4 py-2 cursor-pointer text-gray-500 italic hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                        onclick="selectProject('', '')">
+                                        Kosongkan Project
+                                    </li>
+
+                                    @foreach ($dataProjectList as $proj)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                            onclick="selectProject('{{ $proj['id'] }}', '{{ $proj['name'] }}')">
+                                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $proj['name'] }}
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <div class="relative mt-2">
+                                <x-label for="classificationInput" value="Kategori Keuangan / Segmen Usaha" />
+                                <input type="text" id="classificationInput" placeholder="Ketik/Pilih Kategori..."
+                                    class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 
+                                    focus:outline-none focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
+                                    oninput="filterClassificationDropdown()" onclick="toggleClassificationDropdown()"
+                                    autocomplete="off" />
+
+                                <input type="hidden" id="classification_id" name="segmenUsahaId"
+                                    value="{{ old('segmenUsahaId', $contract->segmenUsahaId) }}" />
+
+                                <ul id="classificationDropdown"
+                                    class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                                    rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+
+                                     {{-- Opsi kosong --}}
+                                     <li class="px-4 py-2 cursor-pointer text-gray-500 italic hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                     onclick="selectClassification('', '')">
+                                     Kosongkan segmen usaha
+                                 </li>
+
+                                    @foreach ($dataClassificationList as $item)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                            onclick="selectClassification('{{ $item['id'] }}', '{{ $item['name'] }}')">
+                                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $item['name'] }}
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+
+                            {{-- <input type="hidden" id="department_id" name="departmentId"
+                                value="{{ old('departmentId', $contract->departmentId) }}">
+                            <input type="hidden" id="project_id" name="projectId"
+                                value="{{ old('projectId', $contract->projectId) }}">
+                            <input type="hidden" id="classification_id" name="segmenUsahaId"
+                                value="{{ old('segmenUsahaId', $contract->segmenUsahaId) }}"> --}}
+
+                            <hr />
+
+                        </div>
+                        <div
+                            class="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700/20 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md gap-2">
+                            <x-secondary-button
+                                onclick="window.location='{{ route('contracts.index') }}'">Batal</x-secondary-button>
+                            <x-button type="submit">Update Kontrak</x-button>
                         </div>
                     </div>
 
-                    <div
-                        class="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700/20 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md gap-2">
-                        <x-secondary-button
-                            onclick="window.location='{{ route('contracts.index') }}'">Batal</x-secondary-button>
-                        <x-button type="submit">Simpan</x-button>
-                    </div>
+
+
+
+
                 </form>
             </div>
             {{-- Edit Data Baru End --}}
         </div>
     </div>
+
+
+
+    <script>
+        function filterDepartmentDropdown() {
+            const input = document.getElementById("departmentInput");
+            const filter = input.value.toLowerCase();
+            const dropdown = document.getElementById("departmentDropdown");
+            const items = dropdown.getElementsByTagName("li");
+
+            dropdown.classList.remove("hidden");
+
+            for (let i = 0; i < items.length; i++) {
+                const text = items[i].innerText.toLowerCase();
+                items[i].style.display = text.includes(filter) ? "" : "none";
+            }
+        }
+
+        function toggleDepartmentDropdown() {
+            const dropdown = document.getElementById("departmentDropdown");
+            dropdown.classList.toggle("hidden");
+        }
+
+        function selectDepartment(id, name) {
+            document.getElementById("department_id").value = id;
+            document.getElementById("departmentInput").value = name;
+            document.getElementById("departmentDropdown").classList.add("hidden");
+        }
+    </script>
+
+    <script>
+        function filterProjectDropdown() {
+            const input = document.getElementById("projectInput");
+            const filter = input.value.toLowerCase();
+            const dropdown = document.getElementById("projectDropdown");
+            const items = dropdown.getElementsByTagName("li");
+
+            dropdown.classList.remove("hidden");
+
+            for (let i = 0; i < items.length; i++) {
+                const text = items[i].innerText.toLowerCase();
+                items[i].style.display = text.includes(filter) ? "" : "none";
+            }
+        }
+
+        function toggleProjectDropdown() {
+            const dropdown = document.getElementById("projectDropdown");
+            dropdown.classList.toggle("hidden");
+        }
+
+        function selectProject(id, name) {
+            document.getElementById("project_id").value = id;
+            document.getElementById("projectInput").value = name;
+            document.getElementById("projectDropdown").classList.add("hidden");
+        }
+    </script>
+
+    <script>
+        function filterClassificationDropdown() {
+            const input = document.getElementById("classificationInput");
+            const filter = input.value.toLowerCase();
+            const dropdown = document.getElementById("classificationDropdown");
+            const items = dropdown.getElementsByTagName("li");
+
+            dropdown.classList.remove("hidden");
+
+            for (let i = 0; i < items.length; i++) {
+                const text = items[i].innerText.toLowerCase();
+                items[i].style.display = text.includes(filter) ? "" : "none";
+            }
+        }
+
+        function toggleClassificationDropdown() {
+            const dropdown = document.getElementById("classificationDropdown");
+            dropdown.classList.toggle("hidden");
+        }
+
+        function selectClassification(id, name) {
+            document.getElementById("classification_id").value = id;
+            document.getElementById("classificationInput").value = name;
+            document.getElementById("classificationDropdown").classList.add("hidden");
+        }
+    </script>
 
     {{-- JavaScript --}}
     <script>
@@ -232,6 +437,42 @@
             const typeDropdown = document.getElementById('type');
             const billTypeContainer = document.getElementById('bill-type-container');
             const inputContainer = document.getElementById('input-container');
+
+            // === Departemen ===
+            const departmentId = document.getElementById("department_id").value;
+            const departmentInput = document.getElementById("departmentInput");
+            if (departmentId) {
+                const selectedDept = [...document.querySelectorAll("#departmentDropdown li")].find(li =>
+                    li.getAttribute("onclick")?.includes(`'${departmentId}'`)
+                );
+                if (selectedDept) {
+                    departmentInput.value = selectedDept.innerText.trim();
+                }
+            }
+
+            // === Proyek ===
+            const projectId = document.getElementById("project_id").value;
+            const projectInput = document.getElementById("projectInput");
+            if (projectId) {
+                const selectedProj = [...document.querySelectorAll("#projectDropdown li")].find(li =>
+                    li.getAttribute("onclick")?.includes(`'${projectId}'`)
+                );
+                if (selectedProj) {
+                    projectInput.value = selectedProj.innerText.trim();
+                }
+            }
+
+            // === Kategori Keuangan / Segmen Usaha ===
+            const classificationId = document.getElementById("classification_id").value;
+            const classificationInput = document.getElementById("classificationInput");
+            if (classificationId) {
+                const selectedClass = [...document.querySelectorAll("#classificationDropdown li")].find(li =>
+                    li.getAttribute("onclick")?.includes(`'${classificationId}'`)
+                );
+                if (selectedClass) {
+                    classificationInput.value = selectedClass.innerText.trim();
+                }
+            }
 
             // Fungsi untuk menampilkan/menyembunyikan form Tipe Pembayaran
             function toggleBillTypeForm() {
