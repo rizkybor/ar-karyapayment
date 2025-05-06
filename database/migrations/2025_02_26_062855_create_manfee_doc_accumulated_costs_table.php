@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('manfee_doc_accumulated_costs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('document_id')->constrained('manfee_documents')->onDelete('cascade');
+            $table->string('accountId', 255);
             $table->string('account', 255);
             $table->string('account_name', 255);
             $table->decimal('total_expense_manfee', 5, 2);
