@@ -87,14 +87,11 @@ class AccurateTransactionService
 
     public function postDataInvoice($payload)
     {
-        // dd($payload);
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
 
         // Assign Detail Account by Table Data
         $detailAccounts = [];
-        // angka hanya PPH yang berjenis Hutang Pajak
-        // $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
         foreach ($tableData as $data) {
             $detailAccounts[] = [
                 "_status" => "insert",
@@ -105,12 +102,14 @@ class AccurateTransactionService
                 "groupSeqId" => "",
                 "inputGroupSeq" => "",
                 "inputGroupSeqId" => "",
-                "itemId" => 207, // item dari account
-                "detailName" => $data['expense_type'] ?? '',
+                "itemId" => $data->item_detail['id'] ?? '',
+                "detailName" => $payload['data']->category == "management_fee"
+                    ? ($data['expense_type'] ?? '')
+                    : ($data['account_name'] ?? ''),
                 "quantity" => 1,
                 "controlQuantity" => 0,
-                "itemUnitId" => 100,
-                "unitRatio" => 1,
+                "" => 100,
+                "uniitemUnitIdtRatio" => 1,
                 "unitPrice" => (int) $data['nilai_biaya'] ?? '',
                 "canChangeDetailGroup" => false,
                 "isFromMemorize" => false,
@@ -122,20 +121,19 @@ class AccurateTransactionService
                 "itemCashDiscount" => 0,
                 "lastItemDiscPercent" => "",
                 "lastItemCashDiscount" => 0,
-                "useTax1" => true,
+                "useTax1" => $data['expense_type'] == "Biaya Personil" ? false : true,
                 "useTax2" => false,
-                "useTax3" => false,
+                "useTax3" => $data->item_detail['tax3Id'] ? true : false,
                 "useTax4" => false,
-                "tax3Id" => "",
-                "tax3IdId" => "",
-                "tax3" => "",
+                "tax3Id" => $data->item_detail['tax3Id'] ?? '',
+                "tax3" => $data->item_detail['tax3'] ?? '',
                 "taxableAmount3" => 0,
-                "detailTaxName" => "PPN 10%", // belum ada
+                "detailTaxName" => $data->item_detail['tax3Id'] ? "PPN 10%, PPh 23 2%" : "PPN 10%",
                 "totalPrice" => (int) $data['nilai_biaya'] ?? '',
                 "department" => "",
-                "departmentId" => 151, // belum ada
+                "departmentId" => "",
                 "project" => "",
-                "projectId" => 457,
+                "projectId" => "",
                 "salesmanListId" => 0,
                 "salesmanName" => "",
                 "posSalesType" => "",
@@ -180,15 +178,15 @@ class AccurateTransactionService
                 "salesOrderPoNumber" => "",
                 "deliveryOrderPoNumber" => "",
                 "optionDynamicGroupId" => 0,
-                "charField1" => "",
-                "charField2" => "",
-                "charField3" => "",
-                "charField4" => "",
-                "charField5" => "",
-                "charField6" => "",
-                "charField7" => "",
-                "charField8" => "",
-                "charField9" => "",
+                "charField1" => $data->item_detail['charField1'] ?? '',
+                "charField2" => $data->item_detail['charField2'] ?? '',
+                "charField3" => $data->item_detail['charField3'] ?? '',
+                "charField4" => $data->item_detail['charField4'] ?? '',
+                "charField5" => $data->item_detail['charField5'] ?? '',
+                "charField6" => $data->item_detail['charField6'] ?? '',
+                "charField7" => $data->item_detail['charField7'] ?? '',
+                "charField8" => $data->item_detail['charField8'] ?? '',
+                "charField9" => $data->item_detail['charField9'] ?? '',
                 "charField10" => "",
                 "charField11" => "",
                 "charField12" => "",
@@ -204,8 +202,8 @@ class AccurateTransactionService
                 "numericField7" => 0,
                 "numericField8" => 0,
                 "numericField9" => 0,
-                "numericField10" => 0,
-                "dateField1" => "",
+                "numericField10" => $data->item_detail['numericField10'] ?? '',
+                "dateField1" => $data->item_detail['dateField1'] ?? '',
                 "dateField2" => "",
                 "dataClassification1Id" => "",
                 "dataClassification2Id" => "",
@@ -224,42 +222,139 @@ class AccurateTransactionService
             ];
         }
 
-        // belum ada
-        $detailTaxes = [];
-        foreach ($tableTax as $data) {
-            $detailTaxes[] = [
+        if ($payload['data']->category == "management_fee") {
+            // KHUSUS MANFEE (NAMBAH MANFEE ACCOUNT & TAX)
+            $manfee = $payload['accumulatedCosts']->first();
+
+            $detailAccounts[] = [
+                "_status" => "insert",
                 "id" => "",
                 "idId" => "",
-                "seq" => "",
-                "seqId" => "",
-                "_status" => "insert",
-                "taxId" => 50,
-                "taxType" => "PPN",
-                "pph23Type" => "",
-                "pph23TypeId" => "",
-                "pph15Type" => "",
-                "pph15TypeId" => "",
-                "pphPs4Type" => "",
-                "pphPs4TypeId" => "",
-                "taxDescription" => "Pajak Pertambahan Nilai",
-                "taxableAmount" => 2000,
-                "taxRate" => (int)$payload['accumulatedCosts']->first()->rate_ppn,
-                "taxAmount" => 220,
-                "remove" => false,
-                "detailInvoiceId" => "",
-                "detailInvoiceIdId" => "",
-                "detailInvoiceNo" => "",
-                "detailInvoiceNoId" => "",
-                "purchaseDetail" => false,
-                "new" => true
+                "seq" => count($detailAccounts) + 1,
+                "groupSeq" => "",
+                "groupSeqId" => "",
+                "inputGroupSeq" => "",
+                "inputGroupSeqId" => "",
+                "itemId" => $manfee['accountId'] ?? null,
+                "detailName" => $manfee['account_name'] ?? 'Management Fee',
+                "quantity" => 1,
+                "controlQuantity" => 0,
+                "" => 100,
+                "uniitemUnitIdtRatio" => 1,
+                "unitPrice" => (int) $manfee['nilai_manfee'] ?? 0,
+                "canChangeDetailGroup" => false,
+                "isFromMemorize" => false,
+                "dynamicGroup" => false,
+                "detailDynamicGroup" => false,
+                "detailDynamicGroupPrice" => 0,
+                "detailDynamicGroupTotalPrice" => 0,
+                "itemDiscPercent" => "",
+                "itemCashDiscount" => 0,
+                "lastItemDiscPercent" => "",
+                "lastItemCashDiscount" => 0,
+                "useTax1" => true,
+                "tax1Id" => (int) $manfee['accountId'],
+                "detailTaxName" => "PPN {$manfee['rate_ppn']}%",
+                "totalPrice" => (int) $manfee['nilai_manfee'],
+                "numericField10" => 0,
+                "dateField1" => "",
+                "customerId" => $payload['customer']['id'] ?? ''
+            ];
+
+            $detailTaxes = [];
+            foreach ($tableTax as $data) {
+                $detailTaxes[] = [
+                    "id" => "",
+                    "idId" => "",
+                    "seq" => "",
+                    "seqId" => "",
+                    "_status" => "insert",
+                    "taxId" => 50,
+                    "taxType" => "PPN",
+                    "pph23Type" => "",
+                    "pph23TypeId" => "",
+                    "pph15Type" => "",
+                    "pph15TypeId" => "",
+                    "pphPs4Type" => "",
+                    "pphPs4TypeId" => "",
+                    "taxDescription" => "Pajak Pertambahan Nilai",
+                    "taxableAmount" => 2000,
+                    "taxRate" => (int)$payload['accumulatedCosts']->first()->rate_ppn,
+                    "taxAmount" => 220,
+                    "remove" => false,
+                    "detailInvoiceId" => "",
+                    "detailInvoiceIdId" => "",
+                    "detailInvoiceNo" => "",
+                    "detailInvoiceNoId" => "",
+                    "purchaseDetail" => false,
+                    "new" => true
+                ];
+            }
+        } else {
+            // NON MANAGEMENT FEE TAX 
+            $detailTaxes = [
+                [
+                    "id" => "",
+                    "idId" => "",
+                    "seq" => "",
+                    "seqId" => "",
+                    "_status" => "insert",
+                    "taxId" => 57,
+                    "taxType" => "PPH23",
+                    "pph23Type" => "JASA_MANAJEMEN",
+                    "pph23TypeId" => "",
+                    "pph15Type" => "",
+                    "pph15TypeId" => "",
+                    "pphPs4Type" => "",
+                    "pphPs4TypeId" => "",
+                    "taxDescription" => "Jasa Manajemen",
+                    "taxableAmount" => 100000,
+                    "taxRate" => 2,
+                    "taxAmount" => 2000,
+                    "remove" => false,
+                    "detailInvoiceId" => "",
+                    "detailInvoiceIdId" => "",
+                    "detailInvoiceNo" => "",
+                    "detailInvoiceNoId" => "",
+                    "purchaseDetail" => false,
+                    "new" => true
+                ],
+                [
+                    "id" => "",
+                    "idId" => "",
+                    "seq" => "",
+                    "seqId" => "",
+                    "_status" => "insert",
+                    "taxId" => 50,
+                    "taxType" => "PPN",
+                    "pph23Type" => "",
+                    "pph23TypeId" => "",
+                    "pph15Type" => "",
+                    "pph15TypeId" => "",
+                    "pphPs4Type" => "",
+                    "pphPs4TypeId" => "",
+                    "taxDescription" => "Pajak Pertambahan Nilai",
+                    "taxableAmount" => 400000,
+                    "taxRate" => 11,
+                    "taxAmount" => 44000,
+                    "remove" => false,
+                    "detailInvoiceId" => "",
+                    "detailInvoiceIdId" => "",
+                    "detailInvoiceNo" => "",
+                    "detailInvoiceNoId" => "",
+                    "purchaseDetail" => false,
+                    "new" => true
+                ]
             ];
         }
+
+        // dd($detailAccounts);
 
         /**
          * Example body request.
          */
         $postData = [
-            "uniqueDataNumber" => now()->timestamp, // atau bisa pakai uniqid()
+            "uniqueDataNumber" => now()->timestamp,
             "needDetailResult" => false,
             "attachmentCount" => 0,
             "commentCount" => 0,
@@ -323,7 +418,7 @@ class AccurateTransactionService
             "tax1AmountBase" => 33000,
             "tax2AmountBase" => 0,
             "tax4AmountBase" => 0,
-            "tax3Amount" => 0,
+            "tax3Amount" => 2000,
             "tax4Amount" => 0,
             "tax1Rate" => (int)$payload['accumulatedCosts']->first()->rate_ppn,
             "tax2Rate" => 0,
@@ -460,8 +555,7 @@ class AccurateTransactionService
             "ignoreWarning" => false
         ];
 
-        dd(json_encode($postData));
-
+        // dd($postData['detailItem']);
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
         }
@@ -484,10 +578,10 @@ class AccurateTransactionService
 
             if ($response->getStatusCode() === 200) {
                 $responseBody = json_decode((string) $response->getBody(), true);
-            
+
                 $success = $responseBody['s'] ?? null;
                 $messages = $responseBody['d'] ?? [];
-            
+
                 // Log lengkap untuk audit trail
                 Log::info('Accurate Sales Invoice Response', [
                     'timestamp' => now()->toDateTimeString(),
@@ -498,12 +592,12 @@ class AccurateTransactionService
                     'success_flag' => $success,
                     'messages' => $messages,
                 ]);
-            
+
                 // Jika gagal (s === false)
                 if ($success === false) {
                     throw new Exception('Gagal simpan invoice: ' . implode('; ', $messages));
                 }
-            
+
                 return $responseBody;
             } else {
                 Log::error('Accurate Invoice Unexpected Status Code', [
@@ -632,6 +726,42 @@ class AccurateTransactionService
             }
         } catch (Exception $e) {
             throw new Exception('Failed to save customer: ' . $e->getMessage());
+        }
+    }
+
+    public function getItemDetail(array $params)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization'     => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp'   => $timestamp,
+            'X-Api-Signature'   => $signature,
+        ];
+
+        // Minimal harus ada salah satu dari 'id' atau 'no'
+        if (!isset($params['id']) && !isset($params['no'])) {
+            throw new Exception("Parameter 'id' atau 'no' wajib diisi.");
+        }
+
+        // Siapkan query parameter hanya untuk 'id' dan 'no'
+        $queryParams = array_filter([
+            'id' => $params['id'] ?? null,
+            'no' => $params['no'] ?? null,
+        ]);
+
+        $url = $this->baseUrl . '/item/detail.do?' . http_build_query($queryParams);
+
+        try {
+            $response = $this->client->get($url, ['headers' => $headers]);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (Exception $e) {
+            throw new Exception('Failed to get item detail: ' . $e->getMessage());
         }
     }
 }

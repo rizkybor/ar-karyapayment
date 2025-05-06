@@ -24,6 +24,14 @@
             'route' => route('management-fee.print-invoice', $document['id']),
         ],
     ];
+
+    if (Auth::user()->hasRole('perbendaharaan') && (int) $document->status === 6) {
+        $printOptions[] = [
+            'label' => 'Export All Document to ZIP',
+            'route' => route('management-fee.download-zip', $document['id']),
+        ];
+    }
+
 @endphp
 
 @php
@@ -115,7 +123,7 @@
 
                 {{-- @if ($document_status > 0) --}}
                 <div x-data="{ open: false }" class="relative">
-                    <x-button-action @click="open = !open" color="blue" icon="eye">
+                    <x-button-action @click="open = !open" color="blue" icon="{{ $showDraft ? 'print' : 'eye' }}">
                         {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
                     </x-button-action>
 
@@ -144,8 +152,7 @@
 
                 @if (auth()->user()->role !== 'maker')
                     @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
-
-                        <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
+                        {{-- <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
                         <div x-data="{ open: false }" class="relative">
                             <x-button-action @click="open = !open" color="blue" icon="print">
                                 Cetak Dokumen
@@ -164,16 +171,16 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Button batalkan dokumen -->
                         {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
 
-                          <!-- Upload Faktur Pajak Button -->
-                          <x-button-action color="teal" icon="pencil"
-                          onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
-                         Update Lampiran
-                      </x-button-action>
+                        <!-- Upload Faktur Pajak Button -->
+                        <x-button-action color="teal" icon="pencil"
+                            onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
+                            Update Lampiran
+                        </x-button-action>
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
@@ -285,15 +292,18 @@
         const documentId = "{{ $document->id }}";
         const token = "{{ csrf_token() }}";
 
-         // 🚫 Validasi: role harus maker
-         if (!isMaker) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya', 'error', 'Akses Ditolak!');
+        // 🚫 Validasi: role harus maker
+        if (!isMaker) {
+            showAutoCloseAlert('globalAlertModal', 3000,
+                'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya',
+                'error', 'Akses Ditolak!');
             return;
         }
 
         // 🚫 Validasi: pastikan ada bank yang dipilih
         if (!bankId) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning', 'Perhatian!');
+            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning',
+                'Perhatian!');
             return;
         }
 

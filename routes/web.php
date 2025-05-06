@@ -240,6 +240,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/{id}/print-surat', [PDFController::class, 'ManfeeLetter'])->name('print-surat');;
         Route::get('/{id}/print-invoice', [PDFController::class, 'ManfeeInvoice'])->name('print-invoice');;
         Route::get('/{id}/print-kwitansi', [PDFController::class, 'ManfeeKwitansi'])->name('print-kwitansi');;
+        Route::get('/{id}/download-zip', [PDFController::class, 'ManfeeZip'])
+            ->name('download-zip');
 
         Route::prefix('histories')->name('histories.')->group(function () {
             Route::get('/', [ManfeeHistoryController::class, 'index'])->name('index');

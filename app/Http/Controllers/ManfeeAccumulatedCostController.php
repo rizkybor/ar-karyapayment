@@ -42,18 +42,29 @@ class ManfeeAccumulatedCostController extends Controller
 
         // Validasi input dengan custom messages
         $request->validate([
+            'accountId' => 'required|string|max:255',
             'account' => 'required|string|max:255',
             'account_name' => 'required|string|max:255',
             'total_expense_manfee' => 'required|string|max:255',
             'nilai_manfee' => 'required|numeric',
             'dpp' => 'required|numeric',
-            'rate_ppn' => 'required|numeric|min:0|max:999.99',
+            'rate_ppn' => 'required|numeric|min:11|max:999.99',
             'nilai_ppn' => 'required|numeric',
             'comment_ppn' => 'nullable|string|max:255',
             'total' => 'required|numeric',
+        ], [
+            'account.required' => 'Akun wajib diisi.',
+            'account.string' => 'Akun harus berupa teks.',
+            'account.max' => 'Akun tidak boleh lebih dari 255 karakter.',
+
+            'rate_ppn.required' => 'Rate PPN harus diisi.',
+            'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
+            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 11.',
+            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
         ]);
 
         // Ambil nilai dari request
+        $accountId = $request->accountId;
         $account = $request->input('account');
         $account_name = $request->account_name;
         $totalExpenseManfee = $request->input('total_expense_manfee');
@@ -70,6 +81,7 @@ class ManfeeAccumulatedCostController extends Controller
                 'document_id' => $id
             ],
             [
+                'accountId' => $accountId,
                 'account' => $account,
                 'account_name' => $account_name,
                 'total_expense_manfee' => $totalExpenseManfee,

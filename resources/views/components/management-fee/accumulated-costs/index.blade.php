@@ -43,24 +43,6 @@
             <div class="col-span-1 sm:col-span-2 lg:col-span-3">
                 <x-label for="account" value="{{ __('Akun') }}" />
                 @if ($isEdit)
-                    {{-- <select id="account_id" name="account"
-                        class="block mt-1 w-full bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 
-                        font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all
-                        {{ !$isEdit ? 'border-transparent bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600' }}"
-                        onchange="document.getElementById('account_name_input').value = this.selectedOptions[0].dataset.name"
-                        {{ !$isEdit ? 'disabled' : '' }}>
-                        <option value="" disabled selected>Pilih Akun</option>
-                        @foreach ($account_akumulasi as $akun)
-                            <option value="{{ $akun['no'] }}" data-name="{{ $akun['name'] }}"
-                                {{ old('account', $firstAccumulatedCost->account ?? '') == $akun['no'] ? 'selected' : '' }}>
-                                ({{ $akun['no'] }})
-                                {{ $akun['name'] }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <input type="hidden" id="account_name_input" name="account_name"
-                        value="{{ old('account_name', $firstAccumulatedCost->account_name ?? '') }}"> --}}
-
                     <div class="relative mt-1">
                         {{-- Input untuk mengetik nama akun --}}
                         <input type="text" id="akunInput" placeholder="Cari/Pilih Barang & Jasa..."
@@ -76,7 +58,7 @@
                                        rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
                             @foreach ($account_akumulasi as $akun)
                                 <li class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                                    onclick="selectAkun('{{ $akun['no'] }}', '{{ $akun['name'] }}')">
+                                    onclick="selectAkun('{{ $akun['id'] }}','{{ $akun['no'] }}', '{{ $akun['name'] }}')">
                                     <div class="font-semibold text-gray-800 dark:text-gray-200">{{ $akun['name'] }}
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $akun['no'] }}</div>
@@ -86,10 +68,12 @@
                     </div>
 
                     {{-- Hidden input untuk menyimpan kode dan nama akun --}}
-                    <input type="hidden" name="account" id="akunHidden"
+                    <input type="hidden" id="akunHidden" name="account"
                         value="{{ old('akun', $firstAccumulatedCost->account ?? '') }}">
                     <input type="hidden" id="nama_akun" name="account_name"
                         value="{{ old('nama_akun', $firstAccumulatedCost->account_name ?? '') }}">
+                    <input type="hidden" id="id_akun" name="accountId"
+                        value="{{ old('id_akun', $firstAccumulatedCost->accountId ?? '') }}">
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
                         {{ $firstAccumulatedCost?->account ? "({$firstAccumulatedCost->account}) {$firstAccumulatedCost->account_name}" : 'Belum memilih akun' }}
@@ -102,25 +86,13 @@
             <div class="col-span-1 sm:col-span-2 lg:col-span-2 lg:col-start-4">
                 <x-label for="total_expense_manfee" value="{{ __('Rate Manfee (%)') }}" />
                 @if ($isEdit)
-                    {{-- <select id="total_expense_manfee" name="total_expense_manfee"
-                        class="block mt-1 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all"
-                        onchange="calculateManfee()">
-                        <option value="">Rate Manfee</option>
-                        @foreach ($rate_manfee as $rate_manfees)
-                            <option value="{{ $rate_manfees }}"
-                                {{ old('rate_manfees', $firstAccumulatedCost->total_expense_manfee ?? '') == $rate_manfees ? 'selected' : '' }}>
-                                {{ $rate_manfees }}
-                            </option>
-                        @endforeach
-                    </select> --}}
-
                     <x-input id="total_expense_manfee" class="block mt-1 w-full" type="text"
                         name="total_expense_manfee"
                         value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.')) }}"
                         onchange="calculateManfee();  checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? null, 0, ',', '.') }}%
+                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.') }}%
                     </p>
                 @endif
 
@@ -166,7 +138,7 @@
                         value="{{ old('comment_ppn', $firstAccumulatedCost->comment_ppn ?? '') }}" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->rate_ppn ?? null, 0, ',', '.') }} %
+                        {{ number_format($firstAccumulatedCost->rate_ppn ?? 0, 1, '.', '.') }} %
                     </p>
                 @endif
             </div>
@@ -362,8 +334,9 @@
         document.getElementById('akunDropdown').classList.toggle('hidden');
     }
 
-    function selectAkun(no, name) {
+    function selectAkun(id, no, name) {
         document.getElementById('akunInput').value = name + ' (' + no + ')';
+        document.getElementById('id_akun').value = id;
         document.getElementById('akunHidden').value = no;
         document.getElementById('nama_akun').value = name;
         document.getElementById('akunDropdown').classList.add('hidden');

@@ -81,27 +81,27 @@
 
                 {{-- Bank Account --}}
                 @if ($isEditable)
-                        <div>
-                            <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
-                                class="text-gray-800 dark:text-gray-100" />
+                    <div>
+                        <x-label for="bank_account_id" value="{{ __('Pilih Akun Bank') }}"
+                            class="text-gray-800 dark:text-gray-100" />
 
-                            <select name="bank_account_id" id="bank_account_id"
-                                class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                onchange="updateBankAccount(this.value)">
-                                <option value="">-- Pilih Akun Bank --</option>
-                                @foreach ($bankAccounts as $bank)
-                                    <option value="{{ $bank->id }}"
-                                        {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
-                                        {{ $bank->bank_name }} - {{ $bank->account_number }}
-                                        ({{ $bank->account_name }})
-                                    </option>
-                                @endforeach
-                            </select>
+                        <select name="bank_account_id" id="bank_account_id"
+                            class="mt-1 block w-full rounded-md shadow-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            onchange="updateBankAccount(this.value)">
+                            <option value="">-- Pilih Akun Bank --</option>
+                            @foreach ($bankAccounts as $bank)
+                                <option value="{{ $bank->id }}"
+                                    {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
+                                    {{ $bank->bank_name }} - {{ $bank->account_number }}
+                                    ({{ $bank->account_name }})
+                                </option>
+                            @endforeach
+                        </select>
 
-                            @error('bank_account_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @error('bank_account_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
                 @endif
             </div>
         </div>
@@ -119,7 +119,8 @@
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
                 @if ($document_status >= 0)
                     <div x-data="{ open: false }" class="relative">
-                        <x-button-action @click="open = !open" color="blue" icon="eye">
+                        <x-button-action @click="open = !open" color="blue"
+                            icon="{{ $showDraft ? 'print' : 'eye' }}">
                             {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
                         </x-button-action>
 
@@ -175,7 +176,7 @@
                         <!-- Upload Faktur Pajak Button -->
                         <x-button-action color="teal" icon="pencil"
                             onclick="window.location.href='{{ route('non-management-fee.edit', $document->id) }}'">
-                           Update Lampiran
+                            Update Lampiran
                         </x-button-action>
 
                         <!-- Reject Button -->
@@ -288,15 +289,18 @@
         const documentId = "{{ $document->id }}";
         const token = "{{ csrf_token() }}";
 
-         // 🚫 Validasi: role harus maker
+        // 🚫 Validasi: role harus maker
         if (!isMaker) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya', 'error', 'Akses Ditolak!');
+            showAutoCloseAlert('globalAlertModal', 3000,
+                'Anda tidak memiliki izin untuk mengubah akun bank. Hanya pembuat invoice yang dapat melakukannya',
+                'error', 'Akses Ditolak!');
             return;
         }
 
         // 🚫 Validasi: pastikan ada bank yang dipilih
         if (!bankId) {
-            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning', 'Perhatian!');
+            showAutoCloseAlert('globalAlertModal', 3000, 'Silakan pilih akun bank terlebih dahulu.', 'warning',
+                'Perhatian!');
             return;
         }
 

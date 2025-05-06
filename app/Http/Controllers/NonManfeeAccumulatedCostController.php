@@ -16,7 +16,7 @@ class NonManfeeAccumulatedCostController extends Controller
     {
         NonManfeeDocument::findOrFail($id);
         $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
-        
+
         return response()->json([
             'akun' => $accumulatedCost->account ?? null,
             'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,
@@ -33,10 +33,11 @@ class NonManfeeAccumulatedCostController extends Controller
     {
         // Validasi input dengan custom messages
         $request->validate([
+            'accountId' => 'required|string|max:255',
             'akun' => 'required|string|max:255',
             'nama_akun' => 'required|string|max:255',
             'dpp_pekerjaan' => 'required|string|min:1',
-            'rate_ppn' => 'required|numeric|min:0|max:999.99',
+            'rate_ppn' => 'required|numeric|min:11|max:99',
             'comment_ppn' => 'nullable|string|max:255',
         ], [
             'akun.required' => 'Akun wajib diisi.',
@@ -48,8 +49,8 @@ class NonManfeeAccumulatedCostController extends Controller
 
             'rate_ppn.required' => 'Rate PPN harus diisi.',
             'rate_ppn.numeric' => 'Rate PPN harus berupa angka (gunakan titik untuk desimal).',
-            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 0.',
-            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 999.99.',
+            'rate_ppn.min' => 'Rate PPN tidak boleh kurang dari 11%.',
+            'rate_ppn.max' => 'Rate PPN tidak boleh lebih dari 99%.',
         ]);
 
         // Konversi format angka
@@ -65,6 +66,7 @@ class NonManfeeAccumulatedCostController extends Controller
                 'document_id' => $id
             ],
             [
+                'accountId' => $request->accountId,
                 'account' => $request->akun,
                 'account_name' => $request->nama_akun,
                 'dpp' => $dppPekerjaan,

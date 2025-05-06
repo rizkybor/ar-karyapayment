@@ -111,24 +111,26 @@
                     @php
                         $totalBiaya = 0;
                     @endphp
-                    @foreach ($detailPayments as $payment)
+                    @forelse ($detailPayments as $payment)
                         <tr>
                             <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
                             <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                             <td class="no-border" style="text-align: right; padding-right: 5rem">
-                                {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}</td>
+                                {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                            </td>
                         </tr>
                         @php
                             $totalBiaya += $payment->nilai_biaya ?? 0;
                         @endphp
-                    @endforeach
+                    @empty
+                        '-'
+                    @endforelse
+
                     <tr>
                         <td class="no-border">
-                            Management Fee {{ rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') }}%
+                            Management Fee
+                            {{ isset($accumulatedCosts[0]) ? rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') . '%' : '-' }}
                         </td>
-                        {{-- @php
-                            dd($accumulatedCosts);
-                        @endphp --}}
                         <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                         <td class="no-border" style="text-align: right; padding-right: 5rem">
                             {{ number_format($accumulatedCosts->sum('nilai_manfee'), 0, ',', '.') }}
@@ -142,17 +144,17 @@
                         <td class="no-border">Jumlah</td>
                         <td class="no-border" style="text-align: right; padding-left: 3rem; font-weight: bold;">Rp.</td>
                         <td class="no-border" style="text-align: right; padding-right: 5rem; font-weight: bold;">
-                            {{ number_format($grandTotal, 0, ',', '.') }}
+                            {{ isset($grandTotal) ? number_format($grandTotal, 0, ',', '.') : '0' }}
                         </td>
                         <td class="no-border">&nbsp;</td>
                     </tr>
                     <tr>
                         <td class="no-border">
-                            {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                            {{ isset($accumulatedCosts[0]) ? ($accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn) : '-' }}
                         </td>
                         <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
                         <td class="no-border" style="text-align: right; padding-right: 5rem">
-                            {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                            {{ isset($accumulatedCosts) ? number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') : '0' }}
                         </td>
                     </tr>
 
@@ -164,7 +166,7 @@
                         <td class="no-border" style="text-align: right; padding-right: 5rem;">
                             <div
                                 style="display: inline-block; width: 85%; border-top: 1px solid #000000; padding-top: 0.5rem; font-weight: bold; text-align: right;">
-                                {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
+                                {{ isset($accumulatedCosts) ? number_format($accumulatedCosts->sum('total'), 0, ',', '.') : '0' }}
                             </div>
                         </td>
 
@@ -183,7 +185,8 @@
                     Rp.</td>
                 <td
                     style="padding: 5px 10px; text-align: right; font-weight: bold; font-style: italic; vertical-align: middle; height: 30px;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+                    {{ isset($accumulatedCosts) ? number_format($accumulatedCosts->sum('total'), 0, ',', '.') : '0' }}
+                </td>
             </tr>
         </table>
 
@@ -192,8 +195,8 @@
             <tr>
                 <td rowspan="6"></td>
                 <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none;">Jakarta,
-                    {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>

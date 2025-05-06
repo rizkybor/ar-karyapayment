@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Exception;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -110,7 +111,7 @@ class NonManfeeDocumentController extends Controller
             $nonManfeeDoc = NonManfeeDocument::create($input);
             return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
                 ->with('success', 'Data berhasil disimpan!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -153,7 +154,7 @@ class NonManfeeDocumentController extends Controller
             ->first();
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $nonManfeeDocument->detailPayments
@@ -268,7 +269,7 @@ class NonManfeeDocumentController extends Controller
             ->sum('nilai_biaya');
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $nonManfeeDocument->detailPayments
@@ -473,7 +474,7 @@ class NonManfeeDocumentController extends Controller
     //         DB::commit();
 
     //         return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
-    //     } catch (\Exception $e) {
+    //     } catch (Exception $e) {
     //         DB::rollBack();
     //         Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
     //         return back()->with('error', "Terjadi kesalahan saat memproses approval.");
@@ -592,30 +593,53 @@ class NonManfeeDocumentController extends Controller
 
                     $dataAccurate['customer'] = $customerDetailResponse['d'];
 
+                    $detailPayments = $dataAccurate['detailPayments'];
+
+                    foreach ($detailPayments as $index => $detailPayment) {
+                        $accountId = $detailPayment->accountId ?? null;
+
+                        if ($accountId) {
+                            try {
+                                $itemDetail = $this->accurateService->getItemDetail([
+                                    'id' => $accountId,
+                                ]);
+
+                                // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
+                                $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
+                            } catch (Exception $e) {
+                                Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                                $detailPayments[$index]['item_detail'] = null;
+                            }
+                        }
+                    }
+
+                    // Replace detailPayments di $dataAccurate dengan yang sudah di-update
+                    $dataAccurate['detailPayments'] = $detailPayments;
+
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    dd($apiResponsePostAccurate, 'after hit accurate');
+                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
 
 
-                    // ✅ Proccess Privy Service
-                    // get base 64 from pdf template
-                    $pdfController = app()->make(PDFController::class);
-                    $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
-                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
-                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
+                    // // ✅ Proccess Privy Service
+                    // // get base 64 from pdf template
+                    // $pdfController = app()->make(PDFController::class);
+                    // $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
+                    // $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
+                    // $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
 
-                    // PRIVY SERVICES
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
-                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
+                    // // PRIVY SERVICES
+                    // $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
+                    // $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
+                    // $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
 
-                    $letterPrivy = $createLetter->getData();
-                    $invoicePrivy = $createInvoice->getData();
-                    $kwitansiPrivy = $createKwitansi->getData();
+                    // $letterPrivy = $createLetter->getData();
+                    // $invoicePrivy = $createInvoice->getData();
+                    // $kwitansiPrivy = $createKwitansi->getData();
 
-                    dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
-                } catch (\Exception $e) {
+                    // dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
+                } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
 
@@ -727,7 +751,7 @@ class NonManfeeDocumentController extends Controller
             DB::commit();
 
             return back()->with('success', "Dokumen telah " . ($isRevised ? "dikembalikan ke {$nextRole} sebagai revisi" : "disetujui dan diteruskan ke {$nextRole}."));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat memproses approval.");
@@ -870,7 +894,7 @@ class NonManfeeDocumentController extends Controller
 
             DB::commit();
             return back()->with('success', "Dokumen telah dikembalikan ke {$targetApprover->name} untuk pengecekan ulang.");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");

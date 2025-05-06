@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('path', 255);
             $table->text('address');
             $table->string('work_unit', 255);
+            $table->string('departmentId')->nullable();
+            $table->string('projectId')->nullable();
+            $table->string('segmenUsahaId')->nullable();
             $table->boolean('status')->nullable()->default(null);
             $table->timestamps();
         });
