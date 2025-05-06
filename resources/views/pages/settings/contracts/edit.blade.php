@@ -251,8 +251,8 @@
                                 </ul>
                             </div>
 
-
-                            <div class="relative mt-2">
+                            {{-- Autocomplete Proyek --}}
+                            <div class="relative mt-1">
                                 <x-label for="projectInput" value="Proyek" />
                                 <input type="text" id="projectInput" placeholder="Ketik/Pilih Proyek..."
                                     class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
@@ -285,7 +285,8 @@
                                 </ul>
                             </div>
 
-                            <div class="relative mt-2">
+                            {{-- Autocomplete Segmen Usaha --}}
+                            <div class="relative mt-1">
                                 <x-label for="classificationInput" value="Kategori Keuangan / Segmen Usaha" />
                                 <input type="text" id="classificationInput" placeholder="Ketik/Pilih Kategori..."
                                     class="block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
@@ -301,11 +302,11 @@
                                     class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
                                     rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
 
-                                     {{-- Opsi kosong --}}
-                                     <li class="px-4 py-2 cursor-pointer text-gray-500 italic hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                                     onclick="selectClassification('', '')">
-                                     Kosongkan segmen usaha
-                                 </li>
+                                    {{-- Opsi kosong --}}
+                                    <li class="px-4 py-2 cursor-pointer text-gray-500 italic hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                        onclick="selectClassification('', '')">
+                                        Kosongkan segmen usaha
+                                    </li>
 
                                     @foreach ($dataClassificationList as $item)
                                         <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
@@ -336,10 +337,6 @@
                             <x-button type="submit">Update Kontrak</x-button>
                         </div>
                     </div>
-
-
-
-
 
                 </form>
             </div>

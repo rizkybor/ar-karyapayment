@@ -51,7 +51,8 @@
                                 <select name="category" class="form-select mt-1 block w-full min-h-[40px]">
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach ($category as $item)
-                                        <option value="{{ $item }}" {{ old('category') === $item ? 'selected' : '' }}>
+                                        <option value="{{ $item }}"
+                                            {{ old('category') === $item ? 'selected' : '' }}>
                                             {{ $item }}
                                         </option>
                                     @endforeach
@@ -182,25 +183,125 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <hr />
+
+                            <x-label>*Informasi Tambahan untuk keterangan Departemen, Proyek, Segmen Usaha
+                            </x-label>
+
+                            {{-- Autocomplete Department --}}
+                            <div class="relative">
+                                <x-label for="departmentInput" value="Departemen" />
+                                <input type="text" id="departmentInput" placeholder="Ketik/Pilih Departemen..."
+                                    class="block w-full px-4 py-2 border rounded-md text-sm" value=""
+                                    oninput="filterDropdown('departmentInput', 'departmentDropdown')"
+                                    onclick="toggleDropdown('departmentDropdown')" autocomplete="off" />
+                                <input type="hidden" id="department_id" name="departmentId" value="" />
+                                <ul id="departmentDropdown"
+                                    class="absolute z-10 w-full bg-white border rounded-md mt-1 max-h-60 overflow-auto shadow hidden">
+                                    <li class="px-4 py-2 text-gray-500 italic cursor-pointer hover:bg-gray-100"
+                                        onclick="selectItem('department_id', 'departmentInput', '', '')">Kosongkan
+                                        Departemen</li>
+                                    @foreach ($departmentList as $dept)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                            onclick="selectItem('department_id', 'departmentInput', '{{ $dept['id'] }}', '{{ $dept['name'] }}')">
+                                            <strong>{{ $dept['name'] }}</strong>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            {{-- Autocomplete Proyek --}}
+                            <div class="relative mt-1">
+                                <x-label for="projectInput" value="Proyek" />
+                                <input type="text" id="projectInput" placeholder="Ketik/Pilih Proyek..."
+                                    class="block w-full px-4 py-2 border rounded-md text-sm" value=""
+                                    oninput="filterDropdown('projectInput', 'projectDropdown')"
+                                    onclick="toggleDropdown('projectDropdown')" autocomplete="off" />
+                                <input type="hidden" id="project_id" name="projectId" value="" />
+                                <ul id="projectDropdown"
+                                    class="absolute z-10 w-full bg-white border rounded-md mt-1 max-h-60 overflow-auto shadow hidden">
+                                    <li class="px-4 py-2 text-gray-500 italic cursor-pointer hover:bg-gray-100"
+                                        onclick="selectItem('project_id', 'projectInput', '', '')">Kosongkan Proyek
+                                    </li>
+                                    @foreach ($dataProjectList as $proj)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                            onclick="selectItem('project_id', 'projectInput', '{{ $proj['id'] }}', '{{ $proj['name'] }}')">
+                                            <strong>{{ $proj['name'] }}</strong>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            {{-- Autocomplete Segmen Usaha --}}
+                            <div class="relative mt-1">
+                                <x-label for="classificationInput" value="Segmen Usaha" />
+                                <input type="text" id="classificationInput" placeholder="Ketik/Pilih Kategori..."
+                                    class="block w-full px-4 py-2 border rounded-md text-sm" value=""
+                                    oninput="filterDropdown('classificationInput', 'classificationDropdown')"
+                                    onclick="toggleDropdown('classificationDropdown')" autocomplete="off" />
+                                <input type="hidden" id="classification_id" name="segmenUsahaId" value="" />
+                                <ul id="classificationDropdown"
+                                    class="absolute z-10 w-full bg-white border rounded-md mt-1 max-h-60 overflow-auto shadow hidden">
+                                    <li class="px-4 py-2 text-gray-500 italic cursor-pointer hover:bg-gray-100"
+                                        onclick="selectItem('classification_id', 'classificationInput', '', '')">
+                                        Kosongkan Segmen Usaha</li>
+                                    @foreach ($dataClassificationList as $item)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                            onclick="selectItem('classification_id', 'classificationInput', '{{ $item['id'] }}', '{{ $item['name'] }}')">
+                                            <strong>{{ $item['name'] }}</strong>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700/20 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
+                                <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                                    <x-secondary-button
+                                        onclick="window.location='{{ route('contracts.index') }}'">Batal</x-secondary-button>
+                                    <div class="form-group">
+                                        <x-button type="submit">Simpan Kontrak</x-button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
-                    <div
-                        class="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700/20 text-right sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
-                        <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
-                            <x-secondary-button
-                                onclick="window.location='{{ route('contracts.index') }}'">Batal</x-secondary-button>
-                            <div class="form-group">
-                                <x-button type="submit">Simpan</x-button>
-                            </div>
-                        </div>
-                    </div>
                 </form>
 
             </div>
             {{-- Tambah Data Baru End --}}
         </div>
     </div>
+
+    <script>
+        function filterDropdown(inputId, dropdownId) {
+            const input = document.getElementById(inputId).value.toLowerCase();
+            const dropdown = document.getElementById(dropdownId);
+            const items = dropdown.getElementsByTagName("li");
+
+            dropdown.classList.remove("hidden");
+
+            for (let item of items) {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? "" : "none";
+            }
+        }
+
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle("hidden");
+        }
+
+        function selectItem(hiddenInputId, textInputId, idValue, nameValue) {
+            document.getElementById(hiddenInputId).value = idValue;
+            document.getElementById(textInputId).value = nameValue;
+            document.getElementById(hiddenInputId.replace('_id', 'Dropdown')).classList.add("hidden");
+        }
+    </script>
+
     {{-- JavaScript untuk format Rupiah --}}
     <script>
         // # Format Rupiah
