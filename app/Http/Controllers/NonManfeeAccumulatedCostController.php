@@ -16,7 +16,7 @@ class NonManfeeAccumulatedCostController extends Controller
     {
         NonManfeeDocument::findOrFail($id);
         $accumulatedCost = NonManfeeDocAccumulatedCost::where('document_id', $id)->first();
-        
+
         return response()->json([
             'akun' => $accumulatedCost->account ?? null,
             'dpp_pekerjaan' => $accumulatedCost->dpp ?? 0,
@@ -33,6 +33,7 @@ class NonManfeeAccumulatedCostController extends Controller
     {
         // Validasi input dengan custom messages
         $request->validate([
+            'accountId' => 'required|string|max:255',
             'akun' => 'required|string|max:255',
             'nama_akun' => 'required|string|max:255',
             'dpp_pekerjaan' => 'required|string|min:1',
@@ -65,6 +66,7 @@ class NonManfeeAccumulatedCostController extends Controller
                 'document_id' => $id
             ],
             [
+                'accountId' => $request->accountId,
                 'account' => $request->akun,
                 'account_name' => $request->nama_akun,
                 'dpp' => $dppPekerjaan,

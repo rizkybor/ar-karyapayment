@@ -66,7 +66,7 @@
                                    rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
                             @foreach ($optionAccount as $akun)
                                 <li class="p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                                    onclick="selectAkun('{{ $akun['no'] }}', '{{ $akun['name'] }}')">
+                                    onclick="selectAkun('{{ $akun['id'] }}','{{ $akun['no'] }}', '{{ $akun['name'] }}')">
                                     <div class="font-semibold text-gray-800 dark:text-gray-200">{{ $akun['name'] }}
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ $akun['no'] }}</div>
@@ -76,6 +76,8 @@
                     </div>
 
                     {{-- Hidden input untuk menyimpan kode dan nama akun --}}
+                    <input type="hidden" id="id_akun" name="accountId"
+                        value="{{ old('accountId', $firstAccumulatedCost->accountId ?? '') }}">
                     <input type="hidden" name="akun" id="akunHidden"
                         value="{{ old('akun', $firstAccumulatedCost->account ?? '') }}">
                     <input type="hidden" id="nama_akun" name="nama_akun"
@@ -184,34 +186,34 @@
         };
 
         window.checkChanges = function() {
-    let akunValue = document.getElementById("akunHidden")?.value || '';
-    let akunNameFull = `${document.getElementById("nama_akun")?.value || ''} (${akunValue})`;
+            let akunValue = document.getElementById("akunHidden")?.value || '';
+            let akunNameFull = `${document.getElementById("nama_akun")?.value || ''} (${akunValue})`;
 
-    let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
-    let commentPpnValue = document.getElementById("comment_ppn")?.value || '';
-    let nilaiPpnValue = document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '';
-    let jumlahValue = document.getElementById("jumlah")?.value.replace(/\./g, '') || '';
+            let ratePpnValue = document.getElementById("rate_ppn")?.value || '';
+            let commentPpnValue = document.getElementById("comment_ppn")?.value || '';
+            let nilaiPpnValue = document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '';
+            let jumlahValue = document.getElementById("jumlah")?.value.replace(/\./g, '') || '';
 
-    let dppPekerjaan = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '';
+            let dppPekerjaan = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '';
 
-    let hasChanged =
-        akunValue !== initialData.akun ||
-        akunName !== initialData.nama_akun ||
-        dppPekerjaan !== initialData.dpp_pekerjaan ||
-        ratePpnValue !== initialData.rate_ppn ||
-        commentPpnValue !== initialData.comment_ppn ||
-        nilaiPpnValue !== initialData.nilai_ppn ||
-        jumlahValue !== initialData.jumlah;
+            let hasChanged =
+                akunValue !== initialData.akun ||
+                akunName !== initialData.nama_akun ||
+                dppPekerjaan !== initialData.dpp_pekerjaan ||
+                ratePpnValue !== initialData.rate_ppn ||
+                commentPpnValue !== initialData.comment_ppn ||
+                nilaiPpnValue !== initialData.nilai_ppn ||
+                jumlahValue !== initialData.jumlah;
 
-    if (saveButton) {
-        saveButton.disabled = !hasChanged;
-        saveButton.classList.toggle("bg-gray-400", !hasChanged);
-        saveButton.classList.toggle("cursor-not-allowed", !hasChanged);
-        saveButton.classList.toggle("opacity-50", !hasChanged);
-        saveButton.classList.toggle("bg-violet-500", hasChanged);
-        saveButton.classList.toggle("hover:bg-violet-600", hasChanged);
-    }
-};
+            if (saveButton) {
+                saveButton.disabled = !hasChanged;
+                saveButton.classList.toggle("bg-gray-400", !hasChanged);
+                saveButton.classList.toggle("cursor-not-allowed", !hasChanged);
+                saveButton.classList.toggle("opacity-50", !hasChanged);
+                saveButton.classList.toggle("bg-violet-500", hasChanged);
+                saveButton.classList.toggle("hover:bg-violet-600", hasChanged);
+            }
+        };
 
         window.validateRatePPN = function(input) {
             input.value = input.value.replace(/[^0-9.,]/g, '');
@@ -275,8 +277,9 @@
         document.getElementById('akunDropdown').classList.toggle('hidden');
     }
 
-    function selectAkun(no, name) {
+    function selectAkun(id, no, name) {
         document.getElementById('akunInput').value = `${name} (${no})`;
+        document.getElementById('id_akun').value = id;
         document.getElementById('akunHidden').value = no;
         document.getElementById('nama_akun').value = name;
         document.getElementById('akunDropdown').classList.add('hidden');
@@ -302,13 +305,13 @@
     //     }
     // });
     document.addEventListener('click', function(event) {
-    const input = document.getElementById('akunInput');
-    const dropdown = document.getElementById('akunDropdown');
+        const input = document.getElementById('akunInput');
+        const dropdown = document.getElementById('akunDropdown');
 
-    if (!input || !dropdown) return;
+        if (!input || !dropdown) return;
 
-    if (!input.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.add('hidden');
-    }
-});
+        if (!input.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 </script>
