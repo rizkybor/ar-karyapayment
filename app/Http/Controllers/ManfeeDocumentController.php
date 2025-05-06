@@ -191,7 +191,7 @@ class ManfeeDocumentController extends Controller
             ->first();
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $manfeeDoc->detailPayments
@@ -274,7 +274,7 @@ class ManfeeDocumentController extends Controller
         $rate_manfee = ['9', '10', '11', '12', '13'];
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $manfeeDoc->detailPayments

@@ -89,12 +89,9 @@ class AccurateTransactionService
     {
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
-        // dd($tableData);
 
         // Assign Detail Account by Table Data
         $detailAccounts = [];
-        // angka hanya PPH yang berjenis Hutang Pajak
-        // $amount = in_array($data['account'], ["210201", "210202", "210203", "210204", "210205", "210209"]) ? -abs($data['amount']) : $data['amount'];
         foreach ($tableData as $data) {
             $detailAccounts[] = [
                 "_status" => "insert",
@@ -122,7 +119,7 @@ class AccurateTransactionService
                 "itemCashDiscount" => 0,
                 "lastItemDiscPercent" => "",
                 "lastItemCashDiscount" => 0,
-                "useTax1" => true,
+                "useTax1" => $data['expense_type'] == "Biaya Personil" ? false : true,
                 "useTax2" => false,
                 "useTax3" => false,
                 "useTax4" => false,
@@ -223,6 +220,48 @@ class AccurateTransactionService
                 "customerId" => $data['customer']['id'] ?? ''
             ];
         }
+
+        if ($payload['data']->category == "management_fee") {
+            // KHUSUS MANFEE
+            $manfee = $payload['accumulatedCosts']->first();
+
+            $detailAccounts[] = [
+                "_status" => "insert",
+                "id" => "",
+                "idId" => "",
+                "seq" => count($detailAccounts) + 1,
+                "groupSeq" => "",
+                "groupSeqId" => "",
+                "inputGroupSeq" => "",
+                "inputGroupSeqId" => "",
+                "itemId" => $manfee['accountId'] ?? null,
+                "detailName" => $manfee['account_name'] ?? 'Management Fee',
+                "quantity" => 1,
+                "controlQuantity" => 0,
+                "" => 100,
+                "uniitemUnitIdtRatio" => 1,
+                "unitPrice" => (int) $manfee['nilai_manfee'] ?? 0,
+                "canChangeDetailGroup" => false,
+                "isFromMemorize" => false,
+                "dynamicGroup" => false,
+                "detailDynamicGroup" => false,
+                "detailDynamicGroupPrice" => 0,
+                "detailDynamicGroupTotalPrice" => 0,
+                "itemDiscPercent" => "",
+                "itemCashDiscount" => 0,
+                "lastItemDiscPercent" => "",
+                "lastItemCashDiscount" => 0,
+                "useTax1" => true,
+                "tax1Id" => (int) $manfee['accountId'],
+                "detailTaxName" => "PPN {$manfee['rate_ppn']}%",
+                "totalPrice" => (int) $manfee['nilai_manfee'],
+                "numericField10" => 0,
+                "dateField1" => "",
+                "customerId" => $payload['customer']['id'] ?? ''
+            ];
+        }
+
+        // dd($detailAccounts);
 
         // belum ada
         $detailTaxes = [];

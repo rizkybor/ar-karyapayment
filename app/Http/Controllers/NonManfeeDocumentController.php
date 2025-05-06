@@ -154,7 +154,7 @@ class NonManfeeDocumentController extends Controller
             ->first();
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $nonManfeeDocument->detailPayments
@@ -269,7 +269,7 @@ class NonManfeeDocumentController extends Controller
             ->sum('nilai_biaya');
 
         # untuk value dropdown dalam detail biaya
-        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil', 'Biaya Lembur', 'THR', 'Kompesasi', 'SPPD', 'Add Cost'];
+        $jenis_biaya_default = ['Biaya Personil', 'Biaya Non Personil'];
 
         // Ambil semua expense_type unik dari detailPayments
         $existing_expense_types = $nonManfeeDocument->detailPayments
