@@ -24,6 +24,9 @@ class Contracts extends Model
         'path',
         'address',
         'work_unit',
+        'departmentId',
+        'projectId',
+        'segmenUsahaId',
         'status',
     ];
 
