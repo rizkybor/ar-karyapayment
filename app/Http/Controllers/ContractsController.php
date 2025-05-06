@@ -61,7 +61,23 @@ class ContractsController extends Controller
 
         $category = ContractCategory::pluck('name');
 
-        return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit', 'category'));
+        try {
+            // Department List
+            $getResponseDepartmentsAccurate = $this->accurate->getDepartmentList();
+            $departmentList = $getResponseDepartmentsAccurate['d'];
+
+            // Project List
+            $getResponseProject = $this->accurate->getProjectList();
+            $dataProjectList = $getResponseProject['d'];
+
+            // Data Classification  / Segmen Usaha
+            $getResponsedataClassificationAccurate = $this->accurate->getDataClassificationList();
+            $dataClassificationList = $getResponsedataClassificationAccurate['d'];
+        } catch (\Exception $e) {
+            return back()->withErrors('Gagal memuat data Accurate: ' . $e->getMessage());
+        }
+
+        return view('pages/settings/contracts/create', compact('mstType', 'mstWorkUnit', 'category',  'departmentList', 'dataProjectList', 'dataClassificationList'));
     }
 
     /**
@@ -85,9 +101,16 @@ class ContractsController extends Controller
             'address' => 'required',
             'work_unit' => 'required',
             'status' => 'nullable|in:0,1',
+            'departmentId' => 'nullable',
+            'projectId' => 'nullable',
+            'segmenUsahaId' => 'nullable',
         ]);
 
         $input = $request->all();
+
+        $input['departmentId']   = $request->input('departmentId') ?: null;
+        $input['projectId']      = $request->input('projectId') ?: null;
+        $input['segmenUsahaId']  = $request->input('segmenUsahaId') ?: null;
 
         // Format Tanggal
         $input['contract_date'] = Carbon::parse($request->contract_date)->format('Y-m-d');
