@@ -144,9 +144,9 @@
             document.getElementById('letter_number').value =
                 `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
             document.getElementById('invoice_number').value =
-                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
-            document.getElementById('receipt_number').value =
                 `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
+            document.getElementById('receipt_number').value =
+                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
         }
 
         function toggleContractDropdown() {
