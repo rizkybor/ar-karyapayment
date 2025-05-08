@@ -604,7 +604,8 @@ class NonManfeeDocumentController extends Controller
                     // // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     // $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
+                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate'); 
+                    // end proccess accurate
 
 
                     // // ✅ Proccess Privy Service
