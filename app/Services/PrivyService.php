@@ -14,18 +14,18 @@ class PrivyService
         $url = privy_base_url() . '/oauth2/api/v1/token';
 
         // ✅ Gunakan Mock Response jika di lokal
-        if (app()->environment('local')) {
-            Http::fake([
-                $url => Http::response([
-                    'message' => 'Mocked token response',
-                    'data' => [
-                        'access_token' => 'mocked_token_1234567890',
-                        'token_type' => 'Bearer',
-                        'expires_in' => 3600,
-                    ]
-                ], 200)
-            ]);
-        }
+        // if (app()->environment('local')) {
+        //     Http::fake([
+        //         $url => Http::response([
+        //             'message' => 'Mocked token response',
+        //             'data' => [
+        //                 'access_token' => 'mocked_token_1234567890',
+        //                 'token_type' => 'Bearer',
+        //                 'expires_in' => 3600,
+        //             ]
+        //         ], 200)
+        //     ]);
+        // }
 
         $response = Http::asJson()->post($url, [
             'client_id' => config('services.privy.username'),
@@ -320,14 +320,20 @@ class PrivyService
 
     public function uploadDocument(array $payload): ?array
     {
-        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        // $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $timestamp = Carbon::now('Asia/Jakarta')->format('D M d Y H:i:s') . ' GMT+0700';
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
 
-        $originalPayload = $payload;
-        $payloadForSignature = collect($payload)->except(['document'])->all();
-        ksort($payloadForSignature);
+        $payloadForSignature = $payload;
+        if (isset($payloadForSignature['document'])) {
+            unset($payloadForSignature['document']);
+        }
+
+        // dd($payloadForSignature);
+        // ksort($payloadForSignature);
+
         $rawJson = json_encode($payloadForSignature, JSON_UNESCAPED_SLASHES);
         $rawJson = preg_replace('/\s+/', '', $rawJson);
         $bodyMd5 = base64_encode(md5($rawJson, true));
@@ -347,16 +353,17 @@ class PrivyService
             ];
         }
 
+        
         $headers = [
             'Timestamp' => $timestamp,
             'Signature' => $finalSignature,
-            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+            'Authorization' => $token['data']['token_type'] . ' ' . $token['data']['access_token'],
         ];
 
-        $url = privy_base_url() . 'web/api/v2/doc-signing';
-
+        $url = privy_base_url() . '/web/api/v2/doc-signing';
+        // dd($originalPayload, $url);
         try {
-            $response = Http::withHeaders($headers)->post($url, $originalPayload);
+            $response = Http::withHeaders($headers)->post($url, $payload);
 
             Log::info('Response API', [
                 'status' => $response->status(),

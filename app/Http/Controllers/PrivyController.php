@@ -157,15 +157,15 @@ class PrivyController extends Controller
                 'type_sign' => 'required|in:0,1',
                 'posX' => 'required|string',
                 'posY' => 'required|string',
-                'doc_type' => 'required|string',
+                'docType' => 'required|string',
                 'noSurat' => 'required|string'
             ]);
         } catch (ValidationException $e) {
-            return response()->json([
+            return [
                 'status' => 'ERROR',
                 'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
+                'error' => $e->errors(),
+            ];
         }
 
         // Ambil input
@@ -173,7 +173,7 @@ class PrivyController extends Controller
         $typeSign = $request->type_sign;
         $posX = $request->posX;
         $posY = $request->posY;
-        $ref = $request->doc_type;
+        $ref = $request->docType;
         $no = $request->noSurat;
 
         // Bangun payload secara otomatis
@@ -189,13 +189,13 @@ class PrivyController extends Controller
                 'response' => $response,
             ]);
 
-            return response()->json($response);
+            return $response;
         } catch (\Throwable $e) {
-            return response()->json([
+            return [
                 'status' => 'ERROR',
                 'message' => 'Gagal upload dokumen ke Privy',
                 'error' => $e->getMessage(),
-            ], 500);
+            ];
         }
     }
 
