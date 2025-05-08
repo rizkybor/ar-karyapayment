@@ -368,17 +368,28 @@ class ManfeeDocumentController extends Controller
 
     // Privy
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): object
     {
         $request = new Request([
             'base64_pdf' => $base64,
             'type_sign' => $typeSign,
             "posX" => $posX,
-            "posY" => $posY
+            "posY" => $posY,
+            'docType' => $docType,
+            'noSurat' => $noSurat
         ]);
 
         $privyController = app()->make(PrivyController::class);
         $privyService = app()->make(PrivyService::class);
+
+        dd([
+            'base64_pdf' => $request->base64_pdf,
+            'type_sign' => $request->type_sign,
+            'posX' => $request->posX,
+            'posY' => $request->posY,
+            'docType' => $docType,
+            'noSurat' => $noSurat
+        ]);
 
         return $privyController->generateDocument($request, $privyService,);
     }
@@ -451,84 +462,90 @@ class ManfeeDocumentController extends Controller
                     );
                 }
 
-                // ✅ Kirim ke AccurateService
                 try {
-                    $dataAccurate = [
-                        'data' => $document,
-                        'contract' => $document->contract,
-                        'accumulatedCosts' => $document->accumulatedCosts,
-                        'creator' => $document->creator,
-                        'bankAccount' => $document->bankAccount,
-                        'detailPayments' => $document->detailPayments,
-                        'taxFiles' => $document->taxFiles,
-                    ];
+                    // ✅ Kirim ke AccurateService
+                    // $dataAccurate = [
+                    //     'data' => $document,
+                    //     'contract' => $document->contract,
+                    //     'accumulatedCosts' => $document->accumulatedCosts,
+                    //     'creator' => $document->creator,
+                    //     'bankAccount' => $document->bankAccount,
+                    //     'detailPayments' => $document->detailPayments,
+                    //     'taxFiles' => $document->taxFiles,
+                    // ];
 
-                    // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
-                    $customersCheck = $this->accurateService->getAllCustomers([
-                        'filter.keywords.op' => 'EQUAL',
-                        'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
-                    ]);
+                    // // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
+                    // $customersCheck = $this->accurateService->getAllCustomers([
+                    //     'filter.keywords.op' => 'EQUAL',
+                    //     'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                    // ]);
 
-                    if (empty($customersCheck)) {
-                        // ❌ Jika customer TIDAK ditemukan
-                        $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
+                    // if (empty($customersCheck)) {
+                    //     // ❌ Jika customer TIDAK ditemukan
+                    //     $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
 
-                        $getCustomers = $this->accurateService->getAllCustomers([
-                            'filter.keywords.op' => 'EQUAL',
-                            'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
-                        ]);
-                        $customer = $getCustomers[0];
-                    } else {
-                        // ✅ Jika customer ditemukan
-                        $customer = $customersCheck[0];
-                    }
+                    //     $getCustomers = $this->accurateService->getAllCustomers([
+                    //         'filter.keywords.op' => 'EQUAL',
+                    //         'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                    //     ]);
+                    //     $customer = $getCustomers[0];
+                    // } else {
+                    //     // ✅ Jika customer ditemukan
+                    //     $customer = $customersCheck[0];
+                    // }
 
-                    $customerDetailResponse = $this->accurateService->getCustomerDetail([
-                        'customerNo' => $customer['customerNo']
-                    ]);
+                    // $customerDetailResponse = $this->accurateService->getCustomerDetail([
+                    //     'customerNo' => $customer['customerNo']
+                    // ]);
 
-                    $dataAccurate['customer'] = $customerDetailResponse['d'];
+                    // $dataAccurate['customer'] = $customerDetailResponse['d'];
 
-                    $detailPayments = $dataAccurate['detailPayments'];
+                    // $detailPayments = $dataAccurate['detailPayments'];
 
-                    foreach ($detailPayments as $index => $detailPayment) {
-                        $accountId = $detailPayment->accountId ?? null;
+                    // foreach ($detailPayments as $index => $detailPayment) {
+                    //     $accountId = $detailPayment->accountId ?? null;
 
-                        if ($accountId) {
-                            try {
-                                $itemDetail = $this->accurateService->getItemDetail([
-                                    'id' => $accountId,
-                                ]);
+                    //     if ($accountId) {
+                    //         try {
+                    //             $itemDetail = $this->accurateService->getItemDetail([
+                    //                 'id' => $accountId,
+                    //             ]);
 
-                                // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
-                                $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
-                            } catch (Exception $e) {
-                                Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
-                                $detailPayments[$index]['item_detail'] = null;
-                            }
-                        }
-                    }
+                    //             // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
+                    //             $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
+                    //         } catch (Exception $e) {
+                    //             Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                    //             $detailPayments[$index]['item_detail'] = null;
+                    //         }
+                    //     }
+                    // }
 
-                    // Replace detailPayments di $dataAccurate dengan yang sudah di-update
-                    $dataAccurate['detailPayments'] = $detailPayments;
+                    // // Replace detailPayments di $dataAccurate dengan yang sudah di-update
+                    // $dataAccurate['detailPayments'] = $detailPayments;
 
-                    // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
-                    $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
+                    // // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
+                    // $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
                     // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
 
 
                     // // ✅ Proccess Privy Service
                     // // get base 64 from pdf template
-                    // $pdfController = app()->make(PDFController::class);
-                    // $base64letter = $pdfController->manfeeLetterBase64($document->id);
-                    // $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
-                    // $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
-
+                    $pdfController = app()->make(PDFController::class);
+                    $base64letter = $pdfController->manfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
+                    
+                    // CREATE REFERENCE NUMBER DOCUMENT
+                    $tanggal = Carbon::now();
+                    $noSurat = $document->letter_number;
+                    $referenceNumber = 'REF' . $tanggal->format('Ymd') . $noSurat;
+                    $referenceNumber = str_replace('/', '', $referenceNumber);
+                    
                     // // PRIVY SERVICES
-                    // $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84');
-                    // $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47');
-                    // $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55');
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84', $referenceNumber, $noSurat);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47', $referenceNumber, $noSurat);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55', $referenceNumber, $noSurat);
 
                     // $letterPrivy = $createLetter->getData();
                     // $invoicePrivy = $createInvoice->getData();
