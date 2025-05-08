@@ -355,15 +355,6 @@ class PrivyService
 
         $url = privy_base_url() . 'web/api/v2/doc-signing';
 
-        // Log::info('[Privy] Mengirim dokumen ke Privy API', [
-        //     'url' => $url,
-        //     'headers' => $headers,
-        //     'payload' => $originalPayload,
-        //     'payload_signatures' => $payloadForSignature,
-        //     'signature_string' => $signatureString,
-        //     'final_signature' => $finalSignature,
-        // ]);
-
         try {
             $response = Http::withHeaders($headers)->post($url, $originalPayload);
 
