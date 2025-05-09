@@ -128,9 +128,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])->name('invoice.print.status');
-    Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])->name('invoice.print.status.data');
-    Route::post('/invoice/print/status/update', [InvoicePrintStatusController::class, 'updatePrintStatus'])
+
+    Route::get('/invoice-print-status', [InvoicePrintStatusController::class, 'index'])
+        ->name('invoice.print.status');
+
+    Route::get('/invoice-print-status/data', [InvoicePrintStatusController::class, 'datatable'])
+        ->name('invoice.print.status.data');
+
+    Route::post('/invoice-print-status/update', [InvoicePrintStatusController::class, 'updatePrintStatus'])
         ->name('invoice.print.status.update');
 
 

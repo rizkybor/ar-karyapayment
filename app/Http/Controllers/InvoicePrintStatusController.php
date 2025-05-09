@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use App\Models\ManfeeDocument;
 use App\Models\NonManfeeDocument;
 use Illuminate\Support\Facades\DB;
@@ -19,47 +18,77 @@ class InvoicePrintStatusController extends Controller
 
     public function updatePrintStatus(Request $request)
     {
+        DB::beginTransaction();
         $ids = $request->input('ids', []);
+
         if (empty($ids)) {
-            return response()->json(['message' => 'Tidak ada ID yang dipilih'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada invoice yang dipilih'
+            ], 400);
         }
 
-        // Update untuk dua model jika digabung dari Manfee & Non-Manfee
-        ManfeeDocument::whereIn('id', $ids)->update(['status_print' => 1]);
-        NonManfeeDocument::whereIn('id', $ids)->update(['status_print' => 1]);
+        try {
 
-        return response()->json(['message' => 'Status print diperbarui.']);
+            $manfeeUpdated = ManfeeDocument::whereIn('id', $ids)
+                ->where('status_print', false)
+                ->update(['status_print' => true]);
+
+            $nonManfeeUpdated = NonManfeeDocument::whereIn('id', $ids)
+                ->where('status_print', false)
+                ->update(['status_print' => true]);
+
+            DB::commit();
+
+            $totalUpdated = $manfeeUpdated + $nonManfeeUpdated;
+
+            return response()->json([
+                'success' => true,
+                'message' => $totalUpdated > 0
+                    ? "Berhasil update status print invoice"
+                    : "Tidak ada invoice yang perlu diupdate",
+                'updated' => $totalUpdated
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Update Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal update status print: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function datatable(Request $request)
     {
-        $user = Auth::user();
+        $manfeeQuery = ManfeeDocument::select([
+            'id',
+            DB::raw("'Management Fee' as type"),
+            'invoice_number',
+            DB::raw('CAST(status_print AS SIGNED) as status_print'),
+            'created_at'
+        ]);
 
-        if ($request->has('search') && !empty($request->search['value'])) {
-            Cache::forget('nonmanfee_doc_datatable_' . $user->id);
-        }
+        $nonManfeeQuery = NonManfeeDocument::select([
+            'id',
+            DB::raw("'Non Management Fee' as type"),
+            'invoice_number',
+            DB::raw('CAST(status_print AS SIGNED) as status_print'),
+            'created_at'
+        ]);
 
-        $cacheKey = 'nonmanfee_doc_datatable_' . $user->id;
-        if (Cache::has($cacheKey) && !$request->has('search')) {
-            return Cache::get($cacheKey);
-        }
-
-        $manfeeQuery = ManfeeDocument::query()
-            ->selectRaw("'Manfee' as type, invoice_number, status_print, created_at");
-
-        $nonManfeeQuery = NonManfeeDocument::query()
-            ->selectRaw("'Non Manfee' as type, invoice_number, status_print, created_at");
-
-        $mergedQuery = $manfeeQuery->unionAll($nonManfeeQuery);
-
-        $query = DB::table(DB::raw("({$mergedQuery->toSql()}) as sub"))
-            ->mergeBindings($mergedQuery->getQuery());
+        $query = DB::table($manfeeQuery->unionAll($nonManfeeQuery));
 
         return DataTables::of($query)
             ->addIndexColumn()
             ->editColumn('status_print', function ($row) {
-                return $row->status_print == 1 ? 'Sudah' : 'Belum';
+                // Cek nilai secara ketat
+                $status = $row->status_print === true || $row->status_print === 1 || $row->status_print === '1';
+                return $status
+                    ? '<span class="text-green-600 font-semibold">Sudah</span>'
+                    : '<span class="text-red-600 font-semibold">Belum</span>';
             })
+            ->rawColumns(['status_print'])
             ->make(true);
     }
 }
