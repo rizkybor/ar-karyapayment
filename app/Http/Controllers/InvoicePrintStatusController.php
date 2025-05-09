@@ -19,9 +19,9 @@ class InvoicePrintStatusController extends Controller
     public function updatePrintStatus(Request $request)
     {
         DB::beginTransaction();
-        $ids = $request->input('ids', []);
+        $documents = $request->input('documents', []);
 
-        if (empty($ids)) {
+        if (empty($documents)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada invoice yang dipilih'
@@ -29,14 +29,20 @@ class InvoicePrintStatusController extends Controller
         }
 
         try {
+            $manfeeUpdated = 0;
+            $nonManfeeUpdated = 0;
 
-            $manfeeUpdated = ManfeeDocument::whereIn('id', $ids)
-                ->where('status_print', false)
-                ->update(['status_print' => true]);
-
-            $nonManfeeUpdated = NonManfeeDocument::whereIn('id', $ids)
-                ->where('status_print', false)
-                ->update(['status_print' => true]);
+            foreach ($documents as $doc) {
+                if ($doc['type'] === 'Management Fee') {
+                    $manfeeUpdated += ManfeeDocument::where('id', $doc['id'])
+                        ->where('status_print', false)
+                        ->update(['status_print' => true]);
+                } elseif ($doc['type'] === 'Non Management Fee') {
+                    $nonManfeeUpdated += NonManfeeDocument::where('id', $doc['id'])
+                        ->where('status_print', false)
+                        ->update(['status_print' => true]);
+                }
+            }
 
             DB::commit();
 
@@ -45,9 +51,11 @@ class InvoicePrintStatusController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $totalUpdated > 0
-                    ? "Berhasil update status print invoice"
+                    ? "Berhasil update status print $totalUpdated invoice"
                     : "Tidak ada invoice yang perlu diupdate",
-                'updated' => $totalUpdated
+                'updated' => $totalUpdated,
+                'manfee_updated' => $manfeeUpdated,
+                'non_manfee_updated' => $nonManfeeUpdated
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
