@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class PrivyController extends Controller
 {
@@ -98,15 +99,15 @@ class PrivyController extends Controller
     }
 
     // Payload Privy Pattern 
-    public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY)
+    public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY, $ref, $no)
     {
         // Generate reference_number: REFYYYYMMDDprimeXXXX
         $today = Carbon::now();
-        $referenceNumber = 'REF' . $today->format('Ymd') . 'prime' . strtoupper(Str::random(4));
+        $referenceNumber = $ref;
 
         $payload = [
             "reference_number" => $referenceNumber,
-            "channel_id" => "KUU001",
+            "channel_id" => env('PRIVY_CHANNEL_ID'),
             "custom_signature_placement" => true,
             "doc_process" => $typeSign,
             "visibility" => true,
@@ -116,7 +117,7 @@ class PrivyController extends Controller
             ],
             "document" => [
                 "document_file" => "data:application/pdf;base64," . $base64Pdf,
-                "document_name" => "test",
+                "document_name" => "PRIVY_" . $no,
                 "sign_process" => "1",
                 "barcode_position" => "1",
             ],
@@ -134,11 +135,11 @@ class PrivyController extends Controller
                             "posY" => $posY,
                             "signPage" => "1",
                         ],
-                        [
-                            "posX" => "200",
-                            "posY" => "200",
-                            "signPage" => "1",
-                        ],
+                        // [
+                        //     "posX" => "200",
+                        //     "posY" => "200",
+                        //     "signPage" => "1",
+                        // ],
                     ]
                 ]
             ]
@@ -155,14 +156,16 @@ class PrivyController extends Controller
                 'base64_pdf' => 'required|string',
                 'type_sign' => 'required|in:0,1',
                 'posX' => 'required|string',
-                'posY' => 'required|string'
+                'posY' => 'required|string',
+                'docType' => 'required|string',
+                'noSurat' => 'required|string'
             ]);
         } catch (ValidationException $e) {
-            return response()->json([
+            return [
                 'status' => 'ERROR',
                 'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
+                'error' => $e->errors(),
+            ];
         }
 
         // Ambil input
@@ -170,20 +173,29 @@ class PrivyController extends Controller
         $typeSign = $request->type_sign;
         $posX = $request->posX;
         $posY = $request->posY;
+        $ref = $request->docType;
+        $no = $request->noSurat;
 
         // Bangun payload secara otomatis
-        $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY);
+        $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY, $ref, $no);
 
         try {
             // Kirim ke Privy
             $response = $privy->uploadDocument($payload);
-            return response()->json($response);
+
+            Log::info('Privy uploadDocument response:', [
+                'no_surat' => $no,
+                'reference' => $ref,
+                'response' => $response,
+            ]);
+
+            return $response;
         } catch (\Throwable $e) {
-            return response()->json([
+            return [
                 'status' => 'ERROR',
                 'message' => 'Gagal upload dokumen ke Privy',
                 'error' => $e->getMessage(),
-            ], 500);
+            ];
         }
     }
 
