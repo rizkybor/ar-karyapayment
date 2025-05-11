@@ -22,12 +22,15 @@
         [
             'label' => 'Invoice',
             'route' => route('non-management-fee.print-invoice', $document['id']),
-        ],
-        [
+        ]
+    ];
+
+    if (Auth::user()->hasRole('perbendaharaan') && (int) $document->status === 6) {
+        $printOptions[] = [
             'label' => 'Export All Document to ZIP',
             'route' => route('non-management-fee.download-zip', $document['id']),
-        ],
-    ];
+        ];
+    }
 @endphp
 
 @php
