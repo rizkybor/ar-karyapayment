@@ -648,7 +648,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '510.78', '572.67', $refKwitansi, $noKw);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -660,7 +660,8 @@ class NonManfeeDocumentController extends Controller
 
                     dd([
                         'letter'   => $createLetter,
-                        'invoice'  => $createInvoice
+                        'invoice'  => $createInvoice,
+                        'kwitansi'  => $createKwitansi
                     ], '<<< cek response PRIVY');
 
 
@@ -797,7 +798,7 @@ class NonManfeeDocumentController extends Controller
         $privyController = app()->make(PrivyController::class);
         $privyService = app()->make(PrivyService::class);
 
-        return $privyController->generateDocument($request, $privyService,);
+        return $privyController->generateDocument($request, $privyService);
     }
 
     /**

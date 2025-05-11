@@ -290,6 +290,7 @@ class PDFController extends Controller
             'terbilang' => $terbilang,
             'detailPayments' => $document->detailPayments
         ];
+
         $pdf = PDF::loadView('templates.document-kwitansi', $data);
         $pdfOutput = $pdf->output();
         $base64 = base64_encode($pdfOutput);
@@ -508,9 +509,10 @@ class PDFController extends Controller
         ];
 
         $pdf = PDF::loadView('templates.management-fee.document-invoice', $data);
+        $pdfOutput = $pdf->output();
+        $base64 = base64_encode($pdfOutput);
 
-        $pdfOutput = $pdf->output(); // binary
-        return base64_encode($pdfOutput); // hasil base64
+        return $base64;
     }
 
     public function manfeeKwitansiBase64($document_id): string
@@ -541,8 +543,10 @@ class PDFController extends Controller
         ];
 
         $pdf = PDF::loadView('templates.management-fee.document-kwitansi', $data);
+        $pdfOutput = $pdf->output();
+        $base64 = base64_encode($pdfOutput);
 
-        return base64_encode($pdf->output());
+        return $base64;
     }
 
     /*

@@ -33,10 +33,10 @@ class PrivyUser extends Model
 
 
 // Contoh penggunaan di controller saat pembubuhan privy :
-$user = User::find($id);
+// $user = User::find($id);
 
-if ($user->isPrivyVerified()) {
-    // User adalah pengguna Privy dan sudah terverifikasi
-} else {
-    // Bukan pengguna Privy atau belum verified
-}
+// if ($user->isPrivyVerified()) {
+//     // User adalah pengguna Privy dan sudah terverifikasi
+// } else {
+//     // Bukan pengguna Privy atau belum verified
+// }
