@@ -368,7 +368,7 @@ class ManfeeDocumentController extends Controller
 
     // Privy
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): object
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): array
     {
         $request = new Request([
             'base64_pdf' => $base64,
@@ -382,16 +382,7 @@ class ManfeeDocumentController extends Controller
         $privyController = app()->make(PrivyController::class);
         $privyService = app()->make(PrivyService::class);
 
-        dd([
-            'base64_pdf' => $request->base64_pdf,
-            'type_sign' => $request->type_sign,
-            'posX' => $request->posX,
-            'posY' => $request->posY,
-            'docType' => $docType,
-            'noSurat' => $noSurat
-        ]);
-
-        return $privyController->generateDocument($request, $privyService,);
+        return $privyController->generateDocument($request, $privyService);
     }
 
 
@@ -532,27 +523,59 @@ class ManfeeDocumentController extends Controller
                     // // ✅ Proccess Privy Service
                     // // get base 64 from pdf template
                     $pdfController = app()->make(PDFController::class);
+
                     $base64letter = $pdfController->manfeeLetterBase64($document->id);
                     $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
                     $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
-                    
+
                     // CREATE REFERENCE NUMBER DOCUMENT
                     $tanggal = Carbon::now();
+
                     $noSurat = $document->letter_number;
-                    $referenceNumber = 'REF' . $tanggal->format('Ymd') . $noSurat;
-                    $referenceNumber = str_replace('/', '', $referenceNumber);
-                    
-                    // // PRIVY SERVICES
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84', $referenceNumber, $noSurat);
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47', $referenceNumber, $noSurat);
-                    $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55', $referenceNumber, $noSurat);
+                    $noKw    = $document->receipt_number;
+                    $noInv   = $document->invoice_number;
 
-                    // $letterPrivy = $createLetter->getData();
-                    // $invoicePrivy = $createInvoice->getData();
-                    // $kwitansiPrivy = $createKwitansi->getData();
+                    $refLetter  = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noSurat);
+                    $refInvoice = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noInv);
+                    $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
 
-                    // dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
-                } catch (\Exception $e) {
+                    // === PRIVY SERVICES ===
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84', $refLetter, $noSurat);
+                    if (isset($createLetter['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createLetter',
+                            'message' => 'Gagal membuat surat',
+                            'details' => $createLetter['error'],
+                        ]);
+                    }
+
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47', $refInvoice, $noInv);
+                    if (isset($createInvoice['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createInvoice',
+                            'message' => 'Gagal membuat invoice',
+                            'details' => $createInvoice['error'],
+                        ]);
+                    }
+
+                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '506.54', '601.55', $refKwitansi, $noKw);
+                    if (isset($createKwitansi['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createKwitansi',
+                            'message' => 'Gagal membuat kwitansi',
+                            'details' => $createKwitansi['error'],
+                        ]);
+                    }
+
+                    dd([
+                        'letter'   => $createLetter,
+                        'invoice'  => $createInvoice,
+                        'kwitansi'  => $createKwitansi
+                    ], '<<< cek response PRIVY');
+                } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
                 // ✅ Lanjutkan proses approval

@@ -798,7 +798,7 @@ class NonManfeeDocumentController extends Controller
         $privyController = app()->make(PrivyController::class);
         $privyService = app()->make(PrivyService::class);
 
-        return $privyController->generateDocument($request, $privyService,);
+        return $privyController->generateDocument($request, $privyService);
     }
 
     /**
