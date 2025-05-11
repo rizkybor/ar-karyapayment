@@ -34,13 +34,19 @@ class InvoicePrintStatusController extends Controller
 
             foreach ($documents as $doc) {
                 if ($doc['type'] === 'Management Fee') {
-                    $manfeeUpdated += ManfeeDocument::where('id', $doc['id'])
-                        ->where('status_print', false)
-                        ->update(['status_print' => true]);
+                    $document = ManfeeDocument::find($doc['id']);
+                    if ($document) {
+                        $document->status_print = !$document->status_print;
+                        $document->save();
+                        $manfeeUpdated++;
+                    }
                 } elseif ($doc['type'] === 'Non Management Fee') {
-                    $nonManfeeUpdated += NonManfeeDocument::where('id', $doc['id'])
-                        ->where('status_print', false)
-                        ->update(['status_print' => true]);
+                    $document = NonManfeeDocument::find($doc['id']);
+                    if ($document) {
+                        $document->status_print = !$document->status_print;
+                        $document->save();
+                        $nonManfeeUpdated++;
+                    }
                 }
             }
 
@@ -52,7 +58,7 @@ class InvoicePrintStatusController extends Controller
                 'success' => true,
                 'message' => $totalUpdated > 0
                     ? "Berhasil update status print $totalUpdated invoice"
-                    : "Tidak ada invoice yang perlu diupdate",
+                    : "Tidak ada invoice yang diubah",
                 'updated' => $totalUpdated,
                 'manfee_updated' => $manfeeUpdated,
                 'non_manfee_updated' => $nonManfeeUpdated
@@ -66,6 +72,7 @@ class InvoicePrintStatusController extends Controller
             ], 500);
         }
     }
+
 
     public function datatable(Request $request)
     {
