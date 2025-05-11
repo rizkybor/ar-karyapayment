@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
+use App\Models\FilePrivy;
 use App\Models\Contracts;
 use App\Models\ManfeeDocument;
 use App\Models\DocumentApproval;
@@ -570,11 +571,17 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
+                     // SAVE TO DB
+                    $this->storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi);
+
+                    // BAGIAN INI JANGAN DIUBAH DULU
+                    DB::commit();
                     dd([
-                        'letter'   => $createLetter,
-                        'invoice'  => $createInvoice,
-                        'kwitansi'  => $createKwitansi
-                    ], '<<< cek response PRIVY');
+                        'letter' => $createLetter,
+                        'invoice' => $createInvoice,
+                        'kwitansi' => $createKwitansi
+                    ], '<<< cek response PRIVY Manfee');
+
                 } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
@@ -834,6 +841,46 @@ class ManfeeDocumentController extends Controller
             Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
         }
+    }
+
+    private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
+    {
+        $letterData = [
+            'document_id'     => $document->id,
+            'category_type'   => $document->category,
+            'type_document'   => 'letter',
+            'reference_number' => $createLetter['data']['reference_number'] ?? null,
+            'document_token'  => $createLetter['data']['document_token'] ?? null,
+            'status'          => $createLetter['data']['status'] ?? null,
+        ];
+
+        $file = FilePrivy::create($letterData);
+        Log::info('Saved FilePrivy ID:', [$file->id]);
+
+        $invoiceData = [
+            'document_id'     => $document->id,
+            'category_type'   => $document->category,
+            'type_document'   => 'invoice',
+            'reference_number' => $createInvoice['data']['reference_number'] ?? null,
+            'document_token'  => $createInvoice['data']['document_token'] ?? null,
+            'status'          => $createInvoice['data']['status'] ?? null,
+        ];
+
+        $invoice = FilePrivy::create($invoiceData);
+        Log::info('Saved FilePrivy Invoice ID:', [$invoice?->id]);
+
+
+        $kwitansiData = [
+            'document_id'     => $document->id,
+            'category_type'   => $document->category,
+            'type_document'   => 'kwitansi',
+            'reference_number' => $createKwitansi['data']['reference_number'] ?? null,
+            'document_token'  => $createKwitansi['data']['document_token'] ?? null,
+            'status'          => $createKwitansi['data']['status'] ?? null,
+        ];
+        
+        $kwitansi = FilePrivy::create($kwitansiData);
+        Log::info('Saved FilePrivy Kwitansi ID:', [$kwitansi?->id]);
     }
 
     private function convertToRoman($month)
