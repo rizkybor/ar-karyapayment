@@ -117,4 +117,9 @@ class ManfeeDocument extends Model
     {
         return $this->hasMany(ManfeeDocHistories::class, 'document_id');
     }
+
+    public function filePrivies()
+    {
+        return $this->hasMany(FilePrivy::class, 'document_id');
+    }
 }
