@@ -145,7 +145,7 @@ class InvoicePrintStatusController extends Controller
 
     public function datatable(Request $request)
     {
-        $manfeeQuery = ManfeeDocument::select([
+        $manfeeQuery = ManfeeDocument::where('status', 6)->select([
             'id',
             DB::raw("'Management Fee' as type"),
             'invoice_number',
@@ -153,7 +153,7 @@ class InvoicePrintStatusController extends Controller
             'created_at'
         ]);
 
-        $nonManfeeQuery = NonManfeeDocument::select([
+        $nonManfeeQuery = NonManfeeDocument::where('status', 6)->select([
             'id',
             DB::raw("'Non Management Fee' as type"),
             'invoice_number',
