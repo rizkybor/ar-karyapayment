@@ -100,8 +100,8 @@ class InvoicePrintStatusController extends Controller
                 // Cek nilai secara ketat
                 $status = $row->status_print === true || $row->status_print === 1 || $row->status_print === '1';
                 return $status
-                    ? '<span class="text-green-600 font-semibold">Sudah</span>'
-                    : '<span class="text-red-600 font-semibold">Belum</span>';
+                    ? '<span class="text-green-600 font-semibold">Sudah diprint</span>'
+                    : '<span class="text-red-600 font-semibold">Belum diprint</span>';
             })
             ->rawColumns(['status_print'])
             ->make(true);
