@@ -13,20 +13,6 @@ class PrivyService
     {
         $url = privy_base_url() . '/oauth2/api/v1/token';
 
-        // ✅ Gunakan Mock Response jika di lokal
-        if (app()->environment('local')) {
-            Http::fake([
-                $url => Http::response([
-                    'message' => 'Mocked token response',
-                    'data' => [
-                        'access_token' => 'mocked_token_1234567890',
-                        'token_type' => 'Bearer',
-                        'expires_in' => 3600,
-                    ]
-                ], 200)
-            ]);
-        }
-
         $response = Http::asJson()->post($url, [
             'client_id' => config('services.privy.username'),
             'client_secret' => config('services.privy.password'),
@@ -274,24 +260,6 @@ class PrivyService
                     ]
                 ]
             ];
-
-            // Contoh response jika ingin simulasikan rejected:
-            /*
-        return [
-            'message' => 'Success retrieve data',
-            'data' => [
-                'reference_number' => $payload['reference_number'],
-                'channel_id' => $payload['channel_id'],
-                'register_token' => $payload['register_token'],
-                'status' => 'rejected',
-                'reject_reason' => [
-                    'reason' => 'Nomor HP sudah terasosiasi dengan PrivyID lain',
-                    'code' => 'RC09',
-                ],
-                'resend' => false
-            ]
-        ];
-        */
         }
 
         $response = Http::withHeaders($headers)->post($url, $payload);
@@ -320,14 +288,20 @@ class PrivyService
 
     public function uploadDocument(array $payload): ?array
     {
-        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        // $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
+        $timestamp = Carbon::now('Asia/Jakarta')->format('D M d Y H:i:s') . ' GMT+0700';
         $apiKey = config('services.privy.api_key');
         $apiSecret = config('services.privy.secret_key');
         $httpVerb = 'POST';
 
-        $originalPayload = $payload;
-        $payloadForSignature = collect($payload)->except(['document'])->all();
-        ksort($payloadForSignature);
+        $payloadForSignature = $payload;
+        if (isset($payloadForSignature['document'])) {
+            unset($payloadForSignature['document']);
+        }
+
+        // dd($payloadForSignature);
+        // ksort($payloadForSignature);
+
         $rawJson = json_encode($payloadForSignature, JSON_UNESCAPED_SLASHES);
         $rawJson = preg_replace('/\s+/', '', $rawJson);
         $bodyMd5 = base64_encode(md5($rawJson, true));
@@ -350,22 +324,13 @@ class PrivyService
         $headers = [
             'Timestamp' => $timestamp,
             'Signature' => $finalSignature,
-            'Authorization' => 'Bearer ' . $token['data']['access_token'],
+            'Authorization' => $token['data']['token_type'] . ' ' . $token['data']['access_token'],
         ];
 
-        $url = privy_base_url() . 'web/api/v2/doc-signing';
-
-        // Log::info('[Privy] Mengirim dokumen ke Privy API', [
-        //     'url' => $url,
-        //     'headers' => $headers,
-        //     'payload' => $originalPayload,
-        //     'payload_signatures' => $payloadForSignature,
-        //     'signature_string' => $signatureString,
-        //     'final_signature' => $finalSignature,
-        // ]);
-
+        $url = privy_base_url() . '/web/api/v2/doc-signing';
+        // dd($originalPayload, $url);
         try {
-            $response = Http::withHeaders($headers)->post($url, $originalPayload);
+            $response = Http::withHeaders($headers)->post($url, $payload);
 
             Log::info('Response API', [
                 'status' => $response->status(),
@@ -374,7 +339,7 @@ class PrivyService
 
             if ($response->successful()) {
                 $responseData = $response->json();
-            
+
                 return [
                     'message' => 'Success retrieve data',
                     'data' => [
@@ -477,66 +442,6 @@ class PrivyService
                 'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
             ]
         ];
-    }
-
-    public function checkDocumentStatus(array $payload): ?array
-    {
-        $timestamp = now('Asia/Jakarta')->format('Y-m-d\TH:i:sP');
-        $requestId = Str::uuid()->toString();
-        $apiKey = config('services.privy.api_key');
-        $apiSecret = config('services.privy.secret_key');
-        $httpVerb = 'POST';
-
-        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-        $bodyMd5 = base64_encode(md5($rawJson, true));
-        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
-        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
-
-        $token = $this->getToken();
-        if (!$token || !isset($token['data']['access_token'])) {
-            return [
-                'error' => [
-                    'code' => 401,
-                    'errors' => ['Token tidak tersedia']
-                ]
-            ];
-        }
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Request-ID' => $requestId,
-            'Timestamp' => $timestamp,
-            'Signature' => $hmacBase64,
-            'Authorization' => 'Bearer ' . $token['data']['access_token'],
-        ];
-
-        $url = privy_base_url() . '/web/api/v2/doc-signing/status';
-
-        // MOCK Response
-        if (config('app.env') === 'local') {
-            return [
-                'message' => 'Success retrieve data',
-                'data' => [
-                    'reference_number' => $payload['reference_number'],
-                    'channel_id' => $payload['channel_id'],
-                    'status' => 'uploaded',
-                    'document_token' => $payload['document_token'],
-                    'signing_url' => 'https://dev.dcidi.io/531c398559',
-                    'signed_document' => null
-                ]
-            ];
-        }
-
-        $response = Http::withHeaders($headers)->post($url, $payload);
-
-        return $response->successful()
-            ? $response->json()
-            : [
-                'error' => [
-                    'code' => $response->status(),
-                    'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
-                ]
-            ];
     }
 
     public function checkDocumentHistory(array $payload): ?array
@@ -703,5 +608,61 @@ class PrivyService
         return $response->successful()
             ? $response->json()
             : ['error' => ['code' => $response->status(), 'errors' => [json_decode($response->body(), true)]]];
+    }
+
+    public function checkDocSigningStatus(array $payload): ?array
+    {
+        $timestamp = now('Asia/Jakarta')->format('D M d Y H:i:s') . ' GMT+0700';
+        $apiKey = config('services.privy.api_key');
+        $apiSecret = config('services.privy.secret_key');
+        $httpVerb = 'POST';
+
+        // Format JSON tanpa spasi
+        $rawJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $rawJson = preg_replace('/\s+/', '', $rawJson);
+        $bodyMd5 = base64_encode(md5($rawJson, true));
+
+        $signatureString = "{$timestamp}:{$apiKey}:{$httpVerb}:{$bodyMd5}";
+        $hmacBase64 = base64_encode(hash_hmac('sha256', $signatureString, $apiSecret, true));
+        $finalSignature = base64_encode("{$apiKey}:{$hmacBase64}");
+
+        // Ambil token akses
+        $tokenData = $this->getToken();
+        if (!$tokenData || !isset($tokenData['data']['access_token'])) {
+            Log::error('Privy: Token tidak tersedia untuk doc-signing status.');
+            return [
+                'error' => [
+                    'code' => 401,
+                    'errors' => ['Token tidak tersedia']
+                ]
+            ];
+        }
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Timestamp' => $timestamp,
+            'Signature' => $finalSignature,
+            'Authorization' => $tokenData['data']['token_type'] . ' ' . $tokenData['data']['access_token'],
+        ];
+
+        $url = privy_base_url() . '/web/api/v2/doc-signing/status';
+
+        $response = Http::withHeaders($headers)->post($url, $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Privy Doc-Signing Status Error', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return [
+            'error' => [
+                'code' => $response->status(),
+                'errors' => [json_decode($response->body(), true) ?? 'Unknown error']
+            ]
+        ];
     }
 }

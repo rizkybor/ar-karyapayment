@@ -24,20 +24,12 @@
             'route' => route('management-fee.print-invoice', $document['id']),
         ],
     ];
-
-    if (Auth::user()->hasRole('perbendaharaan') && (int) $document->status === 6) {
-        $printOptions[] = [
-            'label' => 'Export All Document to ZIP',
-            'route' => route('management-fee.download-zip', $document['id']),
-        ];
-    }
-
 @endphp
 
 @php
     $statusIsSix = (int) $document_status === 6;
     $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
-    $showDraft = $statusIsSix && $isPerbendaharaan;
+    $printPrivy = $statusIsSix && $isPerbendaharaan;
 @endphp
 
 <div x-data="{ modalOpen: false }">
@@ -64,15 +56,6 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 mt-4">
-                {{-- Jenis --}}
-                {{-- <div>
-                    <x-label for="transaction_status" value="{{ __('Jenis') }}"
-                        class="text-gray-800 dark:text-gray-100" />
-                    <p class="mt-1 text-gray-800 dark:text-gray-200 font-semibold">
-                        Management Fee
-                    </p>
-                </div> --}}
-
                 <div>
                     <x-label for="transaction_status" value="{{ __('Status Pembayaran') }}"
                         class="text-gray-800 dark:text-gray-100" />
@@ -120,42 +103,13 @@
         {{-- @if ($isShowPage && $transaction_status == '1') --}}
         @if ($isShowPage)
             <div class="flex flex-wrap gap-2 sm:flex-nowrap sm:w-auto sm:items-start">
+                @if ($document_status >= 0)
+                    @if (!$printPrivy)
 
-                {{-- @if ($document_status > 0) --}}
-                <div x-data="{ open: false }" class="relative">
-                    <x-button-action @click="open = !open" color="blue" icon="{{ $showDraft ? 'print' : 'eye' }}">
-                        {{ $showDraft ? 'Cetak' : 'Lihat' }} Dokumen
-                    </x-button-action>
-
-                    <div x-show="open" @click.away="open = false"
-                        class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
-                        <ul class="py-2 text-gray-700">
-                            @foreach ($printOptions as $option)
-                                <li>
-                                    <a href="{{ $option['route'] }}" target="_blank"
-                                        class="text-sm block px-4 py-2 hover:bg-blue-500 hover:text-white">
-                                        {{ $option['label'] }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-                {{-- @endif --}}
-
-                @if ($document_status == 103)
-                    <x-button-action color="red" icon="eye"
-                        onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
-                        Alasan Pembatalan
-                    </x-button-action>
-                @endif
-
-                @if (auth()->user()->role !== 'maker')
-                    @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
-                        {{-- <!-- Dropdown Option Print PDF (Surat Permohonan, Kwitansi, Invoice) -->
+                        {{-- Tombol Lihat Biasa --}}
                         <div x-data="{ open: false }" class="relative">
-                            <x-button-action @click="open = !open" color="blue" icon="print">
-                                Cetak Dokumen
+                            <x-button-action @click="open = !open" color="blue" icon="'eye'">
+                                Lihat Dokumen
                             </x-button-action>
 
                             <div x-show="open" @click.away="open = false"
@@ -171,11 +125,55 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        </div> --}}
+                        </div>
+                    @else
+                        {{-- Tombol Cetak/Lihat Khusus (Validasi ke Privy terlebih dulu) --}}
+                        <div x-data="{ openPrivy: false }" class="relative">
+                            <x-button-action color="blue" icon="print" @click="openPrivy = !openPrivy">
+                                Cetak Dokumen
+                            </x-button-action>
 
-                        <!-- Button batalkan dokumen -->
-                        {{-- <x-button-action color="red" icon="reject">Batalkan Dokumen</x-button-action> --}}
+                            <div x-show="openPrivy" x-transition @click.away="openPrivy = false" x-cloak
+                                class="absolute z-10 mt-2 bg-white border rounded-lg shadow-lg w-56">
+                                <ul class="py-2 text-gray-700">
+                                    <template x-for="option in ['letter', 'kwitansi', 'invoice']"
+                                        :key="option">
+                                        <li>
+                                            <button type="button"
+                                                @click="openPrivy = false; openPrivyDoc('{{ $document['id'] }}', option)"
+                                                class="text-sm block w-full text-left px-4 py-2 hover:bg-blue-500 hover:text-white"
+                                                x-text="{
+                                                    'letter': 'Cetak Surat Permohonan',
+                                                    'kwitansi': 'Cetak Kwitansi',
+                                                    'invoice': 'Cetak Invoice'
+                                                }[option]">
+                                            </button>
+                                        </li>
+                                    </template>
 
+                                    {{-- Export ZIP tanpa validasi Privy --}}
+                                    <li>
+                                        <a href="{{ route('management-fee.download-zip', $document['id']) }}"
+                                            target="_blank"
+                                            class="text-sm block w-full text-left px-4 py-2 hover:bg-blue-500 hover:text-white">
+                                            Export ZIP
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
+                @if ($document_status == 103)
+                    <x-button-action color="red" icon="eye"
+                        onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
+                        Alasan Pembatalan
+                    </x-button-action>
+                @endif
+
+                @if (auth()->user()->role !== 'maker')
+                    @if (auth()->user()->role === 'perbendaharaan' && $document_status == 6)
                         <!-- Upload Faktur Pajak Button -->
                         <x-button-action color="teal" icon="pencil"
                             onclick="window.location.href='{{ route('management-fee.edit', $document->id) }}'">
@@ -332,6 +330,44 @@
                 console.error('Error:', error);
                 showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan saat menyimpan.', 'error',
                     'Kesalahan!');
+            });
+    }
+
+    function openPrivyDoc(documentId, type) {
+        const token = "{{ csrf_token() }}";
+
+        fetch("{{ route('privy.check-doc-status') }}", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": token
+                },
+                body: JSON.stringify({
+                    document_id: documentId,
+                    type_document: type
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const status = data?.data?.status;
+                const signedUrl = data?.data?.signed_document;
+                console.log(data.data, '<< cek')
+
+                if ((status === 'uploaded' || status === 'signed') && signedUrl) {
+                    window.open(signedUrl, '_blank');
+                } else {
+                    showAutoCloseAlert(
+                        'globalAlertModal',
+                        3000,
+                        `Dokumen belum siap. Status: Privy ${status ?? 'Tidak diketahui'}`,
+                        'warning',
+                        'Dokumen Sedang Diproses'
+                    );
+                }
+            })
+            .catch(error => {
+                console.error('Error saat membuka dokumen:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Gagal menghubungi Privy', 'error', 'Kesalahan');
             });
     }
 </script>

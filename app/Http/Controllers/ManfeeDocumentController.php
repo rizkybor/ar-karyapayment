@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
+use App\Models\FilePrivy;
 use App\Models\Contracts;
 use App\Models\ManfeeDocument;
 use App\Models\DocumentApproval;
@@ -368,19 +369,21 @@ class ManfeeDocumentController extends Controller
 
     // Privy
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): array
     {
         $request = new Request([
             'base64_pdf' => $base64,
             'type_sign' => $typeSign,
             "posX" => $posX,
-            "posY" => $posY
+            "posY" => $posY,
+            'docType' => $docType,
+            'noSurat' => $noSurat
         ]);
 
         $privyController = app()->make(PrivyController::class);
         $privyService = app()->make(PrivyService::class);
 
-        return $privyController->generateDocument($request, $privyService,);
+        return $privyController->generateDocument($request, $privyService);
     }
 
 
@@ -451,8 +454,8 @@ class ManfeeDocumentController extends Controller
                     );
                 }
 
-                // ✅ Kirim ke AccurateService
                 try {
+                    // ✅ Kirim ke AccurateService
                     $dataAccurate = [
                         'data' => $document,
                         'contract' => $document->contract,
@@ -515,27 +518,68 @@ class ManfeeDocumentController extends Controller
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
-
 
                     // // ✅ Proccess Privy Service
                     // // get base 64 from pdf template
-                    // $pdfController = app()->make(PDFController::class);
-                    // $base64letter = $pdfController->manfeeLetterBase64($document->id);
-                    // $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
-                    // $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
+                    $pdfController = app()->make(PDFController::class);
 
-                    // // PRIVY SERVICES
-                    // $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84');
-                    // $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47');
-                    // $createKwitansi = $this->sendToPrivy($base64kw, '1', '506,54', '601,55');
+                    $base64letter = $pdfController->manfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
 
-                    // $letterPrivy = $createLetter->getData();
-                    // $invoicePrivy = $createInvoice->getData();
-                    // $kwitansiPrivy = $createKwitansi->getData();
+                    // CREATE REFERENCE NUMBER DOCUMENT
+                    $tanggal = Carbon::now();
 
-                    // dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
-                } catch (\Exception $e) {
+                    $noSurat = $document->letter_number;
+                    $noKw    = $document->receipt_number;
+                    $noInv   = $document->invoice_number;
+
+                    $refLetter  = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noSurat);
+                    $refInvoice = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noInv);
+                    $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
+
+                    // === PRIVY SERVICES ===
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84', $refLetter, $noSurat);
+                    if (isset($createLetter['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createLetter',
+                            'message' => 'Gagal membuat surat',
+                            'details' => $createLetter['error'],
+                        ]);
+                    }
+
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47', $refInvoice, $noInv);
+                    if (isset($createInvoice['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createInvoice',
+                            'message' => 'Gagal membuat invoice',
+                            'details' => $createInvoice['error'],
+                        ]);
+                    }
+
+                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '506.54', '601.55', $refKwitansi, $noKw);
+                    if (isset($createKwitansi['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createKwitansi',
+                            'message' => 'Gagal membuat kwitansi',
+                            'details' => $createKwitansi['error'],
+                        ]);
+                    }
+
+                    // SAVE TO DB
+                    $this->storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi);
+
+                    // BAGIAN INI JANGAN DIUBAH DULU
+                    DB::commit();
+                    // dd([
+                    //     'letter' => $createLetter,
+                    //     'invoice' => $createInvoice,
+                    //     'kwitansi' => $createKwitansi
+                    // ], '<<< cek response PRIVY Manfee');
+                } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
                 // ✅ Lanjutkan proses approval
@@ -793,6 +837,60 @@ class ManfeeDocumentController extends Controller
             DB::rollBack();
             Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
+        }
+    }
+
+    private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
+    {
+        // Ambil semua type_document yang sudah ada untuk document_id ini
+        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
+
+        // Simpan LETTER jika belum ada
+        if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {
+            $letterData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'letter',
+                'reference_number' => $createLetter['data']['reference_number'] ?? null,
+                'document_token'   => $createLetter['data']['document_token'] ?? null,
+                'status'           => $createLetter['data']['status'] ?? null,
+            ];
+            $file = FilePrivy::create($letterData);
+            Log::info('Saved FilePrivy LETTER ID:', [$file->id]);
+        } else {
+            Log::info("FilePrivy LETTER sudah ada atau data kosong untuk document_id {$document->id}");
+        }
+
+        // Simpan INVOICE jika belum ada
+        if (!in_array('invoice', $existingTypes) && !empty($createInvoice['data'])) {
+            $invoiceData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'invoice',
+                'reference_number' => $createInvoice['data']['reference_number'] ?? null,
+                'document_token'   => $createInvoice['data']['document_token'] ?? null,
+                'status'           => $createInvoice['data']['status'] ?? null,
+            ];
+            $invoice = FilePrivy::create($invoiceData);
+            Log::info('Saved FilePrivy INVOICE ID:', [$invoice?->id]);
+        } else {
+            Log::info("FilePrivy INVOICE sudah ada atau data kosong untuk document_id {$document->id}");
+        }
+
+        // Simpan KWITANSI jika belum ada
+        if (!in_array('kwitansi', $existingTypes) && !empty($createKwitansi['data'])) {
+            $kwitansiData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'kwitansi',
+                'reference_number' => $createKwitansi['data']['reference_number'] ?? null,
+                'document_token'   => $createKwitansi['data']['document_token'] ?? null,
+                'status'           => $createKwitansi['data']['status'] ?? null,
+            ];
+            $kwitansi = FilePrivy::create($kwitansiData);
+            Log::info('Saved FilePrivy KWITANSI ID:', [$kwitansi?->id]);
+        } else {
+            Log::info("FilePrivy KWITANSI sudah ada atau data kosong untuk document_id {$document->id}");
         }
     }
 

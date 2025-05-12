@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
+use App\Models\FilePrivy;
 use App\Models\Contracts;
 use App\Models\BankAccount;
 use App\Models\Notification;
@@ -481,21 +482,6 @@ class NonManfeeDocumentController extends Controller
     //     }
     // }
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY): object
-    {
-        $request = new Request([
-            'base64_pdf' => $base64,
-            'type_sign' => $typeSign,
-            "posX" => $posX,
-            "posY" => $posY
-        ]);
-
-        $privyController = app()->make(PrivyController::class);
-        $privyService = app()->make(PrivyService::class);
-
-        return $privyController->generateDocument($request, $privyService,);
-    }
-
     public function processApproval(Request $request, $id)
     {
         DB::beginTransaction();
@@ -619,30 +605,70 @@ class NonManfeeDocumentController extends Controller
                     // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
                     $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
-                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate');
-
 
                     // // ✅ Proccess Privy Service
                     // // get base 64 from pdf template
-                    // $pdfController = app()->make(PDFController::class);
-                    // $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
-                    // $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
-                    // $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
+                    $pdfController = app()->make(PDFController::class);
 
-                    // // PRIVY SERVICES
-                    // $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18');
-                    // $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80');
-                    // $createKwitansi = $this->sendToPrivy($base64kw, '1', '510.78', '572.67');
+                    $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
+                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
+                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
 
-                    // $letterPrivy = $createLetter->getData();
-                    // $invoicePrivy = $createInvoice->getData();
-                    // $kwitansiPrivy = $createKwitansi->getData();
+                    // CREATE REFERENCE NUMBER DOCUMENT
+                    $tanggal = Carbon::now();
 
-                    // dd($letterPrivy, $invoicePrivy, $kwitansiPrivy, '<<< cek response PRIVY');
+                    $noSurat = $document->letter_number;
+                    $noKw = $document->receipt_number;
+                    $noInv = $document->invoice_number;
+
+                    $refLetter = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noSurat);
+                    $refInvoice = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noInv);
+                    $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
+
+                    // === PRIVY SERVICES ===
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '28.29', '677.18', $refLetter, $noSurat);
+                    if (isset($createLetter['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createLetter',
+                            'message' => 'Gagal membuat surat',
+                            'details' => $createLetter['error'],
+                        ]);
+                    }
+
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '543.30', '623.80', $refInvoice, $noInv);
+                    if (isset($createInvoice['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createInvoice',
+                            'message' => 'Gagal membuat invoice',
+                            'details' => $createInvoice['error'],
+                        ]);
+                    }
+
+                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '510.78', '572.67', $refKwitansi, $noKw);
+                    if (isset($createKwitansi['error'])) {
+                        return response()->json([
+                            'status' => 'ERROR',
+                            'step' => 'createKwitansi',
+                            'message' => 'Gagal membuat kwitansi',
+                            'details' => $createKwitansi['error'],
+                        ]);
+                    }
+
+                    // SAVE TO DB
+                    $this->storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi);
+
+                    // BAGIAN INI JANGAN DIUBAH DULU
+                    DB::commit();
+                    // dd([
+                    //     'letter' => $createLetter,
+                    //     'invoice' => $createInvoice,
+                    //     'kwitansi' => $createKwitansi
+                    // ], '<<< cek response PRIVY Nonfee');
                 } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
-
                 // ✅ Lanjutkan proses approval
                 $nextRole = 'perbendaharaan';
                 $statusCode = '6'; // done
@@ -694,57 +720,57 @@ class NonManfeeDocumentController extends Controller
             // 🔹 7️⃣ Simpan approval untuk user berikutnya
             foreach ($nextApprovers as $nextApprover) {
                 DocumentApproval::create([
-                    'document_id'    => $document->id,
-                    'document_type'  => NonManfeeDocument::class,
-                    'approver_id'    => $nextApprover->id,
-                    'approver_role'  => $nextRole,
-                    'submitter_id'   => $document->created_by,
+                    'document_id' => $document->id,
+                    'document_type' => NonManfeeDocument::class,
+                    'approver_id' => $nextApprover->id,
+                    'approver_role' => $nextRole,
+                    'submitter_id' => $document->created_by,
                     'submitter_role' => $userRole,
-                    'status'         => (string) $statusCode,
-                    'approved_at'    => now(),
+                    'status' => (string) $statusCode,
+                    'approved_at' => now(),
                 ]);
             }
 
             // 🔹 8️⃣ Perbarui status dokumen
             $document->update([
                 'last_reviewers' => $nextRole,
-                'status'         => (string) $statusCode,
+                'status' => (string) $statusCode,
             ]);
 
             // 🔹 9️⃣ Simpan ke History
             NonManfeeDocHistory::create([
-                'document_id'     => $document->id,
-                'performed_by'    => $user->id,
-                'role'            => $userRole,
+                'document_id' => $document->id,
+                'performed_by' => $user->id,
+                'role' => $userRole,
                 'previous_status' => $previousStatus,
-                'new_status'      => (string) $statusCode,
-                'action'          => $isRevised ? 'Revised Approval' : 'Approved',
-                'notes'           => $message ? "{$message}." : "Dokumen diproses oleh {$user->name}.",
+                'new_status' => (string) $statusCode,
+                'action' => $isRevised ? 'Revised Approval' : 'Approved',
+                'notes' => $message ? "{$message}." : "Dokumen diproses oleh {$user->name}.",
             ]);
 
             // 🔹 🔟 Kirim Notifikasi
             $notification = Notification::create([
-                'type'            => InvoiceApprovalNotification::class,
+                'type' => InvoiceApprovalNotification::class,
                 'notifiable_type' => NonManfeeDocument::class,
-                'notifiable_id'   => $document->id,
-                'messages'        => $message
+                'notifiable_id' => $document->id,
+                'messages' => $message
                     ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
                     : "Dokumen telah disetujui oleh {$user->name}. Lihat detail: " . route('non-management-fee.show', $document->id),
-                'sender_id'       => $user->id,
-                'sender_role'     => $userRole,
-                'read_at'         => null,
-                'created_at'      => now(),
-                'updated_at'      => now(),
+                'sender_id' => $user->id,
+                'sender_role' => $userRole,
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             // 🔹 🔟 Kirim notifikasi ke setiap user dengan role berikutnya
             foreach ($nextApprovers as $nextApprover) {
                 NotificationRecipient::create([
                     'notification_id' => $notification->id,
-                    'user_id'         => $nextApprover->id,
-                    'read_at'         => null,
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
+                    'user_id' => $nextApprover->id,
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
 
@@ -756,6 +782,23 @@ class NonManfeeDocumentController extends Controller
             Log::error("Error saat approval dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat memproses approval.");
         }
+    }
+
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): array
+    {
+        $request = new Request([
+            'base64_pdf' => $base64,
+            'type_sign' => $typeSign,
+            "posX" => $posX,
+            "posY" => $posY,
+            'docType' => $docType,
+            'noSurat' => $noSurat
+        ]);
+
+        $privyController = app()->make(PrivyController::class);
+        $privyService = app()->make(PrivyService::class);
+
+        return $privyController->generateDocument($request, $privyService);
     }
 
     /**
@@ -774,11 +817,11 @@ class NonManfeeDocumentController extends Controller
         }
 
         $flow = [
-            'kadiv'               => 'perbendaharaan',
-            'perbendaharaan'      => 'manager_anggaran',
-            'manager_anggaran'    => 'direktur_keuangan',
-            'direktur_keuangan'   => 'pajak',
-            'pajak'               => 'perbendaharaan'
+            'kadiv' => 'perbendaharaan',
+            'perbendaharaan' => 'manager_anggaran',
+            'manager_anggaran' => 'direktur_keuangan',
+            'direktur_keuangan' => 'pajak',
+            'pajak' => 'perbendaharaan'
         ];
 
         return $flow[$currentRole] ?? null;
@@ -790,17 +833,17 @@ class NonManfeeDocumentController extends Controller
     private function approvalStatusMap()
     {
         return [
-            '0'   => 'draft',
-            '1'   => 'kadiv',
-            '2'   => 'perbendaharaan',
-            '3'   => 'manager_anggaran',
-            '4'   => 'direktur_keuangan',
-            '5'   => 'pajak',
-            '6'   => 'done',
+            '0' => 'draft',
+            '1' => 'kadiv',
+            '2' => 'perbendaharaan',
+            '3' => 'manager_anggaran',
+            '4' => 'direktur_keuangan',
+            '5' => 'pajak',
+            '6' => 'done',
             '100' => 'finished', // status belum digunakan
             '101' => 'canceled', // status belum digunakan
             '102' => 'revised',
-            '103'  => 'rejected',
+            '103' => 'rejected',
         ];
     }
 
@@ -838,57 +881,57 @@ class NonManfeeDocumentController extends Controller
             // 🔹 4️⃣ Simpan revisi ke dalam log approval (Pastikan tidak ada duplikasi)
             DocumentApproval::updateOrCreate(
                 [
-                    'document_id'   => $document->id,
+                    'document_id' => $document->id,
                     'document_type' => NonManfeeDocument::class,
-                    'approver_id'   => $user->id,
+                    'approver_id' => $user->id,
                 ],
                 [
-                    'role'         => $userRole,
-                    'status'       => $document->status,
-                    'approved_at'  => now(),
+                    'role' => $userRole,
+                    'status' => $document->status,
+                    'approved_at' => now(),
                 ]
             );
 
             // 🔹 3️⃣ Update status dokumen menjadi "Revisi Selesai (102)" dan set approver terakhir
             $document->update([
-                'status'         => '102',
+                'status' => '102',
                 'last_reviewers' => $userRole,
             ]);
 
             // 🔹 5️⃣ Simpan riwayat revisi di `NonManfeeDocHistory`
             NonManfeeDocHistory::create([
-                'document_id'     => $document->id,
-                'performed_by'    => $user->id,
-                'role'            => $userRole,
+                'document_id' => $document->id,
+                'performed_by' => $user->id,
+                'role' => $userRole,
                 'previous_status' => $document->status,
-                'new_status'      => '102',
-                'action'          => 'Revised',
-                'notes'           => "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
+                'new_status' => '102',
+                'action' => 'Revised',
+                'notes' => "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
             ]);
 
             // 🔹 6️⃣ Kirim Notifikasi ke Approver yang Merevisi Sebelumnya
             if ($targetApprover) {
                 $notification = Notification::create([
-                    'type'            => InvoiceApprovalNotification::class,
+                    'type' => InvoiceApprovalNotification::class,
                     'notifiable_type' => NonManfeeDocument::class,
-                    'notifiable_id'   => $document->id,
-                    'messages'        =>  $message
+                    'notifiable_id' => $document->id,
+                    'messages' => $message
                         ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
                         : "Dokumen diproses oleh {$user->name}.",
-                    'sender_id'       => $user->id,
-                    'sender_role'     => $userRole,
-                    'read_at'         => null,
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
+                    'sender_id' => $user->id,
+                    'sender_role' => $userRole,
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 // 🔹 7️⃣ Tambahkan ke Notifikasi Recipient
                 NotificationRecipient::create([
                     'notification_id' => $notification->id,
-                    'user_id'         => $targetApprover->id,
-                    'read_at'         => null,
-                    'created_at'      => now(),
-                    'updated_at'      => now(),
+                    'user_id' => $targetApprover->id,
+                    'read_at' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
 
@@ -898,6 +941,60 @@ class NonManfeeDocumentController extends Controller
             DB::rollBack();
             Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
             return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
+        }
+    }
+
+    private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
+    {
+        // Ambil semua type_document yang sudah ada untuk document_id ini
+        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
+
+        // Simpan LETTER jika belum ada
+        if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {
+            $letterData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'letter',
+                'reference_number' => $createLetter['data']['reference_number'] ?? null,
+                'document_token'   => $createLetter['data']['document_token'] ?? null,
+                'status'           => $createLetter['data']['status'] ?? null,
+            ];
+            $file = FilePrivy::create($letterData);
+            Log::info('Saved FilePrivy LETTER ID:', [$file->id]);
+        } else {
+            Log::info("FilePrivy LETTER sudah ada atau data kosong untuk document_id {$document->id}");
+        }
+
+        // Simpan INVOICE jika belum ada
+        if (!in_array('invoice', $existingTypes) && !empty($createInvoice['data'])) {
+            $invoiceData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'invoice',
+                'reference_number' => $createInvoice['data']['reference_number'] ?? null,
+                'document_token'   => $createInvoice['data']['document_token'] ?? null,
+                'status'           => $createInvoice['data']['status'] ?? null,
+            ];
+            $invoice = FilePrivy::create($invoiceData);
+            Log::info('Saved FilePrivy INVOICE ID:', [$invoice?->id]);
+        } else {
+            Log::info("FilePrivy INVOICE sudah ada atau data kosong untuk document_id {$document->id}");
+        }
+
+        // Simpan KWITANSI jika belum ada
+        if (!in_array('kwitansi', $existingTypes) && !empty($createKwitansi['data'])) {
+            $kwitansiData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'kwitansi',
+                'reference_number' => $createKwitansi['data']['reference_number'] ?? null,
+                'document_token'   => $createKwitansi['data']['document_token'] ?? null,
+                'status'           => $createKwitansi['data']['status'] ?? null,
+            ];
+            $kwitansi = FilePrivy::create($kwitansiData);
+            Log::info('Saved FilePrivy KWITANSI ID:', [$kwitansi?->id]);
+        } else {
+            Log::info("FilePrivy KWITANSI sudah ada atau data kosong untuk document_id {$document->id}");
         }
     }
 
@@ -952,19 +1049,19 @@ class NonManfeeDocumentController extends Controller
         // Update dokumen
         $document->update([
             'reason_rejected' => $request->reason,
-            'path_rejected'   => $dropboxPath,
-            'status'          => 103, // Status dibatalkan
+            'path_rejected' => $dropboxPath,
+            'status' => 103, // Status dibatalkan
         ]);
 
         // Simpan ke riwayat
         NonManfeeDocHistory::create([
-            'document_id'     => $document->id,
-            'performed_by'    => $user->id,
-            'role'            => $userRole,
+            'document_id' => $document->id,
+            'performed_by' => $user->id,
+            'role' => $userRole,
             'previous_status' => $previousStatus,
-            'new_status'      => '103',
-            'action'          => 'Rejected',
-            'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
+            'new_status' => '103',
+            'action' => 'Rejected',
+            'notes' => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
         ]);
 
         return redirect()->route('non-management-fee.show', $document->id)
@@ -994,12 +1091,12 @@ class NonManfeeDocumentController extends Controller
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         return [
-            'letter_number'  => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+            'letter_number' => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
             'invoice_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
             'receipt_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'base_number'    => $baseNumber,
-            'month_roman'    => $monthRoman,
-            'year'           => $year,
+            'base_number' => $baseNumber,
+            'month_roman' => $monthRoman,
+            'year' => $year,
         ];
     }
 

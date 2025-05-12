@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use App\Models\ManfeeDocument;
 use App\Models\NonManfeeDocument;
 use Illuminate\Support\Facades\DB;
@@ -19,47 +18,161 @@ class InvoicePrintStatusController extends Controller
 
     public function updatePrintStatus(Request $request)
     {
-        $ids = $request->input('ids', []);
-        if (empty($ids)) {
-            return response()->json(['message' => 'Tidak ada ID yang dipilih'], 400);
+        Log::info('FUNGSI UPDATE:', $request->all());
+        DB::beginTransaction();
+        $documents = $request->input('documents', []);
+
+        if (empty($documents)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada invoice yang dipilih'
+            ], 400);
         }
 
-        // Update untuk dua model jika digabung dari Manfee & Non-Manfee
-        ManfeeDocument::whereIn('id', $ids)->update(['status_print' => 1]);
-        NonManfeeDocument::whereIn('id', $ids)->update(['status_print' => 1]);
+        try {
+            $manfeeUpdated = 0;
+            $nonManfeeUpdated = 0;
+            $statusValues = [];
 
-        return response()->json(['message' => 'Status print diperbarui.']);
+            $records = collect($documents)->map(function ($doc) {
+                if ($doc['type'] === 'Management Fee') {
+                    $doc['model'] = ManfeeDocument::find($doc['id']);
+                } elseif ($doc['type'] === 'Non Management Fee') {
+                    $doc['model'] = NonManfeeDocument::find($doc['id']);
+                }
+                return $doc;
+            })->filter(fn($d) => $d['model']);
+
+            $statusValues = $records->pluck('model')->pluck('status_print')->all();
+            $count = count($statusValues);
+
+            $allTrue = collect($statusValues)->every(fn($s) => $s == true);
+            $allFalse = collect($statusValues)->every(fn($s) => $s == false);
+
+            foreach ($records as $doc) {
+                $model = $doc['model'];
+
+                if ($count === 1) {
+                    $model->status_print = !$model->status_print;
+                } else {
+                    if (!$allTrue && !$allFalse) {
+                        $model->status_print = false;
+                    } elseif ($allTrue) {
+                        $model->status_print = false;
+                    } elseif ($allFalse) {
+                        $model->status_print = true;
+                    }
+                }
+
+                $model->save();
+
+                if ($doc['type'] === 'Management Fee') {
+                    $manfeeUpdated++;
+                } elseif ($doc['type'] === 'Non Management Fee') {
+                    $nonManfeeUpdated++;
+                }
+            }
+
+            DB::commit();
+
+            $totalUpdated = $manfeeUpdated + $nonManfeeUpdated;
+
+            return response()->json([
+                'success' => true,
+                'message' => $totalUpdated > 0
+                    ? "Berhasil update status print $totalUpdated invoice"
+                    : "Tidak ada invoice yang diubah",
+                'updated' => $totalUpdated,
+                'manfee_updated' => $manfeeUpdated,
+                'non_manfee_updated' => $nonManfeeUpdated
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Update Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal update status print: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
+    public function getBulkInvoiceData(Request $request)
+    {
+        $invoiceNumbers = collect($request->input('invoice_numbers', []))
+            ->filter()
+            ->map(function ($num) {
+                return trim($num);
+            })
+            ->unique()
+            ->values();
+
+        if ($invoiceNumbers->isEmpty()) {
+            return response()->json([
+                'message' => 'Invoice number tidak valid.',
+            ], 400);
+        }
+
+        $manfee = ManfeeDocument::whereIn('invoice_number', $invoiceNumbers)
+            ->select('id', 'invoice_number')
+            ->get()
+            ->map(function ($doc) {
+                $doc->type = 'Management Fee';
+                return $doc;
+            });
+
+        Log::info('MF rows matched:', $manfee->pluck('invoice_number')->toArray());
+
+
+        $nonManfee = NonManfeeDocument::whereIn('invoice_number', $invoiceNumbers)
+            ->select('id', 'invoice_number')
+            ->get()
+            ->map(function ($doc) {
+                $doc->type = 'Non Management Fee';
+                return $doc;
+            });
+
+        Log::info('NF rows matched:', $nonManfee->pluck('invoice_number')->toArray());
+
+        $merged = $manfee->concat($nonManfee);
+
+        Log::info('Merged documents:', $merged->toArray());
+
+        return response()->json([
+            'data' => $merged->values()
+        ]);
+    }
+
 
     public function datatable(Request $request)
     {
-        $user = Auth::user();
+        $manfeeQuery = ManfeeDocument::where('status', 6)->select([
+            'id',
+            DB::raw("'Management Fee' as type"),
+            'invoice_number',
+            DB::raw('CAST(status_print AS SIGNED) as status_print'),
+            'created_at'
+        ]);
 
-        if ($request->has('search') && !empty($request->search['value'])) {
-            Cache::forget('nonmanfee_doc_datatable_' . $user->id);
-        }
+        $nonManfeeQuery = NonManfeeDocument::where('status', 6)->select([
+            'id',
+            DB::raw("'Non Management Fee' as type"),
+            'invoice_number',
+            DB::raw('CAST(status_print AS SIGNED) as status_print'),
+            'created_at'
+        ]);
 
-        $cacheKey = 'nonmanfee_doc_datatable_' . $user->id;
-        if (Cache::has($cacheKey) && !$request->has('search')) {
-            return Cache::get($cacheKey);
-        }
-
-        $manfeeQuery = ManfeeDocument::query()
-            ->selectRaw("'Manfee' as type, invoice_number, status_print, created_at");
-
-        $nonManfeeQuery = NonManfeeDocument::query()
-            ->selectRaw("'Non Manfee' as type, invoice_number, status_print, created_at");
-
-        $mergedQuery = $manfeeQuery->unionAll($nonManfeeQuery);
-
-        $query = DB::table(DB::raw("({$mergedQuery->toSql()}) as sub"))
-            ->mergeBindings($mergedQuery->getQuery());
+        $query = DB::table($manfeeQuery->unionAll($nonManfeeQuery));
 
         return DataTables::of($query)
             ->addIndexColumn()
             ->editColumn('status_print', function ($row) {
-                return $row->status_print == 1 ? 'Sudah' : 'Belum';
+                // Cek nilai secara ketat
+                $status = $row->status_print === true || $row->status_print === 1 || $row->status_print === '1';
+                return $status
+                    ? '<span class="text-green-600 font-semibold">Sudah diprint</span>'
+                    : '<span class="text-red-600 font-semibold">Belum diprint</span>';
             })
+            ->rawColumns(['status_print'])
             ->make(true);
     }
 }

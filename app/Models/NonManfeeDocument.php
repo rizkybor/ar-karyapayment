@@ -114,4 +114,10 @@ class NonManfeeDocument extends Model
     {
         return $this->hasMany(NonManfeeDocTax::class, 'document_id');
     }
+
+    // ✅ Relasi ke File Privy
+    public function filePrivies()
+    {
+        return $this->hasMany(FilePrivy::class, 'document_id');
+    }
 }

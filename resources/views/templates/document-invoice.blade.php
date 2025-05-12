@@ -71,9 +71,10 @@
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
         $showDraft = $status === 6 && $isPerbendaharaan;
         $isRejected = $status === 103;
+        $disableWatermark = $disableWatermark ?? false;
     @endphp
 
-    @if (!$showDraft)
+    @if (!$disableWatermark && !$showDraft)
         <div
             style="position: fixed;
            top: 35%;
@@ -156,15 +157,6 @@
                     {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
                 <!-- Jumlah, rata kanan agar lebih rapi -->
             </tr>
-
-            {{-- <tr>
-                <td class="no-border">{{ $accumulatedCosts[0]->account_name ?? '-' }}</td>
-                <td class="no-border">Rp.</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">
-                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
-                <td class="no-border">&nbsp;</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-            </tr> --}}
 
             @foreach ($detailPayments as $payment)
                 <tr>
@@ -274,11 +266,6 @@
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                    {{-- @php
-                        $logoPath = public_path('images/dirut-keuangan.png');
-                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
-                    @endphp
-                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150"> --}}
                 </td>
             </tr>
             <tr>
