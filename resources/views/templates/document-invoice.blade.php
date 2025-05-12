@@ -71,9 +71,10 @@
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
         $showDraft = $status === 6 && $isPerbendaharaan;
         $isRejected = $status === 103;
+        $disableWatermark = $disableWatermark ?? false;
     @endphp
 
-    @if (!$showDraft)
+    @if (!$disableWatermark && !$showDraft)
         <div
             style="position: fixed;
            top: 35%;

@@ -1,6 +1,5 @@
 <?php
 
-// MIGRATION: database/migrations/xxxx_xx_xx_create_file_privies_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +21,11 @@ class CreateFilePriviesTable extends Migration
 
             $table->timestamps();
 
+            // Index biasa (optional)
             $table->index(['document_id', 'category_type']);
+
+            // ✅ Tambahkan constraint unik
+            $table->unique(['document_id', 'type_document'], 'unique_doc_type_per_document');
         });
     }
 

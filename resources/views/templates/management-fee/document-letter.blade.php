@@ -69,9 +69,10 @@
         $statusIsSix = (int) $document->status === 6;
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
         $showDraft = $statusIsSix && $isPerbendaharaan;
+        $disableWatermark = $disableWatermark ?? false;
     @endphp
 
-    @if (!$showDraft)
+    @if (!$disableWatermark && !$showDraft)
         <!-- Watermark Layer -->
         <div
             style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
