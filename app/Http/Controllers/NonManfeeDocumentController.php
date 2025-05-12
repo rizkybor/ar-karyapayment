@@ -542,71 +542,68 @@ class NonManfeeDocumentController extends Controller
                 }
 
                 try {
-                    // // ✅ Proccess AccurateService
-                    // $dataAccurate = [
-                    //     'data' => $document,
-                    //     'contract' => $document->contract,
-                    //     'accumulatedCosts' => $document->accumulatedCosts,
-                    //     'creator' => $document->creator,
-                    //     'bankAccount' => $document->bankAccount,
-                    //     'detailPayments' => $document->detailPayments,
-                    //     'taxFiles' => $document->taxFiles,
-                    // ];
+                    // ✅ Proccess AccurateService
+                    $dataAccurate = [
+                        'data' => $document,
+                        'contract' => $document->contract,
+                        'accumulatedCosts' => $document->accumulatedCosts,
+                        'creator' => $document->creator,
+                        'bankAccount' => $document->bankAccount,
+                        'detailPayments' => $document->detailPayments,
+                        'taxFiles' => $document->taxFiles,
+                    ];
 
-                    // // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
-                    // $customersCheck = $this->accurateService->getAllCustomers([
-                    //     'filter.keywords.op' => 'EQUAL',
-                    //     'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
-                    // ]);
+                    // LOGIC 1 - MENCARI DATA PELANGGAN ATAU BUAT BARU DATA PELANGAN DARI ACCURATE
+                    $customersCheck = $this->accurateService->getAllCustomers([
+                        'filter.keywords.op' => 'EQUAL',
+                        'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                    ]);
 
-                    // if (empty($customersCheck)) {
-                    //     // ❌ Jika customer TIDAK ditemukan
-                    //     $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
+                    if (empty($customersCheck)) {
+                        // ❌ Jika customer TIDAK ditemukan
+                        $this->accurateService->saveCustomer($dataAccurate['contract']->employee_name);
 
-                    //     $getCustomers = $this->accurateService->getAllCustomers([
-                    //         'filter.keywords.op' => 'EQUAL',
-                    //         'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
-                    //     ]);
-                    //     $customer = $getCustomers[0];
-                    // } else {
-                    //     // ✅ Jika customer ditemukan
-                    //     $customer = $customersCheck[0];
-                    // }
+                        $getCustomers = $this->accurateService->getAllCustomers([
+                            'filter.keywords.op' => 'EQUAL',
+                            'filter.keywords.val[0]' => $dataAccurate['contract']->employee_name
+                        ]);
+                        $customer = $getCustomers[0];
+                    } else {
+                        // ✅ Jika customer ditemukan
+                        $customer = $customersCheck[0];
+                    }
 
-                    // $customerDetailResponse = $this->accurateService->getCustomerDetail([
-                    //     'customerNo' => $customer['customerNo']
-                    // ]);
+                    $customerDetailResponse = $this->accurateService->getCustomerDetail([
+                        'customerNo' => $customer['customerNo']
+                    ]);
 
-                    // $dataAccurate['customer'] = $customerDetailResponse['d'];
+                    $dataAccurate['customer'] = $customerDetailResponse['d'];
 
-                    // $detailPayments = $dataAccurate['detailPayments'];
+                    $detailPayments = $dataAccurate['detailPayments'];
 
-                    // foreach ($detailPayments as $index => $detailPayment) {
-                    //     $accountId = $detailPayment->accountId ?? null;
+                    foreach ($detailPayments as $index => $detailPayment) {
+                        $accountId = $detailPayment->accountId ?? null;
 
-                    //     if ($accountId) {
-                    //         try {
-                    //             $itemDetail = $this->accurateService->getItemDetail([
-                    //                 'id' => $accountId,
-                    //             ]);
+                        if ($accountId) {
+                            try {
+                                $itemDetail = $this->accurateService->getItemDetail([
+                                    'id' => $accountId,
+                                ]);
 
-                    //             // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
-                    //             $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
-                    //         } catch (Exception $e) {
-                    //             Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
-                    //             $detailPayments[$index]['item_detail'] = null;
-                    //         }
-                    //     }
-                    // }
+                                // Masukkan hasil detail item ke dalam masing-masing objek detailPayment
+                                $detailPayments[$index]['item_detail'] = $itemDetail['d'] ?? null;
+                            } catch (Exception $e) {
+                                Log::error("Gagal mengambil detail item untuk accountId {$accountId}: " . $e->getMessage());
+                                $detailPayments[$index]['item_detail'] = null;
+                            }
+                        }
+                    }
 
-                    // // Replace detailPayments di $dataAccurate dengan yang sudah di-update
-                    // $dataAccurate['detailPayments'] = $detailPayments;
+                    // Replace detailPayments di $dataAccurate dengan yang sudah di-update
+                    $dataAccurate['detailPayments'] = $detailPayments;
 
-                    // // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
-                    // $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
-
-                    // dd($apiResponsePostAccurate, 'after hit accurate, check accurate'); 
-                    // end proccess accurate
+                    // LOGIC 2 - INPUT SELURUH DATA PELANGAN KE ACCURATE
+                    $apiResponsePostAccurate = $this->accurateService->postDataInvoice($dataAccurate);
 
 
                     // // ✅ Proccess Privy Service
@@ -664,16 +661,14 @@ class NonManfeeDocumentController extends Controller
 
                     // BAGIAN INI JANGAN DIUBAH DULU
                     DB::commit();
-                    dd([
-                        'letter' => $createLetter,
-                        'invoice' => $createInvoice,
-                        'kwitansi' => $createKwitansi
-                    ], '<<< cek response PRIVY Nonfee');
-
+                    // dd([
+                    //     'letter' => $createLetter,
+                    //     'invoice' => $createInvoice,
+                    //     'kwitansi' => $createKwitansi
+                    // ], '<<< cek response PRIVY Nonfee');
                 } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
-
                 // ✅ Lanjutkan proses approval
                 $nextRole = 'perbendaharaan';
                 $statusCode = '6'; // done
@@ -951,42 +946,56 @@ class NonManfeeDocumentController extends Controller
 
     private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
     {
-        $letterData = [
-            'document_id'     => $document->id,
-            'category_type'   => $document->category,
-            'type_document'   => 'letter',
-            'reference_number' => $createLetter['data']['reference_number'] ?? null,
-            'document_token'  => $createLetter['data']['document_token'] ?? null,
-            'status'          => $createLetter['data']['status'] ?? null,
-        ];
+        // Ambil semua type_document yang sudah ada untuk document_id ini
+        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
 
-        $file = FilePrivy::create($letterData);
-        Log::info('Saved FilePrivy ID:', [$file->id]);
+        // Simpan LETTER jika belum ada
+        if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {
+            $letterData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'letter',
+                'reference_number' => $createLetter['data']['reference_number'] ?? null,
+                'document_token'   => $createLetter['data']['document_token'] ?? null,
+                'status'           => $createLetter['data']['status'] ?? null,
+            ];
+            $file = FilePrivy::create($letterData);
+            Log::info('Saved FilePrivy LETTER ID:', [$file->id]);
+        } else {
+            Log::info("FilePrivy LETTER sudah ada atau data kosong untuk document_id {$document->id}");
+        }
 
-        $invoiceData = [
-            'document_id'     => $document->id,
-            'category_type'   => $document->category,
-            'type_document'   => 'invoice',
-            'reference_number' => $createInvoice['data']['reference_number'] ?? null,
-            'document_token'  => $createInvoice['data']['document_token'] ?? null,
-            'status'          => $createInvoice['data']['status'] ?? null,
-        ];
+        // Simpan INVOICE jika belum ada
+        if (!in_array('invoice', $existingTypes) && !empty($createInvoice['data'])) {
+            $invoiceData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'invoice',
+                'reference_number' => $createInvoice['data']['reference_number'] ?? null,
+                'document_token'   => $createInvoice['data']['document_token'] ?? null,
+                'status'           => $createInvoice['data']['status'] ?? null,
+            ];
+            $invoice = FilePrivy::create($invoiceData);
+            Log::info('Saved FilePrivy INVOICE ID:', [$invoice?->id]);
+        } else {
+            Log::info("FilePrivy INVOICE sudah ada atau data kosong untuk document_id {$document->id}");
+        }
 
-        $invoice = FilePrivy::create($invoiceData);
-        Log::info('Saved FilePrivy Invoice ID:', [$invoice?->id]);
-
-
-        $kwitansiData = [
-            'document_id'     => $document->id,
-            'category_type'   => $document->category,
-            'type_document'   => 'kwitansi',
-            'reference_number' => $createKwitansi['data']['reference_number'] ?? null,
-            'document_token'  => $createKwitansi['data']['document_token'] ?? null,
-            'status'          => $createKwitansi['data']['status'] ?? null,
-        ];
-        
-        $kwitansi = FilePrivy::create($kwitansiData);
-        Log::info('Saved FilePrivy Kwitansi ID:', [$kwitansi?->id]);
+        // Simpan KWITANSI jika belum ada
+        if (!in_array('kwitansi', $existingTypes) && !empty($createKwitansi['data'])) {
+            $kwitansiData = [
+                'document_id'      => $document->id,
+                'category_type'    => $document->category,
+                'type_document'    => 'kwitansi',
+                'reference_number' => $createKwitansi['data']['reference_number'] ?? null,
+                'document_token'   => $createKwitansi['data']['document_token'] ?? null,
+                'status'           => $createKwitansi['data']['status'] ?? null,
+            ];
+            $kwitansi = FilePrivy::create($kwitansiData);
+            Log::info('Saved FilePrivy KWITANSI ID:', [$kwitansi?->id]);
+        } else {
+            Log::info("FilePrivy KWITANSI sudah ada atau data kosong untuk document_id {$document->id}");
+        }
     }
 
     /**
