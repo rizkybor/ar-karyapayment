@@ -105,7 +105,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     | PrivyId Routes
     |--------------------------------------------------------------------------
     */
-    Route::post('/privy/check-doc-status', [PrivyController::class, 'checkDocStatus'])
+    Route::post('/privy/check-doc-status', [PrivyController::class, 'checkDocumentStatus'])
         ->name('privy.check-doc-status');
 
     /*

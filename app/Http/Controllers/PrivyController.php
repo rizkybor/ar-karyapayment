@@ -215,24 +215,40 @@ class PrivyController extends Controller
 
     public function checkDocumentStatus(Request $request, PrivyService $privy)
     {
-        $payload = $request->only(['reference_number', 'channel_id', 'document_token', 'info']);
+        $documentId = $request->input('document_id');
+        $type = $request->input('type_document', 'letter');
 
-        if (
-            empty($payload['reference_number']) ||
-            empty($payload['channel_id']) ||
-            empty($payload['document_token'])
-        ) {
+        if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
             return response()->json([
                 'error' => [
                     'code' => 422,
-                    'errors' => ['reference_number, channel_id, dan document_token wajib diisi.']
+                    'message' => 'Tipe dokumen tidak valid. Gunakan letter, invoice, atau kwitansi.'
                 ]
             ], 422);
         }
 
-        $result = $privy->checkDocumentStatus($payload);
+        $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('type_document', $type)
+            ->first();
 
-        return response()->json($result);
+        if (!$filePrivy) {
+            return response()->json([
+                'error' => [
+                    'code' => 404,
+                    'message' => "FilePrivy untuk type '{$type}' tidak ditemukan."
+                ]
+            ], 404);
+        }
+
+        $payload = [
+            'reference_number' => $filePrivy->reference_number,
+            'channel_id'       => $filePrivy->channel_id ?? 'default_channel',
+            'document_token'   => $filePrivy->document_token,
+        ];
+
+        $response = $privy->checkDocSigningStatus($payload);
+
+        return response()->json($response);
     }
 
     public function checkDocumentHistory(Request $request, PrivyService $privy)
@@ -296,43 +312,5 @@ class PrivyController extends Controller
         $result = $privy->validateOtp($payload);
 
         return response()->json($result);
-    }
-
-    public function checkDocStatus(Request $request)
-    {
-        $documentId = $request->input('document_id');
-        $type = $request->input('type_document', 'letter'); 
-
-        if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'message' => 'Tipe dokumen tidak valid. Gunakan letter, invoice, atau kwitansi.'
-                ]
-            ], 422);
-        }
-
-        $filePrivy = FilePrivy::where('document_id', $documentId)
-            ->where('type_document', $type)
-            ->first();
-
-        if (!$filePrivy) {
-            return response()->json([
-                'error' => [
-                    'code' => 404,
-                    'message' => "FilePrivy untuk type '{$type}' tidak ditemukan."
-                ]
-            ], 404);
-        }
-
-        $payload = [
-            'reference_number' => $filePrivy->reference_number,
-            'channel_id'       => $filePrivy->channel_id ?? 'default_channel',
-            'document_token'   => $filePrivy->document_token,
-        ];
-
-        $response = app(PrivyService::class)->checkDocSigningStatus($payload);
-
-        return response()->json($response);
     }
 }
