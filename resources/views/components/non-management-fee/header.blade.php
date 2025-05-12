@@ -359,9 +359,9 @@
                     showAutoCloseAlert(
                         'globalAlertModal',
                         3000,
-                        `Dokumen belum siap. Status: ${status ?? 'Tidak diketahui'}`,
+                        `Dokumen belum siap. Status: Privy ${status ?? 'Tidak diketahui'}`,
                         'warning',
-                        'Dokumen Belum Tersedia'
+                        'Dokumen Sedang Diproses'
                     );
                 }
             })
