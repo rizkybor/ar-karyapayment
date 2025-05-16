@@ -17,18 +17,31 @@
         </div>
 
         <!-- Cards -->
+
         <div class="grid grid-cols-12 gap-6">
+            @unless (auth()->user()->hasRole('super_admin'))
+                <!-- Line chart (Acme Plus) -->
+                <x-dashboard-invoice.card-stick :dataDocuments=$dataStickChartAllInvoices />
 
-            <!-- Line chart (Acme Plus) -->
-            <x-dashboard-invoice.card-stick :dataDocuments=$dataStickChartAllInvoices />
+                <!-- Pie chart (Acme Advanced) -->
+                <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataPieChartAllInvoices
+                    :docExpired=$notActiveCount />
 
-            <!-- Pie chart (Acme Advanced) -->
-            <x-dashboard-invoice.card-rounded :totalInvoices=$totalInvoices :dataInvoices=$dataPieChartAllInvoices :docExpired=$notActiveCount />
+                <!-- Card (Customers) -->
+                <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoicesManFee />
 
-            <!-- Card (Customers) -->
-            <x-dashboard-invoice.card-table-manfee :dataInvoices=$dataInvoicesManFee />
+                <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoicesNonFee />
+            @endunless
 
-            <x-dashboard-invoice.card-table-nonmanfee :dataInvoices=$dataInvoicesNonFee />
+            @if (auth()->user()->hasRole('super_admin'))
+                <div class="col-span-12">
+                    <div class="mb-5 overflow-hidden">
+                        <img src="/images/foto-bersama.png" alt="Foto Bersama"
+                            class="w-1/2 h-auto object-cover rounded-xl">
+                    </div>
+                </div>
+            @endif
+
 
             {{-- <!-- Line chart (Acme Professional) -->
             <x-dashboard.dashboard-card-03 :dataFeed="$dataFeed" />
@@ -60,8 +73,8 @@
 
             <!-- Card (Income/Expenses) -->
             <x-dashboard.dashboard-card-13 /> --}}
-
         </div>
+
 
     </div>
 </x-app-layout>
