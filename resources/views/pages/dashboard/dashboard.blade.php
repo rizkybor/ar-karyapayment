@@ -41,11 +41,10 @@
                     </div>
                 </div> --}}
                 <div class="col-span-12">
-    <div class="mb-5">
-        <img src="/images/e-invoice.png" alt="Foto Bersama"
-            class="w-full h-auto object-cover rounded-xl">
-    </div>
-</div>
+                    <div class="mb-5">
+                        <img src="/images/e-invoice.png" alt="Foto Bersama" class="w-full h-auto object-cover rounded-xl">
+                    </div>
+                </div>
             @endif
 
 
