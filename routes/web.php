@@ -86,10 +86,6 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
-// Route::get('/generate-letter', [PDFController::class, 'generateLetter']);
-// Route::get('/generate-invoice', [PDFController::class, 'generateInvoice']);
-// Route::get('/generate-kwitansi', [PDFController::class, 'generateKwitansi']);
-
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
 
