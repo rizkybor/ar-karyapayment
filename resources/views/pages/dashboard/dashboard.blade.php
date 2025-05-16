@@ -34,12 +34,18 @@
             @endunless
 
             @if (auth()->user()->hasRole('super_admin'))
-                <div class="col-span-12">
+                {{-- <div class="col-span-12">
                     <div class="mb-5 overflow-hidden">
                         <img src="/images/foto-bersama.png" alt="Foto Bersama"
                             class="w-full sm:w-1/2 h-auto object-cover rounded-xl">
                     </div>
-                </div>
+                </div> --}}
+                <div class="col-span-12">
+    <div class="mb-5">
+        <img src="/images/e-invoice.png" alt="Foto Bersama"
+            class="w-full h-auto object-cover rounded-xl">
+    </div>
+</div>
             @endif
 
 
