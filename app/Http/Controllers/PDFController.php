@@ -22,59 +22,22 @@ class PDFController extends Controller
 
     /*
 |--------------------------------------------------------------------------
-| Default Function
+| Global Function
 |--------------------------------------------------------------------------
 */
-    public function generateLetter($document_id)
+    private function fetchSignedDocumentUrl($documentId, $type)
     {
-        $data = [
-            'title' => 'Contoh PDF',
-            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
-        ];
 
-        // Load Blade view dari folder templates
-        $pdf = Pdf::loadView('templates.document-letter', $data);
+        $privyCtrl = new PrivyController();
+        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId, $type);
 
-        // Download file PDF dengan nama document-letter.pdf
-        // return $pdf->download('document-letter.pdf');
-        return $pdf->stream('document-letter.pdf');
+        if (!$signedUrl) {
+            throw new \Exception("Dokumen {$type} belum ditandatangani atau tidak ditemukan.");
+        }
+
+        return $signedUrl;
     }
 
-    public function generateKwitansi()
-    {
-        $data = [
-            'title' => 'Contoh PDF',
-            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
-        ];
-
-        // Load Blade view dari folder templates
-        $pdf = Pdf::loadView('templates.document-kwitansi', $data);
-
-        // Download file PDF dengan nama document-letter.pdf
-        // return $pdf->download('document-kwitansi.pdf');
-        return $pdf->stream('document-kwitansi.pdf');
-    }
-
-    public function generateInvoice()
-    {
-        $data = [
-            'title' => 'Contoh PDF',
-            'content' => 'Ini adalah contoh PDF dalam Laravel 10.'
-        ];
-
-        // Load Blade view dari folder templates
-        $pdf = Pdf::loadView('templates.document-invoice', $data);
-
-        // Download file PDF dengan nama document-letter.pdf
-        // return $pdf->download('document-invoice.pdf');
-        return $pdf->stream('document-invoice.pdf');
-    }
-
-    /*
-|--------------------------------------------------------------------------
-| Non Management Fee Function
-|--------------------------------------------------------------------------
-*/
     public function sanitizeFileName($name)
     {
         // Ganti karakter tidak valid dengan underscore
@@ -111,42 +74,9 @@ class PDFController extends Controller
         return ($terbilang);
     }
 
-    public function showManagerSignature()
-    {
-        // Contoh: respons dari Dropbox API
-        $response = [
-            'links' => [
-                ['url' => 'https://www.dropbox.com/s/abcd1234/signature.png?dl=0']
-            ]
-        ];
-
-        // Pastikan response dan URL tersedia
-        if (isset($response['links'][0]['url'])) {
-            $originalLink = $response['links'][0]['url'];
-
-            // Ubah link menjadi direct download
-            $directLink = str_replace("www.dropbox.com", "dl.dropboxusercontent.com", $originalLink);
-
-            // Pastikan parameter `?raw=1` ditambahkan
-            if (!str_contains($directLink, '?')) {
-                $directLink .= '?raw=1';
-            } else {
-                $directLink .= '&raw=1';
-            }
-
-            // $signatureStatus->$field = $directLink;
-
-            // Simpan model jika diperlukan
-            // $signatureStatus->save();
-
-            return $directLink;
-        }
-        return null; // Jika URL tidak ditemukan
-    }
-
     /*
 |--------------------------------------------------------------------------
-| Non Management Fee PDF (Letter, Invoice, Kwitansi) View
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) View Single File
 |--------------------------------------------------------------------------
 */
 
@@ -228,7 +158,7 @@ class PDFController extends Controller
 
     /*
 |--------------------------------------------------------------------------
-| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64
+| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64 before Upload Privy
 |--------------------------------------------------------------------------
 */
 
@@ -402,23 +332,9 @@ class PDFController extends Controller
     }
 
 
-    private function fetchSignedDocumentUrl($documentId, $type)
-    {
-
-        $privyCtrl = new PrivyController();
-        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId, $type);
-
-        if (!$signedUrl) {
-            throw new \Exception("Dokumen {$type} belum ditandatangani atau tidak ditemukan.");
-        }
-
-        return $signedUrl;
-    }
-
-
     /*
 |--------------------------------------------------------------------------
-| Management Fee Function
+| Management Fee PDF (Letter, Invoice, Kwitansi) View Single File
 |--------------------------------------------------------------------------
 */
 
@@ -500,7 +416,7 @@ class PDFController extends Controller
 
     /*
 |--------------------------------------------------------------------------
-| Non Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64
+| Management Fee PDF (Letter, Invoice, Kwitansi) BASE 64 before Upload Privy
 |--------------------------------------------------------------------------
 */
 
@@ -617,14 +533,18 @@ class PDFController extends Controller
         $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
         $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
 
-        PDF::loadView('templates.document-letter', $data)->save($letterPdfPath);
-        PDF::loadView('templates.document-invoice', $data)->save($invoicePdfPath);
+         try {
+            $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
+            file_put_contents($letterPdfPath, file_get_contents($letterUrl));
 
-        $firstCost = $document->accumulatedCosts->first();
-        if (!$firstCost) return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, 'invoice');
+            file_put_contents($invoicePdfPath, file_get_contents($invoiceUrl));
 
-        $data['terbilang'] = $this->nilaiToString($firstCost->total);
-        PDF::loadView('templates.document-kwitansi', $data)->save($kwitansiPdfPath);
+            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, 'kwitansi');
+            file_put_contents($kwitansiPdfPath, file_get_contents($kwitansiUrl));
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         // Dropbox files
         $dropbox = new DropboxController();
