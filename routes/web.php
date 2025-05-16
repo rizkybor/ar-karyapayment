@@ -34,6 +34,7 @@ use Laravel\Fortify\Http\Controllers\NewPasswordController;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Models\User;
 use App\Actions\Fortify\CreateNewUser;
 
 /*
@@ -50,9 +51,23 @@ use App\Actions\Fortify\CreateNewUser;
 Route::redirect('/', 'login');
 
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
+
     Route::get('/register', function () {
-        return view('auth.register', ['roles' => Role::all()]);
+        $rolesLimited = ['perbendaharaan', 'direktur_keuangan', 'manager_anggaran', 'pajak'];
+
+        // Role terbatas yang sudah dipakai (1 akun per role)
+        $usedRoles = User::whereIn('role', $rolesLimited)->pluck('role')->toArray();
+
+        // Department yang sudah punya kadiv (1 department 1 akun kadiv)
+        $kadivDepartments = User::where('role', 'kadiv')->pluck('department')->toArray();
+
+        return view('auth.register', [
+            'roles' => Role::all(),
+            'usedRoles' => $usedRoles,
+            'kadivDepartments' => $kadivDepartments,
+        ]);
     })->name('register');
+
 
     Route::post('/register', function (Request $request) {
         $action = new CreateNewUser();

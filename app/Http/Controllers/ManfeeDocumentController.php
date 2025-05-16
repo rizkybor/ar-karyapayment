@@ -559,7 +559,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '506.54', '601.55', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '506.54', '601.55', $refKwitansi, $noKw);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -578,7 +578,7 @@ class ManfeeDocumentController extends Controller
                     //     'letter' => $createLetter,
                     //     'invoice' => $createInvoice,
                     //     'kwitansi' => $createKwitansi
-                    // ], '<<< cek response PRIVY Manfee');
+                    // ], '<<< cek response PRIVY Nonfee');
                 } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
