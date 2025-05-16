@@ -37,7 +37,7 @@
                 <div class="col-span-12">
                     <div class="mb-5 overflow-hidden">
                         <img src="/images/foto-bersama.png" alt="Foto Bersama"
-                            class="w-1/2 h-auto object-cover rounded-xl">
+                            class="w-full sm:w-1/2 h-auto object-cover rounded-xl">
                     </div>
                 </div>
             @endif
