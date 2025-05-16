@@ -575,8 +575,10 @@ class ManfeeDocumentController extends Controller
                     // BAGIAN INI JANGAN DIUBAH DULU
                     DB::commit();
                     // dd([
+                    //     'letter' => $createLetter,
+                    //     'invoice' => $createInvoice,
                     //     'kwitansi' => $createKwitansi
-                    // ], '<<< cek response PRIVY Manfee');
+                    // ], '<<< cek response PRIVY Nonfee');
                 } catch (Exception $e) {
                     return back()->with('error', 'Gagal kirim data ke Accurate: ' . $e->getMessage());
                 }
