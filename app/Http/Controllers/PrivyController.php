@@ -127,7 +127,7 @@ class PrivyController extends Controller
         }
     }
 
-
+    // fungsi untuk print single 
     public function checkDocumentStatus(Request $request, PrivyService $privy)
     {
         $documentId = $request->input('document_id');
@@ -164,9 +164,36 @@ class PrivyController extends Controller
         $response = $privy->checkDocSigningStatus($payload);
 
         Log::info('Privy check file response:', [
-                'status' => 201,
-                'response' => $response,
-            ]);
+            'status' => 201,
+            'response' => $response,
+        ]);
         return response()->json($response);
+    }
+
+    // fungsi untuk export all
+    public function getSignedDocumentUrl($documentId, $type)
+    {
+        if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
+            return null;
+        }
+
+        $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('type_document', $type)
+            ->first();
+
+        if (!$filePrivy) {
+            return null;
+        }
+
+        $payload = [
+            'reference_number' => $filePrivy->reference_number,
+            'channel_id'       => $filePrivy->channel_id ?? 'default_channel',
+            'document_token'   => $filePrivy->document_token,
+        ];
+
+        $privy = new PrivyService();
+        $response = $privy->checkDocSigningStatus($payload);
+
+        return $response['data']['signed_document'] ?? null;
     }
 }
