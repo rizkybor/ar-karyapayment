@@ -8,6 +8,9 @@ use App\Models\NonManfeeDocument;
 use App\Models\ManfeeDocument;
 use ZipArchive;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\PrivyController;
+
+
 
 class PDFController extends Controller
 {
@@ -342,14 +345,18 @@ class PDFController extends Controller
         $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
         $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
 
-        PDF::loadView('templates.document-letter', $data)->save($letterPdfPath);
-        PDF::loadView('templates.document-invoice', $data)->save($invoicePdfPath);
+        try {
+            $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
+            file_put_contents($letterPdfPath, file_get_contents($letterUrl));
 
-        $firstCost = $document->accumulatedCosts->first();
-        if (!$firstCost) return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, 'invoice');
+            file_put_contents($invoicePdfPath, file_get_contents($invoiceUrl));
 
-        $data['terbilang'] = $this->nilaiToString($firstCost->total);
-        PDF::loadView('templates.document-kwitansi', $data)->save($kwitansiPdfPath);
+            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, 'kwitansi');
+            file_put_contents($kwitansiPdfPath, file_get_contents($kwitansiUrl));
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         // Dropbox files
         $dropbox = new DropboxController();
@@ -392,6 +399,20 @@ class PDFController extends Controller
         if (file_exists($tempDir)) rmdir($tempDir);
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
+    }
+
+
+    private function fetchSignedDocumentUrl($documentId, $type)
+    {
+
+        $privyCtrl = new PrivyController();
+        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId, $type);
+
+        if (!$signedUrl) {
+            throw new \Exception("Dokumen {$type} belum ditandatangani atau tidak ditemukan.");
+        }
+
+        return $signedUrl;
     }
 
 
