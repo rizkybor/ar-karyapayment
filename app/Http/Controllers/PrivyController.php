@@ -3,96 +3,14 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Services\PrivyService;
-use Illuminate\Support\Str;
 use App\Models\FilePrivy;
+use App\Services\PrivyService;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class PrivyController extends Controller
 {
-
-    public function getPrivySignaturePreview(Request $request, PrivyService $privy)
-    {
-        $payload = $request->all();
-
-        $signatureData = $privy->generatePrivySignature($payload);
-
-        return response()->json([
-            'message' => 'Signature generated successfully',
-            'signature_info' => $signatureData
-        ]);
-    }
-
-    public function register(Request $request, PrivyService $privy)
-    {
-        // Ambil semua data dari body request (Postman raw JSON)
-        $payload = $request->all();
-
-        // Validasi dasar (opsional tapi disarankan)
-        if (
-            empty($payload['selfie']) ||
-            empty($payload['identity']) ||
-            empty($payload['email']) ||
-            empty($payload['nik'])
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data yang dikirim tidak lengkap. Pastikan selfie, identity, email, dan nik terisi.',
-            ], 422);
-        }
-
-        $result = $privy->registerUser($payload);
-
-        return response()->json($result);
-    }
-
-    public function resendRegister(Request $request, PrivyService $privy)
-    {
-        $payload = $request->all();
-
-        // Validasi dasar
-        if (
-            empty($payload['reference_number']) ||
-            empty($payload['channel_id']) ||
-            empty($payload['register_token'])
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Parameter wajib tidak lengkap: reference_number, channel_id, register_token.',
-            ], 422);
-        }
-
-        $result = $privy->resendRegisterUser($payload);
-
-        return response()->json($result);
-    }
-
-    public function checkRegisterStatus(Request $request, PrivyService $privy)
-    {
-        $payload = $request->all();
-
-        // Validasi minimum input
-        if (
-            empty($payload['reference_number']) ||
-            empty($payload['channel_id']) ||
-            empty($payload['register_token'])
-        ) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => ['Data tidak ditemukan']
-                ]
-            ], 422);
-        }
-
-        $result = $privy->checkRegisterStatus($payload);
-
-        return response()->json($result);
-    }
-
     // Payload Privy Pattern 
     public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY, $ref, $no)
     {
@@ -118,27 +36,36 @@ class PrivyController extends Controller
             ],
             "recipients" => [
                 [
-                    "detail" => "true",
+                    "detail" => "0",
                     "user_type" => "0",
                     "autosign" => "1",
                     "id_user" => env('PRIVY_ID_USER'),
                     "signer_type" => "Signer",
-                    "enterpriseToken" => "",
+                    "enterpriseToken" => env('PRIVY_ENTERPRISE_TOKEN'),
                     "sign_positions" => [
                         [
                             "posX" => $posX,
                             "posY" => $posY,
                             "signPage" => "1",
                         ],
-                        // [
-                        //     "posX" => "200",
-                        //     "posY" => "200",
-                        //     "signPage" => "1",
-                        // ],
                     ]
                 ]
             ]
         ];
+
+        if ($typeSign == 2) {
+            $payload['e_meterai'] = [
+                "doc_category" => "Surat Perjanjian",
+                "stamp_position" => [
+                    [
+                        "dimension" => 100,
+                        "pos_x" => 10,
+                        "pos_y" => 10,
+                        "page" => 1
+                    ]
+                ]
+            ];
+        }
 
         return $payload;
     }
@@ -149,7 +76,7 @@ class PrivyController extends Controller
             // Validasi input minimal
             $request->validate([
                 'base64_pdf' => 'required|string',
-                'type_sign' => 'required|in:0,1',
+                'type_sign' => 'required|in:0,1,2',
                 'posX' => 'required|string',
                 'posY' => 'required|string',
                 'docType' => 'required|string',
@@ -174,6 +101,12 @@ class PrivyController extends Controller
         // Bangun payload secara otomatis
         $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY, $ref, $no);
 
+
+        Log::info('Privy uploadDocument response:', [
+            'type' => $typeSign,
+            'payload' => $payload,
+        ]);
+
         try {
             // Kirim ke Privy
             $response = $privy->uploadDocument($payload);
@@ -194,24 +127,6 @@ class PrivyController extends Controller
         }
     }
 
-    public function deleteDocument(Request $request, PrivyService $privy)
-    {
-        $payload = $request->only(['reference_number', 'document_token']);
-
-        // Validasi dasar
-        if (empty($payload['reference_number']) || empty($payload['document_token'])) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => ['Parameter reference_number dan document_token wajib diisi.']
-                ]
-            ], 422);
-        }
-
-        $result = $privy->deleteDocument($payload);
-
-        return response()->json($result);
-    }
 
     public function checkDocumentStatus(Request $request, PrivyService $privy)
     {
@@ -249,68 +164,5 @@ class PrivyController extends Controller
         $response = $privy->checkDocSigningStatus($payload);
 
         return response()->json($response);
-    }
-
-    public function checkDocumentHistory(Request $request, PrivyService $privy)
-    {
-        $payload = $request->only(['reference_number', 'channel_id', 'document_token', 'info']);
-
-        // Validasi input wajib
-        if (
-            empty($payload['reference_number']) ||
-            empty($payload['channel_id']) ||
-            empty($payload['document_token'])
-        ) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => ['reference_number, channel_id, dan document_token wajib diisi.']
-                ]
-            ], 422);
-        }
-
-        $result = $privy->checkDocumentHistory($payload);
-
-        return response()->json($result);
-    }
-
-    public function requestOtp(Request $request, PrivyService $privy)
-    {
-        $payload = $request->only(['channel_id', 'signer_user_id', 'reference_numbers']);
-
-        if (
-            empty($payload['channel_id']) ||
-            empty($payload['signer_user_id']) ||
-            empty($payload['reference_numbers'])
-        ) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => ['channel_id, signer_user_id, dan reference_numbers wajib diisi']
-                ]
-            ], 422);
-        }
-
-        $result = $privy->requestOtp($payload);
-
-        return response()->json($result);
-    }
-
-    public function validateOtp(Request $request, PrivyService $privy)
-    {
-        $payload = $request->only(['otp_code', 'transaction_id']);
-
-        if (empty($payload['otp_code']) || empty($payload['transaction_id'])) {
-            return response()->json([
-                'error' => [
-                    'code' => 422,
-                    'errors' => ['otp_code dan transaction_id wajib diisi']
-                ]
-            ], 422);
-        }
-
-        $result = $privy->validateOtp($payload);
-
-        return response()->json($result);
     }
 }

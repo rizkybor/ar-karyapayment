@@ -646,7 +646,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '510.78', '572.67', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '510.78', '572.67', $refKwitansi, $noKw);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',

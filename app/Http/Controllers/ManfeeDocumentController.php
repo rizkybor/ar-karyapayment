@@ -559,7 +559,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '0', '506.54', '601.55', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '506.54', '601.55', $refKwitansi, $noKw);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -575,8 +575,6 @@ class ManfeeDocumentController extends Controller
                     // BAGIAN INI JANGAN DIUBAH DULU
                     DB::commit();
                     // dd([
-                    //     'letter' => $createLetter,
-                    //     'invoice' => $createInvoice,
                     //     'kwitansi' => $createKwitansi
                     // ], '<<< cek response PRIVY Manfee');
                 } catch (Exception $e) {
