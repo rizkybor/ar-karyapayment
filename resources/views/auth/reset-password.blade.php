@@ -6,7 +6,7 @@
     <form method="POST" action="{{ route('password.update') }}">
         @csrf
 
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+        <input type="hidden" name="token" value="{{ request()->token }}">
 
         <div class="block">
             <x-label for="email" value="{{ __('Email') }}" />
