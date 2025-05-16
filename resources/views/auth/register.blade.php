@@ -65,6 +65,31 @@
                                 <x-input id="password_confirmation" type="password" name="password_confirmation"
                                     required autocomplete="new-password" placeholder="Masukkan ulang password" />
                             </div>
+                            <!-- Role -->
+                            <div>
+                                <x-label for="role">{{ __('Role') }} <span
+                                        class="text-red-500">*</span></x-label>
+                                <select id="role" name="role"
+                                    class="mt-1 block w-full form-select rounded-md border-gray-300 shadow-sm" required>
+                                    <option value="">{{ __('Pilih Role') }}</option>
+                                    @foreach ($roles as $role)
+                                        @php
+                                            $disabled = false;
+                                            $note = '';
+
+                                            // Jika role terbatas sudah dipakai, disable
+                                            if (in_array($role->name, $usedRoles)) {
+                                                $disabled = true;
+                                                $note = '';
+                                            }
+                                        @endphp
+                                        <option value="{{ $role->name }}" {{ $disabled ? 'disabled' : '' }}>
+                                            {{ ucwords(str_replace('_', ' ', $role->name)) }} {{ $note }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error for="role" class="mt-2" />
+                            </div>
 
                             <!-- Department -->
                             <div>
@@ -72,12 +97,14 @@
                                         class="text-red-500">*</span></x-label>
                                 <select id="department" name="department"
                                     class="mt-1 block w-full form-select rounded-md border-gray-300 shadow-sm" required>
-                                    <option value="">Pilih Department</option>
-                                    <option value="Departmen SDM">Departmen SDM</option>
-                                    <option value="Departmen Pengadaan dan Administrasi Umum">Departmen Pengadaan dan
-                                        Administrasi Umum</option>
-                                    <option value="Departmen Operasi">Departmen Operasi</option>
-                                    <option value="Departmen Keuangan">Departmen Keuangan</option>
+                                    <option value="">{{ __('Pilih Department') }}</option>
+                                    <option value="Departemen SDM & Umum">Departemen SDM & Umum</option>
+                                    <option value="Departemen Komersial/CNG">Departemen Komersial/CNG</option>
+                                    <option value="Departemen Operasional">Departemen Operasional</option>
+                                    <option value="Departemen Ketehnikan">Departemen Ketehnikan</option>
+                                    <option value="Departemen HSSE">Departemen HSSE</option>
+                                    <option value="Departemen Pajak">Departemen Pajak</option>
+                                    <option value="Departemen Keuangan">Departemen Keuangan</option>
                                 </select>
                                 <x-input-error for="department" class="mt-2" />
                             </div>
@@ -88,23 +115,6 @@
                                         class="text-red-500">*</span></x-label>
                                 <x-input id="position" type="text" name="position" :value="old('position')" required
                                     placeholder="Masukkan posisi" />
-                            </div>
-
-                            <!-- Role -->
-                            <div>
-                                <x-label for="role">{{ __('Role') }} <span
-                                        class="text-red-500">*</span></x-label>
-                                <select id="role" name="role"
-                                    class="mt-1 block w-full form-select rounded-md border-gray-300 shadow-sm" required>
-                                    <option value="">Pilih Role</option>
-                                    <option value="maker">Maker</option>
-                                    <option value="kadiv">Kadiv</option>
-                                    <option value="bendahara">Bendahara</option>
-                                    <option value="manager_anggaran">Manager Anggaran</option>
-                                    <option value="direktur_keuangan">Direktur Keuangan</option>
-                                    <option value="pajak">Pajak</option>
-                                </select>
-                                <x-input-error for="role" class="mt-2" />
                             </div>
 
                             <!-- Employee Status -->
@@ -194,6 +204,40 @@
                 input.value = input.value.slice(0, 8);
             }
         }
+    </script>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const departmentSelect = document.getElementById('department');
+
+        // Department yang sudah punya kadiv (dari controller)
+        const kadivDepartments = @json($kadivDepartments);
+
+        function updateDepartmentOptions() {
+            const selectedRole = roleSelect.value;
+
+            // Enable semua opsi department dulu
+            for (let i = 0; i < departmentSelect.options.length; i++) {
+                departmentSelect.options[i].disabled = false;
+            }
+
+            if (selectedRole === 'kadiv') {
+                // Disable department yang sudah ada kadiv
+                for (let i = 0; i < departmentSelect.options.length; i++) {
+                    const option = departmentSelect.options[i];
+                    if (kadivDepartments.includes(option.value)) {
+                        option.disabled = true;
+                        // Jika department yang dipilih sekarang di-disable, reset nilai select
+                        if (departmentSelect.value === option.value) {
+                            departmentSelect.value = '';
+                        }
+                    }
+                }
+            }
+        }
+
+        roleSelect.addEventListener('change', updateDepartmentOptions);
+        document.addEventListener('DOMContentLoaded', updateDepartmentOptions);
     </script>
     {{-- </x-authentication-layout> --}}
 </x-app-layout>
