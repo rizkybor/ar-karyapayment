@@ -300,7 +300,7 @@
                 <td class="no-border-top-side">
                     :</td>
                 <td class="no-border-top-side">
-                    contact@kpusahatama.co.id</td>
+                    invoice_center@pt-kpusahatama.com</td>
                 <td colspan="2" style="border-top: none;"></td>
             </tr>
         </tbody>
@@ -317,7 +317,7 @@
                     RUKO KETAPANG INDAH BLOK A2 NO.8<br>Jl. K.H. Zainul Arifin<br>Jakarta Barat - 11140<br>Indonesia
                 </td>
                 <td style="width: 30%; border: none;">
-                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: invoice_center@pt-kpusahatama.com
+                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: contact@kpusahatama.co.id
                 </td>
             </tr>
         </table>

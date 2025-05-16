@@ -226,7 +226,7 @@
                 </td>
                 <td style="width: 30%; border: none; vertical-align: top;">
                     <strong>T</strong>: +62 21-6343 558 <br>
-                    <strong>E</strong>: invoice_center@pt-kpusahatama.com
+                    <strong>E</strong>: contact@kpusahatama.co.id
                 </td>
             </tr>
         </table>
