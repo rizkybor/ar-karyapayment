@@ -133,7 +133,7 @@
                     <!-- Button -->
                     <tr>
                         <td align="center" style="padding: 30px 0;">
-                            <a href="{{ route('password.reset', ['token' => $token]) }}"
+                            <a href="{{ route('password.reset', ['token' => $token, 'email' => $notifiable->email]) }}"
                                style="background-color:#007bff; color:white; padding:14px 25px; text-decoration:none; font-size:16px; font-weight:bold; border-radius:5px; display:inline-block;">
                                 Reset Password
                             </a>
