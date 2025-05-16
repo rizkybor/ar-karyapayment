@@ -353,7 +353,7 @@
                 const signedUrl = data?.data?.signed_document;
                 console.log(data.data, '<< cek')
 
-                if ((status === 'uploaded' || status === 'signed') && signedUrl) {
+                if ((status === 'uploaded' || status === 'completed') && signedUrl) {
                     window.open(signedUrl, '_blank');
                 } else {
                     showAutoCloseAlert(

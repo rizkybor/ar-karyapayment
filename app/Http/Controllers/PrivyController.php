@@ -163,6 +163,10 @@ class PrivyController extends Controller
 
         $response = $privy->checkDocSigningStatus($payload);
 
+        Log::info('Privy check file response:', [
+                'status' => 201,
+                'response' => $response,
+            ]);
         return response()->json($response);
     }
 }
