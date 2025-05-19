@@ -369,7 +369,7 @@ class ManfeeDocumentController extends Controller
 
     // Privy
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat): array
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat, string $jenis_dokumen): array
     {
         $request = new Request([
             'base64_pdf' => $base64,
@@ -377,7 +377,8 @@ class ManfeeDocumentController extends Controller
             "posX" => $posX,
             "posY" => $posY,
             'docType' => $docType,
-            'noSurat' => $noSurat
+            'noSurat' => $noSurat,
+            'jenis_dokumen' => $jenis_dokumen ?? null,
         ]);
 
         $privyController = app()->make(PrivyController::class);
@@ -538,8 +539,10 @@ class ManfeeDocumentController extends Controller
                     $refInvoice = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noInv);
                     $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
 
+                    $jenis_dokumen = $document->category ?? null;
+
                     // === PRIVY SERVICES ===
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat);
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat, $jenis_dokumen);
                     if (isset($createLetter['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -549,7 +552,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '526.67', '622.20', $refInvoice, $noInv);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '526.67', '622.20', $refInvoice, $noInv, $jenis_dokumen);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -559,7 +562,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '512.37', '677.95', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '507.64', '679.73', $refKwitansi, $noKw, $jenis_dokumen);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
