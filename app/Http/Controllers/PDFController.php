@@ -266,14 +266,20 @@ class PDFController extends Controller
             'detailPayments' => $document->detailPayments
         ];
 
-        $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+        // $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+
+        // File Name
+        $letterName = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->employee_name);
+        $invoiceName = $this->sanitizeFileName($document->invoice_number . '_' . $document->contract->employee_name);
+        $kwitansiName = $this->sanitizeFileName($document->receipt_number . '_' . $document->contract->employee_name);
+
         $tempDir = storage_path('app/temp_' . uniqid());
         if (!file_exists($tempDir)) mkdir($tempDir, 0777, true);
 
         // Generate PDFs
-        $letterPdfPath = $tempDir . "/Surat_{$baseName}.pdf";
-        $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
-        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
+        $letterPdfPath = $tempDir . "/Surat_Permohonan_{$letterName}.pdf";
+        $invoicePdfPath = $tempDir . "/Invoice_{$invoiceName}.pdf";
+        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$kwitansiName}.pdf";
 
         try {
             $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
@@ -524,16 +530,22 @@ class PDFController extends Controller
             'detailPayments' => $document->detailPayments
         ];
 
-        $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+        // $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
+
+        // File Name
+        $letterName = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->employee_name);
+        $invoiceName = $this->sanitizeFileName($document->invoice_number . '_' . $document->contract->employee_name);
+        $kwitansiName = $this->sanitizeFileName($document->receipt_number . '_' . $document->contract->employee_name);
+
         $tempDir = storage_path('app/temp_' . uniqid());
         if (!file_exists($tempDir)) mkdir($tempDir, 0777, true);
 
         // Generate PDFs
-        $letterPdfPath = $tempDir . "/Surat_{$baseName}.pdf";
-        $invoicePdfPath = $tempDir . "/Invoice_{$baseName}.pdf";
-        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$baseName}.pdf";
+        $letterPdfPath = $tempDir . "/Surat_Permohonan_{$letterName}.pdf";
+        $invoicePdfPath = $tempDir . "/Invoice_{$invoiceName}.pdf";
+        $kwitansiPdfPath = $tempDir . "/Kwitansi_{$kwitansiName}.pdf";
 
-         try {
+        try {
             $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
             file_put_contents($letterPdfPath, file_get_contents($letterUrl));
 
