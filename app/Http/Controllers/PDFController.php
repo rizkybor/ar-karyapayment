@@ -259,15 +259,6 @@ class PDFController extends Controller
             return back()->with('error', 'Dokumen hanya dapat diunduh jika sudah Done');
         }
 
-        $data = [
-            'document' => $document,
-            'contract' => $document->contract,
-            'accumulatedCosts' => $document->accumulatedCosts,
-            'detailPayments' => $document->detailPayments
-        ];
-
-        // $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
-
         // File Name
         $letterName = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->employee_name);
         $invoiceName = $this->sanitizeFileName($document->invoice_number . '_' . $document->contract->employee_name);
@@ -522,15 +513,6 @@ class PDFController extends Controller
         if ((int) $document->status !== 6) {
             return back()->with('error', 'Dokumen hanya dapat diunduh jika sudah Done');
         }
-
-        $data = [
-            'document' => $document,
-            'contract' => $document->contract,
-            'accumulatedCosts' => $document->accumulatedCosts,
-            'detailPayments' => $document->detailPayments
-        ];
-
-        // $baseName = $this->sanitizeFileName($document->contract->contract_number . '_' . $document->contract->employee_name);
 
         // File Name
         $letterName = $this->sanitizeFileName($document->letter_number . '_' . $document->contract->employee_name);
