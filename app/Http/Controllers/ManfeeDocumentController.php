@@ -539,7 +539,7 @@ class ManfeeDocumentController extends Controller
                     $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
 
                     // === PRIVY SERVICES ===
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.94', '690.84', $refLetter, $noSurat);
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat);
                     if (isset($createLetter['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -549,7 +549,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '524.66', '653.47', $refInvoice, $noInv);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '526.67', '622.20', $refInvoice, $noInv);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -559,7 +559,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '506.54', '601.55', $refKwitansi, $noKw);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '512.37', '677.95', $refKwitansi, $noKw);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
