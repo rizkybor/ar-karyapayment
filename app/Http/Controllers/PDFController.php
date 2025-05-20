@@ -103,6 +103,11 @@ class PDFController extends Controller
     {
         $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
 
+        $firstCost = $document->accumulatedCosts->first();
+        if (!$firstCost) {
+            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        }
+
         $data = [
             'document' => $document,
             'contract' => $document->contract,
@@ -125,7 +130,6 @@ class PDFController extends Controller
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
-
         if (!$firstCost) {
             return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
         }
@@ -358,6 +362,12 @@ class PDFController extends Controller
     {
         $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts'])->findOrFail($document_id);
 
+        // Pastikan accumulatedCosts tidak kosong untuk menghindari error
+        $firstCost = $document->accumulatedCosts->first();
+        if (!$firstCost) {
+            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        }
+
         $data = [
             'document' => $document,
             'contract' => $document->contract,
@@ -380,10 +390,9 @@ class PDFController extends Controller
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
-
-        // if (!$firstCost) {
-        //     return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
-        // }
+        if (!$firstCost) {
+            return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
+        }
 
         // Hitung nilai terbilang dari total
         $terbilang = $firstCost ? $this->nilaiToString($firstCost->total) : '-';
