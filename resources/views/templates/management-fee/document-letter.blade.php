@@ -39,8 +39,13 @@
             margin: auto;
         }
 
+        .signature-name {
+            margin-top: 60px;
+            margin-left: 60px;
+        }
+
         .signature {
-            margin-top: 40px;
+            margin-top: 18px;
             margin-bottom: 40px;
             text-align: left;
         }
@@ -229,7 +234,9 @@
             @endphp
             <img src="{{ $logoBase64 }}" alt="Logo KPU" width="120"> --}}
             <br />
-            <p><strong>Sutaryo</strong></p>
+            <div class="signature-name">
+                <p><strong>Sutaryo</strong></p>
+            </div>
         </div>
     </div>
 
