@@ -7,9 +7,9 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <!-- Header Notifikasi -->
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                     Dikirim oleh :
-                    <span class="font-normal ml-1">
+                    <span class="text-sm ml-1">
                         {{ $notification->sender->name }} ({{ $notification->sender->nip }} -
                         {{ $notification->sender->position }})
                     </span>
