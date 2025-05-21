@@ -140,7 +140,7 @@
                                         :key="option">
                                         <li>
                                             <button type="button"
-                                                @click="openPrivy = false; openPrivyDoc('{{ $document['id'] }}', option)"
+                                                @click="openPrivy = false; openPrivyDoc('{{ $document['id'] }}', '{{ $document['category'] }}', option)"
                                                 class="text-sm block w-full text-left px-4 py-2 hover:bg-blue-500 hover:text-white"
                                                 x-text="{
                                                     'letter': 'Cetak Surat Permohonan',
@@ -333,7 +333,7 @@
             });
     }
 
-    function openPrivyDoc(documentId, type) {
+    function openPrivyDoc(documentId, category_type, type) {
         const token = "{{ csrf_token() }}";
 
         fetch("{{ route('privy.check-doc-status') }}", {
@@ -344,6 +344,7 @@
                 },
                 body: JSON.stringify({
                     document_id: documentId,
+                    category_type: category_type, 
                     type_document: type
                 })
             })

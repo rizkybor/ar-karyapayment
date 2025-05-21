@@ -25,11 +25,11 @@ class PDFController extends Controller
 | Global Function
 |--------------------------------------------------------------------------
 */
-    private function fetchSignedDocumentUrl($documentId, $type)
+    private function fetchSignedDocumentUrl($documentId, $category, $type)
     {
 
         $privyCtrl = new PrivyController();
-        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId, $type);
+        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId,$category, $type);
 
         if (!$signedUrl) {
             throw new \Exception("Dokumen {$type} belum ditandatangani atau tidak ditemukan.");
@@ -277,13 +277,13 @@ class PDFController extends Controller
         $kwitansiPdfPath = $tempDir . "/Kwitansi_{$kwitansiName}.pdf";
 
         try {
-            $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
+            $letterUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'letter');
             file_put_contents($letterPdfPath, file_get_contents($letterUrl));
 
-            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, 'invoice');
+            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'invoice');
             file_put_contents($invoicePdfPath, file_get_contents($invoiceUrl));
 
-            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, 'kwitansi');
+            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'kwitansi');
             file_put_contents($kwitansiPdfPath, file_get_contents($kwitansiUrl));
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
@@ -537,13 +537,13 @@ class PDFController extends Controller
         $kwitansiPdfPath = $tempDir . "/Kwitansi_{$kwitansiName}.pdf";
 
         try {
-            $letterUrl = $this->fetchSignedDocumentUrl($document->id, 'letter');
+            $letterUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'letter');
             file_put_contents($letterPdfPath, file_get_contents($letterUrl));
 
-            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, 'invoice');
+            $invoiceUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'invoice');
             file_put_contents($invoicePdfPath, file_get_contents($invoiceUrl));
 
-            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, 'kwitansi');
+            $kwitansiUrl = $this->fetchSignedDocumentUrl($document->id, $document->category, 'kwitansi');
             file_put_contents($kwitansiPdfPath, file_get_contents($kwitansiUrl));
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
