@@ -149,7 +149,9 @@ class NonManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
+        $documentType = 'App\Models\NonManfeeDocument';
         $latestApprover = DocumentApproval::where('document_id', $id)
+            ->where('document_type', $documentType)
             ->with('approver')
             ->latest('updated_at')
             ->first();
@@ -638,7 +640,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '520.59', '610.61', $refInvoice, $noInv, $jenis_dokumen);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '590.45', $refInvoice, $noInv, $jenis_dokumen);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -648,7 +650,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '515.53', '665.83', $refKwitansi, $noKw, $jenis_dokumen);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '530.81', '667.33', $refKwitansi, $noKw, $jenis_dokumen);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -950,7 +952,7 @@ class NonManfeeDocumentController extends Controller
     private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
     {
         // Ambil semua type_document yang sudah ada untuk document_id ini
-        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
+        $existingTypes = FilePrivy::where('document_id', $document->id)->where('category_type', $document->category)->pluck('type_document')->toArray();
 
         // Simpan LETTER jika belum ada
         if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {

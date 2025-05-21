@@ -59,8 +59,8 @@ class PrivyController extends Controller
                 "stamp_position" => [
                     [
                         "dimension" => 100,
-                        "pos_x" => $jenis_dokumen == 'management_fee' ? 427.36 : 431.12,
-                        "pos_y" => $jenis_dokumen == 'management_fee' ? 678.64 : 660.07,
+                        "pos_x" => $jenis_dokumen == 'management_fee' ? 424.58 : 426.84,
+                        "pos_y" => $jenis_dokumen == 'management_fee' ? 695.53 : 675.41,
                         "page" => 1
                     ]
                 ]
@@ -134,6 +134,7 @@ class PrivyController extends Controller
     public function checkDocumentStatus(Request $request, PrivyService $privy)
     {
         $documentId = $request->input('document_id');
+        $category_type = $request->input('category_type');
         $type = $request->input('type_document', 'letter');
 
         if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
@@ -146,6 +147,7 @@ class PrivyController extends Controller
         }
 
         $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('category_type', $category_type)
             ->where('type_document', $type)
             ->first();
 
@@ -174,13 +176,14 @@ class PrivyController extends Controller
     }
 
     // fungsi untuk export all
-    public function getSignedDocumentUrl($documentId, $type)
+    public function getSignedDocumentUrl($documentId, $category_type, $type)
     {
         if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
             return null;
         }
 
         $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('category_type', $category_type)
             ->where('type_document', $type)
             ->first();
 

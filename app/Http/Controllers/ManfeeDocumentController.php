@@ -185,8 +185,9 @@ class ManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
-
+        $documentType = 'App\Models\ManfeeDocument';
         $latestApprover = DocumentApproval::where('document_id', $id)
+            ->where('document_type', $documentType)
             ->with('approver')
             ->latest('updated_at') // Ambil hanya yang paling baru
             ->first();
@@ -552,7 +553,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '526.67', '622.20', $refInvoice, $noInv, $jenis_dokumen);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '610.45', $refInvoice, $noInv, $jenis_dokumen);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -562,7 +563,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '507.64', '679.73', $refKwitansi, $noKw, $jenis_dokumen);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '533.32', '692.75', $refKwitansi, $noKw, $jenis_dokumen);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -846,7 +847,7 @@ class ManfeeDocumentController extends Controller
     private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
     {
         // Ambil semua type_document yang sudah ada untuk document_id ini
-        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
+        $existingTypes = FilePrivy::where('document_id', $document->id)->where('category_type', $document->category)->pluck('type_document')->toArray();
 
         // Simpan LETTER jika belum ada
         if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {
