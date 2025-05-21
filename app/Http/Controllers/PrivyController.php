@@ -134,6 +134,7 @@ class PrivyController extends Controller
     public function checkDocumentStatus(Request $request, PrivyService $privy)
     {
         $documentId = $request->input('document_id');
+        $category_type = $request->input('category_type');
         $type = $request->input('type_document', 'letter');
 
         if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
@@ -146,6 +147,7 @@ class PrivyController extends Controller
         }
 
         $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('category_type', $category_type)
             ->where('type_document', $type)
             ->first();
 

@@ -847,7 +847,7 @@ class ManfeeDocumentController extends Controller
     private function storePrivyDocuments($document, $createLetter, $createInvoice, $createKwitansi)
     {
         // Ambil semua type_document yang sudah ada untuk document_id ini
-        $existingTypes = FilePrivy::where('document_id', $document->id)->pluck('type_document')->toArray();
+        $existingTypes = FilePrivy::where('document_id', $document->id)->where('category_type', $document->category)->pluck('type_document')->toArray();
 
         // Simpan LETTER jika belum ada
         if (!in_array('letter', $existingTypes) && !empty($createLetter['data'])) {
