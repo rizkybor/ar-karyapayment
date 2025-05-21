@@ -553,7 +553,7 @@ class ManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '590.45', $refInvoice, $noInv, $jenis_dokumen);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '610.45', $refInvoice, $noInv, $jenis_dokumen);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
