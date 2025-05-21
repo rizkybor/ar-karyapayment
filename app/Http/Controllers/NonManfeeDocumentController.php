@@ -149,7 +149,9 @@ class NonManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
+        $documentType = 'App\Models\NonManfeeDocument';
         $latestApprover = DocumentApproval::where('document_id', $id)
+            ->where('document_type', $documentType)
             ->with('approver')
             ->latest('updated_at')
             ->first();

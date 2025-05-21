@@ -185,8 +185,9 @@ class ManfeeDocumentController extends Controller
             ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
             ->sum('nilai_biaya');
 
-
+        $documentType = 'App\Models\ManfeeDocument';
         $latestApprover = DocumentApproval::where('document_id', $id)
+            ->where('document_type', $documentType)
             ->with('approver')
             ->latest('updated_at') // Ambil hanya yang paling baru
             ->first();
