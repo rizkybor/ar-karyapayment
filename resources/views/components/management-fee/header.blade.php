@@ -40,7 +40,7 @@
             <div class="grid grid-cols-2 gap-4">
                 {{-- Status Transaksi --}}
                 <div>
-                    <x-label for="transaction_status" value="{{ __('Status Transaksi') }}"
+                    <x-label for="transaction_status" value="{{ __('Status Tagihan') }}"
                         class="text-gray-800 dark:text-gray-100" />
                     <p class="mt-1 font-semibold {{ $transaction_status ? 'text-green-600' : 'text-red-600' }}">
                         {{ $transaction_status ? 'Invoice Aktif' : 'Invoice Tidak Aktif' }}
