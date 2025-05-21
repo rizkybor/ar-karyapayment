@@ -176,13 +176,14 @@ class PrivyController extends Controller
     }
 
     // fungsi untuk export all
-    public function getSignedDocumentUrl($documentId, $type)
+    public function getSignedDocumentUrl($documentId, $category_type, $type)
     {
         if (!in_array($type, ['letter', 'invoice', 'kwitansi'])) {
             return null;
         }
 
         $filePrivy = FilePrivy::where('document_id', $documentId)
+            ->where('category_type', $category_type)
             ->where('type_document', $type)
             ->first();
 
