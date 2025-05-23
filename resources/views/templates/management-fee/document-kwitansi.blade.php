@@ -16,27 +16,44 @@
             border: 1px solid black;
             padding: 5px;
         }
+
+        .no-border {
+            border: none;
+        }
+
+        .no-border-top-side {
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
     </style>
 </head>
 
 <body class="p-8">
-
     @php
-        $statusIsSix = (int) $document->status === 6;
+        $status = (int) $document->status;
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
-        $showDraft = $statusIsSix && $isPerbendaharaan;
+        $showDraft = $status === 6 && $isPerbendaharaan;
+        $isRejected = $status === 103;
         $disableWatermark = $disableWatermark ?? false;
     @endphp
 
     @if (!$disableWatermark && !$showDraft)
-        <!-- Watermark Layer -->
         <div
-            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-            DRAFT
+            style="position: fixed;
+           top: 35%;
+           left: 12%;
+           z-index: -1;
+           opacity: 0.08;
+           font-size: {{ $isRejected ? '100px' : '150px' }};
+           transform: rotate(-30deg);
+           font-weight: bold;
+           color: {{ $isRejected ? '#dc2626' : '#000' }};">
+            {{ $isRejected ? 'REJECTED' : 'DRAFT' }}
         </div>
     @endif
 
-    <div class="bg-white p-8 border-box"">
+    <div class="bg-white p-8 border-box">
         <!-- Header -->
         <div class="flex justify-between items-start border-b pb-2" style="margin-bottom: 20px;">
             <table width="100%" border="0" style="border-collapse: collapse;">
@@ -46,9 +63,6 @@
                             <img src="file://{{ public_path('images/logo-kpu-ls.png') }}" alt="Logo KPU"
                                 style="height: 50px; width: auto; display: block; margin-left: 10px; margin-top: 10px;">
                         </th>
-                        {{-- <th style="text-align: left; vertical-align: bottom; padding-bottom: 5px; font-weight: normal;">
-                            No. {{ $document->invoice_number ?? 'Nomor surat tidak ada' }}
-                        </th> --}}
                     </tr>
                     <tr>
                         <td class="header" style="border: none; text-align: center;">
@@ -57,18 +71,6 @@
                         </td>
                     </tr>
                 </thead>
-                {{-- <tbody>
-                    <tr>
-                        <td></td>
-                        <td style="padding: 1; vertical-align: top;">
-                            <div class="border-box" style="margin: 1; padding: 1;">
-                                <p class="font-semibold" style="margin: 1; padding: 1;">Sudah Terima Dari :</p>
-                                <p style="margin: 1; padding: 1;">{{ $contract->employee_name ?? 'NULL' }}</p>
-                                <p style="margin: 1; padding: 1;">{{ $contract->address ?? 'NULL' }}</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody> --}}
             </table>
 
             <table border="1" style="border-collapse: collapse; width: 50%; margin-left: 0; margin-top: 24px;">
@@ -175,7 +177,6 @@
                     </tr>
                 </table>
             </div>
-
         </div>
 
         <!-- Jumlah dalam kotak -->
@@ -205,11 +206,6 @@
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                    {{-- @php
-                        $logoPath = public_path('images/dirut-keuangan.png');
-                        $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
-                    @endphp
-                    <img src="{{ $logoBase64 }}" alt="Logo KPU" width="150"> --}}
                 </td>
             </tr>
             <tr>
@@ -226,12 +222,12 @@
             <tr>
                 <td class="no-border">Atas Nama</td>
                 <td class="no-border">:</td>
-                <td class="no-border">PT. Karya Prima Usahatama</td>
+                <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
                     <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
                 </td>
-
+            </tr>
             <tr>
                 <td class="no-border-top-side">
                     Email</td>
@@ -242,7 +238,6 @@
                 <td colspan="2" style="border-top: none;"></td>
             </tr>
         </table>
-
     </div>
 
     {{-- Footer --}}
@@ -262,7 +257,6 @@
             </tr>
         </table>
     </div>
-
 </body>
 
 </html>
