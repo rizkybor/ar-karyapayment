@@ -137,78 +137,79 @@
         $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
         $rowspan = 7 + $detailPayments->count();
     @endphp
-    <table class="border-table" width="100%">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th colspan="3">Keterangan</th>
-                <th colspan="2">Jumlah</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
-
-                <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
-                    {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
-
-                <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
-                <td style="text-align: right; border-left:none; border-bottom: none;">
-                    {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
-                <!-- Jumlah, rata kanan agar lebih rapi -->
-            </tr>
-
-            @foreach ($detailPayments as $payment)
+    <div style="min-height: 340px;">
+        <table class="border-table" width="100%">
+            <thead>
                 <tr>
-                    <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                    <th>No</th>
+                    <th colspan="3">Keterangan</th>
+                    <th colspan="2">Jumlah</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
-                    {{-- Rp. --}}
-                    <td class="no-border" style="text-align: right; padding-right: 0.5rem; white-space: nowrap;">Rp.
-                    </td>
+                    <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
+                        {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
 
-                    {{-- Nilai --}}
+                    <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
+                    <td style="text-align: right; border-left:none; border-bottom: none;">
+                        {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
+                    <!-- Jumlah, rata kanan agar lebih rapi -->
+                </tr>
+
+                @foreach ($detailPayments as $payment)
+                    <tr>
+                        <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+
+                        {{-- Rp. --}}
+                        <td class="no-border" style="text-align: right; padding-right: 0.5rem; white-space: nowrap;">Rp.
+                        </td>
+
+                        {{-- Nilai --}}
+                        <td
+                            style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
+                            {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                        </td>
+
+                        <td class="no-border">&nbsp;</td>
+                        <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
+                    </tr>
+                    @php
+                        $totalBiaya += $payment->nilai_biaya ?? 0;
+                    @endphp
+                @endforeach
+
+                <tr>
+                    <td class="no-border">Jumlah</td>
+                    <td class="no-border" style="text-align: right; padding-right: 0.5rem;"><strong>Rp.</strong></td>
                     <td
                         style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
-                        {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                        <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
                     </td>
-
                     <td class="no-border">&nbsp;</td>
                     <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
                 </tr>
-                @php
-                    $totalBiaya += $payment->nilai_biaya ?? 0;
-                @endphp
-            @endforeach
 
-            <tr>
-                <td class="no-border">Jumlah</td>
-                <td class="no-border" style="text-align: right; padding-right: 0.5rem;"><strong>Rp.</strong></td>
-                <td
-                    style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
-                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
-                </td>
-                <td class="no-border">&nbsp;</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-            </tr>
+                <tr>
+                    <td class="no-border">
+                        {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                    </td>
+                    <td class="no-border" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
+                    <td
+                        style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
+                        {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                    </td>
+                    <td class="no-border">&nbsp;</td>
+                    <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
+                </tr>
 
-            <tr>
-                <td class="no-border">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
-                </td>
-                <td class="no-border" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
-                <td
-                    style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
-                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
-                </td>
-                <td class="no-border">&nbsp;</td>
-                <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-            </tr>
-
-            <tr>
-                <td class="no-border-top-side">Jumlah Total</td>
-                <td class="no-border-top-side" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
-                <td
-                    style="
+                <tr>
+                    <td class="no-border-top-side">Jumlah Total</td>
+                    <td class="no-border-top-side" style="text-align: right; padding-right: 0.5rem;">Rp.</td>
+                    <td
+                        style="
             border-left: none;
             border-top: none;
             border-right: 1px solid black;
@@ -216,50 +217,56 @@
             text-align: right;
             padding: 5px 3rem 5px 0;
             position: relative;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
-                    <div
-                        style="
+                        {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}
+                        <div
+                            style="
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 80%;
                 height: 1px;
                 background: black;">
-                    </div>
-                </td>
-                <td class="no-border-top-side">&nbsp;</td>
-                <td style="border-left: none; border-top: none;">&nbsp;</td>
-            </tr>
+                        </div>
+                    </td>
+                    <td class="no-border-top-side">&nbsp;</td>
+                    <td style="border-left: none; border-top: none;">&nbsp;</td>
+                </tr>
 
 
-            <tr>
-                <td colspan="3" style="text-align: right;">Jumlah</td>
-                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
-                <td style="text-align: right; border-left: none;">
-                    <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align: right;">
-                    {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
-                </td>
-                <td style="border-bottom: none; border-right: none;">Rp</td>
-                <td style="text-align: right; border-left: none;">
-                    {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
-                <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
-                <td style="text-align: right;border-left: none;">
-                    <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
-                </td>
-            </tr>
-            <tr>
-                <td rowspan="6"></td>
-                <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
-                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-                </td>
+                <tr>
+                    <td colspan="3" style="text-align: right;">Jumlah</td>
+                    <td style="border-bottom: none; border-right: none;"><strong>Rp</strong></td>
+                    <td style="text-align: right; border-left: none;">
+                        <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;">
+                        {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                    </td>
+                    <td style="border-bottom: none; border-right: none;">Rp</td>
+                    <td style="text-align: right; border-left: none;">
+                        {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Jumlah Total</strong></td>
+                    <td style=" border-right: none;"><strong>Rp</strong></td>
+                    <td style="text-align: right;border-left: none;">
+                        <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <table>
+        <tbody <tr>
+            <td rowspan="6"></td>
+            <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
+            <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+            </td>
             </tr>
             <tr>
                 <td class="no-border">Bank</td>
@@ -290,11 +297,11 @@
                     Direktur Keuangan dan Administrasi
                 </td </tr>
             <tr>
-                <td class="no-border-top-side">
+                <td class="no-border">
                     Email</td>
-                <td class="no-border-top-side">
+                <td class="no-border">
                     :</td>
-                <td class="no-border-top-side">
+                <td class="no-border">
                     invoice_center@pt-kpusahatama.com</td>
                 <td colspan="2" style="border-top: none;"></td>
             </tr>
