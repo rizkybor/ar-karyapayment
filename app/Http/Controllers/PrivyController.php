@@ -59,8 +59,8 @@ class PrivyController extends Controller
                 "stamp_position" => [
                     [
                         "dimension" => 100,
-                        "pos_x" => $jenis_dokumen == 'management_fee' ? 424.58 : 426.84,
-                        "pos_y" => $jenis_dokumen == 'management_fee' ? 695.53 : 675.41,
+                        "pos_x" => $jenis_dokumen == 'management_fee' ? 424.58 : 424.58,
+                        "pos_y" => $jenis_dokumen == 'management_fee' ? 820.00 : 820.00,
                         "page" => 1
                     ]
                 ]
