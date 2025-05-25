@@ -163,7 +163,7 @@
                     Rp.</td>
                 <td
                     style="padding: 5px 10px; text-align: right; font-weight: bold; font-style: italic; vertical-align: middle; height: 30px;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }},</td>
+                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
             </tr>
         </table>
 
