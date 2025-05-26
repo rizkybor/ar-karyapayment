@@ -104,40 +104,40 @@
             </td>
         </tr>
     </table>
+    <div style="min-height: 505px;">
 
-    <!-- Penerima -->
-    <table border="1" style="border-collapse: collapse; width: 50%; margin-left: 0;">
-        <tr>
-            <td style="border: 1px solid black; padding: 8px; text-align: left;">
-                Kepada Yth:<br>
-                <strong>{{ $contract->employee_name ?? 'NULL' }}</strong><br>
-                {{ $contract->address ?? 'NULL' }}
-            </td>
-        </tr>
-    </table>
+        <!-- Penerima -->
+        <table border="1" style="border-collapse: collapse; width: 50%; margin-left: 0;">
+            <tr>
+                <td style="border: 1px solid black; padding: 8px; text-align: left;">
+                    Kepada Yth:<br>
+                    <strong>{{ $contract->employee_name ?? 'NULL' }}</strong><br>
+                    {{ $contract->address ?? 'NULL' }}
+                </td>
+            </tr>
+        </table>
 
-    <!-- Kwitansi dan Tanggal -->
-    <table class="w-full mt-4 text-sm border-collapse"
-        style="border: 1px solid black; width: 60%; border-collapse: collapse;">
-        <tr>
-            <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Kwitansi</strong></td>
-            <td class="w-2" style="border: 1px solid black; padding: 8px;">No.
-                {{ $document->receipt_number ?? 'NULL' }}</td>
-        </tr>
-        <tr>
-            <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Tanggal</strong></td>
-            <td class="w-2" style="border: 1px solid black; padding: 8px;">
-                {{ \Carbon\Carbon::parse($document->created_at)->translatedFormat('d F Y') }}</td>
-        </tr>
-    </table>
+        <!-- Kwitansi dan Tanggal -->
+        <table class="w-full mt-4 text-sm border-collapse"
+            style="border: 1px solid black; width: 60%; border-collapse: collapse;">
+            <tr>
+                <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Kwitansi</strong></td>
+                <td class="w-2" style="border: 1px solid black; padding: 8px;">No.
+                    {{ $document->receipt_number ?? 'NULL' }}</td>
+            </tr>
+            <tr>
+                <td class="w-1/2" style="border: 1px solid black; padding: 8px;"><strong>Tanggal</strong></td>
+                <td class="w-2" style="border: 1px solid black; padding: 8px;">
+                    {{ \Carbon\Carbon::parse($document->created_at)->translatedFormat('d F Y') }}</td>
+            </tr>
+        </table>
 
 
-    {{-- Table Detail --}}
-    @php
-        $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
-        $rowspan = 7 + $detailPayments->count();
-    @endphp
-    <div style="min-height: 340px;">
+        {{-- Table Detail --}}
+        @php
+            $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
+            $rowspan = 7 + $detailPayments->count();
+        @endphp
         <table class="border-table" width="100%">
             <thead>
                 <tr>
