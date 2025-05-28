@@ -16,6 +16,10 @@
             border: 1px solid black;
             padding: 5px;
         }
+
+        .no-border {
+            border: none !important;
+        }
     </style>
 </head>
 
@@ -26,6 +30,18 @@
         $showDraft = $status === 6 && $isPerbendaharaan;
         $isRejected = $status === 103;
         $disableWatermark = $disableWatermark ?? false;
+
+        $groupedExpenses = [];
+        foreach ($detailPayments as $payment) {
+            $type = $payment->expense_type ?? 'Lainnya';
+            if (!isset($groupedExpenses[$type])) {
+                $groupedExpenses[$type] = 0;
+            }
+            $groupedExpenses[$type] += $payment->nilai_biaya ?? 0;
+        }
+
+        $totalBiaya = $detailPayments->sum('nilai_biaya') ?? 0;
+        $grandTotal = $totalBiaya + $accumulatedCosts->sum('nilai_manfee');
     @endphp
 
     @if (!$disableWatermark && !$showDraft)
@@ -102,39 +118,48 @@
 
                 <div style="min-height: 230px;">
                     <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
-                        @php
-                            $totalBiaya = 0;
-                        @endphp
-                        @foreach ($detailPayments as $payment)
+                        @foreach ($groupedExpenses as $type => $amount)
                             <tr>
-                                <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
+                                <td class="no-border">{{ $type ?? '-' }}</td>
                                 <td class="no-border" style="text-align: right; white-space: nowrap;">Rp.</td>
                                 <td class="no-border" style="text-align: right; padding-right: 2rem;">
-                                    {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                                    {{ number_format($amount ?? 0, 0, ',', '.') }}
                                 </td>
                             </tr>
-                            @php
-                                $totalBiaya += $payment->nilai_biaya ?? 0;
-                            @endphp
                         @endforeach
+
+                        <tr>
+                            <td class="no-border">
+                                Management Fee
+                                {{ optional($accumulatedCosts[0] ?? null)->total_expense_manfee
+                                    ? rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') . '%'
+                                    : '-' }}
+                            </td>
+                            <td class="no-border" style="text-align: right;">Rp.</td>
+                            <td class="no-border" style="text-align: right; padding-right: 2rem;">
+                                {{ number_format($accumulatedCosts->sum('nilai_manfee') ?? 0, 0, ',', '.') }}
+                            </td>
+                        </tr>
 
                         <tr>
                             <td class="no-border">Jumlah</td>
                             <td class="no-border" style="text-align: right;"><strong>Rp.</strong>
                             </td>
                             <td class="no-border" style="text-align: right; padding-right: 2rem;">
-                                <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                                <strong>{{ number_format($grandTotal ?? 0, 0, ',', '.') }}</strong>
                             </td>
                             <td class="no-border">&nbsp;</td>
                         </tr>
 
                         <tr>
                             <td class="no-border">
-                                {{ $accumulatedCosts[0]->comment_ppn == '' ? 'PPN' : 'PPN ' . $accumulatedCosts[0]->comment_ppn }}
+                                {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
+                                    ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
+                                    : 'PPN' }}
                             </td>
                             <td class="no-border" style="text-align: right;">Rp.</td>
                             <td class="no-border" style="text-align: right; padding-right: 2rem;">
-                                {{ number_format($accumulatedCosts->sum('nilai_ppn'), 0, ',', '.') }}
+                                {{ number_format($accumulatedCosts->sum('nilai_ppn') ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
 
@@ -145,14 +170,12 @@
                             </td>
                             <td
                                 style="display: inline-block; width: 85%; border-top: 1px solid #000000; padding-top: 0.5rem; font-weight: bold; text-align: right; padding-right: 2rem;">
-                                <strong>{{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</strong>
+                                <strong>{{ number_format($accumulatedCosts->sum('total') ?? 0, 0, ',', '.') }}</strong>
                             </td>
                         </tr>
-
                     </table>
                 </div>
             </div>
-
         </div>
 
         <!-- Jumlah dalam kotak -->
@@ -163,7 +186,7 @@
                     Rp.</td>
                 <td
                     style="padding: 5px 10px; text-align: right; font-weight: bold; font-style: italic; vertical-align: middle; height: 30px;">
-                    {{ number_format($accumulatedCosts->sum('total'), 0, ',', '.') }}</td>
+                    {{ number_format($accumulatedCosts->sum('total') ?? 0, 0, ',', '.') }}</td>
             </tr>
         </table>
 
