@@ -397,7 +397,7 @@ class AccurateTransactionService
             "transDate" => now()->format('d/m/Y'),
             "shipDate" => now()->format('d/m/Y'),
             "dueDate" => now()->format('d/m/Y'),
-            "description" => $payload['data']->letter_subject ?? NULL,
+            "description" => $payload['data']->letter_subject ?? '',
             "tax1Id" => 50,
             "tax2Id" => "",
             "tax2IdId" => "",
