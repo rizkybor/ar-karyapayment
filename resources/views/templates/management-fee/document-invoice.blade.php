@@ -194,7 +194,7 @@
                     <td
                         style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: none; padding: 5px; position: relative; text-align: right; padding-right: 5rem;">
                         {{ number_format($grandTotal ?? 0, 0, ',', '.') }}
-                        <div style="position: absolute; top: 0; left: 25%; width: 50%; height: 1px; background: black;">
+                        <div style="position: absolute; top: 0; left: 5%; width: 60%; height: 1px; background: black;">
                         </div>
                     </td>
                     <td class="no-border">&nbsp;</td>
@@ -221,7 +221,7 @@
                     <td
                         style="font-weight: bold; border-left: none; border-top:none; border-right: 1px solid black; border-bottom: 1px solid black; padding: 5px; position: relative; text-align: right; padding-right: 5rem;">
                         {{ number_format($accumulatedCosts->sum('total') ?? 0, 0, ',', '.') }}
-                        <div style="position: absolute; top: 0; left: 25%; width: 50%; height: 1px; background: black;">
+                        <div style="position: absolute; top: 0; left: 5%; width: 60%; height: 1px; background: black;">
                         </div>
                     </td>
                     <td class="no-border-top-side">&nbsp;</td>
