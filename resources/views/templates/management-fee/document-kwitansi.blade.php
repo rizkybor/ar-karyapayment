@@ -214,8 +214,7 @@
             <tr>
                 <td class="no-border">Cabang</td>
                 <td class="no-border">:</td>
-                <td class="no-border">KK Jakarta Gedung PGN Pusat<br>Jl. KH. Zainul Arifin No. 20<br>Jakarta Barat -
-                    11140</td>
+                <td class="no-border">KK Jakarta Gedung PGN Pusat</td>
             </tr>
             <tr>
                 <td class="no-border">Atas Nama</td>
