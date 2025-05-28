@@ -251,7 +251,7 @@
                 </td>
                 <td style="width: 30%; border: none;">
                     <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>:
-                    contact@kpusahatama.co.id
+                    contact@pt-kpusahatama.co.id
                 </td>
             </tr>
         </table>

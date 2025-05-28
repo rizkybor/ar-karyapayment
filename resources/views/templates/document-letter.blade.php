@@ -256,7 +256,7 @@
                     RUKO KETAPANG INDAH BLOK A2 NO.8<br>Jl. K.H. Zainul Arifin<br>Jakarta Barat - 11140<br>Indonesia
                 </td>
                 <td style="width: 30%; border: none;">
-                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: contact@kpusahatama.co.id
+                    <strong>T</strong>: +62 21-6343 558 <br> <strong>E</strong>: contact@pt-kpusahatama.co.id
                 </td>
             </tr>
         </table>
