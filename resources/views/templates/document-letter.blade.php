@@ -151,10 +151,10 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan nomor {{ $contract->contract_number ?? 'NULL' }}
-        ({{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('d F Y') }}) antara
+        Berdasarkan {{ $contract->category ?? 'NULL' }} nomor {{ $contract->contract_number ?? 'NULL' }} tanggal
+        {{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('d F Y') }} antara
         {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
-        {{ $contract->title ?? 'NULL' }} {{ $document->reference_document ?? '' }}, dengan ini kami mengajukan
+        {{ $contract->title ?? 'NULL' }}{{ $document->reference_document ? ', ' . $document->reference_document : '' }}, dengan ini kami mengajukan
         permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
     </div>
 
