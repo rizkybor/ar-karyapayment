@@ -109,6 +109,7 @@ class ContractsController extends Controller
 
         $input = $request->all();
 
+        $input['contract_initial']   = $request->input('contract_initial') ?: null;
         $input['departmentId']   = $request->input('departmentId') ?: null;
         $input['projectId']      = $request->input('projectId') ?: null;
         $input['segmenUsahaId']  = $request->input('segmenUsahaId') ?: null;
@@ -135,7 +136,7 @@ class ContractsController extends Controller
         }
 
         $input['path'] = $dropboxPath;
-
+        
         // Simpan data kontrak ke database
         $contract = Contracts::create($input);
 
