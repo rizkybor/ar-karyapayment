@@ -258,20 +258,26 @@
                     <!-- Settings -->
                     <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                     bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                    @if (Request::is('user*') ||
+                    @if (Request::is('user') ||
+                            (Request::is('list_users*') ||
                             Request::routeIs('contracts*') ||
                             Request::routeIs('contract-categories*') ||
                             Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
-                        x-data="{ open: {{ Request::is('user*') || Request::routeIs('contracts*') || Request::routeIs('contract-categories*') || Request::is('register*') ? 1 : 0 }} }">
+                        x-data="{ open: {{ Request::is('user*') || Request::is('list_users*') || Request::routeIs('contracts*') || Request::routeIs('contract-categories*') || Request::is('register*') ? 1 : 0 }} }">
 
                         <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                        @if (!Request::is('user*') && !Request::routeIs('contracts*') && !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
+                        @if (
+                            !Request::is('user*') &&
+                                !Request::routeIs('list_users*') &&
+                                !Request::routeIs('contracts*') &&
+                                !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
                             href="#0" @click.prevent="open = !open; sidebarExpanded = true">
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 fill-current 
                                     @if (Request::is('user*') ||
+                                            Request::is('list_users*') ||
                                             Request::is('contracts*') ||
                                             Request::is('contract-categories*') ||
                                             Request::is('register*')) text-violet-500 
@@ -337,6 +343,17 @@
                                             <span
                                                 class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
                                                 Create User
+                                            </span>
+                                        </a>
+                                    </li>
+
+                                    <li class="mb-1 last:mb-0">
+                                        <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
+                                            @if (Request::is('list_users*')) !text-violet-500 @endif"
+                                            href="{{ route('list_users') }}">
+                                            <span
+                                                class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                                                List Data User
                                             </span>
                                         </a>
                                     </li>

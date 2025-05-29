@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 // use App\Http\Controllers\DataFeedController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\ContractCategoryController;
 use App\Http\Controllers\DashboardController;
@@ -75,6 +76,12 @@ Route::middleware(['auth', 'role:super_admin'])->group(function () {
 
         return redirect()->route('register')->with('status', 'User berhasil dibuat.');
     });
+
+    // user route custom
+    Route::get('/list_users', [UserController::class, 'index'])->name('list_users');
+    Route::get('/list_users/{user}/edit', [UserController::class, 'edit'])->name('list_users.edit');
+    Route::put('/list_users/{user}', [UserController::class, 'update'])->name('list_users.update');
+    Route::delete('/list_users/{user}', [UserController::class, 'destroy'])->name('list_users.destroy');
 });
 
 // Route::prefix('privy')->group(function () {
