@@ -220,19 +220,22 @@
                 <td class="no-border">Atas Nama</td>
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
-                <td colspan="2"
-                    style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
-                    <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
-                </td>
+                <td colspan="2" style="border-top: none;"></td>
 
             <tr>
-                <td class="no-border-top-side">
-                    Email</td>
-                <td class="no-border-top-side">
-                    :</td>
-                <td class="no-border-top-side">
-                    invoice_center@pt-kpusahatama.com</td>
-                <td colspan="2" style="border-top: none;"></td>
+                <td class="no-border-top-side" style="vertical-align: top;">
+                    Email
+                </td>
+                <td class="no-border-top-side" style="vertical-align: top;">
+                    :
+                </td>
+                <td class="no-border-top-side" style="vertical-align: top;">
+                    invoice_center@pt-kpusahatama.com
+                </td>
+                <td colspan="2"
+                    style="border-top: none; border-bottom: none; text-align: center; font-weight: normal; padding-bottom: 1rem;">
+                    <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
+                </td>
             </tr>
         </table>
 

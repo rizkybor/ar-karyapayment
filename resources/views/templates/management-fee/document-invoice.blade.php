@@ -287,18 +287,18 @@
                 <td class="no-border">Atas Nama</td>
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
+                <td colspan="2" style="border-top: none;"></td>
+            </tr>
+            <tr>
+                <td class="no-border" style="vertical-align: top;">Email</td>
+                <td class="no-border" style="vertical-align: top;">:</td>
+                <td class="no-border" style="vertical-align: top;">invoice_center@pt-kpusahatama.com</td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
                     <strong>Sutaryo</strong>
                     <br>
                     Direktur Keuangan dan Administrasi
                 </td>
-            </tr>
-            <tr>
-                <td class="no-border">Email</td>
-                <td class="no-border">:</td>
-                <td class="no-border">invoice_center@pt-kpusahatama.com</td>
-                <td colspan="2" style="border-top: none;"></td>
             </tr>
         </tbody>
     </table>
