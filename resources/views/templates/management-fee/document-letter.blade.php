@@ -144,9 +144,11 @@
 
     <!-- Isi Surat -->
     <div class="mt-4 text-smaller justify-text leading-relaxed">
-        Berdasarkan {{ $contract->category ?? 'NULL' }} nomor {{ $contract->contract_number ?? 'NULL' }} tanggal {{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('d F Y') }} antara
+        Berdasarkan {{ $contract->category ?? 'NULL' }} nomor {{ $contract->contract_number ?? 'NULL' }} tanggal
+        {{ \Carbon\Carbon::parse($contract->contract_date)->translatedFormat('d F Y') }} antara
         {{ $contract->employee_name ?? 'NULL' }} dengan PT Karya Prima Usahatama tentang
-        {{ $contract->title ?? 'NULL' }}{{ $document->reference_document ? ', ' . $document->reference_document : '' }}, dengan ini kami mengajukan
+        {{ $contract->title ?? 'NULL' }}{{ $document->reference_document ? ', ' . $document->reference_document : '' }},
+        dengan ini kami mengajukan
         permohonan pembayaran pekerjaan tersebut, dengan bukti perincian terlampir.
     </div>
 
@@ -195,7 +197,7 @@
                 <td style="width: 10%; border: none; vertical-align: top;">Cabang</td>
                 <td style="width: 90%; border: none;">: {{ $bagian ?? 'KK Jakarta Gedung PGN PUSAT' }}</td>
             </tr>
-            <tr>
+            {{-- <tr>
                 <td style="width: 10%; border: none;"></td>
                 <td style="width: 90%; border: none; padding-left: 6px;">
                     {{ $bagian ?? 'JL. KH. Zainul Arifin No. 20' }}</td>
@@ -203,7 +205,7 @@
             <tr>
                 <td style="width: 10%; border: none;"></td>
                 <td style="width: 90%; border: none; padding-left: 6px;">{{ $bagian ?? 'Jakarta Barat - 11140' }}</td>
-            </tr>
+            </tr> --}}
 
             <tr>
                 <td style="width: 10%; border: none;">Atas Nama</td>

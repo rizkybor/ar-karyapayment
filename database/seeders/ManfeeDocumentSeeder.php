@@ -17,6 +17,8 @@ class ManfeeDocumentSeeder extends Seeder
      */
     public function run(): void
     {
+        $lastGlobal = $this->getLastGlobalDocumentNumber();
+
         // Ambil semua kontrak yang bertipe 'management_fee'
         $contracts = Contracts::where('type', 'management_fee')->pluck('id');
 
@@ -37,7 +39,11 @@ class ManfeeDocumentSeeder extends Seeder
         $faker = Faker::create();
 
         for ($i = 1; $i <= 10; $i++) {
+            // $contract_id = $contracts->random();
             $contract_id = $contracts->random();
+            $contract = Contracts::find($contract_id);
+            $contractInitial = $contract->contract_initial ?? 'SOL';
+
             $created_by = $makers->random();
             $created_at = Carbon::now();
 
@@ -46,8 +52,6 @@ class ManfeeDocumentSeeder extends Seeder
                 ->day(15)
                 ->setTime(0, 1, 0);
 
-            // 🔢 Hitung nomor urut dengan kelipatan 10 dimulai dari 110
-            $nomorUrut = str_pad(110 + ($i - 1) * 10, 6, '0', STR_PAD_LEFT);
 
             // 🗓️ Ambil bulan romawi dan tahun
             $bulanRomawi = [
@@ -65,13 +69,14 @@ class ManfeeDocumentSeeder extends Seeder
                 'XII'
             ];
 
+            $nomorUrut = str_pad($lastGlobal + ($i * 10), 6, '0', STR_PAD_LEFT);
             $bulan = $bulanRomawi[(int) $created_at->format('m') - 1];
             $tahun = $created_at->format('Y');
 
             // 🧾 Format nomor dokumen
-            $invoice_number = "$nomorUrut/MF/INV/KPU/SOL/$bulan/$tahun";
-            $receipt_number = "$nomorUrut/MF/KW/KPU/SOL/$bulan/$tahun";
-            $letter_number  = "$nomorUrut/MF/KEU/KPU/SOL/$bulan/$tahun";
+            $invoice_number = "$nomorUrut/MF/INV/KPU/$contractInitial/$bulan/$tahun";
+            $receipt_number = "$nomorUrut/MF/KW/KPU/$contractInitial/$bulan/$tahun";
+            $letter_number  = "$nomorUrut/MF/KEU/KPU/$contractInitial/$bulan/$tahun";
 
             $data[] = [
                 'contract_id'    => $contract_id,
@@ -100,5 +105,23 @@ class ManfeeDocumentSeeder extends Seeder
         DB::table('manfee_documents')->insert($data);
 
         $this->command->info("✅ Berhasil menambahkan 10 data Management Fee dengan expired_at (H+30 pukul 00:01:00).");
+    }
+
+    private function getLastGlobalDocumentNumber(): int
+    {
+        $lastMF = \App\Models\ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')->value('letter_number');
+        $lastNF = \App\Models\NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')->value('letter_number');
+
+        $numMF = 100;
+        $numNF = 100;
+
+        if ($lastMF && preg_match('/^(\d{6})/', $lastMF, $m1)) {
+            $numMF = intval($m1[1]);
+        }
+        if ($lastNF && preg_match('/^(\d{6})/', $lastNF, $m2)) {
+            $numNF = intval($m2[1]);
+        }
+
+        return max($numMF, $numNF);
     }
 }

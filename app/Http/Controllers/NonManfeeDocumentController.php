@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Exception;
+use App\Models\ManfeeDocument;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,6 +67,44 @@ class NonManfeeDocumentController extends Controller
         return view('pages/ar-menu/non-management-fee/create', array_merge([
             'contracts' => $contracts,
         ], $numbers));
+    }
+
+    private function getNextDocumentNumberBase(): array
+    {
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        // Ambil 6 digit pertama dari nomor surat, lalu konversi ke integer
+        $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+        $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+
+        $lastNumericMF = 100;
+        $lastNumericNF = 100;
+
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
+            $lastNumericMF = intval($matchMF[1]);
+        }
+
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
+            $lastNumericNF = intval($matchNF[1]);
+        }
+
+        $lastNumeric = max($lastNumericMF, $lastNumericNF);
+
+        if ($lastNumeric % 10 !== 0) {
+            $lastNumeric = ceil($lastNumeric / 10) * 10;
+        }
+
+        $nextNumber = $lastNumeric + 10;
+        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        return [
+            'base_number' => $baseNumber,
+            'month_roman' => $monthRoman,
+            'year' => $year,
+        ];
     }
 
     /**
@@ -1075,33 +1114,44 @@ class NonManfeeDocumentController extends Controller
 
     private function generateDocumentNumbers(string $prefix = 'NF'): array
     {
-        $monthRoman = $this->convertToRoman(date('n'));
-        $year = date('Y');
+        // $monthRoman = $this->convertToRoman(date('n'));
+        // $year = date('Y');
 
-        $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
+        // $lastNumber = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        //     ->value('letter_number');
 
-        if (!$lastNumber) {
-            $lastNumeric = 100;
-        } else {
-            preg_match('/^(\d{6})/', $lastNumber, $matches);
-            $lastNumeric = intval($matches[1] ?? 100);
+        // if (!$lastNumber) {
+        //     $lastNumeric = 100;
+        // } else {
+        //     preg_match('/^(\d{6})/', $lastNumber, $matches);
+        //     $lastNumeric = intval($matches[1] ?? 100);
 
-            if ($lastNumeric % 10 !== 0) {
-                $lastNumeric = ceil($lastNumeric / 10) * 10;
-            }
-        }
+        //     if ($lastNumeric % 10 !== 0) {
+        //         $lastNumeric = ceil($lastNumeric / 10) * 10;
+        //     }
+        // }
 
-        $nextNumber = $lastNumeric + 10;
-        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        // $nextNumber = $lastNumeric + 10;
+        // $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // return [
+        //     'letter_number' => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+        //     'invoice_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+        //     'receipt_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
+        //     'base_number' => $baseNumber,
+        //     'month_roman' => $monthRoman,
+        //     'year' => $year,
+        // ];
+        
+        $doc = $this->getNextDocumentNumberBase();
 
         return [
-            'letter_number' => sprintf("%s/%s/KEU/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'invoice_number' => sprintf("%s/%s/INV/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'receipt_number' => sprintf("%s/%s/KW/KPU/Auto/%s/%s", $baseNumber, $prefix, $monthRoman, $year),
-            'base_number' => $baseNumber,
-            'month_roman' => $monthRoman,
-            'year' => $year,
+            'letter_number' => sprintf("%s/NF/KEU/KPU/Auto/%s/%s", $doc['base_number'], $doc['month_roman'], $doc['year']),
+            'invoice_number' => sprintf("%s/NF/INV/KPU/Auto/%s/%s", $doc['base_number'], $doc['month_roman'], $doc['year']),
+            'receipt_number' => sprintf("%s/NF/KW/KPU/Auto/%s/%s", $doc['base_number'], $doc['month_roman'], $doc['year']),
+            'base_number' => $doc['base_number'],
+            'month_roman' => $doc['month_roman'],
+            'year' => $doc['year'],
         ];
     }
 
