@@ -29,6 +29,15 @@
                             </div>
 
                             <div>
+                                <x-label for="contract_initial" value="Inisial Kontrak" />
+                                <x-input id="contract_initial"
+                                    value="{{ old('contract_initial', $contract->contract_initial) }}" type="text"
+                                    name="contract_initial" class="mt-1 block w-full min-h-[40px]"
+                                    placeholder="Masukkan inisial kontrak" required maxlength="255" />
+                                <x-input-error for="contract_initial" class="mt-2" />
+                            </div>
+
+                            <div>
                                 <x-label for="title" value="{{ __('Judul Kontrak') }}" />
                                 <x-input id="title" type="text" name="title"
                                     value="{{ old('title', $contract->title) }}" class="mt-1 block w-full min-h-[40px]"

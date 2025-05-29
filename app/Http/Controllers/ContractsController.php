@@ -88,6 +88,7 @@ class ContractsController extends Controller
         // Validasi input
         $request->validate([
             'contract_number' => 'required',
+            'contract_initial' => 'required',
             'title' => 'required',
             'category' => 'required',
             'employee_name' => 'required',
@@ -222,6 +223,7 @@ class ContractsController extends Controller
     {
         $request->validate([
             'contract_number' => 'required',
+            'contract_initial' => 'required',
             'title' => 'required',
             'category' => 'required',
             'employee_name' => 'required',
@@ -242,6 +244,7 @@ class ContractsController extends Controller
 
         $input = $request->except('path');
 
+        $input['contract_initial']   = $request->input('contract_initial');
         $input['departmentId']   = $request->input('departmentId') ?: null;
         $input['projectId']      = $request->input('projectId') ?: null;
         $input['segmenUsahaId']  = $request->input('segmenUsahaId') ?: null;
