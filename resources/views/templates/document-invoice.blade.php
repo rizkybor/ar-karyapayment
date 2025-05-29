@@ -72,6 +72,19 @@
         $showDraft = $status === 6 && $isPerbendaharaan;
         $isRejected = $status === 103;
         $disableWatermark = $disableWatermark ?? false;
+
+        // Group expenses by type and sum their values
+        $groupedExpenses = [];
+        foreach ($detailPayments as $payment) {
+            $type = $payment->expense_type ?? 'Lainnya';
+            if (!isset($groupedExpenses[$type])) {
+                $groupedExpenses[$type] = 0;
+            }
+            $groupedExpenses[$type] += $payment->nilai_biaya ?? 0;
+        }
+
+        $grandTotal = $detailPayments->sum('nilai_biaya') ?? 0;
+        $rowspan = 8 + count($groupedExpenses); // Update rowspan based on grouped expenses count
     @endphp
 
     @if (!$disableWatermark && !$showDraft)
@@ -155,30 +168,22 @@
 
                     <td style="border-right:none; border-bottom: none;">Rp</td> <!-- Simbol Rupiah -->
                     <td style="text-align: right; border-left:none; border-bottom: none;">
-                        {{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</td>
+                        {{ number_format($grandTotal, 0, ',', '.') }}</td>
                     <!-- Jumlah, rata kanan agar lebih rapi -->
                 </tr>
 
-                @foreach ($detailPayments as $payment)
+                  @foreach ($groupedExpenses as $type => $amount)
                     <tr>
-                        <td class="no-border">{{ $payment->expense_type ?? '-' }}</td>
-
-                        {{-- Rp. --}}
-                        <td class="no-border" style="text-align: right; padding-right: 0.5rem; white-space: nowrap;">Rp.
-                        </td>
-
-                        {{-- Nilai --}}
+                        <td class="no-border">{{ $type ?? '-' }}</td>
+                        <td class="no-border" style="text-align: right; padding-left: 5rem">
+                            Rp.</td>
                         <td
-                            style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
-                            {{ number_format($payment->nilai_biaya ?? 0, 0, ',', '.') }}
+                            style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem">
+                            {{ number_format($amount ?? 0, 0, ',', '.') }}
                         </td>
-
                         <td class="no-border">&nbsp;</td>
                         <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
                     </tr>
-                    @php
-                        $totalBiaya += $payment->nilai_biaya ?? 0;
-                    @endphp
                 @endforeach
 
                 <tr>
@@ -186,7 +191,7 @@
                     <td class="no-border" style="text-align: right; padding-right: 0.5rem;"><strong>Rp.</strong></td>
                     <td
                         style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 3rem;">
-                        <strong>{{ number_format($accumulatedCosts->sum('dpp'), 0, ',', '.') }}</strong>
+                        <strong>{{ number_format($grandTotal, 0, ',', '.') }}</strong>
                     </td>
                     <td class="no-border">&nbsp;</td>
                     <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
@@ -261,49 +266,53 @@
     </div>
 
     <table>
-        <tbody <tr>
-            <td rowspan="6"></td>
-            <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-            <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
-                Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-            </td>
-            </tr>
+        <tbody>
             <tr>
-                <td class="no-border">Bank</td>
-                <td class="no-border">:</td>
-                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
-                <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
+                <td rowspan="6"></td>
+                <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
+                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
                 </td>
             </tr>
             <tr>
+                <td class="no-border">Bank</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->bank_name ?? '-' }}</td>
+                <td class="no-border"></td>
+                <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
+                </td>
+            </tr>
+            {{-- <tr>
                 <td class="no-border">No. Rekening</td>
                 <td class="no-border">:</td>
                 <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
+            </tr> --}}
+             <tr>
+                <td class="no-border">No. Rekening</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_number ?? '-' }}</td>
+                <td class="no-border"></td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
-                <td class="no-border">:</td>
-                <td class="no-border">KK Jakarta Gedung PGN Pusat<br>Jl. KH. Zainul Arifin No. 20<br>Jakarta Barat -
-                    11140</td>
+                <td class="no-border">: &nbsp;&nbsp;KK Jakarta Gedung PGN Pusat</td>
+                <td class="no-border"></td>
             </tr>
             <tr>
                 <td class="no-border">Atas Nama</td>
-                <td class="no-border">:</td>
-                <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_name ?? '-' }}</td>
+                <td class="no-border"></td>
+                <td colspan="2" style="border-top: none;"></td>
+            </tr>
+                <tr>
+                <td class="no-border" style="vertical-align: top;">Email</td>
+                <td class="no-border" style="vertical-align: top;">: &nbsp;&nbsp;invoice_center@pt-kpusahatama.com
+                </td>
+                <td class="no-border" style="vertical-align: top;"></td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
                     <strong>Sutaryo</strong>
                     <br>
                     Direktur Keuangan dan Administrasi
-                </td </tr>
-            <tr>
-                <td class="no-border">
-                    Email</td>
-                <td class="no-border">
-                    :</td>
-                <td class="no-border">
-                    invoice_center@pt-kpusahatama.com</td>
-                <td colspan="2" style="border-top: none;"></td>
+                </td>
             </tr>
         </tbody>
     </table>
