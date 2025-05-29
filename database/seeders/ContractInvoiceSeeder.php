@@ -20,6 +20,7 @@ class ContractInvoiceSeeder extends Seeder
         $data = [
             [
                 'contract_number' => 'ADSAKDSA23',
+                'contract_initial' => 'NSN',
                 'employee_name' => 'PT. Nusanida',
                 'value' => 12500000,
                 'start_date' => $now->copy()->subMonths(3),
@@ -27,6 +28,7 @@ class ContractInvoiceSeeder extends Seeder
             ],
             [
                 'contract_number' => 'ADSAKDSA24',
+                'contract_initial' => 'TLK',
                 'employee_name' => 'PT. Telkom',
                 'value' => 15000000,
                 'start_date' => $now->copy()->subMonths(6),
@@ -34,6 +36,7 @@ class ContractInvoiceSeeder extends Seeder
             ],
             [
                 'contract_number' => 'ADSAKDSA25',
+                'contract_initial' => 'IJY',
                 'employee_name' => 'PT. Indo Jaya',
                 'value' => 20000000,
                 'start_date' => $now->copy()->subYear(),
@@ -41,6 +44,7 @@ class ContractInvoiceSeeder extends Seeder
             ],
             [
                 'contract_number' => 'ADSAKDSA26',
+                'contract_initial' => 'PSC',
                 'employee_name' => 'PT. Pasific',
                 'value' => 50000000,
                 'start_date' => $now->copy()->subYear(),
@@ -48,6 +52,7 @@ class ContractInvoiceSeeder extends Seeder
             ],
             [
                 'contract_number' => 'ADSAKDSA27',
+                'contract_initial' => 'IJM',
                 'employee_name' => 'PT. Indo Jaya Maritim',
                 'value' => 50000000,
                 'start_date' => $now->copy()->subYear(),
@@ -55,6 +60,7 @@ class ContractInvoiceSeeder extends Seeder
             ],
             [
                 'contract_number' => 'ADSAKDSA28',
+                'contract_initial' => 'TFI',
                 'employee_name' => 'PT. Taffware Indo',
                 'value' => 50000000,
                 'start_date' => $now->copy()->subYear(),

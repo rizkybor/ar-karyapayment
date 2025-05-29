@@ -30,7 +30,7 @@
                                 rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
                                 @foreach ($contracts as $contract)
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                                        onclick="selectContract('{{ $contract->id }}', '{{ $contract->contract_number }}', '{{ $contract->employee_name }}', '{{ $contract->billTypes->pluck('bill_type')->toJson() }}')">
+                                        onclick="selectContract('{{ $contract->id }}', '{{ $contract->contract_number }}', '{{ $contract->employee_name }}', '{{ $contract->contract_initial }}', '{{ $contract->billTypes->pluck('bill_type')->toJson() }}')">
                                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
                                             {{ $contract->contract_number }}</div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -115,7 +115,7 @@
             });
         }
 
-        function selectContract(id, contractNumber, employeeName, billTypesJson) {
+        function selectContract(id, contractNumber, employeeName, contractInitial, billTypesJson) {
             document.getElementById("contractInput").value = contractNumber;
             document.getElementById("contract_id").value = id;
             document.getElementById("employee_name").value = employeeName;
@@ -130,17 +130,18 @@
             }
 
             // Update nomor dokumen
-            updateContractDetailsManual(contractNumber, employeeName);
+            updateContractDetailsManual(contractNumber, employeeName, contractInitial);
 
             // Tutup dropdown
             document.getElementById("contractDropdown").classList.add("hidden");
         }
 
-        function updateContractDetailsManual(contractNumber, employeeName) {
+        function updateContractDetailsManual(contractNumber, employeeName, contractInitial) {
+            
             const base_number = '{{ $base_number }}';
             const month_roman = '{{ $month_roman }}';
             const year = '{{ $year }}';
-            const companyInitial = getCompanyInitial(employeeName);
+            const companyInitial = contractInitial;
 
             document.getElementById('letter_number').value =
                 `${base_number}/NF/KEU/KPU/${companyInitial}/${month_roman}/${year}`;
@@ -148,23 +149,6 @@
                 `${base_number}/NF/INV/KPU/${companyInitial}/${month_roman}/${year}`;
             document.getElementById('receipt_number').value =
                 `${base_number}/NF/KW/KPU/${companyInitial}/${month_roman}/${year}`;
-        }
-
-        function getCompanyInitial(employeeName) {
-            if (!employeeName) return 'SOL';
-            const companyName = employeeName.replace(/^PT\.?\s*/i, '');
-            const words = companyName.trim().split(/\s+/);
-
-            if (words.length === 1) {
-                return words[0].toUpperCase();
-            }
-            let initials = '';
-            for (let i = 0; i < words.length; i++) {
-                if (words[i].length > 0) {
-                    initials += words[i][0].toUpperCase();
-                }
-            }
-            return initials;
         }
 
         // Hide dropdown jika klik di luar

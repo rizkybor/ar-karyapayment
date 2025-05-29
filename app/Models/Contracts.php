@@ -13,6 +13,7 @@ class Contracts extends Model
 
     protected $fillable = [
         'contract_number',
+        'contract_initial',
         'title',
         'category',
         'employee_name',
