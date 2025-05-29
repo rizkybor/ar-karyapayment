@@ -221,6 +221,7 @@
                 <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_name ?? '-' }}</td>
                 <td class="no-border"></td>
                 <td colspan="2" style="border-top: none;"></td>
+            </tr>
 
             <tr>
                 <td class="no-border-top-side" style="vertical-align: top;">
