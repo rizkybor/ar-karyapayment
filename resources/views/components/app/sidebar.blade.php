@@ -109,59 +109,11 @@
                         </a>
                     </li>
 
-                    <!-- Job Board -->
-                    {{-- <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 bg-[linear-gradient(135deg,var(--tw-gradient-stops))] @if (in_array(Request::segment(1), ['job', 'management-fee', 'non-management-fee'])) {{ 'from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04]' }} @endif"
-                        x-data="{ open: {{ in_array(Request::segment(1), ['job', 'management-fee', 'non-management-fee']) ? 1 : 0 }} }">
-                        <a class="block text-gray-800 dark:text-gray-100 truncate transition @if (!in_array(Request::segment(1), ['job', 'management-fee', 'non-management-fee'])) {{ 'hover:text-gray-900 dark:hover:text-white' }} @endif"
-                            href="#0" @click.prevent="open = !open; sidebarExpanded = true">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 fill-current @if (in_array(Request::segment(1), ['job', 'management-fee', 'non-management-fee'])) {{ 'text-violet-500' }}@else{{ 'text-gray-400 dark:text-gray-500' }} @endif"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M6.753 2.659a1 1 0 0 0-1.506-1.317L2.451 4.537l-.744-.744A1 1 0 1 0 .293 5.207l1.5 1.5a1 1 0 0 0 1.46-.048l3.5-4ZM6.753 10.659a1 1 0 1 0-1.506-1.317l-2.796 3.195-.744-.744a1 1 0 0 0-1.414 1.414l1.5 1.5a1 1 0 0 0 1.46-.049l3.5-4ZM8 4.5a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1ZM9 11.5a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Z" />
-                                    </svg>
-                                    <span
-                                        class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Invoice (Billing)</span>
-                                </div>
-                                <!-- Icon -->
-                                <div
-                                    class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                    <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500 @if (in_array(Request::segment(1), ['job'])) {{ 'rotate-180' }} @endif"
-                                        :class="open ? 'rotate-180' : 'rotate-0'" viewBox="0 0 12 12">
-                                        <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-                        <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                            <ul class="pl-8 mt-1 @if (!in_array(Request::segment(1), ['job'])) {{ 'hidden' }} @endif"
-                                :class="open ? '!block' : 'hidden'">
-                                <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('job-listing')) {{ '!text-violet-500' }} @endif"
-                                        href="{{ route('management-fee*') }}">
-                                        <span
-                                            class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Management
-                                            Fee</span>
-                                    </a>
-                                </li>
-                                <li class="mb-1 last:mb-0">
-                                    <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Request::is('job-post')) {{ '!text-violet-500' }} @endif"
-                                        href="{{ route('non-management-fee*') }}">
-                                        <span
-                                            class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Management
-                                            Non Fee</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li> --}}
-
                     @if (auth()->user()->role !== 'super_admin')
                         <!-- Invoice (Billing) -->
                         <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                     bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
+
                     @if (Request::is('management-fee*') || Request::is('non-management-fee*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
                             x-data="{ open: {{ Request::is('management-fee*') || Request::is('non-management-fee*') ? 1 : 0 }} }">
                             <a class="block text-gray-800 dark:text-gray-100 truncate transition 
@@ -258,26 +210,22 @@
                     <!-- Settings -->
                     <li class="pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 
                     bg-[linear-gradient(135deg,var(--tw-gradient-stops))] 
-                    @if (Request::is('user') ||
-                            (Request::is('list_users*') ||
+                    @if (Request::is('user*') ||
+                            Request::is('list_user*') ||
                             Request::routeIs('contracts*') ||
                             Request::routeIs('contract-categories*') ||
                             Request::is('register*')) from-violet-500/[0.12] dark:from-violet-500/[0.24] to-violet-500/[0.04] @endif"
-                        x-data="{ open: {{ Request::is('user*') || Request::is('list_users*') || Request::routeIs('contracts*') || Request::routeIs('contract-categories*') || Request::is('register*') ? 1 : 0 }} }">
+                        x-data="{ open: {{ Request::is('user*') || Request::is('list_user*') || Request::routeIs('contracts*') || Request::routeIs('contract-categories*') || Request::is('register*') ? 1 : 0 }} }">
 
                         <a class="block text-gray-800 dark:text-gray-100 truncate transition 
-                        @if (
-                            !Request::is('user*') &&
-                                !Request::routeIs('list_users*') &&
-                                !Request::routeIs('contracts*') &&
-                                !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
+                        @if (!Request::is('user*') && !Request::routeIs('contracts*') && !Request::is('register*')) hover:text-gray-900 dark:hover:text-white @endif"
                             href="#0" @click.prevent="open = !open; sidebarExpanded = true">
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 fill-current 
                                     @if (Request::is('user*') ||
-                                            Request::is('list_users*') ||
+                                            Request::is('list_user*') ||
                                             Request::is('contracts*') ||
                                             Request::is('contract-categories*') ||
                                             Request::is('register*')) text-violet-500 
@@ -346,14 +294,16 @@
                                             </span>
                                         </a>
                                     </li>
+                                @endrole
 
+                                @role('super_admin')
                                     <li class="mb-1 last:mb-0">
                                         <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate 
-                                            @if (Request::is('list_users*')) !text-violet-500 @endif"
+                                        @if (Request::is('list_users*')) !text-violet-500 @endif"
                                             href="{{ route('list_users') }}">
                                             <span
                                                 class="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                                List Data User
+                                                Daftar Pengguna
                                             </span>
                                         </a>
                                     </li>
