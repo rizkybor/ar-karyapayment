@@ -201,25 +201,25 @@
             </tr>
             <tr>
                 <td class="no-border">Bank</td>
-                <td class="no-border">:</td>
-                <td class="no-border">{{ $document->bankAccount->bank_name ?? '-' }}</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->bank_name ?? '-' }}</td>
+                <td class="no-border"></td>
                 <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
                 </td>
             </tr>
             <tr>
                 <td class="no-border">No. Rekening</td>
-                <td class="no-border">:</td>
-                <td class="no-border">{{ $document->bankAccount->account_number ?? '-' }}</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_number ?? '-' }}</td>
+                <td class="no-border"></td>
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
-                <td class="no-border">:</td>
-                <td class="no-border">KK Jakarta Gedung PGN Pusat</td>
+                <td class="no-border">: &nbsp;&nbsp;KK Jakarta Gedung PGN Pusat</td>
+                <td class="no-border"></td>
             </tr>
             <tr>
                 <td class="no-border">Atas Nama</td>
-                <td class="no-border">:</td>
-                <td class="no-border">{{ $document->bankAccount->account_name ?? '-' }}</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_name ?? '-' }}</td>
+                <td class="no-border"></td>
                 <td colspan="2" style="border-top: none;"></td>
 
             <tr>
@@ -227,10 +227,10 @@
                     Email
                 </td>
                 <td class="no-border-top-side" style="vertical-align: top;">
-                    :
+                    : &nbsp;&nbsp;invoice_center@pt-kpusahatama.com
                 </td>
                 <td class="no-border-top-side" style="vertical-align: top;">
-                    invoice_center@pt-kpusahatama.com
+
                 </td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal; padding-bottom: 1rem;">
