@@ -3,7 +3,7 @@
 
         <!-- Header Section -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Daftar Pengguna</h1>
+            <h1 class="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">List All Users</h1>
         </div>
 
         <!-- Cards Container -->
