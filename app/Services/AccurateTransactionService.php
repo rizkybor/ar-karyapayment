@@ -764,4 +764,43 @@ class AccurateTransactionService
             throw new Exception('Failed to get item detail: ' . $e->getMessage());
         }
     }
+
+    public function deleteSalesInvoice(int $id)
+    {
+        if (!$this->accessToken) {
+            throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
+        }
+
+        $timestamp = now()->format('d/m/Y H:i:s');
+        $signature = $this->makeSignature($timestamp);
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->accessToken,
+            'X-Api-Timestamp' => $timestamp,
+            'X-Api-Signature' => $signature,
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ];
+
+        $url = $this->baseUrl . '/sales-invoice/delete.do';
+
+        try {
+            $response = $this->client->delete($url, [
+                'headers' => $headers,
+                'form_params' => [
+                    'id' => $id
+                ]
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+
+            if ($statusCode === 200 && ($responseBody['s'] ?? false)) {
+                return $responseBody;
+            } else {
+                throw new Exception('Gagal menghapus invoice: ' . json_encode($responseBody['d'] ?? $responseBody));
+            }
+        } catch (Exception $e) {
+            throw new Exception('Failed to delete sales invoice: ' . $e->getMessage());
+        }
+    }
 }

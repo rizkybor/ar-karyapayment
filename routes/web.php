@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TestController;
-// use App\Http\Controllers\DataFeedController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContractsController;
 use App\Http\Controllers\ContractCategoryController;
@@ -30,12 +28,13 @@ use App\Http\Controllers\NonManfeeDocumentDataTableController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PrivyController;
 use App\Http\Controllers\DropboxController;
+use App\Http\Controllers\AccurateController;
 use App\Http\Controllers\NotificationController;
 use Laravel\Fortify\Http\Controllers\NewPasswordController;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
-use App\Models\User;
 use App\Actions\Fortify\CreateNewUser;
 
 /*
@@ -94,8 +93,6 @@ Route::get('/reset-password', [NewPasswordController::class, 'create'])->name('p
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    // Route::get('/json-data-feed', [DataFeedController::class, 'getDataFeed'])->name('json_data_feed');
-
     /*
     |--------------------------------------------------------------------------
     | Dropbox Routes
@@ -125,6 +122,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     */
     Route::post('/privy/check-doc-status', [PrivyController::class, 'checkDocumentStatus'])
         ->name('privy.check-doc-status');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accurate Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::delete('/accurate/sales-invoice/{id}', [AccurateController::class, 'deleteInvoice'])->name('accurate.sales-invoice-delete');
 
     /*
     |--------------------------------------------------------------------------
