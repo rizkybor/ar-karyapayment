@@ -765,7 +765,7 @@ class AccurateTransactionService
         }
     }
 
-    public function deleteSalesInvoice(int $id)
+    public function deleteSalesInvoice($id)
     {
         if (!$this->accessToken) {
             throw new Exception('ACCURATE_ACCESS_TOKEN is not set.');
@@ -784,10 +784,10 @@ class AccurateTransactionService
         $url = $this->baseUrl . '/sales-invoice/delete.do';
 
         try {
-            $response = $this->client->delete($url, [
+            $response = $this->client->post($url, [
                 'headers' => $headers,
                 'form_params' => [
-                    'id' => $id
+                    'number' => $id
                 ]
             ]);
 

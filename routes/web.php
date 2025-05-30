@@ -128,7 +128,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     | Accurate Routes
     |--------------------------------------------------------------------------
     */
-    Route::delete('/accurate/sales-invoice/{id}', [AccurateController::class, 'deleteInvoice'])->name('accurate.sales-invoice-delete');
+    Route::post('/accurate/sales-invoice', [AccurateController::class, 'deleteInvoice'])->name('accurate.sales-invoice-delete');
 
     /*
     |--------------------------------------------------------------------------

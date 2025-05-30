@@ -7,7 +7,6 @@
     'document' => [],
     'latestApprover' => '',
     'bankAccounts',
-    'id_accurate',
 ])
 
 @php
@@ -172,7 +171,8 @@
                         Alasan Pembatalan
                     </x-button-action>
 
-                    <x-button-action color="red" icon="trash" onclick="deleteAccurateById({{ $id_accurate }})">
+                    <x-button-action color="red" icon="trash"
+                        onclick="deleteAccurateById('{{ $document->invoice_number }}')">
                         Hapus Data Accurate
                     </x-button-action>
                 @endif
@@ -277,12 +277,15 @@
 
         if (!confirm("Yakin ingin menghapus data dari Accurate?")) return;
 
-        fetch(`/accurate/sales-invoice/${id_accurate}/`, {
-                method: 'DELETE',
+        fetch(`/accurate/sales-invoice`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': token
-                }
+                },
+                body: JSON.stringify({
+                    number: id_accurate
+                })
             })
             .then(response => response.json())
             .then(data => {

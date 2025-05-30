@@ -224,7 +224,6 @@ class ManfeeDocumentController extends Controller
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
 
-        $id_accurate = $payment_status_json[0]['id'] ?? null;
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -245,7 +244,7 @@ class ManfeeDocumentController extends Controller
         }
 
 
-        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi', 'allBankAccounts', 'payment_status', 'id_accurate'));
+        return view('pages.ar-menu.management-fee.invoice-detail.show', compact('manfeeDoc', 'jenis_biaya', 'latestApprover', 'subtotals', 'subtotalBiayaNonPersonil', 'account_detailbiaya', 'account_akumulasi', 'allBankAccounts', 'payment_status'));
     }
 
 
