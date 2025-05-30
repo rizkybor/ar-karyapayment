@@ -21,6 +21,9 @@
                         {{-- Nomor Kontrak --}}
                         <div><strong>Nomor Kontrak:</strong> {{ $contract->contract_number }}</div>
 
+                        {{-- Inisial Kontrak --}}
+                        <div><strong>Inisial Kontrak:</strong> {{ $contract->contract_initial ?? '-' }}</div>
+
                         {{-- Nama Perusahaan --}}
                         <div><strong>Nama Perusahaan:</strong> {{ $contract->employee_name }}</div>
 
