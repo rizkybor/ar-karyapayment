@@ -6,8 +6,7 @@
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
-    'latestApprover' => '',
-    'id_accurate' => ''
+    'latestApprover' => ''
 ])
 
 @php
@@ -173,7 +172,7 @@
                     </x-button-action>
 
                     <x-button-action color="red" icon="trash"
-                        onclick="deleteAccurateById({{ $id_accurate }})">
+                        onclick="deleteAccurateById('{{ $document->invoice_number }}')">
                         Hapus Data Accurate
                     </x-button-action>
                 @endif
@@ -278,26 +277,29 @@
 
         if (!confirm("Yakin ingin menghapus data dari Accurate?")) return;
 
-        fetch("{{ route('accurate.sales-invoice-delete') }}", {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAutoCloseAlert('globalAlertModal', 3000, data.message, 'success', 'Berhasil!');
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                showAutoCloseAlert('globalAlertModal', 3000, data.message, 'error', 'Gagal!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan.', 'error', 'Gagal!');
-        });
+        fetch(`/accurate/sales-invoice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    number: id_accurate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'success', 'Berhasil!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'error', 'Gagal!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan.', 'error', 'Gagal!');
+            });
     }
 
     function openModal(button) {
