@@ -71,17 +71,26 @@
 <body class="bg-white p-8">
 
     @php
-        $statusIsSix = (int) $document->status === 6;
+        $status = (int) $document->status;
         $isPerbendaharaan = auth()->user()->role === 'perbendaharaan';
-        $showDraft = $statusIsSix && $isPerbendaharaan;
+        $showDraft = $status === 6 && $isPerbendaharaan;
+        $isRejected = $status === 103;
         $disableWatermark = $disableWatermark ?? false;
     @endphp
 
+
     @if (!$disableWatermark && !$showDraft)
-        <!-- Watermark Layer -->
         <div
-            style="position: fixed; top: 35%; left: 12%; z-index: -1; opacity: 0.08; font-size: 150px; transform: rotate(-30deg); font-weight: bold; color: #000;">
-            DRAFT
+            style="position: fixed;
+               top: 35%;
+               left: 12%;
+               z-index: -1;
+               opacity: 0.08;
+               font-size: {{ $isRejected ? '100px' : '150px' }};
+               transform: rotate(-30deg);
+               font-weight: bold;
+               color: {{ $isRejected ? '#dc2626' : '#000' }};">
+            {{ $isRejected ? 'REJECTED' : 'DRAFT' }}
         </div>
     @endif
 
