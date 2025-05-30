@@ -195,8 +195,7 @@ class ContractsController extends Controller
             $departmentList = $getResponseDepartmentsAccurate['d'];
 
             // Project List
-            $getResponseProject = $this->accurate->getProjectList();
-            $dataProjectList = $getResponseProject['d'];
+            $dataProjectList = $this->accurate->getProjectList();
 
             // Data Classification  / Segmen Usaha
             $getResponsedataClassificationAccurate = $this->accurate->getDataClassificationList();
