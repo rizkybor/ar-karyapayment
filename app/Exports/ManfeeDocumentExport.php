@@ -3,38 +3,216 @@
 namespace App\Exports;
 
 use App\Models\ManfeeDocument;
+use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class ManfeeDocumentExport implements FromCollection, WithHeadings
+class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths, WithEvents
 {
-  protected $ids;
+    protected $ids;
 
-  public function __construct($ids)
-  {
-    $this->ids = explode(',', $ids);
-  }
+    public function __construct($ids)
+    {
+        $this->ids = explode(',', $ids);
+    }
 
-  public function collection()
-  {
-    return ManfeeDocument::whereIn('id', $this->ids)
-      ->with('contract') // Mengambil relasi contract
-      ->get()
-      ->map(function ($doc) {
+    public function collection()
+    {
+        return ManfeeDocument::with(['contract', 'creator', 'accumulatedCosts'])
+            ->whereIn('id', $this->ids)
+            ->get()
+            ->map(function ($doc, $index) {
+                $tglTagihan = $doc->created_at;
+                $tglJatuhTempo = Carbon::parse($doc->expired_at);
+                $hariIni = Carbon::now();
+
+                $umurPiutang = $hariIni->diffInDays($tglTagihan);
+                $selisihJatuhTempo = $hariIni->diffInDays($tglJatuhTempo, false);
+
+                $firstAccumulated = $doc->accumulatedCosts->first();
+                $dpp = $firstAccumulated?->dpp ?? '';
+                $nilaiPpn = $firstAccumulated?->nilai_ppn ?? '';
+                $totalTagihan = $firstAccumulated?->total ?? '';
+
+                return [
+                    'No' => $index + 1,
+                    'No. Tagihan' => $doc->invoice_number ?? '',
+                    'No. Perjanjian / Kontrak' => optional($doc->contract)->contract_number ?? '',
+                    'Tgl Perjanjian' => optional(optional($doc->contract)->contract_date)?->format('d M Y') ?? '',
+                    'Pemberi Kerja' => optional($doc->contract)->employee_name ?? '',
+                    'Kode' => optional($doc->contract)->contract_initial ?? '',
+                    'PIC KPU' => optional($doc->creator)->name ?? '',
+                    'PIC PEMBERI KERJA' => optional($doc->contract)->employee_name ?? '',
+                    'Jenis Tagihan' => $doc->category ?? '',
+                    'Tgl. Tagihan' => $tglTagihan?->format('d M Y') ?? '',
+                    'Umur Piutang' => $umurPiutang . ' hari',
+                    'Tanggal Bayar ke TAD' => '',
+                    'Tgl. Jatuh Tempo' => $tglJatuhTempo?->format('d M Y') ?? '',
+                    'Jatuh Tempo' => ($selisihJatuhTempo >= 0)
+                        ? $selisihJatuhTempo . ' hari lagi'
+                        : 'Lewat ' . abs($selisihJatuhTempo) . ' hari',
+                    'Tgl. Dokumen Diterima & Penerima' => '',
+                    'No. Faktur Pajak' => '',
+                    'Transaksi' => $doc->letter_subject ?? '',
+                    'Nilai Pokok' => '',
+                    'Non Personil' => '',
+                    'Lain-lain' => '',
+                    'Manfee' => '',
+                    'DPP' => $dpp,
+                    'PPN' => $nilaiPpn,
+                    'Total Tagihan' => $totalTagihan,
+                    'Outstanding' => '',
+                    'Tgl Terima' => '',
+                    'Nilai Diterima' => '',
+                    'PPh (ps. 23, 4(2), 22) & WAPU' => '',
+                    'Keterangan' => '',
+                    'Update status tagihan' => '',
+                    'No. PERMENT PGNMAS / Notes' => ''
+                ];
+            });
+    }
+
+    public function headings(): array
+    {
         return [
-          'ID' => $doc->id,
-          'No Kontrak' => $doc->contract->contract_number ?? '-',
-          'Nama Pemberi Kerja' => $doc->contract->employee_name ?? '-',
-          'Total Nilai Kontrak' => $doc->contract->value ?? '-',
-          'Jangka Waktu' => $doc->period,
-          'Status' => $doc->status,
-          'Created At' => $doc->created_at->format('d-m-Y H:i'),
+            'No',
+            'No. Tagihan',
+            'No. Perjanjian / Kontrak',
+            'Tgl Perjanjian',
+            'Pemberi Kerja',
+            'Kode',
+            'PIC KPU',
+            'PIC PEMBERI KERJA',
+            'Jenis Tagihan',
+            'Tgl. Tagihan',
+            'Umur Piutang',
+            'Tanggal Bayar ke TAD',
+            'Tgl. Jatuh Tempo',
+            'Jatuh Tempo',
+            'Tgl. Dokumen Diterima & Penerima',
+            'No. Faktur Pajak',
+            'Transaksi',
+            'Nilai Pokok',
+            'Non Personil',
+            'Lain-lain',
+            'Manfee',
+            'DPP',
+            'PPN',
+            'Total Tagihan',
+            'Outstanding',
+            'Tgl Terima',
+            'Nilai Diterima',
+            'PPh (ps. 23, 4(2), 22) & WAPU',
+            'Keterangan',
+            'Update status tagihan',
+            'No. PERMENT PGNMAS / Notes'
         ];
-      });
-  }
+    }
 
-  public function headings(): array
-  {
-    return ['ID', 'No Kontrak', 'Nama Pemberi Kerja', 'Total Nilai Kontrak', 'Jangka Waktu', 'Status', 'Created At'];
-  }
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true],
+                'fill' => [
+                    'fillType' => 'solid',
+                    'startColor' => ['rgb' => 'DAECF9'],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'wrapText' => true,
+                ],
+            ],
+        ];
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 5,
+            'B' => 35,
+            'C' => 25,
+            'D' => 15,
+            'E' => 25,
+            'F' => 10,
+            'G' => 20,
+            'H' => 50,
+            'I' => 25,
+            'J' => 15,
+            'K' => 15,
+            'L' => 50,
+            'M' => 15,
+            'N' => 15,
+            'O' => 40,
+            'P' => 30,
+            'Q' => 70,
+            'R' => 15,
+            'S' => 15,
+            'T' => 15,
+            'U' => 15,
+            'V' => 15,
+            'W' => 15,
+            'X' => 15,
+            'Y' => 15,
+            'Z' => 15,
+            'AA' => 15,
+            'AB' => 40,
+            'AC' => 15,
+            'AD' => 40,
+            'AE' => 40,
+        ];
+    }
+
+    public function excelColumnsRange($start = 'A', $end = 'AE')
+    {
+        $columns = [];
+        $col = $start;
+
+        while (true) {
+            $columns[] = $col;
+            if ($col === $end) {
+                break;
+            }
+            $col++;
+        }
+
+        return $columns;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+
+                // Set tinggi baris header
+                $sheet->getRowDimension(1)->setRowHeight(30);
+
+                // Ambil kolom dari A sampai AE
+                $columns = $this->excelColumnsRange('A', 'AE');
+
+                // Wrap text & vertical alignment
+                foreach ($columns as $col) {
+                    $sheet->getStyle("{$col}")->getAlignment()->setWrapText(true);
+                    $sheet->getStyle("{$col}")->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                }
+
+                // Freeze header baris pertama
+                $sheet->freezePane('A2');
+
+                // Set tinggi semua baris yang ada datanya menjadi 30
+                $highestRow = $sheet->getHighestRow();
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    $sheet->getRowDimension($row)->setRowHeight(30);
+                }
+            },
+        ];
+    }
 }
