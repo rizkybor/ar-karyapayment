@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\User;
 use App\Models\FilePrivy;
 use App\Models\Contracts;
+use App\Models\NonManfeeDocument;
 use App\Models\ManfeeDocument;
 use App\Models\DocumentApproval;
 use App\Models\Notification;
@@ -63,19 +64,26 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        $lastNumber = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+        $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
-        if (!$lastNumber) {
-            $lastNumeric = 100;
-        } else {
-            preg_match('/^(\d{6})/', $lastNumber, $matches);
-            $lastNumeric = $matches[1] ?? '000100';
-            $lastNumeric = intval($lastNumeric);
+        $lastNumericMF = 100;
+        $lastNumericNF = 100;
 
-            if ($lastNumeric % 10 !== 0) {
-                $lastNumeric = ceil($lastNumeric / 10) * 10;
-            }
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
+            $lastNumericMF = intval($matchMF[1]);
+        }
+
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
+            $lastNumericNF = intval($matchNF[1]);
+        }
+
+        $lastNumeric = max($lastNumericMF, $lastNumericNF);
+
+        if ($lastNumeric % 10 !== 0) {
+            $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
 
         $nextNumber = $lastNumeric + 10;
