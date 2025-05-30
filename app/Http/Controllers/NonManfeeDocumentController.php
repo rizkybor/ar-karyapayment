@@ -219,8 +219,6 @@ class NonManfeeDocumentController extends Controller
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
 
-        $id_accurate = $payment_status_json[0]['id'] ?? null;
-
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
 
@@ -253,8 +251,7 @@ class NonManfeeDocumentController extends Controller
             'subtotals',
             'subtotalBiayaNonPersonil',
             'allBankAccounts',
-            'payment_status',
-            'id_accurate'
+            'payment_status'
         ));
     }
 
