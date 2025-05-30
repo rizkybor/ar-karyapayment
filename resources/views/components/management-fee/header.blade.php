@@ -7,6 +7,7 @@
     'document' => [],
     'latestApprover' => '',
     'bankAccounts',
+    'id_accurate',
 ])
 
 @php
@@ -170,6 +171,10 @@
                         onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
                         Alasan Pembatalan
                     </x-button-action>
+
+                    <x-button-action color="red" icon="trash" onclick="deleteAccurateById({{ $id_accurate }})">
+                        Hapus Data Accurate
+                    </x-button-action>
                 @endif
 
                 @if (auth()->user()->role !== 'maker')
@@ -262,6 +267,12 @@
 </script>
 
 <script>
+    function deleteAccurateById(id_accurate) {
+        console.log('ID Accurate : ', id_accurate)
+
+        // nama fungsi -> deleteSalesInvoice
+    }
+
     function openModal(button) {
         let actionRoute = button.getAttribute('data-action');
         let modalTitle = button.getAttribute('data-title');
@@ -344,7 +355,7 @@
                 },
                 body: JSON.stringify({
                     document_id: documentId,
-                    category_type: category_type, 
+                    category_type: category_type,
                     type_document: type
                 })
             })
