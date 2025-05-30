@@ -33,7 +33,7 @@
         
         {{-- HEADER --}}
         <x-non-management-fee.header :transaction_status="$nonManfeeDocument['is_active']" :document_status="$nonManfeeDocument['status']" :latestApprover=$latestApprover
-            :document="$nonManfeeDocument" :payment_status="$payment_status" isShowPage="true" />
+            :document="$nonManfeeDocument" :payment_status="$payment_status" :id_accurate="$id_accurate" isShowPage="true" />
 
         {{-- Get error message --}}
         @if (session()->has('error'))
