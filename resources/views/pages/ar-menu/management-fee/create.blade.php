@@ -147,6 +147,11 @@
 
         // Function saat pilih kontrak
         function selectContract(id, contractNumber, employeeName, billTypesJson, contractInitial) {
+            // alert
+            if (!contractInitial || contractInitial.trim() === '') {
+                alert("❗ Silakan lengkapi 'Initial Kontrak' terlebih dahulu di data kontrak.");
+                return;
+            }
             // Update
             document.getElementById("contractInput").value = contractNumber;
             document.getElementById("contract_id").value = id;
