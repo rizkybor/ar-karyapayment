@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class AccurateMasterOptionService
 {
@@ -409,36 +410,42 @@ class AccurateMasterOptionService
         if (!$this->accessToken) {
             throw new Exception('Access Token atau Session ID belum diset.');
         }
-    
+
         $timestamp = now()->format('d/m/Y H:i:s');
         $signature = $this->makeSignature($timestamp);
-    
+
         $headers = [
             'Authorization'     => 'Bearer ' . $this->accessToken,
             'X-Api-Timestamp'   => $timestamp,
             'X-Api-Signature'   => $signature
         ];
-    
-        $url = $this->baseUrl . '/project/list.do';
-    
-        // Parameter berdasarkan dokumentasi dan contoh request
-        $queryParams = [
-            // filter opsional berdasarkan tanggal selesai
-            // 'filter.finishDate.op'     => 'EQUAL',
-            // 'filter.finishDate.val[0]' => '2023-12-31',
-    
-            'sp.page'       => 1,
-            'sp.pageSize'   => 100,
-            'sp.start'      => 0,       // kalau pakai paginasi offset
-            'keywords'      => '',      // pencarian umum (deprecated tapi masih bisa)
-            // 'customerId' => 79,       // hanya jika memang diperlukan
-        ];
-    
-        $response = $this->client->get($url, [
-            'headers' => $headers,
-            'query'   => $queryParams
-        ]);
-    
-        return json_decode($response->getBody()->getContents(), true);
+
+        $allProjects = [];
+        $page = 1;
+        $pageSize = 20;
+        $totalPages = 1; // default awal
+
+        do {
+            $queryParams = [
+                'sp.page'     => $page,
+                'sp.pageSize' => $pageSize,
+            ];
+
+            $url = $this->baseUrl . '/project/list.do?' . http_build_query($queryParams);
+
+            $response = $this->client->get($url, [
+                'headers' => $headers,
+            ]);
+
+            $data = json_decode($response->getBody()->getContents(), true);
+
+            if (isset($data['d']) && is_array($data['d'])) {
+                $allProjects = array_merge($allProjects, $data['d']);
+            }
+
+            $totalPages = $data['sp']['pageCount'] ?? 1;
+            $page++;
+        } while ($page <= $totalPages);
+        return $allProjects;
     }
 }

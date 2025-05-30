@@ -170,6 +170,11 @@
                         onclick="openRejectModal('', true, '{{ $document->reason_rejected }}', '{{ $document->path_rejected }}')">
                         Alasan Pembatalan
                     </x-button-action>
+
+                    <x-button-action color="red" icon="trash"
+                        onclick="deleteAccurateById('{{ $document->invoice_number }}')">
+                        Hapus Data Accurate
+                    </x-button-action>
                 @endif
 
                 @if (auth()->user()->role !== 'maker')
@@ -262,6 +267,41 @@
 </script>
 
 <script>
+    function deleteAccurateById(id_accurate) {
+        if (!id_accurate) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'ID Accurate tidak ditemukan.', 'error', 'Gagal!');
+            return;
+        }
+
+        const token = "{{ csrf_token() }}";
+
+        if (!confirm("Yakin ingin menghapus data dari Accurate?")) return;
+
+        fetch(`/accurate/sales-invoice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    number: id_accurate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'success', 'Berhasil!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'error', 'Gagal!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan.', 'error', 'Gagal!');
+            });
+    }
+
     function openModal(button) {
         let actionRoute = button.getAttribute('data-action');
         let modalTitle = button.getAttribute('data-title');
@@ -344,7 +384,7 @@
                 },
                 body: JSON.stringify({
                     document_id: documentId,
-                    category_type: category_type, 
+                    category_type: category_type,
                     type_document: type
                 })
             })

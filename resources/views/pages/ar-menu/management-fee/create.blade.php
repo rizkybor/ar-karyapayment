@@ -12,7 +12,7 @@
                 <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-                        {{-- new autocompleted --}}
+                        {{-- Contract --}}
                         <div class="relative">
                             <x-label for="type" value="{{ __('Kontrak') }}" />
                             <input type="text" id="contractInput" placeholder="Ketik/Pilih Kontrak..."
@@ -24,13 +24,20 @@
 
                             <input type="hidden" id="contract_id" name="contract_id"
                                 value="{{ old('contract_id') }}" />
+                            <input type="hidden" id="contract_initial" name="contract_initial" value="" />
 
                             <ul id="contractDropdown"
                                 class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
                                 rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
                                 @foreach ($contracts as $contract)
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-                                        onclick="selectContract('{{ $contract->id }}', '{{ $contract->contract_number }}', '{{ $contract->employee_name }}', '{{ $contract->billTypes->pluck('bill_type')->toJson() }}')">
+                                        onclick="selectContract(
+                                            '{{ $contract->id }}', 
+                                            '{{ $contract->contract_number }}', 
+                                            '{{ $contract->employee_name }}', 
+                                            '{{ $contract->billTypes->pluck('bill_type')->toJson() }}',
+                                            '{{ $contract->contract_initial ?? 'SOL' }}'
+                                        )">
                                         <div class="font-semibold text-gray-800 dark:text-gray-200">
                                             {{ $contract->contract_number }}</div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -40,7 +47,7 @@
                             </ul>
                         </div>
 
-
+                        {{-- Document --}}
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
@@ -55,8 +62,9 @@
                         </div>
                         <div>
                             <x-label for="period" value="{{ __('Periode / Termin') }}" />
-                            <x-input id="period" name="period" placeholder="Masukkan Periode / Termin, contoh : (periode Mei)"
-                                type="text" class="mt-1 block w-full min-h-[40px]" required />
+                            <x-input id="period" name="period"
+                                placeholder="Masukkan Periode / Termin, contoh : (periode Mei)" type="text"
+                                class="mt-1 block w-full min-h-[40px]" required />
                             <x-input-error for="period" class="mt-2" />
                         </div>
                         <div>
@@ -86,7 +94,6 @@
                             <x-label for="bill_type" value="{{ __('Type Tagihan') }}" />
                             <select id="bill_type" name="manfee_bill" class="mt-1 block w-full form-select" required>
                                 <option value="">Pilih Type Tagihan</option>
-                                <!-- Opsi akan diisi oleh JS -->
                             </select>
                             <x-input-error for="type" class="mt-2" />
                         </div>
@@ -104,55 +111,30 @@
         </form>
     </div>
 
-    <!-- Tambahkan input hidden untuk base number -->
+    <!-- Hidden input for base number -->
     <input type="hidden" id="base_number" value="{{ $baseNumber }}">
 
     <script>
-        function getCompanyInitial(employeeName) {
-            if (!employeeName) return 'SOL';
-
-            // Hilangkan PT. dan spasi berlebih
-            const companyName = employeeName.replace(/^PT\.?\s*/i, '').trim();
-
-            // Split menjadi kata-kata
-            const words = companyName.split(/\s+/);
-
-            // Jika 1 kata, gunakan kata tersebut (maksimal 8 karakter)
-            if (words.length === 1) {
-                return words[0].substring(0, 8).toUpperCase();
-            }
-
-            // Jika lebih dari 1 kata, ambil inisial masing-masing kata (maksimal 3 kata)
-            let initials = '';
-            const maxWords = Math.min(words.length, 3);
-            for (let i = 0; i < maxWords; i++) {
-                if (words[i].length > 0) {
-                    initials += words[i][0].toUpperCase();
-                }
-            }
-
-            return initials;
-        }
-
-        // Fungsi untuk update nomor dokumen
-        function updateDocumentNumbers(employeeName) {
+        // Fungsi untuk memperbarui nomor dokumen menggunakan contract_initial dari database
+        function updateDocumentNumbers(contractInitial) {
             const baseNumber = document.getElementById('base_number').value;
             const monthRoman = '{{ $monthRoman }}';
             const year = '{{ $year }}';
-            const companyInitial = getCompanyInitial(employeeName);
 
             document.getElementById('letter_number').value =
-                `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
+                `${baseNumber}/MF/KEU/KPU/${contractInitial}/${monthRoman}/${year}`;
             document.getElementById('invoice_number').value =
-                `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
+                `${baseNumber}/MF/INV/KPU/${contractInitial}/${monthRoman}/${year}`;
             document.getElementById('receipt_number').value =
-                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
+                `${baseNumber}/MF/KW/KPU/${contractInitial}/${monthRoman}/${year}`;
         }
 
+        // Toggle contract dropdown
         function toggleContractDropdown() {
             document.getElementById("contractDropdown").classList.toggle("hidden");
         }
 
+        // Filter contract dropdown
         function filterContractDropdown() {
             let input = document.getElementById("contractInput").value.toLowerCase();
             let items = document.querySelectorAll("#contractDropdown li");
@@ -163,13 +145,15 @@
             });
         }
 
-        // Fungsi saat memilih kontrak
-        function selectContract(id, contractNumber, employeeName, billTypesJson) {
+        // Function saat pilih kontrak
+        function selectContract(id, contractNumber, employeeName, billTypesJson, contractInitial) {
+            // Update
             document.getElementById("contractInput").value = contractNumber;
             document.getElementById("contract_id").value = id;
             document.getElementById("employee_name").value = employeeName;
+            document.getElementById("contract_initial").value = contractInitial;
 
-            // Update tipe tagihan
+            // Update bill types dropdown
             try {
                 const billTypes = JSON.parse(billTypesJson);
                 const billTypeSelect = document.getElementById("bill_type");
@@ -181,75 +165,13 @@
                     billTypeSelect.appendChild(option);
                 });
             } catch (e) {
-                console.warn("Gagal parse billTypes", e);
+                console.warn("Failed to parse billTypes", e);
             }
 
-            // Update nomor dokumen
-            updateDocumentNumbers(employeeName);
+            updateDocumentNumbers(contractInitial);
             document.getElementById("contractDropdown").classList.add("hidden");
         }
 
-        function getCompanyInitial(employeeName) {
-            if (!employeeName) return 'SOL';
-            const companyName = employeeName.replace(/^PT\.\s*/i, '');
-            const words = companyName.trim().split(/\s+/);
-            if (words.length === 1) {
-                return words[0];
-            }
-            let initials = '';
-            for (let i = 0; i < words.length; i++) {
-                if (words[i].length > 0) {
-                    initials += words[i][0].toUpperCase();
-                }
-            }
-            return initials;
-        }
-
-        function getCompanyInitial(employeeName) {
-            if (!employeeName) return 'SOL';
-            const companyName = employeeName.replace(/^PT\.?\s*/i, '');
-            const words = companyName.trim().split(/\s+/);
-
-            if (words.length === 1) {
-                return words[0].toUpperCase();
-            }
-            let initials = '';
-            for (let i = 0; i < words.length; i++) {
-                if (words[i].length > 0) {
-                    initials += words[i][0].toUpperCase();
-                }
-            }
-            return initials;
-        }
-
-        function updateContractDetailsManual(contractNumber, employeeName) {
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-
-            // Update tipe tagihan
-            const billTypes = JSON.parse(selectedOption.getAttribute("data-bill-types")) || [];
-            const billTypeSelect = document.getElementById("bill_type");
-            billTypeSelect.innerHTML = '<option value="">Pilih Type Tagihan</option>';
-            billTypes.forEach(billType => {
-                const option = document.createElement("option");
-                option.value = billType;
-                option.textContent = billType;
-                billTypeSelect.appendChild(option);
-            });
-
-            const baseNumber = '{{ $baseNumber }}';
-            const monthRoman = '{{ $monthRoman }}';
-            const year = '{{ $year }}';
-            const companyInitial = getCompanyInitial(employeeName);
-
-            document.getElementById('letter_number').value =
-                `${baseNumber}/MF/KEU/KPU/${companyInitial}/${monthRoman}/${year}`;
-            document.getElementById('invoice_number').value =
-                `${baseNumber}/MF/INV/KPU/${companyInitial}/${monthRoman}/${year}`;
-            document.getElementById('receipt_number').value =
-                `${baseNumber}/MF/KW/KPU/${companyInitial}/${monthRoman}/${year}`;
-        }
-
-        // Hide dropdown if clicked outside
         document.addEventListener('click', function(event) {
             const input = document.getElementById('contractInput');
             const dropdown = document.getElementById('contractDropdown');

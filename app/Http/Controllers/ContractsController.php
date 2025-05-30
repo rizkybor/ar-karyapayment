@@ -51,14 +51,6 @@ class ContractsController extends Controller
         $mstType = MasterType::all();
         $mstWorkUnit = MasterWorkUnit::all();
 
-        // data dummy category
-        // $category = [
-        //     'Surat Perintah Kerja (SPK)',
-        //     'Perjanjian',
-        //     'Purchase Order',
-        //     'Berita Acara Kesepakatan',
-        // ];
-
         $category = ContractCategory::pluck('name');
 
         try {
@@ -67,8 +59,7 @@ class ContractsController extends Controller
             $departmentList = $getResponseDepartmentsAccurate['d'];
 
             // Project List
-            $getResponseProject = $this->accurate->getProjectList();
-            $dataProjectList = $getResponseProject['d'];
+            $dataProjectList = $this->accurate->getProjectList();
 
             // Data Classification  / Segmen Usaha
             $getResponsedataClassificationAccurate = $this->accurate->getDataClassificationList();
@@ -136,7 +127,7 @@ class ContractsController extends Controller
         }
 
         $input['path'] = $dropboxPath;
-        
+
         // Simpan data kontrak ke database
         $contract = Contracts::create($input);
 
