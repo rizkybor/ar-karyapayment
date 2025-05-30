@@ -268,9 +268,35 @@
 
 <script>
     function deleteAccurateById(id_accurate) {
-        console.log('ID Accurate : ', id_accurate)
+        if (!id_accurate) {
+            showAutoCloseAlert('globalAlertModal', 3000, 'ID Accurate tidak ditemukan.', 'error', 'Gagal!');
+            return;
+        }
 
-        // nama fungsi -> deleteSalesInvoice
+        const token = "{{ csrf_token() }}";
+
+        if (!confirm("Yakin ingin menghapus data dari Accurate?")) return;
+
+        fetch(`/accurate/sales-invoice/${id_accurate}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'success', 'Berhasil!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAutoCloseAlert('globalAlertModal', 3000, data.message, 'error', 'Gagal!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAutoCloseAlert('globalAlertModal', 3000, 'Terjadi kesalahan.', 'error', 'Gagal!');
+            });
     }
 
     function openModal(button) {
