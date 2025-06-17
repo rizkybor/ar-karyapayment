@@ -24,7 +24,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
 
@@ -304,6 +304,7 @@
                 <td class="no-border" style="vertical-align: top;"></td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal;">
+                    <br><br>
                     <strong>Sutaryo</strong>
                     <br>
                     Direktur Keuangan dan Administrasi
