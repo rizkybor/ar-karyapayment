@@ -217,6 +217,7 @@
                 </td>
                 <td colspan="2"
                     style="border-top: none; border-bottom: none; text-align: center; font-weight: normal; padding-bottom: 1rem;">
+                    <br><br>
                     <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
                 </td>
             </tr>
