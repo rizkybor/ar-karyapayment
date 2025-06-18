@@ -12,6 +12,12 @@
             font-size: 12px;
         }
 
+        .signature-container {
+            position: absolute;
+            bottom: 75px;
+            width: 100%;
+        }
+
         .border-box {
             border: 1px solid black;
             padding: 5px;
@@ -191,55 +197,60 @@
         </table>
 
         <!-- Pembayaran -->
-        <table width="100%">
-            <tr>
-                <td rowspan="6"></td>
-                <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
-                <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
-                    Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-                </td>
-            </tr>
-            <tr>
-                <td class="no-border">Bank</td>
-                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->bank_name ?? '-' }}</td>
-                <td class="no-border"></td>
-                <td colspan="2" rowspan="3" style="text-align: center; border-top: none; border-bottom: none;">
-                </td>
-            </tr>
-            <tr>
-                <td class="no-border">No. Rekening</td>
-                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_number ?? '-' }}</td>
-                <td class="no-border"></td>
-            </tr>
-            <tr>
-                <td class="no-border">Cabang</td>
-                <td class="no-border">: &nbsp;&nbsp;KK Jakarta Gedung PGN Pusat</td>
-                <td class="no-border"></td>
-            </tr>
-            <tr>
-                <td class="no-border">Atas Nama</td>
-                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_name ?? '-' }}</td>
-                <td class="no-border"></td>
-                <td colspan="2" style="border-top: none;"></td>
-            </tr>
+        <div class="signature-container">
+            <table width="100%">
+                <tr>
+                    <td rowspan="6"></td>
+                    <td class="no-border" colspan="3">Pembayaran dapat ditransfer melalui:</td>
+                    <td colspan="2" style="border-bottom: none; text-align: center; vertical-align: middle;">
+                        Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="no-border">Bank</td>
+                    <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->bank_name ?? '-' }}</td>
+                    <td class="no-border"></td>
+                    <td colspan="2" rowspan="3"
+                        style="text-align: center; border-top: none; border-bottom: none;">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="no-border">No. Rekening</td>
+                    <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_number ?? '-' }}</td>
+                    <td class="no-border"></td>
+                </tr>
+                <tr>
+                    <td class="no-border">Cabang</td>
+                    <td class="no-border">: &nbsp;&nbsp;KK Jakarta Gedung PGN Pusat</td>
+                    <td class="no-border"></td>
+                </tr>
+                <tr>
+                    <td class="no-border">Atas Nama</td>
+                    <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->account_name ?? '-' }}</td>
+                    <td class="no-border"></td>
+                    <td colspan="2" style="border-top: none;"></td>
+                </tr>
 
-            <tr>
-                <td class="no-border-top-side" style="vertical-align: top;">
-                    Email
-                </td>
-                <td class="no-border-top-side" style="vertical-align: top;">
-                    : &nbsp;&nbsp;invoice_center@pt-kpusahatama.com
-                </td>
-                <td class="no-border-top-side" style="vertical-align: top;">
+                <tr>
+                    <td class="no-border-top-side" style="vertical-align: top;">
+                        Email
+                    </td>
+                    <td class="no-border-top-side" style="vertical-align: top;">
+                        : &nbsp;&nbsp;invoice_center@pt-kpusahatama.com
+                    </td>
+                    <td class="no-border-top-side" style="vertical-align: top;">
 
-                </td>
-                <td colspan="2"
-                    style="border-top: none; border-bottom: none; text-align: center; font-weight: normal; padding-bottom: 1rem;">
-                    <br><br>
-                    <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
-                </td>
-            </tr>
-        </table>
+                    </td>
+                    <td colspan="2"
+                        style="border-top: none; border-bottom: none; text-align: center; font-weight: normal; padding-bottom: 2rem;">
+                        <br><br>
+                        <strong>Sutaryo</strong><br>Direktur Keuangan dan Administrasi
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <br><br><br><br><br><br><br><br><br><br><br>
 
     </div>
 
