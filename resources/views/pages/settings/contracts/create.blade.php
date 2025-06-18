@@ -29,7 +29,7 @@
                                 <x-input-error for="contract_number" class="mt-2" />
                             </div>
 
-                              <div>
+                            <div>
                                 <x-label for="contract_initial" value="{{ __('Inisial Kontrak') }}" />
                                 <x-input id="contract_initial" type="text" name="contract_initial"
                                     class="mt-1 block w-full min-h-[40px]" placeholder="Masukkan inisial kontrak"
@@ -90,8 +90,7 @@
                             <div>
                                 <x-label for="contract_date" value="{{ __('Tanggal Kontrak') }}" />
                                 <x-input id="contract_date" type="date" name="contract_date"
-                                    class="mt-1 block w-full min-h-[40px]" required autocomplete="contract_date"
-                                    oninput="setMinStartDate()" />
+                                    class="mt-1 block w-full min-h-[40px]" required autocomplete="contract_date" />
                                 <x-input-error for="contract_date" class="mt-2" />
                             </div>
 
