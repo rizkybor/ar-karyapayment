@@ -515,7 +515,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '530.81', '820.00', $refKwitansi, $noKw, $jenis_dokumen);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '530.81', '840.00', $refKwitansi, $noKw, $jenis_dokumen);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -939,7 +939,7 @@ class NonManfeeDocumentController extends Controller
     }
 
     private function generateDocumentNumbers(): array
-    {   
+    {
         $doc = $this->getNextDocumentNumberBase();
 
         return [
