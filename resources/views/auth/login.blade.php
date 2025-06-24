@@ -6,7 +6,7 @@
     $meta_description = 'Masuk ke aplikasi PrimeBilling untuk mengelola tagihan dan dokumen Anda.';
     $meta_image = url('images/logo-kpu-ls.png');
     $meta_url = route('login');
-    
+
     $today = Carbon::now()->format('m-d');
     $hour = Carbon::now()->format('H');
 
@@ -62,7 +62,8 @@
             </div>
             <div>
                 <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" type="password" name="password" required autocomplete="current-password" />
+                <x-input-password id="password" name="password" required autocomplete="current-password"
+                    class="form-input w-full" />
             </div>
         </div>
         <div class="flex items-center justify-between mt-6">

@@ -54,16 +54,17 @@
                             <div>
                                 <x-label for="password">{{ __('Password') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="password" type="password" name="password" required
-                                    autocomplete="new-password" placeholder="Masukkan password" />
+                                <x-input-password id="password" name="password" required autocomplete="new-password"
+                                    placeholder="Masukkan password" class="form-input w-full" />
                             </div>
 
                             <!-- Confirm Password -->
                             <div>
                                 <x-label for="password_confirmation">{{ __('Confirm Password') }} <span
                                         class="text-red-500">*</span></x-label>
-                                <x-input id="password_confirmation" type="password" name="password_confirmation"
-                                    required autocomplete="new-password" placeholder="Masukkan ulang password" />
+                                <x-input-password id="password_confirmation" name="password_confirmation" required
+                                    autocomplete="new-password" placeholder="Masukkan ulang password"
+                                    class="form-input w-full" />
                             </div>
                             <!-- Role -->
                             <div>
