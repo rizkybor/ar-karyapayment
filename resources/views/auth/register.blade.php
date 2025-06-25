@@ -99,13 +99,18 @@
                                 <select id="department" name="department"
                                     class="mt-1 block w-full form-select rounded-md border-gray-300 shadow-sm" required>
                                     <option value="">{{ __('Pilih Department') }}</option>
-                                    <option value="Departemen SDM & Umum">Departemen SDM & Umum</option>
-                                    <option value="Departemen Komersial/CNG">Departemen Komersial/CNG</option>
-                                    <option value="Departemen Operasional">Departemen Operasional</option>
-                                    <option value="Departemen Ketehnikan">Departemen Ketehnikan</option>
-                                    <option value="Departemen HSSE">Departemen HSSE</option>
-                                    <option value="Departemen Pajak">Departemen Pajak</option>
-                                    <option value="Departemen Keuangan">Departemen Keuangan</option>
+                                    <option value="Department Akuntansi & Pajak">Department Akuntansi & Pajak</option>
+                                    <option value="Department Anggaran & Perbendaharaan">Department Anggaran &
+                                        Perbendaharaan</option>
+                                    <option value="Department HSSE & Legal">Department HSSE & Legal</option>
+                                    <option value="Department Komersil">Department Komersil</option>
+                                    <option value="Department Operasi TAD & Fasilitas Pendukung">Department Operasi TAD
+                                        & Fasilitas Pendukung</option>
+                                    <option value="Department Pengusahaan Gas & Fasilitas Pendukung">Department
+                                        Pengusahaan Gas & Fasilitas Pendukung</option>
+                                    <option value="Department Pengendali Kerja">Department Pengendali Kerja</option>
+                                    <option value="Department SDM & Layanan Umum">Department SDM & Layanan Umum</option>
+                                    <option value="Department Tehnik">Department Tehnik</option>
                                 </select>
                                 <x-input-error for="department" class="mt-2" />
                             </div>

@@ -27,7 +27,7 @@ class UserController extends Controller
 
         return view('pages.settings.users.index', compact('users'));
     }
-    
+
     public function edit(User $user)
     {
         // Ambil semua role KECUALI super_admin
@@ -47,17 +47,17 @@ class UserController extends Controller
             ->toArray();
 
         // Department yang tidak bisa dipilih oleh Kadiv
-        $excludedKadivDepartments = ['Departemen Pajak', 'Departemen Keuangan'];
+        $excludedKadivDepartments = ['Department Akuntansi & Pajak', 'Department Anggaran & Perbendaharaan'];
 
         // Daftar semua department (bisa juga dari config)
         $departments = [
-            'Departemen SDM & Umum',
-            'Departemen Komersial/CNG',
-            'Departemen Operasional',
-            'Departemen Ketehnikan',
-            'Departemen HSSE',
-            'Departemen Pajak',
-            'Departemen Keuangan',
+            'Department SDM & Layanan Umum',
+            'Department Pengusahaan Gas & Fasilitas Pendukung',
+            'Department Operasi TAD & Fasilitas Pendukung',
+            'Department Tehnik',
+            'Department HSSE & Legal',
+            'Department Akuntansi & Pajak',
+            'Department Anggaran & Perbendaharaan',
         ];
 
         return view('pages.settings.users.edit', compact(
