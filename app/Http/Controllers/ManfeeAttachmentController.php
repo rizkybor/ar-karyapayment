@@ -26,7 +26,7 @@ class ManfeeAttachmentController extends Controller
     {
         $request->validate([
             'file_name' => 'required|string|max:255',
-            'file' => 'required|file|mimes:pdf|max:10240',
+            'file' => 'required|file|mimes:pdf|max:102400',
         ]);
 
         // **📂 Ambil File dari Request**

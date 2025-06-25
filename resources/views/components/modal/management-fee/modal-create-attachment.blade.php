@@ -22,14 +22,14 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="file_upload">
-                    Upload File (PDF, Max: 10MB)
+                    Upload File (PDF, Max: 100MB)
                 </label>
                 <input type="file" id="file_upload" name="file"
                     class="mt-1 block w-full text-gray-900 dark:text-gray-300" accept="application/pdf" required>
 
                 <!-- Pesan Error Jika File Melebihi 10MB -->
                 <p id="fileErrorMessage" class="text-red-500 text-sm mt-2 hidden">
-                    ⚠️ Ukuran file terlalu besar! Maksimal 10MB.
+                    ⚠️ Ukuran file terlalu besar! Maksimal 100MB.
                 </p>
             </div>
 
@@ -78,7 +78,7 @@
         // ✅ Validasi File Size
         fileInput.addEventListener("change", function() {
             const file = fileInput.files[0];
-            const maxSize = 10 * 1024 * 1024;
+            const maxSize = 100 * 1024 * 1024;
 
             if (file) {
                 if (file.size > maxSize) {

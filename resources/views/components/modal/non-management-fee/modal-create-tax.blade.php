@@ -6,11 +6,11 @@
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Tambah Faktur Pajak</h3>
 
         <!-- Form Upload -->
-        <form action="{{ route('non-management-fee.taxes.store', ['id' => $nonManfeeDocument->id]) }}" 
-            method="POST" enctype="multipart/form-data" id="taxUploadForm">
-            
+        <form action="{{ route('non-management-fee.taxes.store', ['id' => $nonManfeeDocument->id]) }}" method="POST"
+            enctype="multipart/form-data" id="taxUploadForm">
+
             @csrf
-            
+
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="file_name">
                     Nama File
@@ -22,22 +22,22 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="tax_file_upload">
-                    Upload File (PDF, Max: 10MB)
+                    Upload File (PDF, Max: 100MB)
                 </label>
                 <input type="file" id="tax_file_upload" name="file"
-                    class="mt-1 block w-full text-gray-900 dark:text-gray-300"
-                    accept="application/pdf" required>
-                
+                    class="mt-1 block w-full text-gray-900 dark:text-gray-300" accept="application/pdf" required>
+
                 <!-- Pesan Error Jika File Melebihi 10MB -->
                 <p id="taxFileErrorMessage" class="text-red-500 text-sm mt-2 hidden">
-                    ⚠️ Ukuran file terlalu besar! Maksimal 10MB.
+                    ⚠️ Ukuran file terlalu besar! Maksimal 100MB.
                 </p>
             </div>
 
             <div class="flex justify-end gap-2">
                 <button type="button" class="px-4 py-2 bg-gray-500 text-white rounded-md"
                     id="closeTaxModalButton">Batal</button>
-                <button type="submit" id="taxSubmitButton" class="px-4 py-2 rounded-md text-white bg-violet-500 hover:bg-violet-600">
+                <button type="submit" id="taxSubmitButton"
+                    class="px-4 py-2 rounded-md text-white bg-violet-500 hover:bg-violet-600">
                     Simpan
                 </button>
             </div>
@@ -78,7 +78,7 @@
         // ✅ Validasi File Size
         taxFileInput.addEventListener("change", function() {
             const file = taxFileInput.files[0];
-            const maxSize = 10 * 1024 * 1024;
+            const maxSize = 100 * 1024 * 1024;
 
             if (file) {
                 if (file.size > maxSize) {
