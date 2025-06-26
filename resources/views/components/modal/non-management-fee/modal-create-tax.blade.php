@@ -22,10 +22,10 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="tax_file_upload">
-                    Upload File (PDF, Max: 100MB)
+                    Upload File (PDF, XLS, XLSX, Max: 100MB)
                 </label>
                 <input type="file" id="tax_file_upload" name="file"
-                    class="mt-1 block w-full text-gray-900 dark:text-gray-300" accept="application/pdf" required>
+                    class="mt-1 block w-full text-gray-900 dark:text-gray-300" accept=".pdf, .xls, .xlsx" required>
 
                 <!-- Pesan Error Jika File Melebihi 10MB -->
                 <p id="taxFileErrorMessage" class="text-red-500 text-sm mt-2 hidden">
