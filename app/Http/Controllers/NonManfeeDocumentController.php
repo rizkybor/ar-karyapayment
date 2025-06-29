@@ -390,7 +390,12 @@ class NonManfeeDocumentController extends Controller
             // 🔹 1️⃣ Cek apakah dokumen dalam status revisi
             $isRevised = $document->status === '102';
 
-            // 🔹 2️⃣ Validasi izin approval
+            // Jika revisi, kita abaikan role reviewer terakhir
+            if ($isRevised) {
+                $currentRole = 'maker'; // Atau default role pertama (misal 'maker' atau 'kadiv')
+            }
+
+            // Validasi role
             if (!$isRevised && (!$userRole || $userRole !== $currentRole)) {
                 return back()->with('error', "Anda tidak memiliki izin untuk menyetujui dokumen ini.");
             }
@@ -544,20 +549,20 @@ class NonManfeeDocumentController extends Controller
                 $nextApprovers = User::where('role', $nextRole)->get();
             }
             // 🔹 4️⃣ Jika revisi, kembalikan ke approver sebelumnya
-            elseif ($isRevised) {
-                $lastApprover = DocumentApproval::where('document_id', $document->id)
-                    ->where('document_type', NonManfeeDocument::class)
-                    ->latest('approved_at')
-                    ->first();
+            // elseif ($isRevised) {
+            //     $lastApprover = DocumentApproval::where('document_id', $document->id)
+            //         ->where('document_type', NonManfeeDocument::class)
+            //         ->latest('approved_at')
+            //         ->first();
 
-                if (!$lastApprover) {
-                    return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
-                }
-                $nextRole = $lastApprover->approver_role;
-                $statusCode = $lastApprover->status;
+            //     if (!$lastApprover) {
+            //         return back()->with('error', "Gagal mengembalikan dokumen revisi: Approver sebelumnya tidak ditemukan.");
+            //     }
+            //     $nextRole = $lastApprover->approver_role;
+            //     $statusCode = $lastApprover->status;
 
-                $nextApprovers = User::where('id', $lastApprover->approver_id)->get();
-            }
+            //     $nextApprovers = User::where('id', $lastApprover->approver_id)->get();
+            // }
             // 🔹 5️⃣ Jika bukan revisi & bukan pajak, lanjutkan approval normal
             else {
 
@@ -676,15 +681,14 @@ class NonManfeeDocumentController extends Controller
      */
     private function getNextApprovalRole($currentRole, $department = null, $isRevised = false)
     {
-        // Jika dokumen direvisi, kembalikan ke role sebelumnya
-        if ($isRevised) {
-            return $currentRole; // Kembali ke atasan yang meminta revisi
-        }
-
-        // Alur approval normal
-        if ($currentRole === 'maker' && $department) {
+        if ($isRevised || $currentRole === 'maker') {
             return 'kadiv';
         }
+
+        // // Alur approval normal
+        // if ($currentRole === 'maker' && $department) {
+        //     return 'kadiv';
+        // }
 
         $flow = [
             'kadiv' => 'perbendaharaan',
