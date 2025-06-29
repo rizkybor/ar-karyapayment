@@ -963,8 +963,37 @@ class ManfeeDocumentController extends Controller
             'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
         ]);
 
+          // 🔹 Tentukan penerima notifikasi (maker/pembuat dokumen)
+        $makerId = $document->created_by;
+        $maker = User::find($makerId);
+
+        // 🔹 Buat notifikasi
+        if ($maker) {
+            $notification = Notification::create([
+                'type' => InvoiceApprovalNotification::class,
+                'notifiable_type' => ManfeeDocument::class,
+                'notifiable_id' => $document->id,
+                'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah ditolak oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
+                'sender_id' => $user->id,
+                'sender_role' => $userRole,
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            NotificationRecipient::create([
+                'notification_id' => $notification->id,
+                'user_id' => $maker->id,
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::commit();
+
         return redirect()->route('management-fee.show', $document->id)
-            ->with('success', 'Dokumen berhasil dibatalkan.');
+            ->with('success', 'Dokumen berhasil dibatalkan dan notifikasi telah dikirim ke pembuat dokumen.');
     }
 
     public function updateBankAccount(Request $request, $id)
