@@ -75,6 +75,10 @@
                                     <option value="">{{ __('Pilih Role') }}</option>
                                     @foreach ($roles as $role)
                                         @php
+                                            if ($role->name === 'super_admin') {
+                                                continue;
+                                            }
+
                                             $disabled = false;
                                             $note = '';
 
