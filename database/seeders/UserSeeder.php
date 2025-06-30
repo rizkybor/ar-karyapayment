@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'name' => 'Super Admin',
-                'email' => 'superadmin@example.com',
+                'email' => 'superadmin@kpu.com',
                 'nip' => '001',
                 'department' => null,
                 'position' => null,
@@ -297,7 +297,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Sutaryo',
-                'email' => 'sutaryo@example.com',
+                'email' => 'Sutaryo@pt-kpusahatama.com',
                 'nip' => '99999999',
                 'department' => 'Department Anggaran & Perbendaharaan',
                 'position' => 'Direktur Keuangan',
