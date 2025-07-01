@@ -73,23 +73,54 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // try {
+
+
+        //     $validated = $request->validate([
+        //         'name' => ['required', 'string', 'max:255'],
+        //         'email' => ['required', 'email', 'max:255'],
+        //         'nip' => ['required', 'string', 'digits:8'],
+        //         'department' => ['required', 'string', 'max:255'],
+        //         'position' => ['required', 'string', 'max:255'],
+        //         'role' => ['required', 'string', 'max:255'],
+        //         'employee_status' => ['required', 'string', 'max:255'],
+        //         'gender' => ['required', 'string', 'max:255'],
+        //         'identity_number' => ['required', 'string', 'max:255'],
+        //     ]);
+
+        //     $user->update($validated);
+
+        //     // Pastikan sync role juga dilakukan
+        //     $user->syncRoles([$validated['role']]);
+
+        //     return redirect()->route('list_users')->with('success', 'Data pengguna berhasil diperbarui.');
+        // } catch (ValidationException $e) {
+        //     return redirect()->back()
+        //         ->withErrors($e->validator)
+        //         ->withInput();
+        // } catch (\Throwable $e) {
+        //     return redirect()->back()
+        //         ->with('error', 'Gagal menyimpan: ' . $e->getMessage())
+        //         ->withInput();
+        // }
         try {
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255'],
-                'nip' => ['required', 'string', 'digits:8'],
-                'department' => ['required', 'string', 'max:255'],
-                'position' => ['required', 'string', 'max:255'],
-                'role' => ['required', 'string', 'max:255'],
-                'employee_status' => ['required', 'string', 'max:255'],
-                'gender' => ['required', 'string', 'max:255'],
-                'identity_number' => ['required', 'string', 'max:255'],
+                'name' => ['sometimes', 'string', 'max:255'],
+                'email' => ['sometimes', 'email', 'max:255'],
+                'nip' => ['sometimes', 'string', 'digits:8'],
+                'department' => ['sometimes', 'string', 'max:255'],
+                'position' => ['sometimes', 'string', 'max:255'],
+                'role' => ['sometimes', 'string', 'max:255'],
+                'employee_status' => ['sometimes', 'string', 'max:255'],
+                'gender' => ['sometimes', 'string', 'max:255'],
+                'identity_number' => ['sometimes', 'string', 'max:255'],
             ]);
 
             $user->update($validated);
 
-            // Pastikan sync role juga dilakukan
-            $user->syncRoles([$validated['role']]);
+            if (isset($validated['role'])) {
+                $user->syncRoles([$validated['role']]);
+            }
 
             return redirect()->route('list_users')->with('success', 'Data pengguna berhasil diperbarui.');
         } catch (ValidationException $e) {
