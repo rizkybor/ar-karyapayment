@@ -42,7 +42,7 @@
                                             </x-button-action> --}}
                                             {{-- modal view --}}
                                             <x-button-action color="violet" icon="eye" @click="modalOpen = true">
-                                                View
+                                                Lihat Lampiran
                                             </x-button-action>
                                             <x-modal.global.modal-view-global-file :file="$file"
                                                 :manfeeDoc="$manfeeDoc" />
