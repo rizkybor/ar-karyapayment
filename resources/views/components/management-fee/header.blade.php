@@ -200,7 +200,7 @@
                             data-title="Need Info" data-button-text="Send"
                             data-button-color="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:focus:ring-yellow-700"
                             onclick="openModal(this)">
-                            Need Info
+                            Reject Invoice
                         </x-button-action>
 
                         @if (auth()->user()->role === 'pajak')
