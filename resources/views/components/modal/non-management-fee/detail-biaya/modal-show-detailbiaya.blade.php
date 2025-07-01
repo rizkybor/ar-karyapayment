@@ -34,7 +34,7 @@
         <div class="flex justify-between items-center mb-3">
             <x-button-action class="px-4 py-2 text-white rounded-md" color="violet" icon="eye"
                 @click="modalOpen = true">
-                Show
+                Lihat Detail Biaya
             </x-button-action>
         </div>
     @endif

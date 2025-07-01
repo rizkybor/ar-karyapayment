@@ -37,7 +37,7 @@
                                     <td class="p-2 whitespace-nowrap">
                                         <div class="text-center flex items-center justify-end gap-2">
                                             <x-button-action color="violet" icon="eye" @click="modalOpen = true">
-                                                View
+                                                Lihat Lampiran
                                             </x-button-action>
 
                                             <!-- Panggil Komponen Modal -->
