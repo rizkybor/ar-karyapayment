@@ -14,7 +14,7 @@
 
         .signature-container {
             position: absolute;
-            bottom: 75px;
+            bottom: 91px;
             width: 100%;
         }
 
