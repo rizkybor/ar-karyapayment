@@ -9,24 +9,26 @@ use Illuminate\Support\Facades\View;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 
-
 class ManfeeDocumentDataTableController extends Controller
 {
   public function index(Request $request)
   {
     $user = Auth::user();
 
-    // 🛑 Hapus Cache saat ada Filtering / Searching
+    // Hapus Cache saat ada Filtering / Searching
     if ($request->has('search') && !empty($request->search['value'])) {
       Cache::forget('manfee_doc_datatable_' . $user->id);
     }
 
     $cacheKey = 'manfee_doc_datatable_' . $user->id;
-    if (Cache::has($cacheKey) && !$request->has('search')) {
+    if (
+      Cache::has($cacheKey) && !$request->has('search') && !$request->has('columns')
+      && !$request->has('created_by') && !$request->has('date_start') && !$request->has('date_end')
+    ) {
       return Cache::get($cacheKey);
     }
 
-    // ✅ Query utama
+    // Query utama dengan filter
     $query = ManfeeDocument::query()
       ->with(['contract', 'accumulatedCosts'])
       ->where(function ($query) use ($user) {
@@ -37,24 +39,80 @@ class ManfeeDocumentDataTableController extends Controller
       })
       ->select('manfee_documents.*')
       ->orderByRaw("
-              CASE 
-                  WHEN expired_at >= NOW() THEN 0 
-                  ELSE 1 
-              END, expired_at ASC
-          ");
+                CASE 
+                    WHEN expired_at >= NOW() THEN 0 
+                    ELSE 1 
+                END, expired_at ASC
+            ");
 
-    // ✅ Gunakan DataTables untuk proses data
+    // Filter created_by jika ada
+    if ($request->has('created_by') && $request->created_by != '') {
+      $query->where('created_by', $request->created_by);
+    }
+
+    // Filter date range jika ada
+    if ($request->has('date_start') || $request->has('date_end')) {
+      $startDate = $request->date_start ?: '1970-01-01';
+      $endDate = $request->date_end ?: date('Y-m-d');
+
+      // Tambahkan 1 hari ke endDate untuk mencakup seluruh hari terakhir
+      $endDate = date('Y-m-d', strtotime($endDate . ' +1 day'));
+
+      $query->whereBetween('created_at', [$startDate, $endDate]);
+    }
+
+    if ($request->ajax() && $request->has('get_users')) {
+      $users = ManfeeDocument::with('creator')
+        ->select('created_by')
+        ->groupBy('created_by')
+        ->get()
+        ->pluck('creator')
+        ->filter()
+        ->map(function ($user) {
+          return [
+            'id' => $user->id,
+            'name' => $user->name
+          ];
+        });
+
+      return response()->json($users);
+    }
+
+    // Handle filter dari request DataTables
+    if ($request->has('columns')) {
+      foreach ($request->columns as $column) {
+        if ($column['searchable'] === "true" && !empty($column['search']['value'])) {
+          $columnIndex = $column['data'];
+          $searchValue = $column['search']['value'];
+
+          switch ($columnIndex) {
+            case '4': // Status
+              $this->filterStatus($query, $searchValue);
+              break;
+            case '5': // Nama Pemberi Kerja
+              $query->whereHas('contract', function ($q) use ($searchValue) {
+                $q->where('employee_name', 'like', '%' . $searchValue . '%');
+              });
+              break;
+            case '3': // Nomor Kontrak
+              $query->whereHas('contract', function ($q) use ($searchValue) {
+                $q->where('contract_number', 'like', '%' . $searchValue . '%');
+              });
+              break;
+          }
+        }
+      }
+    }
+
     $data = DataTables::eloquent($query)
       ->addIndexColumn()
 
       ->addColumn('invoice_number', function ($row) {
-        return $row->invoice_number ? $row->invoice_number : '-';
+        return $row->invoice_number ?: '-';
       })
-
       ->addColumn('termin_invoice', function ($row) {
         return $row->contract ? $row->contract->termin_invoice : '-';
       })
-
       ->addColumn('status', function ($row) {
         return view('components.label-status-table', ['status' => $row->status])->render();
       })
@@ -72,70 +130,70 @@ class ManfeeDocumentDataTableController extends Controller
       })
 
       ->filterColumn('status', function ($query, $keyword) {
-        $statusMapping = [
-          'draft' => '0',
-          'checked by kadiv' => '1',
-          'checked by perbendaharaan' => '2',
-          'checked by mgr. anggaran' => '3',
-          'checked by dir. keuangan' => '4',
-          'checked by pajak' => '5',
-          'done' => '6',
-        ];
-
-        $keywordLower = strtolower($keyword);
-
-        // Jika keyword cocok dengan status yang dimapping
-        if (isset($statusMapping[$keywordLower])) {
-          $query->where('status', $statusMapping[$keywordLower]);
-        } else {
-          // Jika user mencari kata "manager", tetap cocokkan ke "manager anggaran"
-          foreach ($statusMapping as $text => $value) {
-            if (strpos($text, $keywordLower) !== false) {
-              $query->where('status', $value);
-              return;
-            }
-          }
-        }
+        $this->filterStatus($query, $keyword);
       })
-
-      ->filterColumn('expired_at', function ($query, $keyword) {
-        if (strtolower($keyword) === 'expired') {
-          $query->where('expired_at', '<', now());
-        }
-      })
-
       ->filterColumn('contract.contract_number', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
-          $q->whereRaw('LOWER(contract_number) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+          $q->where('contract_number', 'like', '%' . $keyword . '%');
         });
       })
-
       ->filterColumn('contract.title', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
-          $q->whereRaw('LOWER(title) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+          $q->where('title', 'like', '%' . $keyword . '%');
         });
       })
-
       ->filterColumn('contract.employee_name', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
-          $q->whereRaw('LOWER(employee_name) LIKE ?', ["%" . strtolower($keyword) . "%"]);
+          $q->where('employee_name', 'like', '%' . $keyword . '%');
         });
       })
-
       ->rawColumns(['status'])
       ->make(true);
 
-    // 🚀 Simpan hasil query ke Redis selama 1 jam (hanya jika tidak ada pencarian)
-    if (!$request->has('search')) {
+    if (
+      !$request->has('search') && !$request->has('columns')
+      && !$request->has('created_by') && !$request->has('date_start') && !$request->has('date_end')
+    ) {
       Cache::put($cacheKey, $data, 3600);
     }
 
     return $data;
   }
 
-  /**
-   * Hapus cache saat data berubah (Insert, Update, Delete)
-   */
+  // Helper method untuk filter status
+  private function filterStatus($query, $keyword)
+  {
+    $statusMapping = [
+      '0' => '0',
+      '1' => '1',
+      '2' => '2',
+      '3' => '3',
+      '4' => '4',
+      '5' => '5',
+      '6' => '6',
+      'draft' => '0',
+      'checked by kadiv' => '1',
+      'checked by perbendaharaan' => '2',
+      'checked by mgr. anggaran' => '3',
+      'checked by dir. keuangan' => '4',
+      'checked by pajak' => '5',
+      'done' => '6',
+    ];
+
+    $keywordLower = strtolower($keyword);
+
+    if (isset($statusMapping[$keywordLower])) {
+      $query->where('status', $statusMapping[$keywordLower]);
+    } else {
+      foreach ($statusMapping as $text => $value) {
+        if (strpos($text, $keywordLower) !== false) {
+          $query->where('status', $value);
+          return;
+        }
+      }
+    }
+  }
+
   public function clearCache()
   {
     $user = Auth::user();
