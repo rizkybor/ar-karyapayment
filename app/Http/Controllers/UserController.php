@@ -51,13 +51,15 @@ class UserController extends Controller
 
         // Daftar semua department (bisa juga dari config)
         $departments = [
-            'Department SDM & Layanan Umum',
-            'Department Pengusahaan Gas & Fasilitas Pendukung',
-            'Department Operasi TAD & Fasilitas Pendukung',
-            'Department Tehnik',
-            'Department HSSE & Legal',
             'Department Akuntansi & Pajak',
             'Department Anggaran & Perbendaharaan',
+            'Department HSSE & Legal',
+            'Department Komersil',
+            'Department Operasi TAD & Fasilitas Pendukung',
+            'Department Pengusahaan Gas & Fasilitas Pendukung',
+            'Department Pengendali Kerja',
+            'Department SDM & Layanan Umum',
+            'Department Tehnik'
         ];
 
         return view('pages.settings.users.edit', compact(
