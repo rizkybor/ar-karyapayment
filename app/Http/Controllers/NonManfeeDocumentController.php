@@ -971,6 +971,82 @@ class NonManfeeDocumentController extends Controller
             ->with('success', 'Dokumen berhasil dibatalkan dan notifikasi telah dikirim ke pembuat dokumen.');
     }
 
+    public function amandemen(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf|max:10240',
+        ]);
+
+        $document = NonManfeeDocument::findOrFail($id);
+        $user = auth()->user(); // Ambil user yang sedang login
+        $userRole = $user->role;
+        $previousStatus = $document->status;
+
+        // Ambil file dan nama untuk diupload
+        $file = $request->file('file');
+        $fileName = 'Amandemen ' . $document->letter_subject;
+        $dropboxFolderName = '/amandemen/';
+
+        // Upload ke Dropbox
+        $dropboxController = new DropboxController();
+        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+
+        if (!$dropboxPath) {
+            return back()->with('error', 'Gagal mengunggah file penolakan.');
+        }
+
+        // Update dokumen
+        $document->update([
+            'reason_amandemen' => $request->reason,
+            'path_amandemen' => $dropboxPath,
+            'status' => 0,
+        ]);
+
+        // Simpan ke riwayat
+        NonManfeeDocHistory::create([
+            'document_id' => $document->id,
+            'performed_by' => $user->id,
+            'role' => $userRole,
+            'previous_status' => $previousStatus,
+            'new_status' => '0',
+            'action' => 'Kembali Draft',
+            'notes' => "Dokumen diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}",
+        ]);
+
+        // 🔹 Tentukan penerima notifikasi (maker/pembuat dokumen)
+        $makerId = $document->created_by;
+        $maker = User::find($makerId);
+
+        // 🔹 Buat notifikasi
+        if ($maker) {
+            $notification = Notification::create([
+                'type' => InvoiceApprovalNotification::class,
+                'notifiable_type' => NonManfeeDocument::class,
+                'notifiable_id' => $document->id,
+                'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('non-management-fee.show', $document->id),
+                'sender_id' => $user->id,
+                'sender_role' => $userRole,
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            NotificationRecipient::create([
+                'notification_id' => $notification->id,
+                'user_id' => $maker->id,
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect()->route('non-management-fee.show', $document->id)
+            ->with('success', 'Dokumen berhasil diamandemenkan dan notifikasi telah dikirim ke pembuat dokumen.');
+    }
+
     private function generateDocumentNumbers(): array
     {
         $doc = $this->getNextDocumentNumberBase();

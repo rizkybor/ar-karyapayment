@@ -309,6 +309,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
 
+        // non-management-fee.amandemen
+        Route::put('/{id}/amandemen', [NonManfeeDocumentController::class, 'amandemen'])->name('amandemen');
+
         Route::prefix('{id}/edit/detail_payments')->name('detail_payments.')->group(function () {
             // non-management-fee.detail_payments.show
             Route::get('/{detail_payment_id}', [NonManfeeDetailPaymentsController::class, 'show'])->name('show');

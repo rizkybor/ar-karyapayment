@@ -187,6 +187,12 @@
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
+                            onclick="openAmandemenModal('{{ route('non-management-fee.rejected', $document->id) }}')">
+                            Amandemen
+                        </x-button-action>
+
+                        <!-- Reject Button -->
+                        <x-button-action color="red" icon="reject"
                             onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">
                             Batalkan Dokumen
                         </x-button-action>
