@@ -61,19 +61,29 @@ class ManfeeDocumentDataTableController extends Controller
       $query->whereBetween('created_at', [$startDate, $endDate]);
     }
 
+    // if ($request->ajax() && $request->has('get_users')) {
+    //   // Ambil semua user yang pernah membuat dokumen
+    //   $userIds = ManfeeDocument::groupBy('created_by')->pluck('created_by');
+
+    //   // Ambil data user lengkap
+    //   $users = \App\Models\User::whereIn('id', $userIds)->get();
+
+    //   return response()->json($users->map(function ($user) {
+    //     return [
+    //       'id' => $user->id,
+    //       'name' => $user->name
+    //     ];
+    //   }));
+    // }
+
+    // Dropdown Dibuat Oleh
     if ($request->ajax() && $request->has('get_users')) {
-      // Ambil semua user yang pernah membuat dokumen
-      $userIds = ManfeeDocument::groupBy('created_by')->pluck('created_by');
+      // Ambil SEMUA user dengan role 'maker' (tanpa memperhatikan apakah punya dokumen)
+      $users = \App\Models\User::where('role', 'maker')
+        ->orderBy('name')
+        ->get(['id', 'name']);
 
-      // Ambil data user lengkap
-      $users = \App\Models\User::whereIn('id', $userIds)->get();
-
-      return response()->json($users->map(function ($user) {
-        return [
-          'id' => $user->id,
-          'name' => $user->name
-        ];
-      }));
+      return response()->json($users);
     }
 
     // Handle filter dari request DataTables
