@@ -62,20 +62,18 @@ class ManfeeDocumentDataTableController extends Controller
     }
 
     if ($request->ajax() && $request->has('get_users')) {
-      $users = ManfeeDocument::with('creator')
-        ->select('created_by')
-        ->groupBy('created_by')
-        ->get()
-        ->pluck('creator')
-        ->filter()
-        ->map(function ($user) {
-          return [
-            'id' => $user->id,
-            'name' => $user->name
-          ];
-        });
+      // Ambil semua user yang pernah membuat dokumen
+      $userIds = ManfeeDocument::groupBy('created_by')->pluck('created_by');
 
-      return response()->json($users);
+      // Ambil data user lengkap
+      $users = \App\Models\User::whereIn('id', $userIds)->get();
+
+      return response()->json($users->map(function ($user) {
+        return [
+          'id' => $user->id,
+          'name' => $user->name
+        ];
+      }));
     }
 
     // Handle filter dari request DataTables
