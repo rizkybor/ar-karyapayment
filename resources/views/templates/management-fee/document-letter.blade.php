@@ -141,7 +141,7 @@
         {{-- Tanggal --}}
         <table border="0">
             <td style="width: 100%; border: none;">
-                Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+                Jakarta, {{ \Carbon\Carbon::parse($document->created_at)->translatedFormat('d F Y') }}
             </td>
         </table>
 
