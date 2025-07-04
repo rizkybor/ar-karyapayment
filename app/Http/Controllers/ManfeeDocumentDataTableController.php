@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ManfeeDocument;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\View;
+
+use App\Models\ManfeeDocument;
+
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Http\Request;
+
 
 class ManfeeDocumentDataTableController extends Controller
 {
@@ -61,21 +63,6 @@ class ManfeeDocumentDataTableController extends Controller
       $query->whereBetween('created_at', [$startDate, $endDate]);
     }
 
-    // if ($request->ajax() && $request->has('get_users')) {
-    //   // Ambil semua user yang pernah membuat dokumen
-    //   $userIds = ManfeeDocument::groupBy('created_by')->pluck('created_by');
-
-    //   // Ambil data user lengkap
-    //   $users = \App\Models\User::whereIn('id', $userIds)->get();
-
-    //   return response()->json($users->map(function ($user) {
-    //     return [
-    //       'id' => $user->id,
-    //       'name' => $user->name
-    //     ];
-    //   }));
-    // }
-
     // Dropdown Dibuat Oleh
     if ($request->ajax() && $request->has('get_users')) {
       // Ambil SEMUA user dengan role 'maker' (tanpa memperhatikan apakah punya dokumen)
@@ -112,6 +99,7 @@ class ManfeeDocumentDataTableController extends Controller
       }
     }
 
+    // ✅ Gunakan DataTables untuk proses data
     $data = DataTables::eloquent($query)
       ->addIndexColumn()
 
@@ -140,6 +128,63 @@ class ManfeeDocumentDataTableController extends Controller
       ->filterColumn('status', function ($query, $keyword) {
         $this->filterStatus($query, $keyword);
       })
+
+      ->filterColumn('expired_at', function ($query, $keyword) {
+        $keyword = strtolower($keyword);
+
+        if ($keyword === 'expired') {
+          $query->where('expired_at', '<', now());
+          return;
+        }
+
+        // Coba cocokkan format tanggal (misal: 01-06-2025 atau 2025-06-01)
+        if (strtotime($keyword)) {
+          $query->whereDate('expired_at', '=', date('Y-m-d', strtotime($keyword)));
+          return;
+        }
+
+        // Pencarian berdasarkan angka tanggal
+        if (preg_match('/^\d{1,2}$/', $keyword)) {
+          $query->whereDay('expired_at', $keyword);
+          return;
+        }
+
+        // Pencarian berdasarkan angka bulan (01–12)
+        if (preg_match('/^(0?[1-9]|1[0-2])$/', $keyword)) {
+          $query->whereMonth('expired_at', $keyword);
+          return;
+        }
+
+        // Pencarian berdasarkan tahun
+        if (preg_match('/^\d{4}$/', $keyword)) {
+          $query->whereYear('expired_at', $keyword);
+          return;
+        }
+
+        // Pencarian berdasarkan nama bulan (bahasa Indonesia)
+        $monthNames = [
+          'januari' => 1,
+          'februari' => 2,
+          'maret' => 3,
+          'april' => 4,
+          'mei' => 5,
+          'juni' => 6,
+          'juli' => 7,
+          'agustus' => 8,
+          'september' => 9,
+          'oktober' => 10,
+          'november' => 11,
+          'desember' => 12,
+        ];
+
+        foreach ($monthNames as $name => $num) {
+          if (str_contains($keyword, $name)) {
+            $query->whereMonth('expired_at', $num);
+            break;
+          }
+        }
+      })
+
       ->filterColumn('contract.contract_number', function ($query, $keyword) {
         $query->whereHas('contract', function ($q) use ($keyword) {
           $q->where('contract_number', 'like', '%' . $keyword . '%');
