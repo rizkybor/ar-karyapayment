@@ -31,6 +31,103 @@
                     <h2 class="font-semibold dark:text-gray-100 py-3">Non Management Fee</h2>
                 </header>
                 <div class="p-3">
+
+                    <!-- Filter Section -->
+                    <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Status Filter -->
+                            <div class="sm:col-span-1">
+                                <label for="filterStatus"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                                <select id="filterStatus"
+                                    class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                                    <option value="">All Status</option>
+                                    <option value="0">Draft</option>
+                                    <option value="1">Checked by Kadiv</option>
+                                    <option value="2">Checked by Perbendaharaan</option>
+                                    <option value="3">Checked by Mgr. Anggaran</option>
+                                    <option value="4">Checked by Dir. Keuangan</option>
+                                    <option value="5">Checked by Pajak</option>
+                                    <option value="6">Done</option>
+                                </select>
+                            </div>
+
+                            <!-- Employer Name Filter -->
+                            <div class="sm:col-span-1">
+                                <label for="filterEmployer"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Pemberi
+                                    Kerja</label>
+                                <input type="text" id="filterEmployer"
+                                    class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                    placeholder="Cari nama pemberi kerja">
+                            </div>
+
+                            <!-- Contract Number Filter -->
+                            <div class="sm:col-span-1">
+                                <label for="filterContract"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor
+                                    Kontrak</label>
+                                <input type="text" id="filterContract"
+                                    class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                    placeholder="Cari nomor kontrak">
+                            </div>
+
+                            <!-- Created By Filter -->
+                            <div class="sm:col-span-1">
+                                <label for="filterMaker"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dibuat
+                                    Oleh</label>
+                                <select id="filterMaker"
+                                    class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+    text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+    focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                                    <option value="">Semua User</option>
+                                    <option value="{{ auth()->id() }}">Saya ({{ auth()->user()->name }})</option>
+                                    <!-- Options akan diisi oleh JavaScript -->
+                                </select>
+                            </div>
+
+                            <!-- Date Range Filter -->
+                            <div class="sm:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal
+                                    Pembuatan</label>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <input type="date" id="filterDateStart"
+                                        class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+            text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+            focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                        onchange="setMinEndDate()">
+                                    <span
+                                        class="flex items-center justify-center text-gray-500 dark:text-gray-400 sm:py-0 py-2">s/d</span>
+                                    <input type="date" id="filterDateEnd"
+                                        class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+            text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+            focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-4 flex justify-end gap-2">
+                            <button id="clearFilters"
+                                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 
+            rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200">
+                                Clear Filters
+                            </button>
+                            <button id="applyFilters"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg 
+            hover:bg-blue-700 transition-all duration-200">
+                                Cari
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Table Controls -->
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                         <div class="relative">
@@ -107,7 +204,8 @@
 
                     <!-- Show Entries Dropdown (Visible only on Mobile) -->
                     <div class="flex items-center gap-2 sm:hidden mt-5">
-                        <label for="perPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
+                        <label for="perPage"
+                            class="text-sm font-medium text-gray-700 dark:text-gray-300">Show:</label>
                         <select id="perPage"
                             class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
                                 text-sm text-gray-700 dark:text-gray-200 font-medium px-3 pr-8 py-2 h-9 rounded-lg shadow-sm 
@@ -138,6 +236,45 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js"></script>
     <script>
         moment.locale('id'); // Setel bahasa ke Bahasa Indonesia
+
+        // Fungsi untuk mengatur min date pada end date berdasarkan start date
+        function setMinEndDate() {
+            const startDateInput = document.getElementById('filterDateStart');
+            const endDateInput = document.getElementById('filterDateEnd');
+
+            if (startDateInput.value) {
+                endDateInput.min = startDateInput.value;
+
+                // Jika end date sebelumnya lebih kecil dari start date yang baru, set ke start date
+                if (endDateInput.value && new Date(endDateInput.value) < new Date(startDateInput.value)) {
+                    endDateInput.value = startDateInput.value;
+                }
+            }
+        }
+
+        // Panggil fungsi saat halaman dimuat dan saat start date berubah
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set min date untuk end date
+            setMinEndDate();
+
+            // Event listener untuk start date
+            document.getElementById('filterDateStart').addEventListener('change', function() {
+                setMinEndDate();
+            });
+
+            // Event listener untuk end date
+            document.getElementById('filterDateEnd').addEventListener('change', function() {
+                const startDate = document.getElementById('filterDateStart').value;
+                const endDate = this.value;
+
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        'Tanggal akhir tidak boleh lebih kecil dari tanggal awal', 'error',
+                        'Error!');
+                    this.value = startDate;
+                }
+            });
+        });
     </script>
 
     <script>
@@ -418,31 +555,31 @@
                         <nav class="flex" role="navigation" aria-label="Navigation">
                             <div class="mr-2">
                                 ${currentPage > 1 ? `
-                                        <button data-page="${currentPage - 2}"
-                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                            </svg>
-                                        </button>` : `
-                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                            </svg>
-                                        </span>`}
+                                                        <button data-page="${currentPage - 2}"
+                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                            </svg>
+                                                        </button>` : `
+                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                            </svg>
+                                                        </span>`}
                             </div>
                             <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
-                                for (let i = 1; i <= totalPages; i++) {
-                                    paginationHtml += i === currentPage ?
-                                        `<li>
+                    for (let i = 1; i <= totalPages; i++) {
+                        paginationHtml += i === currentPage ?
+                            `<li>
                             <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
                                 border border-gray-200 dark:border-gray-700/60 text-violet-500">
                                 ${i}
                             </span>
                         </li>` :
-                                        `<li>
+                            `<li>
                             <button data-page="${i - 1}"
                                 class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
                                 hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
@@ -450,25 +587,25 @@
                                 ${i}
                             </button>
                         </li>`;
-                                }
+                    }
 
-                                paginationHtml += `
+                    paginationHtml += `
                             </ul>
                             <div class="ml-2">
                                 ${currentPage < totalPages ? `
-                                        <button data-page="${currentPage}"
-                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                            </svg>
-                                        </button>` : `
-                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                            </svg>
-                                        </span>`}
+                                                        <button data-page="${currentPage}"
+                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                            </svg>
+                                                        </button>` : `
+                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                            </svg>
+                                                        </span>`}
                             </div>
                         </nav>
                     </div>`;
@@ -521,6 +658,171 @@
                     search: 'applied'
                 }).nodes();
                 $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            }); // ✅ Implementasi Filter
+            $('#applyFilters').on('click', function() {
+                applyFilters();
+            });
+
+            // ✅ Clear Filter
+            $('#clearFilters').on('click', function() {
+                $('#filterStatus').val('');
+                $('#filterEmployer').val('');
+                $('#filterContract').val('');
+                $('#filterMaker').val('');
+                $('#filterDateStart').val('');
+                $('#filterDateEnd').val('');
+                applyFilters();
+            });
+
+            // Load daftar user yang memiliki dokumen
+            function loadUserOptions() {
+                $.ajax({
+                    url: "{{ route('management-fee.datatable') }}",
+                    data: {
+                        get_users: true
+                    },
+                    success: function(response) {
+                        let options = '<option value="">Semua User</option>';
+                        const currentUserId = {{ auth()->id() }};
+                        let currentUserAdded = false;
+
+                        response.forEach(function(user) {
+                            if (user.id == currentUserId) {
+                                options +=
+                                    `<option value="${user.id}">Saya (${user.name})</option>`;
+                                currentUserAdded = true;
+                            } else {
+                                options += `<option value="${user.id}">${user.name}</option>`;
+                            }
+                        });
+
+                        // Jika user saat ini belum ada di daftar (misal belum membuat dokumen)
+                        if (!currentUserAdded && currentUserId) {
+                            const currentUserName = "{{ auth()->user()->name }}";
+                            options +=
+                                `<option value="${currentUserId}">Saya (${currentUserName})</option>`;
+                        }
+
+                        $('#filterMaker').html(options);
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading users:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Panggil fungsi saat halaman dimuat
+            loadUserOptions();
+
+            // ✅ Fungsi untuk menerapkan filter
+            function applyFilters() {
+                let status = $('#filterStatus').val();
+                let employer = $('#filterEmployer').val();
+                let contract = $('#filterContract').val();
+                let maker = $('#filterMaker').val();
+                let dateStart = $('#filterDateStart').val();
+                let dateEnd = $('#filterDateEnd').val();
+
+                // Validasi tanggal
+                if (dateStart && dateEnd) {
+                    let start = new Date(dateStart);
+                    let end = new Date(dateEnd);
+
+                    if (end < start) {
+                        showAutoCloseAlert('globalAlertModal', 3000,
+                            'Tanggal akhir tidak boleh lebih kecil dari tanggal awal', 'error', 'Error!');
+                        $('#filterDateEnd').val(dateStart); // Set end date sama dengan start date
+                        dateEnd = dateStart;
+                    }
+                }
+
+                // Reset pencarian global
+                table.search('');
+
+                // Terapkan filter kolom per kolom
+                table.columns().search('').draw();
+
+                // Filter Status
+                if (status !== '') {
+                    table.column(4).search(status, true, false);
+                }
+
+                // Filter Nama Pemberi Kerja
+                if (employer !== '') {
+                    table.column(5).search(employer, true, false);
+                }
+
+                // Filter Nomor Kontrak
+                if (contract !== '') {
+                    table.column(3).search(contract, true, false);
+                }
+
+                // Bangun URL dengan parameter filter
+                let url = "{{ route('management-fee.datatable') }}?";
+                let params = [];
+
+                if (maker !== '') {
+                    params.push('created_by=' + maker);
+                }
+
+                if (dateStart) {
+                    params.push('date_start=' + dateStart);
+                }
+
+                if (dateEnd) {
+                    params.push('date_end=' + dateEnd);
+                }
+
+                // Jika ada parameter, load dengan URL baru
+                if (params.length > 0) {
+                    table.ajax.url(url + params.join('&')).load();
+                } else {
+                    // Jika tidak ada filter, kembali ke URL awal
+                    table.ajax.url("{{ route('management-fee.datatable') }}").load();
+                }
+            }
+
+
+            // Validasi tanggal saat diubah
+            $('#filterDateStart, #filterDateEnd').on('change', function() {
+                let startDate = $('#filterDateStart').val();
+                let endDate = $('#filterDateEnd').val();
+
+                if (startDate && endDate) {
+                    let start = new Date(startDate);
+                    let end = new Date(endDate);
+
+                    if (end < start) {
+                        showAutoCloseAlert('globalAlertModal', 3000,
+                            'Tanggal akhir tidak boleh lebih kecil dari tanggal awal', 'error', 'Error!'
+                        );
+                        $('#filterDateEnd').val(startDate); // Set end date sama dengan start date
+                    }
+                }
+
+                // Jika start date diubah dan end date kosong, set end date sama dengan start date
+                if (startDate && !endDate && $(this).is('#filterDateStart')) {
+                    $('#filterDateEnd').val(startDate);
+                }
+            });
+
+            // Validasi tanggal saat diubah
+            $('#filterDateStart, #filterDateEnd').on('change', function() {
+                let startDate = $('#filterDateStart').val();
+                let endDate = $('#filterDateEnd').val();
+
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        'Tanggal akhir tidak boleh lebih kecil dari tanggal awal', 'error', 'Error!');
+                    $('#filterDateEnd').val(startDate); // Set end date sama dengan start date
+                }
+            });
+
+            // ✅ Enter key untuk trigger filter
+            $('#filterEmployer, #filterContract').keypress(function(e) {
+                if (e.which === 13) {
+                    applyFilters();
+                }
             });
         });
     </script>
