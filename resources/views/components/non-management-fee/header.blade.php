@@ -6,7 +6,7 @@
     'isEditable' => false,
     'isShowPage' => false,
     'document' => [],
-    'latestApprover' => ''
+    'latestApprover' => '',
 ])
 
 @php
@@ -81,7 +81,7 @@
                                 <option value="{{ $bank->id }}"
                                     {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
                                     {{ $bank->bank_name }} - {{ $bank->account_number }}
-                                    ({{ $bank->account_name }})
+                                    ({{ $bank->branch }})
                                 </option>
                             @endforeach
                         </select>
@@ -384,7 +384,7 @@
                 },
                 body: JSON.stringify({
                     document_id: documentId,
-                    category_type: category_type, 
+                    category_type: category_type,
                     type_document: type
                 })
             })

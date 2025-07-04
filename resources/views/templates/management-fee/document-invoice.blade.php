@@ -288,7 +288,7 @@
             </tr>
             <tr>
                 <td class="no-border">Cabang</td>
-                <td class="no-border">: &nbsp;&nbsp;KK Jakarta Gedung PGN Pusat</td>
+                <td class="no-border">: &nbsp;&nbsp;{{ $document->bankAccount->branch ?? '-' }}</td>
                 <td class="no-border"></td>
             </tr>
             <tr>
