@@ -185,11 +185,12 @@
                             Update Lampiran
                         </x-button-action>
 
-                        <!-- Reject Button -->
+                        <!-- Amandemen Button -->
                         <x-button-action color="red" icon="reject"
-                            onclick="openAmandemenModal('{{ route('non-management-fee.rejected', $document->id) }}')">
+                            >
                             Amandemen
                         </x-button-action>
+                        {{-- onclick="openAmandemenModal('{{ route('non-management-fee.rejected', $document->id) }}')" --}}
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
