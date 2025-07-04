@@ -209,6 +209,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         // management-fee.rejeced
         Route::put('/{id}/rejected', [ManfeeDocumentController::class, 'rejected'])->name('rejected');
 
+        // management-fee.amandemen
+        Route::put('/{id}/amandemen', [ManfeeDocumentController::class, 'amandemen'])->name('amandemen');
+
         // Prefix untuk attachments
         Route::prefix('{id}/edit/attachments')->name('attachments.')->group(function () {
             // management-fee.attachments.show
@@ -308,6 +311,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         // non-management-fee.rejeced
         Route::put('/{id}/rejected', [NonManfeeDocumentController::class, 'rejected'])->name('rejected');
+
+        // non-management-fee.amandemen
+        Route::put('/{id}/amandemen', [NonManfeeDocumentController::class, 'amandemen'])->name('amandemen');
 
         Route::prefix('{id}/edit/detail_payments')->name('detail_payments.')->group(function () {
             // non-management-fee.detail_payments.show
