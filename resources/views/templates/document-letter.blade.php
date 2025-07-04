@@ -208,7 +208,7 @@
                 </tr>
                 <tr>
                     <td style="width: 10%; border: none; vertical-align: top;">Cabang</td>
-                    <td style="width: 90%; border: none;">: {{ $bagian ?? 'KK Jakarta Gedung PGN PUSAT' }}</td>
+                    <td style="width: 90%; border: none;">: {{ $document->bankAccount->branch ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td style="width: 10%; border: none;">Atas Nama</td>

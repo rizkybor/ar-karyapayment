@@ -77,7 +77,7 @@
                             @foreach ($bankAccounts as $bank)
                                 <option value="{{ $bank->id }}"
                                     {{ old('bank_account_id', $selectedBankId ?? ($document->bank_account_id ?? '')) == $bank->id ? 'selected' : '' }}>
-                                    {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->account_name }})
+                                    {{ $bank->bank_name }} - {{ $bank->account_number }} ({{ $bank->branch }})
                                 </option>
                             @endforeach
                         </select>

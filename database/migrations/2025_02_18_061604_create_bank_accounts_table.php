@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('bank_name', 100);
             $table->string('account_number', 100);
             $table->string('account_name', 100);
+            $table->string('branch', 50);
             $table->timestamps();
         });
     }
