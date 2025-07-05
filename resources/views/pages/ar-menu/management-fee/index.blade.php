@@ -55,27 +55,53 @@
                             </div>
 
                             <!-- Employer Name Filter -->
-                            <div class="sm:col-span-1">
+                            <div class="sm:col-span-1 relative">
                                 <label for="filterEmployer"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Pemberi
                                     Kerja</label>
                                 <input type="text" id="filterEmployer"
                                     class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
-                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
-                                    placeholder="Cari nama pemberi kerja">
+        text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+        focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                    placeholder="Ketik/Pilih Nama Pemberi Kerja" oninput="filterEmployerDropdown()"
+                                    onclick="toggleEmployerDropdown()" autocomplete="off" />
+
+                                <ul id="employerDropdown"
+                                    class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+        rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+                                    @foreach ($contracts as $contract)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                            onclick="selectEmployer('{{ $contract->employee_name }}')">
+                                            <div class="font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $contract->employee_name }}</div>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
 
                             <!-- Contract Number Filter -->
-                            <div class="sm:col-span-1">
+                            <div class="sm:col-span-1 relative">
                                 <label for="filterContract"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor
                                     Kontrak</label>
                                 <input type="text" id="filterContract"
                                     class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
-                focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
-                                    placeholder="Cari nomor kontrak">
+        text-sm text-gray-700 dark:text-gray-200 font-medium px-3 py-2 rounded-lg shadow-sm 
+        focus:ring focus:ring-blue-300 dark:focus:ring-blue-700 transition-all ease-in-out duration-200"
+                                    placeholder="Ketik/Pilih Nomor Kontrak" oninput="filterContractDropdown()"
+                                    onclick="toggleContractDropdown()" autocomplete="off" />
+
+                                <ul id="contractDropdown"
+                                    class="absolute z-10 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+        rounded-md mt-1 max-h-60 overflow-auto shadow-md hidden transition-all">
+                                    @foreach ($contracts as $contract)
+                                        <li class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                                            onclick="selectContract('{{ $contract->contract_number }}')">
+                                            <div class="font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $contract->contract_number }}</div>
+                                        </li>
+                                    @endforeach
+                                </ul>
                             </div>
 
                             <!-- Created By Filter -->
@@ -277,6 +303,69 @@
                     this.value = startDate;
                 }
             });
+        });
+    </script>
+    <script>
+        // Fungsi untuk filter dropdown employer
+        function filterEmployerDropdown() {
+            let input = document.getElementById("filterEmployer").value.toLowerCase();
+            let items = document.querySelectorAll("#employerDropdown li");
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        // Toggle employer dropdown
+        function toggleEmployerDropdown() {
+            document.getElementById("employerDropdown").classList.toggle("hidden");
+        }
+
+        // Pilih employer dari dropdown
+        function selectEmployer(employeeName) {
+            document.getElementById("filterEmployer").value = employeeName;
+            document.getElementById("employerDropdown").classList.add("hidden");
+            applyFilters(); // Terapkan filter setelah memilih
+        }
+
+        // Fungsi untuk filter dropdown contract
+        function filterContractDropdown() {
+            let input = document.getElementById("filterContract").value.toLowerCase();
+            let items = document.querySelectorAll("#contractDropdown li");
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        // Toggle contract dropdown
+        function toggleContractDropdown() {
+            document.getElementById("contractDropdown").classList.toggle("hidden");
+        }
+
+        // Pilih contract dari dropdown
+        function selectContract(contractNumber) {
+            document.getElementById("filterContract").value = contractNumber;
+            document.getElementById("contractDropdown").classList.add("hidden");
+            applyFilters(); // Terapkan filter setelah memilih
+        }
+
+        // Close dropdown ketika klik di luar
+        document.addEventListener('click', function(event) {
+            const employerInput = document.getElementById('filterEmployer');
+            const employerDropdown = document.getElementById('employerDropdown');
+            const contractInput = document.getElementById('filterContract');
+            const contractDropdown = document.getElementById('contractDropdown');
+
+            if (!employerInput.contains(event.target) && !employerDropdown.contains(event.target)) {
+                employerDropdown.classList.add("hidden");
+            }
+
+            if (!contractInput.contains(event.target) && !contractDropdown.contains(event.target)) {
+                contractDropdown.classList.add("hidden");
+            }
         });
     </script>
 
@@ -558,19 +647,19 @@
             <nav class="flex" role="navigation" aria-label="Navigation">
                 <div class="mr-2">
                     ${currentPage > 1 ? `
-                                                                                                                                                                                                        <button data-page="${currentPage - 2}" 
-                                                                                                                                                                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                                                                                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                                                                                                                                            </svg>
-                                                                                                                                                                                                        </button>` : `
-                                                                                                                                                                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                                                                                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                                                                                                                                            </svg>
-                                                                                                                                                                                                        </span>`}
+                                                                                                                                                                                                                                    <button data-page="${currentPage - 2}" 
+                                                                                                                                                                                                                                        class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                                                                                                                                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                                                                                                                                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                                                                                                                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                                                                                                                                                                                        </svg>
+                                                                                                                                                                                                                                    </button>` : `
+                                                                                                                                                                                                                                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                                                                                                                                                                                        border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                                                                                                                                                                                        <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                                                                                                                                                                            <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                                                                                                                                                                                                                                        </svg>
+                                                                                                                                                                                                                                    </span>`}
                 </div>
                 <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
 
@@ -601,19 +690,19 @@
                 </ul>
                 <div class="ml-2">
                     ${currentPage < totalPages ? `
-                                                                                                                                                                                                <button data-page="${currentPage}" 
-                                                                                                                                                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                                                                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                </button>` : `
-                                                                                                                                                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                                                                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                        <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                </span>`}
+                                                                                                                                                                                                                            <button data-page="${currentPage}" 
+                                                                                                                                                                                                                                class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                                                                                                                                                                                border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                                                                                                                                                                                                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                                                                                                                                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                                                                                                                                                                                </svg>
+                                                                                                                                                                                                                            </button>` : `
+                                                                                                                                                                                                                            <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                                                                                                                                                                                                                                border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                                                                                                                                                                                                                                <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                                                                                                                                                                                                                                    <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                                                                                                                                                                                                                                </svg>
+                                                                                                                                                                                                                            </span>`}
                 </div>
             </nav>
             </div>`;
