@@ -51,7 +51,9 @@ class ManfeeDocumentController extends Controller
      */
     public function index()
     {
-        return view('pages/ar-menu/management-fee/index');
+        $contracts = Contracts::where('type', 'management_fee')->get();
+
+        return view('pages/ar-menu/management-fee/index', compact('contracts'));
     }
 
     /**

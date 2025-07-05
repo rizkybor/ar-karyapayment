@@ -51,7 +51,8 @@ class NonManfeeDocumentController extends Controller
      */
     public function index(Request $request)
     {
-        return view('pages/ar-menu/non-management-fee/index');
+        $contracts = Contracts::where('type', 'non_management_fee')->get();
+        return view('pages/ar-menu/non-management-fee/index', compact('contracts'));
     }
 
     /**
