@@ -1,7 +1,7 @@
 <div id="amandemenDocumentModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center hidden">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4 sm:mx-0">
-        <h3 id="amandemenModalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Amandemen Dokumen
+        <h3 id="amandemenModalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Amandemen Invoice
         </h3>
 
         <form id="amandemenDocumentForm" method="POST" enctype="multipart/form-data">
@@ -22,7 +22,7 @@
 
             {{-- Upload File --}}
             <div class="mb-4" id="fileUploadSection">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Dokumen Pembatalan
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Dokumen Amandemen
                     :</label>
                 <input type="file" name="file" id="amandemenFileInput" accept="application/pdf" required
                     class="form-input w-full">
@@ -62,13 +62,13 @@
                     </g>
                 </svg>
                 <a href="#" id="amandemenFileLink" target="_blank" class="text-sm text-blue-600 underline">Lihat
-                    Dokumen Pembatalan</a>
+                    Dokumen Amandemen</a>
             </div>
 
             <div class="flex justify-end gap-2">
                 <x-secondary-button type="button" onclick="closeAmandemenModal()">Tutup</x-secondary-button>
-                <x-button-action color="red" type="submit" id="amandemenSubmitButton">
-                    Batalkan
+                <x-button-action color="yellow" type="submit" id="amandemenSubmitButton">
+                    Amandemenkan Invoice
                 </x-button-action>
             </div>
         </form>
@@ -114,7 +114,7 @@
             submitButton.classList.add('hidden');
 
             // Ubah judul
-            title.innerText = 'Alasan Pembatalan Dokumen';
+            title.innerText = 'Alasan Amandemen Invoice';
         } else {
             form.setAttribute('action', actionUrl);
 
@@ -132,7 +132,7 @@
 
             submitButton.classList.remove('hidden');
 
-            title.innerText = 'Batalkan Dokumen';
+            title.innerText = 'Amandemen Invoice';
         }
 
         modal.classList.remove('hidden');

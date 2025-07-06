@@ -158,7 +158,7 @@ class ManfeeDocumentController extends Controller
         try {
             $manfeeDoc = ManfeeDocument::create($input);
             return redirect()->route('management-fee.edit', $manfeeDoc)->with('success', 'Data berhasil disimpan!');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -1013,73 +1013,88 @@ class ManfeeDocumentController extends Controller
             'file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        $document = ManfeeDocument::findOrFail($id);
-        $user = auth()->user(); // Ambil user yang sedang login
-        $userRole = $user->role;
-        $previousStatus = $document->status;
+        DB::beginTransaction();
 
-        // Ambil file dan nama untuk diupload
-        $file = $request->file('file');
-        $fileName = 'Amandemen ' . $document->letter_subject;
-        $dropboxFolderName = '/amandemen/';
+        try {
+            $document = ManfeeDocument::findOrFail($id);
+            $user = auth()->user();
+            $userRole = $user->role;
+            $previousStatus = $document->status;
 
-        // Upload ke Dropbox
-        $dropboxController = new DropboxController();
-        $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
+            // ✅ Hapus data Accurate jika ada
+            if ($document->invoice_number) {
+                $accurateService = new AccurateTransactionService();
+                $result = $accurateService->deleteSalesInvoice($document->invoice_number);
+            }
 
-        if (!$dropboxPath) {
-            return back()->with('error', 'Gagal mengunggah file penolakan.');
-        }
+            // Upload ke Dropbox
+            $file = $request->file('file');
+            $fileName = 'Amandemen ' . $document->letter_subject;
+            $dropboxFolderName = '/amandemen/';
+            $dropboxController = new DropboxController();
+            $dropboxPath = $dropboxController->uploadAttachment($file, $fileName, $dropboxFolderName);
 
-        // Update dokumen
-        $document->update([
-            'reason_amandemen' => $request->reason,
-            'path_amandemen' => $dropboxPath,
-            'status' => 0,
-        ]);
+            if (!$dropboxPath) {
+                DB::rollBack();
+                return back()->with('error', 'Gagal mengunggah file amandemen.');
+            }
 
-        // Simpan ke riwayat
-        ManfeeDocHistories::create([
-            'document_id' => $document->id,
-            'performed_by' => $user->id,
-            'role' => $userRole,
-            'previous_status' => $previousStatus,
-            'new_status' => '0',
-            'action' => 'Kembali Draft',
-            'notes' => "Dokumen diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}",
-        ]);
-
-        // 🔹 Tentukan penerima notifikasi (maker/pembuat dokumen)
-        $makerId = $document->created_by;
-        $maker = User::find($makerId);
-
-        // 🔹 Buat notifikasi
-        if ($maker) {
-            $notification = Notification::create([
-                'type' => InvoiceApprovalNotification::class,
-                'notifiable_type' => ManfeeDocument::class,
-                'notifiable_id' => $document->id,
-                'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('non-management-fee.show', $document->id),
-                'sender_id' => $user->id,
-                'sender_role' => $userRole,
-                'read_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+            // Update dokumen
+            $document->update([
+                'reason_amandemen' => $request->reason,
+                'path_amandemen' => $dropboxPath,
+                'status' => 0, // Status dikembalikan ke draft
             ]);
 
-            NotificationRecipient::create([
-                'notification_id' => $notification->id,
-                'user_id' => $maker->id,
-                'read_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
+            // Hapus data approval
+            DocumentApproval::where('document_id', $document->id)
+                ->where('document_type', ManfeeDocument::class)
+                ->delete();
+
+            // Hapus file privy
+            FilePrivy::where('document_id', $document->id)
+                ->where('category_type', $document->category)
+                ->delete();
+
+            // Simpan riwayat
+            ManfeeDocHistories::create([
+                'document_id' => $document->id,
+                'performed_by' => $user->id,
+                'role' => $userRole,
+                'previous_status' => $previousStatus,
+                'new_status' => 0,
+                'action' => 'Kembali Draft',
+                'notes' => "Dokumen diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}",
             ]);
+
+            // Kirim notifikasi
+            $maker = User::find($document->created_by);
+            if ($maker) {
+                $notification = Notification::create([
+                    'type' => InvoiceApprovalNotification::class,
+                    'notifiable_type' => ManfeeDocument::class,
+                    'notifiable_id' => $document->id,
+                    'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
+                    'sender_id' => $user->id,
+                    'sender_role' => $userRole,
+                    'read_at' => null,
+                ]);
+
+                NotificationRecipient::create([
+                    'notification_id' => $notification->id,
+                    'user_id' => $maker->id,
+                    'read_at' => null,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('management-fee.show', $document->id)
+                ->with('success', 'Dokumen berhasil diamandemen dan data Accurate berhasil dihapus.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        DB::commit();
-
-        return redirect()->route('management-fee.show', $document->id)
-            ->with('success', 'Dokumen berhasil diamandemenkan dan notifikasi telah dikirim ke pembuat dokumen.');
     }
 
     public function updateBankAccount(Request $request, $id)

@@ -89,6 +89,8 @@ class NonManfeeDocumentSeeder extends Seeder
                 'reference_document' => null,
                 'reason_rejected' => '',
                 'path_rejected' => '',
+                'reason_amandemen' => '',
+                'path_amandemen' => '',
                 'last_reviewers' => null,
                 'is_active'      => true,
                 'created_by'     => $created_by,

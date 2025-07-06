@@ -1,7 +1,7 @@
 <div id="rejectDocumentModal"
     class="fixed inset-0 bg-gray-900 bg-opacity-30 z-50 flex items-center justify-center hidden">
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4 sm:mx-0">
-        <h3 id="rejectModalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Batalkan Dokumen
+        <h3 id="rejectModalTitle" class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Batalkan Invoice
         </h3>
 
         <form id="rejectDocumentForm" method="POST" enctype="multipart/form-data">
@@ -68,7 +68,7 @@
             <div class="flex justify-end gap-2">
                 <x-secondary-button type="button" onclick="closeRejectModal()">Tutup</x-secondary-button>
                 <x-button-action color="red" type="submit" id="rejectSubmitButton">
-                    Batalkan
+                    Batalkan Invoice
                 </x-button-action>
             </div>
         </form>
@@ -132,7 +132,7 @@
 
             submitButton.classList.remove('hidden');
 
-            title.innerText = 'Batalkan Dokumen';
+            title.innerText = 'Batalkan Invoice';
         }
 
         modal.classList.remove('hidden');

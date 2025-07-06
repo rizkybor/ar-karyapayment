@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('reference_document', 255)->nullable();
             $table->string('reason_rejected', 255)->nullable();
             $table->string('path_rejected', 255)->nullable();
+            $table->string('reason_amandemen', 255)->nullable();
+            $table->string('path_amandemen', 255)->nullable();
             $table->string('last_reviewers', 255)->nullable();
             $table->boolean('is_active')->nullable()->default(null);
             $table->integer('created_by')->unsigned()->nullable();
