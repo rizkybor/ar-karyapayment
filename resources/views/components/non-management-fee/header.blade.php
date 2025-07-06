@@ -186,16 +186,15 @@
                         </x-button-action>
 
                         <!-- Amandemen Button -->
-                        <x-button-action color="red" icon="reject"
-                            >
+                        <x-button-action color="yellow" icon="reject"
+                            onclick="openAmandemenModal('{{ route('non-management-fee.amandemen', $document->id) }}')">
                             Amandemen
                         </x-button-action>
-                        {{-- onclick="openAmandemenModal('{{ route('non-management-fee.rejected', $document->id) }}')" --}}
 
                         <!-- Reject Button -->
                         <x-button-action color="red" icon="reject"
                             onclick="openRejectModal('{{ route('non-management-fee.rejected', $document->id) }}')">
-                            Batalkan Dokumen
+                            Batalkan Invoice
                         </x-button-action>
                     @endif
 
@@ -264,6 +263,8 @@
 
     <!-- Panggil Komponen Modal dengan Route -->
     <x-modal.global.modal-proccess-global :document="$document" />
+
+    <x-modal.global.modal-amandemen-global :document-id="$document->id" />
 
     <x-modal.global.modal-reject-global :document-id="$document->id" />
 </div>

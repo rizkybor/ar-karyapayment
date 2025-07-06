@@ -26,6 +26,8 @@ class NonManfeeDocument extends Model
         'reference_document',
         'reason_rejected',
         'path_rejected',
+        'reason_amandemen',
+        'path_amandemen',
         'last_reviewers',
         'is_active',
         'created_by',
