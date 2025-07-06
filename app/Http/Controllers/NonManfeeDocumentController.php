@@ -1012,10 +1012,11 @@ class NonManfeeDocumentController extends Controller
                 return back()->with('error', 'Gagal mengunggah file amandemen.');
             }
 
+            // Update dokumen
             $document->update([
-                'reason_amandemen' => $request->reason,
-                'path_amandemen' => $dropboxPath,
-                'status' => 0
+                'reason_rejected' => $request->reason,
+                'path_rejected' => $dropboxPath,
+                'status' => 0, // Status dikembalikan ke draft
             ]);
 
             // Hapus data approval
@@ -1023,15 +1024,10 @@ class NonManfeeDocumentController extends Controller
                 ->where('document_type', NonManfeeDocument::class)
                 ->delete();
 
-           $files = FilePrivy::where('document_id', $document->id)
+            // Hapus file privy
+            FilePrivy::where('document_id', $document->id)
                 ->where('category_type', $document->category)
-                ->get();
-
-            if ($files->count() > 0) {
-                FilePrivy::where('document_id', $document->id)
-                    ->where('category_type', $document->category)
-                    ->delete();
-            }
+                ->delete();
 
             // Simpan riwayat
             NonManfeeDocHistory::create([
