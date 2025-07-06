@@ -993,11 +993,6 @@ class NonManfeeDocumentController extends Controller
             if ($document->invoice_number) {
                 $accurateService = new AccurateTransactionService();
                 $result = $accurateService->deleteSalesInvoice($document->invoice_number);
-
-                if (!$result['success']) {
-                    DB::rollBack();
-                    return back()->with('error', 'Gagal menghapus data Accurate: ' . $result['message']);
-                }
             }
 
             // Upload ke Dropbox
@@ -1014,8 +1009,8 @@ class NonManfeeDocumentController extends Controller
 
             // Update dokumen
             $document->update([
-                'reason_rejected' => $request->reason,
-                'path_rejected' => $dropboxPath,
+                'reason_amandemen' => $request->reason,
+                'path_amandemen' => $dropboxPath,
                 'status' => 0, // Status dikembalikan ke draft
             ]);
 
