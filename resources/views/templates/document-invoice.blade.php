@@ -180,22 +180,6 @@
                     </tr>
                 @endforeach
 
-                {{-- <tr>
-                    <td class="no-border">
-                        Management Fee
-                        {{ optional($accumulatedCosts[0] ?? null)->total_expense_manfee
-                            ? rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') . '%'
-                            : '-' }}
-                    </td>
-                    <td class="no-border" style="text-align: right; padding-left: 3rem">Rp.</td>
-                    <td
-                        style="border-left: none; border-top: none; border-bottom: none; text-align: right; padding-right: 5rem">
-                        {{ number_format($accumulatedCosts->sum('nilai_manfee') ?? 0, 0, ',', '.') }}
-                    </td>
-                    <td class="no-border">&nbsp;</td>
-                    <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
-                </tr> --}}
-
                 <tr>
                     <td class="no-border"><strong>Jumlah</strong></td>
                     <td class="no-border" style="text-align: right; padding-left: 3rem; font-weight: bold;">Rp.</td>
@@ -209,7 +193,7 @@
                     <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td class="no-border">
+                    <td width="40%" class="no-border">
                         {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
                             ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
                             : 'PPN' }}
