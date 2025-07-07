@@ -193,6 +193,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/{id}/update-bank', [ManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
 
+        Route::put('/{id}/period-update', [ManfeeDocumentController::class, 'periodUpdate'])->name('periodUpdate');
         Route::put('/{id}/perihal-update', [ManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
         Route::put('/{id}/reference-document-update', [ManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
 
@@ -306,6 +307,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/{id}/update-bank', [NonManfeeDocumentController::class, 'updateBankAccount'])
             ->name('updateBank');
 
+        Route::put('/{id}/period-update', [NonManfeeDocumentController::class, 'periodUpdate'])->name('periodUpdate');
         Route::put('/{id}/perihal-update', [NonManfeeDocumentController::class, 'perihalUpdate'])->name('perihalUpdate');
         Route::put('/{id}/reference-document-update', [NonManfeeDocumentController::class, 'referenceUpdate'])->name('referenceUpdate');
 

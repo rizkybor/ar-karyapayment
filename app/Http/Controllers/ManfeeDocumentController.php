@@ -346,6 +346,20 @@ class ManfeeDocumentController extends Controller
         return redirect()->route('management-fee.index')->with('success', 'Data berhasil dihapus!');
     }
 
+    public function periodUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'period' => 'required|string|max:255',
+        ]);
+
+        $doc = ManfeeDocument::findOrFail($id);
+        $doc->update([
+            'period' => $request->period,
+        ]);
+
+        return redirect()->back()->with('success', 'Perihal berhasil diperbarui.');
+    }
+
     public function perihalUpdate(Request $request, $id)
     {
         $request->validate([
