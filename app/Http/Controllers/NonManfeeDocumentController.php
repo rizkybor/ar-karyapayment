@@ -1093,6 +1093,20 @@ class NonManfeeDocumentController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function periodUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'period' => 'required|string|max:255',
+        ]);
+
+        $doc = NonManfeeDocument::findOrFail($id);
+        $doc->update([
+            'period' => $request->period,
+        ]);
+
+        return redirect()->back()->with('success', 'Perihal berhasil diperbarui.');
+    }
+
     public function perihalUpdate(Request $request, $id)
     {
         $request->validate([

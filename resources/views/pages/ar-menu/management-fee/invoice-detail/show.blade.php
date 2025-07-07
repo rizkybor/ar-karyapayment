@@ -13,6 +13,9 @@
                 <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
                     : {{ $manfeeDoc['invoice_number'] }}
                 </h1>
+                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Periode :
+                    {{ $manfeeDoc->period }}
+                </h1>
                 <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal :
                     {{ $manfeeDoc->letter_subject }}
                 </h1>
