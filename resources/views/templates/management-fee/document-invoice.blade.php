@@ -209,7 +209,7 @@
                     <td style="border-left: none; border-top: none; border-bottom: none;">&nbsp;</td>
                 </tr>
                 <tr>
-                    <td class="no-border">
+                    <td width="40%" class="no-border">
                         {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
                             ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
                             : 'PPN' }}

@@ -118,24 +118,29 @@
         <div class="border-box" style="margin-bottom: 20px;">
             <p class="font-semibold" style="height: 5px; margin: 2px 0; line-height: 1;">Untuk Pembayaran :</p>
             <div style="padding: 10px;">
-                <div class="border-box">
-                    <p class="italic">{{ $document->letter_subject ?? '-' }} - {{ $document->period ?? '-' }}</p>
+                <div class="border-box" style="overflow-wrap: break-word; word-break: break-word;">
+                    <p class="italic" style="margin: 0;">{{ $document->letter_subject ?? '-' }} -
+                        {{ $document->period ?? '-' }}</p>
                 </div>
 
                 <div style="min-height: 230px;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;">
+                    <table
+                        style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; table-layout: fixed;">
                         @foreach ($groupedExpenses as $type => $amount)
                             <tr>
-                                <td class="no-border">{{ $type ?? '-' }}</td>
-                                <td class="no-border" style="text-align: right; white-space: nowrap;">Rp.</td>
-                                <td class="no-border" style="text-align: right; padding-right: 2rem;">
+                                <td width="70%" class="no-border" style="word-break: break-word;">
+                                    {{ $type ?? '-' }}</td>
+                                <td width="10%" class="no-border" style="text-align: right; white-space: nowrap;">Rp.
+                                </td>
+                                <td width="20%" class="no-border"
+                                    style="text-align: right; padding-right: 2rem; white-space: nowrap;">
                                     {{ number_format($amount ?? 0, 0, ',', '.') }}
                                 </td>
                             </tr>
                         @endforeach
 
                         <tr>
-                            <td class="no-border">
+                            <td class="no-border" style="word-break: break-word;">
                                 Management Fee
                                 {{ optional($accumulatedCosts[0] ?? null)->total_expense_manfee
                                     ? rtrim(rtrim($accumulatedCosts[0]->total_expense_manfee, '0'), '.') . '%'
@@ -148,7 +153,7 @@
                         </tr>
 
                         <tr>
-                            <td class="no-border">Jumlah</td>
+                            <td class="no-border" style="word-break: break-word;">Jumlah</td>
                             <td class="no-border" style="text-align: right;"><strong>Rp.</strong>
                             </td>
                             <td class="no-border" style="text-align: right; padding-right: 2rem;">
@@ -158,19 +163,19 @@
                         </tr>
 
                         <tr>
-                            <td class="no-border">
+                            <td width="70%" class="no-border" style="word-break: break-word;">
                                 {{ isset($accumulatedCosts[0]) && $accumulatedCosts[0]->comment_ppn
                                     ? 'PPN ' . $accumulatedCosts[0]->comment_ppn
                                     : 'PPN' }}
                             </td>
-                            <td class="no-border" style="text-align: right;">Rp.</td>
-                            <td class="no-border" style="text-align: right; padding-right: 2rem;">
+                            <td width="10%" class="no-border" style="text-align: right;">Rp.</td>
+                            <td width="20%" class="no-border" style="text-align: right; padding-right: 2rem;">
                                 {{ number_format($accumulatedCosts->sum('nilai_ppn') ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
 
                         <tr>
-                            <td class="no-border">Jumlah Total</td>
+                            <td class="no-border" style="word-break: break-word;">Jumlah Total</td>
                             <td style="text-align: right; font-weight: bold;">
                                 <strong>Rp.</strong>
                             </td>
@@ -250,7 +255,7 @@
             </table>
         </div>
 
-        <br><br><br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br>
 
     </div>
 

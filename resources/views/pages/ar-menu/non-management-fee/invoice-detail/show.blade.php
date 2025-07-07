@@ -8,6 +8,8 @@
                 <h1 class="text-l md:text-l text-gray-800 dark:text-gray-100 font-bold">Nomor
                     : {{ $nonManfeeDocument['invoice_number'] }}
                 </h1>
+                <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Periode : {{ $nonManfeeDocument->period ?? '-' }}
+                </h1>
                 <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Perihal : {{ $nonManfeeDocument->letter_subject ?? '-' }}
                 </h1>
                 {{-- <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold">Referensi Dokumen : {{ $nonManfeeDocument->reference_document ?? '-' }} --}}
