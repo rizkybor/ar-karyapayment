@@ -261,7 +261,7 @@
 
     {{-- Footer --}}
     <div class="footer" style="position: absolute; bottom: 0; width: 100%; font-size: 10px; margin-top: 8px;">
-        <table border="0" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <table border="0" style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td style="width: 30%; border: none; vertical-align: top;">
                     <strong>PT. KARYA PRIMA USAHATAMA<br><em>melayani & memahami</em></strong>
