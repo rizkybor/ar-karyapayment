@@ -88,11 +88,11 @@
                 @if ($isEdit)
                     <x-input id="total_expense_manfee" class="block mt-1 w-full" type="text"
                         name="total_expense_manfee"
-                        value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.')) }}"
+                        value="{{ old('total_expense_manfee', number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 2, ',', '.')) }}"
                         onchange="calculateManfee();  checkChanges()" maxlength="5" />
                 @else
                     <p class="text-gray-800 dark:text-gray-200">
-                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 1, '.', '.') }}%
+                        {{ number_format($firstAccumulatedCost->total_expense_manfee ?? 0, 2, '.', '.') }}%
                     </p>
                 @endif
 
