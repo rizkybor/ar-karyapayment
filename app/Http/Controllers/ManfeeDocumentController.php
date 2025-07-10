@@ -702,6 +702,7 @@ class ManfeeDocumentController extends Controller
                 'sender_id'       => $user->id,
                 'sender_role'     => $userRole,
                 'read_at'         => null,
+                'invoice_number' => $document->invoice_number,
                 'created_at'      => now(),
                 'updated_at'      => now(),
             ]);
@@ -851,6 +852,7 @@ class ManfeeDocumentController extends Controller
                     'sender_id'       => $user->id,
                     'sender_role'     => $userRole,
                     'read_at'         => null,
+                    'invoice_number' => $document->invoice_number,
                     'created_at'      => now(),
                     'updated_at'      => now(),
                 ]);
@@ -1004,6 +1006,7 @@ class ManfeeDocumentController extends Controller
                 'sender_id' => $user->id,
                 'sender_role' => $userRole,
                 'read_at' => null,
+                'invoice_number' => $document->invoice_number,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -1096,6 +1099,7 @@ class ManfeeDocumentController extends Controller
                     'sender_id' => $user->id,
                     'sender_role' => $userRole,
                     'read_at' => null,
+                    'invoice_number' => $document->invoice_number,
                 ]);
 
                 NotificationRecipient::create([
