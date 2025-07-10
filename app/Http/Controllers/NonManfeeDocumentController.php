@@ -501,9 +501,10 @@ class NonManfeeDocumentController extends Controller
                     $refKwitansi = str_replace('/', '', 'REF' . $tanggal->format('Ymd') . $noKw);
 
                     $jenis_dokumen = $document->category ?? null;
+                    $totalInvoice = $document->accumulatedCosts->pluck('account')[0];
 
                     // === PRIVY SERVICES ===
-                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat, $jenis_dokumen);
+                    $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat, $jenis_dokumen, $totalInvoice);
                     if (isset($createLetter['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -513,7 +514,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '720.00', $refInvoice, $noInv, $jenis_dokumen);
+                    $createInvoice = $this->sendToPrivy($base64inv, '0', '535.61', '720.00', $refInvoice, $noInv, $jenis_dokumen, $totalInvoice);
                     if (isset($createInvoice['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -523,7 +524,7 @@ class NonManfeeDocumentController extends Controller
                         ]);
                     }
 
-                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '530.81', '840.00', $refKwitansi, $noKw, $jenis_dokumen);
+                    $createKwitansi = $this->sendToPrivy($base64kw, '2', '530.81', '840.00', $refKwitansi, $noKw, $jenis_dokumen, $totalInvoice);
                     if (isset($createKwitansi['error'])) {
                         return response()->json([
                             'status' => 'ERROR',
@@ -661,7 +662,7 @@ class NonManfeeDocumentController extends Controller
         }
     }
 
-    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat, string $jenis_dokumen): array
+    private function sendToPrivy(string $base64, string $typeSign, string $posX, string $posY, string $docType, string $noSurat, string $jenis_dokumen, float $totalInvoice): array
     {
         $request = new Request([
             'base64_pdf' => $base64,
@@ -671,6 +672,7 @@ class NonManfeeDocumentController extends Controller
             'docType' => $docType,
             'noSurat' => $noSurat,
             'jenis_dokumen' => $jenis_dokumen ?? null,
+            'total_invoice' => $totalInvoice,
         ]);
 
         $privyController = app()->make(PrivyController::class);
