@@ -836,7 +836,7 @@ class ManfeeDocumentController extends Controller
                 'previous_status' => $document->status,
                 'new_status'      => '102',
                 'action'          => 'Revised',
-                'notes'           => "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
+                'notes'           =>  $message ? "{$message}." : "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
             ]);
 
             // 🔹 6️⃣ Kirim Notifikasi ke Approver yang Merevisi Sebelumnya
@@ -957,6 +957,7 @@ class ManfeeDocumentController extends Controller
         $user = auth()->user(); // Ambil user yang sedang login
         $userRole = $user->role;
         $previousStatus = $document->status;
+        $message = $request->reason;
 
         // Ambil file dan nama untuk diupload
         $file = $request->file('file');
@@ -973,7 +974,7 @@ class ManfeeDocumentController extends Controller
 
         // Update dokumen
         $document->update([
-            'reason_rejected' => $request->reason,
+            'reason_rejected' => $message,
             'path_rejected'   => $dropboxPath,
             'status'          => 103, // Status dibatalkan
         ]);
@@ -986,7 +987,7 @@ class ManfeeDocumentController extends Controller
             'previous_status' => $previousStatus,
             'new_status'      => '103',
             'action'          => 'Rejected',
-            'notes'           => "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
+            'notes'           => $message ? "{$message}." : "Dokumen dibatalkan oleh {$user->name} dengan alasan: {$request->reason}",
         ]);
 
         // 🔹 Tentukan penerima notifikasi (maker/pembuat dokumen)
@@ -999,7 +1000,7 @@ class ManfeeDocumentController extends Controller
                 'type' => InvoiceApprovalNotification::class,
                 'notifiable_type' => ManfeeDocument::class,
                 'notifiable_id' => $document->id,
-                'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah ditolak oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
+                'messages' => $message ? "{$message}.  Lihat detail: " . route('management-fee.show', $document->id) : "Dokumen dengan subjek '{$document->letter_subject}' telah ditolak oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
                 'sender_id' => $user->id,
                 'sender_role' => $userRole,
                 'read_at' => null,
@@ -1036,6 +1037,7 @@ class ManfeeDocumentController extends Controller
             $user = auth()->user();
             $userRole = $user->role;
             $previousStatus = $document->status;
+            $message = $request->reason;
 
             // ✅ Hapus data Accurate jika ada
             if ($document->invoice_number) {
@@ -1057,7 +1059,7 @@ class ManfeeDocumentController extends Controller
 
             // Update dokumen
             $document->update([
-                'reason_amandemen' => $request->reason,
+                'reason_amandemen' => $message,
                 'path_amandemen' => $dropboxPath,
                 'status' => 0, // Status dikembalikan ke draft
             ]);
@@ -1080,7 +1082,7 @@ class ManfeeDocumentController extends Controller
                 'previous_status' => $previousStatus,
                 'new_status' => 0,
                 'action' => 'Kembali Draft',
-                'notes' => "Dokumen diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}",
+                'notes' => $message ? "Dokumen diamandemenkan oleh {$user->name} dengan alasan: {$message}" : "Dokumen diamandemenkan oleh {$user->name}",
             ]);
 
             // Kirim notifikasi
@@ -1090,7 +1092,7 @@ class ManfeeDocumentController extends Controller
                     'type' => InvoiceApprovalNotification::class,
                     'notifiable_type' => ManfeeDocument::class,
                     'notifiable_id' => $document->id,
-                    'messages' => "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
+                    'messages' => $message ? "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name} dengan alasan: {$message}. Lihat detail: " . route('management-fee.show', $document->id) : "Dokumen dengan subjek '{$document->letter_subject}' telah diamandemenkan oleh {$user->name}. Lihat detail: " . route('management-fee.show', $document->id),
                     'sender_id' => $user->id,
                     'sender_role' => $userRole,
                     'read_at' => null,
