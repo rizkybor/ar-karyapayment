@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class PrivyController extends Controller
 {
     // Payload Privy Pattern 
-    public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY, $ref, $no, $jenis_dokumen, $totalInvoice)
+    public function buildPrivyPayload($base64Pdf, $typeSign, $posX, $posY, $ref, $no, $jenis_dokumen)
     {
         // Generate reference_number: REFYYYYMMDDprimeXXXX
         $today = Carbon::now();
@@ -53,7 +53,7 @@ class PrivyController extends Controller
             ]
         ];
 
-        if ($typeSign == 2 && $totalInvoice >= 5000000) {
+        if ($typeSign == 2) {
             $payload['e_meterai'] = [
                 "doc_category" => "Surat Perjanjian",
                 "stamp_position" => [
@@ -81,8 +81,7 @@ class PrivyController extends Controller
                 'posY' => 'required|string',
                 'docType' => 'required|string',
                 'noSurat' => 'required|string',
-                'jenis_dokumen' => 'nullable',
-                'total_invoice' => 'required|numeric|min:0',
+                'jenis_dokumen' => 'nullable'
             ]);
         } catch (ValidationException $e) {
             return [
@@ -100,10 +99,9 @@ class PrivyController extends Controller
         $ref = $request->docType;
         $no = $request->noSurat;
         $jenis_dokumen = $request->jenis_dokumen ?? null;
-        $totalInvoice = $request->total_invoice;
 
         // Bangun payload secara otomatis
-        $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY, $ref, $no, $jenis_dokumen, $totalInvoice);
+        $payload = $this->buildPrivyPayload($base64Pdf,  $typeSign, $posX, $posY, $ref, $no, $jenis_dokumen);
 
 
         Log::info('Privy uploadDocument response:', [
