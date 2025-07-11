@@ -478,8 +478,14 @@
                             }
 
                             // ✅ Jika status adalah "Draft" & BUKAN "Checked by Pajak", tampilkan tombol Edit untuk role "maker"
-                            if (statusText === "Draft" || statusText === "Revised" && userRole ===
-                                "maker") {
+                            // if (statusText === "Draft" || statusText === "Revised" && userRole ===
+                            //     "maker") 
+                            if (
+                                (statusText === "Draft" || statusText === "Revised") &&
+                                userRole === "maker" &&
+                                !["perbendaharaan", "manager_anggaran", "direktur_keuangan"]
+                                .includes(userRole)
+                            ) {
                                 buttons += `
                                 <div class="relative group">
                                     <button class="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-all duration-200"
@@ -499,7 +505,11 @@
                             }
 
                             // ✅ Jika status adalah "Draft", tampilkan tombol Delete
-                            if (statusText === "Draft") {
+                            // if (statusText === "Draft") 
+                            if (statusText === "Draft" && !["perbendaharaan", "manager_anggaran",
+                                    "direktur_keuangan"
+                                ]
+                                .includes(userRole)) {
                                 buttons += `
                                     <!-- Tombol Delete -->
                                     <div class="relative group">
