@@ -23,6 +23,7 @@ class ManfeeDocAccumulatedCost extends Model
         'nilai_ppn',
         'comment_ppn',
         'total',
+        'billing_deadline',
     ];
 
     public function ManfeeDocument()

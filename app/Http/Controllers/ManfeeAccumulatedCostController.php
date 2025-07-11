@@ -52,6 +52,7 @@ class ManfeeAccumulatedCostController extends Controller
             'nilai_ppn' => 'required|numeric',
             'comment_ppn' => 'nullable|string|max:255',
             'total' => 'required|numeric',
+            'billing_deadline' => 'nullable',
         ], [
             'account.required' => 'Akun wajib diisi.',
             'account.string' => 'Akun harus berupa teks.',
@@ -91,6 +92,7 @@ class ManfeeAccumulatedCostController extends Controller
                 'nilai_ppn' => $nilaiPpn,
                 'comment_ppn' => $request->comment_ppn ?? '',
                 'total' => $total,
+                'billing_deadline' => $request->billing_deadline,
             ]
         );
 
