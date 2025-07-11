@@ -160,6 +160,20 @@
                 @endif
             </div>
 
+            {{-- Keterangan Batas Waktu Tagihan --}}
+            <div class="col-span-1 sm:col-span-2">
+                <x-label for="rate_ppn" value="{{ __('Keterangan Batas Waktu Tagihan') }}" />
+                @if ($isEdit)
+                    <x-input id="billing_deadline" type="date" class="block mt-1 w-full"
+                        placeholder="Batas Waktu Tagihan" name="billing_deadline"
+                        value="{{ old('billing_deadline', $firstAccumulatedCost->billing_deadline ?? '') }}" />
+                @else
+                    <p class="text-gray-800 dark:text-gray-200">
+                        {{ !empty($firstAccumulatedCost?->billing_deadline) ? $firstAccumulatedCost->billing_deadline : 'Tidak ada Batas Waktu' }}
+                    </p>
+                @endif
+            </div>
+
         </div>
     </div>
 </div>
@@ -182,7 +196,8 @@
             rate_ppn: document.getElementById("rate_ppn")?.value || '',
             comment_ppn: document.getElementById("comment_ppn")?.value || '',
             nilai_ppn: document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '',
-            jumlah: document.getElementById("jumlah")?.value.replace(/\./g, '') || ''
+            jumlah: document.getElementById("jumlah")?.value.replace(/\./g, '') || '',
+            billing_deadline: document.getElementById("billing_deadline")?.value || '',
         };
 
         window.checkChanges = function() {
@@ -193,6 +208,7 @@
             let commentPpnValue = document.getElementById("comment_ppn")?.value || '';
             let nilaiPpnValue = document.getElementById("nilai_ppn")?.value.replace(/\./g, '') || '';
             let jumlahValue = document.getElementById("jumlah")?.value.replace(/\./g, '') || '';
+            let billingDeadlineValue = document.getElementById("billing_deadline")?.value || '';
 
             let dppPekerjaan = document.getElementById("dpp_pekerjaan")?.value.replace(/\./g, '') || '';
 
@@ -202,6 +218,7 @@
                 dppPekerjaan !== initialData.dpp_pekerjaan ||
                 ratePpnValue !== initialData.rate_ppn ||
                 commentPpnValue !== initialData.comment_ppn ||
+                billingDeadlineValue !== initialData.billing_deadline ||
                 nilaiPpnValue !== initialData.nilai_ppn ||
                 jumlahValue !== initialData.jumlah;
 

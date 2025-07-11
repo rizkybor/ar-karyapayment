@@ -17,9 +17,10 @@ class Notification extends Model
         'notifiable_type',
         'notifiable_id',
         'messages',
-        'read_at',
         'sender_id',
-        'sender_role'
+        'sender_role',
+        'read_at',
+        'invoice_number'
     ];
 
     protected $casts = [

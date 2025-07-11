@@ -88,6 +88,10 @@
         $rowspan = 8 + count($groupedExpenses); // Update rowspan based on grouped expenses count
     @endphp
 
+    @php
+        $billingDeadline = $accumulatedCosts->first()?->billing_deadline;
+    @endphp
+
     @if (!$disableWatermark && !$showDraft)
         <div
             style="position: fixed;
@@ -262,6 +266,13 @@
                 </tr>
             </tbody>
         </table>
+
+        {{-- Batas Waktu Tagihan --}}
+        @if ($billingDeadline)
+            <p style="text-align: left; font-weight: bold; font-style: italic;">
+                {{ 'Batas waktu tagihan: ' . \Carbon\Carbon::parse($billingDeadline)->translatedFormat('d F Y') }}
+            </p>
+        @endif
     </div>
 
     {{-- Detail Pembayaran --}}

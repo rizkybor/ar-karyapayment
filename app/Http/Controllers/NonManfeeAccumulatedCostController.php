@@ -39,6 +39,7 @@ class NonManfeeAccumulatedCostController extends Controller
             'dpp_pekerjaan' => 'required|string|min:1',
             'rate_ppn' => 'required|numeric|min:11|max:99',
             'comment_ppn' => 'nullable|string|max:255',
+            'billing_deadline' => 'nullable',
         ], [
             'akun.required' => 'Akun wajib diisi.',
             'akun.string' => 'Akun harus berupa teks.',
@@ -74,6 +75,7 @@ class NonManfeeAccumulatedCostController extends Controller
                 'nilai_ppn' => $nilaiPpn,
                 'comment_ppn' => $request->comment_ppn ?? '',
                 'total' => $jumlah,
+                'billing_deadline' => $request->billing_deadline,
             ]
         );
 

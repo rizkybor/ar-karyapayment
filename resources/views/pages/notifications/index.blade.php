@@ -58,6 +58,7 @@
 
                                 <div class="flex justify-between items-center">
 
+                                    <div> 
                                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
                                         Dikirim oleh :
                                         <span class="font-normal">
@@ -65,6 +66,15 @@
                                             {{ $notification->sender->position }})
                                         </span>
                                     </p>
+
+                                      <p class="text-sm font-semibold text-gray-800 dark:text-gray-300">
+                                        Nomor Invoice :
+                                        <span class="font-normal">
+                                            {{ $notification->invoice_number }}
+                                        </span>
+                                    </p>
+
+                                </div>
 
                                     <p class="text-sm text-gray-800 dark:text-gray-300">
                                         Tanggal dikirim : {{ $notification->created_at }}

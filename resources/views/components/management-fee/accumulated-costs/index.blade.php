@@ -158,6 +158,21 @@
 
             </div>
 
+            {{-- Batas Waktu Tagihan --}}
+            <div class="col-span-1 sm:col-span-2 lg:col-span-5 lg:col-start-1 lg:row-start-5">
+                <x-label for="billing_deadline" value="{{ __('Keterangan Batas Waktu Tagihan') }}" />
+                @if ($isEdit)
+                    <x-input id="billing_deadline" type="date" class="block mt-1 w-full"
+                        placeholder="Batas Waktu Tagihan" name="billing_deadline"
+                        value="{{ old('billing_deadline', $firstAccumulatedCost->billing_deadline ?? '') }}" />
+                @else
+                    <p class="text-gray-800 dark:text-gray-200">
+                        {{ !empty($firstAccumulatedCost?->billing_deadline) ? 'Deadline pembayaran sampai: ' . \Carbon\Carbon::parse($firstAccumulatedCost->billing_deadline)->translatedFormat('d F Y') : 'Tidak ada Batas Waktu' }}
+                    </p>
+                @endif
+            </div>
+
+
             {{-- Nilai PPN (Disabled) --}}
             <div class="col-span-1 sm:col-span-2 lg:col-span-3 lg:col-start-6 lg:row-start-3">
                 <x-label for="nilai_ppn" value="{{ __('NILAI PPN') }}" />
@@ -191,6 +206,7 @@
             dpp: document.getElementById('dpp').value,
             rate_ppn: document.getElementById('rate_ppn').value,
             comment_ppn: document.getElementById('comment_ppn').value,
+            billing_deadline: document.getElementById('billing_deadline').value,
         };
 
         // Fungsi untuk mengecek apakah ada perubahan nilai dari nilai awal
@@ -206,6 +222,7 @@
                 .total_expense_manfee ||
                 document.getElementById('dpp').value !== initialValues.dpp ||
                 document.getElementById('comment_ppn').value !== initialValues.comment_ppn ||
+                document.getElementById('billing_deadline').value !== initialValues.billing_deadline ||
                 document.getElementById('rate_ppn').value !== initialValues.rate_ppn
             );
         }
@@ -303,6 +320,8 @@
 
         // Comment PPN
         document.getElementById('comment_ppn').addEventListener('change', updateSaveButtonState);
+
+        document.getElementById('billing_deadline').addEventListener('change', updateSaveButtonState);
 
         document.getElementById('nilai_manfee').addEventListener('input', function() {
             let nilaiManfee = unformatRupiah(this.value);

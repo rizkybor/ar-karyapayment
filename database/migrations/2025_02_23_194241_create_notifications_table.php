@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('sender_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('sender_role')->nullable()->index();
             $table->timestamp('read_at')->nullable();
+            $table->string('invoice_number')->nullable();
             $table->timestamps();
         });
     }

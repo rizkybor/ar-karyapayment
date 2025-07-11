@@ -30,22 +30,42 @@ class ManfeeDocumentDataTableController extends Controller
       return Cache::get($cacheKey);
     }
 
-    // Query utama dengan filter
+    // ✅ Query utama
+    // $query = ManfeeDocument::query()
+    //   ->with(['contract', 'accumulatedCosts'])
+    //   ->where(function ($query) use ($user) {
+    //     $query->where('created_by', $user->id)
+    //       ->orWhereHas('approvals', function ($q) use ($user) {
+    //         $q->where('approver_id', $user->id);
+    //       });
+    //   })
+    //   ->select('manfee_documents.*')
+    //   ->orderByRaw("
+    //             CASE 
+    //                 WHEN expired_at >= NOW() THEN 0 
+    //                 ELSE 1 
+    //             END, expired_at ASC
+    //         ");
+
+    // ✅ Query utama diganti (hanya 'perbendaharaan', 'manager_anggaran', 'direktur_keuangan' yang dapat melihat seluruh dokumen yang terbuat)
     $query = ManfeeDocument::query()
       ->with(['contract', 'accumulatedCosts'])
-      ->where(function ($query) use ($user) {
+      ->select('manfee_documents.*');
+
+    // Cek apakah user memiliki role teknisi
+    /** @var \App\Models\User $user */
+    if ($user->hasRole(['perbendaharaan', 'manager_anggaran', 'direktur_keuangan'])) {
+
+      // User teknisi bisa melihat semua dokumen, tidak ada filter tambahan
+    } else {
+      // Jika bukan teknisi, tetap pakai filter by created_by atau approvals
+      $query->where(function ($query) use ($user) {
         $query->where('created_by', $user->id)
           ->orWhereHas('approvals', function ($q) use ($user) {
             $q->where('approver_id', $user->id);
           });
-      })
-      ->select('manfee_documents.*')
-      ->orderByRaw("
-                CASE 
-                    WHEN expired_at >= NOW() THEN 0 
-                    ELSE 1 
-                END, expired_at ASC
-            ");
+      });
+    }
 
     // Filter created_by jika ada
     if ($request->has('created_by') && $request->created_by != '') {

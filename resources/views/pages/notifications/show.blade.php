@@ -7,13 +7,22 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <!-- Header Notifikasi -->
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
-                    Dikirim oleh :
-                    <span class="text-sm ml-1">
-                        {{ $notification->sender->name }} ({{ $notification->sender->nip }} -
-                        {{ $notification->sender->position }})
-                    </span>
-                </h3>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                        Dikirim oleh :
+                        <span class="text-sm ml-1">
+                            {{ $notification->sender->name }} ({{ $notification->sender->nip }} -
+                            {{ $notification->sender->position }})
+                        </span>
+                    </h3>
+
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
+                        Nomor Invoice :
+                        <span class="text-sm ml-1">
+                            {{ $notification->invoice_number }}
+                        </span>
+                    </h3>
+                </div>
                 <span class="text-sm text-gray-500 dark:text-gray-400">
                     Tanggal dikirim : {{ $notification->created_at->format('d M Y, H:i') }}
                 </span>
