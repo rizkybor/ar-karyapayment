@@ -62,12 +62,100 @@ class NonManfeeDocumentController extends Controller
     {
         $contracts = Contracts::where('type', 'non_management_fee')->get();
 
-        // Mengambil semua nomor dokumen dan info tambahan
-        $numbers = $this->generateDocumentNumbers();
+        return view('pages/ar-menu/non-management-fee/create', compact(
+            'contracts'
+        ));
+    }
 
-        return view('pages/ar-menu/non-management-fee/create', array_merge([
-            'contracts' => $contracts,
-        ], $numbers));
+    public function store(Request $request)
+    {
+        $request->validate([
+            'contract_id' => 'required|exists:contracts,id',
+            'period' => 'required',
+            'letter_subject' => 'required',
+        ]);
+
+        // Ambil data kontrak
+        $contract = Contracts::find($request->contract_id);
+        $employeeName = $contract->employee_name;
+        $contractInitial = $contract->contract_initial ?? 'SOL';
+
+        // Validasi contract initial
+        if (empty($contractInitial)) {
+            return back()->with('error', 'Initial kontrak belum diisi di data kontrak. Silakan lengkapi terlebih dahulu.');
+        }
+
+        $monthRoman = $this->convertToRoman(date('n'));
+        $year = date('Y');
+
+        // Generate nomor dokumen untuk Non Management Fee
+        $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+        $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+
+        $lastNumericMF = 100;
+        $lastNumericNF = 100;
+
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
+            $lastNumericMF = intval($matchMF[1]);
+        }
+
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
+            $lastNumericNF = intval($matchNF[1]);
+        }
+
+        $lastNumeric = max($lastNumericMF, $lastNumericNF);
+
+        if ($lastNumeric % 10 !== 0) {
+            $lastNumeric = ceil($lastNumeric / 10) * 10;
+        }
+
+        $nextNumber = $lastNumeric + 10;
+        $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // Generate nomor dokumen dengan format Non Management Fee
+        $letterNumber = sprintf("%s/NF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+        $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+        $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+
+        $input = $request->only([
+            'contract_id',
+            'period',
+            'letter_subject',
+            'manfee_bill',
+            'bank_account_id',
+            'reference_document',
+            'reason_rejected',
+            'path_rejected',
+            'reason_amandemen',
+            'path_amandemen',
+            'last_reviewers',
+        ]);
+
+        // Tambahkan nomor dokumen yang baru digenerate
+        $input['letter_number'] = $letterNumber;
+        $input['invoice_number'] = $invoiceNumber;
+        $input['receipt_number'] = $receiptNumber;
+
+        $input['category'] = 'management_non_fee';
+        $input['status'] = $request->status ?? 0;
+        $input['status_print'] = false;
+        $input['is_active'] = true;
+        $input['created_by'] = auth()->id();
+        $input['expired_at'] = Carbon::now()
+            ->addMonthNoOverflow()
+            ->day(15)
+            ->setTime(0, 1, 0);
+
+        try {
+            // Simpan dokumen baru
+            $nonManfeeDoc = NonManfeeDocument::create($input);
+            return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
+                ->with('success', 'Data berhasil disimpan!');
+        } catch (Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     private function getNextDocumentNumberBase(): array
@@ -111,51 +199,7 @@ class NonManfeeDocumentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
 
-        $request->validate([
-            'contract_id' => 'required|exists:contracts,id',
-            'period' => 'required',
-            'letter_subject' => 'required',
-        ]);
-
-        $input = $request->only([
-            'contract_id',
-            'period',
-            'letter_subject',
-            'manfee_bill',
-            'letter_number',
-            'invoice_number',
-            'receipt_number',
-            'bank_account_id',
-            'reference_document',
-            'reason_rejected',
-            'path_rejected',
-            'reason_amandemen',
-            'path_amandemen',
-            'last_reviewers',
-        ]);
-
-        $input['category'] = 'management_non_fee';
-        $input['status'] = $request->status ?? 0;
-        $input['status_print'] = false;
-        $input['is_active'] = true;
-        $input['created_by'] = auth()->id();
-        $input['expired_at'] = Carbon::now()
-            ->addMonthNoOverflow()
-            ->day(15)
-            ->setTime(0, 1, 0);
-
-        try {
-            // Simpan dokumen baru
-            $nonManfeeDoc = NonManfeeDocument::create($input);
-            return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
-                ->with('success', 'Data berhasil disimpan!');
-        } catch (Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Display the specified resource.

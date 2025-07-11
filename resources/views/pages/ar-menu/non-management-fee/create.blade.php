@@ -44,25 +44,26 @@
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $letter_number }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="letter_number" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="invoice_number" value="{{ __('No Invoice') }}" />
                             <x-input id="invoice_number" name="invoice_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $invoice_number }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="invoice_number" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="period" value="{{ __('Periode / Termin') }}" />
-                            <x-input id="period" name="period" placeholder="Masukkan Periode / Termin, contoh : (periode Mei)"
-                                type="text" class="mt-1 block w-full min-h-[40px]" required />
+                            <x-input id="period" name="period"
+                                placeholder="Masukkan Periode / Termin, contoh : (periode Mei)" type="text"
+                                class="mt-1 block w-full min-h-[40px]" required />
                             <x-input-error for="period" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="receipt_number" value="{{ __('No Kwitansi') }}" />
                             <x-input id="receipt_number" name="receipt_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $receipt_number }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="receipt_number" class="mt-2" />
                         </div>
                         <div class="sm:row-span-2">
@@ -97,7 +98,7 @@
     </div>
 
     <!-- Tambahkan input hidden untuk base number -->
-    <input type="hidden" id="base_number" value="{{ $base_number }}">
+
 
 
     <script>
@@ -116,11 +117,11 @@
         }
 
         function selectContract(id, contractNumber, employeeName, contractInitial, billTypesJson) {
-             if (!contractInitial || contractInitial.trim() === '') {
+            if (!contractInitial || contractInitial.trim() === '') {
                 alert("❗ Silakan lengkapi 'Initial Kontrak' terlebih dahulu di data kontrak.");
                 return;
             }
-            
+
             document.getElementById("contractInput").value = contractNumber;
             document.getElementById("contract_id").value = id;
             document.getElementById("employee_name").value = employeeName;
@@ -139,21 +140,6 @@
 
             // Tutup dropdown
             document.getElementById("contractDropdown").classList.add("hidden");
-        }
-
-        function updateContractDetailsManual(contractNumber, employeeName, contractInitial) {
-            
-            const base_number = '{{ $base_number }}';
-            const month_roman = '{{ $month_roman }}';
-            const year = '{{ $year }}';
-            const companyInitial = contractInitial;
-
-            document.getElementById('letter_number').value =
-                `${base_number}/NF/KEU/KPU/${companyInitial}/${month_roman}/${year}`;
-            document.getElementById('invoice_number').value =
-                `${base_number}/NF/INV/KPU/${companyInitial}/${month_roman}/${year}`;
-            document.getElementById('receipt_number').value =
-                `${base_number}/NF/KW/KPU/${companyInitial}/${month_roman}/${year}`;
         }
 
         // Hide dropdown jika klik di luar
