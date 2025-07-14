@@ -51,13 +51,13 @@
                         <div>
                             <x-label for="letter_number" value="{{ __('No Surat') }}" />
                             <x-input id="letter_number" name="letter_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $letterNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="letter_number" class="mt-2" />
                         </div>
                         <div>
                             <x-label for="invoice_number" value="{{ __('No Invoice') }}" />
                             <x-input id="invoice_number" name="invoice_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $invoiceNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="invoice_number" class="mt-2" />
                         </div>
                         <div>
@@ -70,7 +70,7 @@
                         <div>
                             <x-label for="receipt_number" value="{{ __('No Kwitansi') }}" />
                             <x-input id="receipt_number" name="receipt_number" placeholder="Auto" type="text"
-                                class="mt-1 block w-full min-h-[40px]" readonly value="{{ $receiptNumber }}" />
+                                class="mt-1 block w-full min-h-[40px]" readonly />
                             <x-input-error for="receipt_number" class="mt-2" />
                         </div>
                         <div class="sm:row-span-2">
@@ -111,24 +111,8 @@
         </form>
     </div>
 
-    <!-- Hidden input for base number -->
-    <input type="hidden" id="base_number" value="{{ $baseNumber }}">
 
     <script>
-        // Fungsi untuk memperbarui nomor dokumen menggunakan contract_initial dari database
-        function updateDocumentNumbers(contractInitial) {
-            const baseNumber = document.getElementById('base_number').value;
-            const monthRoman = '{{ $monthRoman }}';
-            const year = '{{ $year }}';
-
-            document.getElementById('letter_number').value =
-                `${baseNumber}/MF/KEU/KPU/${contractInitial}/${monthRoman}/${year}`;
-            document.getElementById('invoice_number').value =
-                `${baseNumber}/MF/INV/KPU/${contractInitial}/${monthRoman}/${year}`;
-            document.getElementById('receipt_number').value =
-                `${baseNumber}/MF/KW/KPU/${contractInitial}/${monthRoman}/${year}`;
-        }
-
         // Toggle contract dropdown
         function toggleContractDropdown() {
             document.getElementById("contractDropdown").classList.toggle("hidden");
