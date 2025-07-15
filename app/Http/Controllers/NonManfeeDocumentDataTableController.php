@@ -58,7 +58,7 @@ class NonManfeeDocumentDataTableController extends Controller
 
         // Cek apakah user memiliki role teknisi
         /** @var \App\Models\User $user */
-        if ($user->hasRole(['perbendaharaan', 'manager_anggaran', 'direktur_keuangan'])) {
+        if ($user->hasRole(['perbendaharaan', 'manager_anggaran', 'direktur_keuangan', 'pajak'])) {
 
             // User teknisi bisa melihat semua dokumen, tidak ada filter tambahan
         } else {
