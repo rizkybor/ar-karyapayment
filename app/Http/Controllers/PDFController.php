@@ -135,7 +135,7 @@ class PDFController extends Controller
         }
 
         // Pembulatan keatas
-        $totalRounded = ceil($firstCost->total);
+        $totalRounded = round($firstCost->total);
 
         // Hitung nilai terbilang dari total
         $terbilang = $this->nilaiToString($totalRounded);
@@ -222,8 +222,8 @@ class PDFController extends Controller
             throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
         }
 
-         // Pembulatan keatas
-        $totalRounded = ceil($firstCost->total);
+        // Pembulatan keatas
+        $totalRounded = round($firstCost->total);
 
         // Hitung nilai terbilang
         $terbilang = $this->nilaiToString($totalRounded);
@@ -402,7 +402,7 @@ class PDFController extends Controller
         }
 
         // Pembulatan keatas
-        $totalRounded = ceil($firstCost->total);
+        $totalRounded = round($firstCost->total);
 
         // Hitung nilai terbilang dari total
         $terbilang = $this->nilaiToString($totalRounded);
@@ -490,7 +490,7 @@ class PDFController extends Controller
         }
 
         // Pembulatan keatas
-        $totalRounded = ceil($firstCost->total);
+        $totalRounded = round($firstCost->total);
 
         // Hitung nilai terbilang
         $terbilang = $this->nilaiToString($totalRounded);
