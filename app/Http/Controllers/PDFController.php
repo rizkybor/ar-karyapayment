@@ -29,7 +29,7 @@ class PDFController extends Controller
     {
 
         $privyCtrl = new PrivyController();
-        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId,$category, $type);
+        $signedUrl = $privyCtrl->getSignedDocumentUrl($documentId, $category, $type);
 
         if (!$signedUrl) {
             throw new \Exception("Dokumen {$type} belum ditandatangani atau tidak ditemukan.");
@@ -134,8 +134,11 @@ class PDFController extends Controller
             return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
         }
 
+        // Pembulatan keatas
+        $totalRounded = ceil($firstCost->total);
+
         // Hitung nilai terbilang dari total
-        $terbilang = $this->nilaiToString($firstCost->total);
+        $terbilang = $this->nilaiToString($totalRounded);
 
         $data = [
             'document' => $document,
@@ -219,8 +222,11 @@ class PDFController extends Controller
             throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
         }
 
+         // Pembulatan keatas
+        $totalRounded = ceil($firstCost->total);
+
         // Hitung nilai terbilang
-        $terbilang = $this->nilaiToString($firstCost->total);
+        $terbilang = $this->nilaiToString($totalRounded);
 
         $data = [
             'document' => $document,
@@ -390,12 +396,16 @@ class PDFController extends Controller
 
         // Pastikan accumulatedCosts tidak kosong untuk menghindari error
         $firstCost = $document->accumulatedCosts->first();
+
         if (!$firstCost) {
             return back()->with('error', 'Dokumen tidak memiliki akumulasi biaya.');
         }
 
+        // Pembulatan keatas
+        $totalRounded = ceil($firstCost->total);
+
         // Hitung nilai terbilang dari total
-        $terbilang = $firstCost ? $this->nilaiToString($firstCost->total) : '-';
+        $terbilang = $this->nilaiToString($totalRounded);
 
         $data = [
             'document' => $document,
@@ -479,8 +489,11 @@ class PDFController extends Controller
             throw new \Exception('Dokumen tidak memiliki akumulasi biaya.');
         }
 
+        // Pembulatan keatas
+        $totalRounded = ceil($firstCost->total);
+
         // Hitung nilai terbilang
-        $terbilang = $this->nilaiToString($firstCost->total);
+        $terbilang = $this->nilaiToString($totalRounded);
 
         $data = [
             'document' => $document,
