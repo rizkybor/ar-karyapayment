@@ -48,10 +48,13 @@
 
                             <div>
                                 <x-label for="category" value="{{ __('Kategori Kontrak') }}" />
-                                <select name="category" value="{{ old('category', $contract->category) }}"
+                                <select id="category" name="category"
                                     class="form-select mt-1 block w-full min-h-[40px]">
                                     @foreach ($category as $item)
-                                        <option value="{{ $item }}">{{ $item }}</option>
+                                        <option value="{{ $item }}"
+                                            {{ old('category', $contract->category) == $item ? 'selected' : '' }}>
+                                            {{ $item }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
