@@ -553,7 +553,7 @@ class ManfeeDocumentController extends Controller
 
                     $typeKwitansi = '0';
                     $jenis_dokumen = $document->category ?? null;
-                    $totalInvoice = $document->accumulatedCosts->pluck('dpp')[0];
+                    $totalInvoice = $document->accumulatedCosts->pluck('total')[0];
 
                     // === PRIVY SERVICES ===
                     $createLetter = $this->sendToPrivy($base64letter, '0', '25.01', '657.27', $refLetter, $noSurat, $jenis_dokumen);
