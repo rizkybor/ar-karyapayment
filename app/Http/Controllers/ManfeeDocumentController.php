@@ -75,7 +75,6 @@ class ManfeeDocumentController extends Controller
     {
         $request->validate([
             'contract_id' => 'required|exists:contracts,id',
-            'period' => 'required',
             'letter_subject' => 'required',
             'manfee_bill' => 'required',
         ]);
@@ -336,9 +335,9 @@ class ManfeeDocumentController extends Controller
 
     public function periodUpdate(Request $request, $id)
     {
-        $request->validate([
-            'period' => 'required|string|max:255',
-        ]);
+        // $request->validate([
+        //     'period' => 'required|string|max:255',
+        // ]);
 
         $doc = ManfeeDocument::findOrFail($id);
         $doc->update([

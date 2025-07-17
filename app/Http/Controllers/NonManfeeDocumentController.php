@@ -71,7 +71,6 @@ class NonManfeeDocumentController extends Controller
     {
         $request->validate([
             'contract_id' => 'required|exists:contracts,id',
-            'period' => 'required',
             'letter_subject' => 'required',
         ]);
 
@@ -1153,9 +1152,9 @@ class NonManfeeDocumentController extends Controller
 
     public function periodUpdate(Request $request, $id)
     {
-        $request->validate([
-            'period' => 'required|string|max:255',
-        ]);
+        // $request->validate([
+        //     'period' => 'required|string|max:255',
+        // ]);
 
         $doc = NonManfeeDocument::findOrFail($id);
         $doc->update([

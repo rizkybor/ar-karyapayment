@@ -25,7 +25,7 @@
                 <div x-data="{ editPeriod: false, period: @js($nonManfeeDocument->period) }" class="mt-2">
                     <template x-if="!editPeriod">
                         <h1 class="text-m md:text-m text-gray-800 dark:text-gray-100 font-bold flex items-center">
-                            Periode: <span class="ml-1" x-text="period"></span>
+                            Periode: <span class="ml-1" x-text="period || '-'"></span>
 
                             @if (auth()->user()->hasRole('maker'))
                                 <button class="group ml-2" @click="editPeriod = true" title="Edit Periode">
@@ -58,7 +58,7 @@
                             @method('PUT')
                             <input type="text" name="period" x-model="period"
                                 class="form-input rounded-md shadow-sm w-full dark:bg-gray-700 dark:text-white"
-                                required>
+                                >
                             <button type="submit" class="group ml-2" title="Simpan Period">
                                 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
