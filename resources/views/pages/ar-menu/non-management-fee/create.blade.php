@@ -57,7 +57,7 @@
                             <x-label for="period" value="{{ __('Periode / Termin') }}" />
                             <x-input id="period" name="period"
                                 placeholder="Masukkan Periode / Termin, contoh : (periode Mei)" type="text"
-                                class="mt-1 block w-full min-h-[40px]" required />
+                                class="mt-1 block w-full min-h-[40px]" />
                             <x-input-error for="period" class="mt-2" />
                         </div>
                         <div>

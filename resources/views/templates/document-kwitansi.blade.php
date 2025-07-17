@@ -115,7 +115,7 @@
             <div style="padding: 10px;">
                 <div class="border-box" style="overflow-wrap: break-word; word-break: break-word;">
                     <p class="italic" style="margin: 0;">
-                        {{ $document->letter_subject ?? '-' }} - {{ $document->period ?? '-' }}
+                        {{ $document->letter_subject ?? '-' }} {{ $document->period ? '-' . $document->period : '' }}
                     </p>
                 </div>
 
