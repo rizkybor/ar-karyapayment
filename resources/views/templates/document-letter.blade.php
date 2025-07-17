@@ -130,8 +130,8 @@
                     <td style="width: 90%; border: none; vertical-align: top;">
                         <div style="display: inline-block; vertical-align: top;">:</div>
                         <div style="display: inline-block; width: calc(100% - 10px);">
-                            <strong>{{ $document->letter_subject ?? '-' }} -
-                                {{ $document->period ?? '-' }}</strong>
+                            <strong>{{ $document->letter_subject ?? '-' }}
+                                {{ $document->period ? '-' . $document->period : '' }}</strong>
                         </div>
                     </td>
                 </tr>

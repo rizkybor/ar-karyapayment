@@ -119,8 +119,8 @@
             <p class="font-semibold" style="height: 5px; margin: 2px 0; line-height: 1;">Untuk Pembayaran :</p>
             <div style="padding: 10px;">
                 <div class="border-box" style="overflow-wrap: break-word; word-break: break-word;">
-                    <p class="italic" style="margin: 0;">{{ $document->letter_subject ?? '-' }} -
-                        {{ $document->period ?? '-' }}</p>
+                    <p class="italic" style="margin: 0;">{{ $document->letter_subject ?? '-' }}
+                        {{ $document->period ? '-' . $document->period : '' }}</p>
                 </div>
 
                 <div style="min-height: 230px;">

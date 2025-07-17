@@ -164,7 +164,7 @@
                     <td rowspan="{{ $rowspan }}" style="vertical-align: top;">1</td> <!-- Kolom pertama (No) -->
 
                     <td colspan="3" style=" border-bottom: none;">{{ $document->letter_subject ?? '-' }} -
-                        {{ $document->period ?? '-' }}</td> <!-- Keterangan -->
+                        {{ $document->period ? '-' . $document->period : '' }}</td> <!-- Keterangan -->
 
                     <td style="border-right:none; border-bottom: none;">Rp.</td> <!-- Simbol Rupiah -->
                     <td style="text-align: right; border-left:none; border-bottom: none;">
