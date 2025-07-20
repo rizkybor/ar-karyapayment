@@ -17,8 +17,9 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
 {
     protected $ids;
 
-    public function __construct($ids)
-    {
+    public function __construct(
+        $ids
+    ) {
         $this->ids = explode(',', $ids);
     }
 
@@ -40,40 +41,68 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                 $nilaiPpn = optional($doc->accumulatedCosts)->nilai_ppn ?? '';
                 $totalTagihan = optional($doc->accumulatedCosts)->total ?? '';
 
+                $nilaiPokok = $doc->detailPayments
+                    ->whereNotIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
+                    ->sum('nilai_biaya');
+
+                $nilaiPersonil = $doc->detailPayments
+                    ->whereNotIn('expense_type', ['Biaya Personil', 'biaya_personil'])
+                    ->sum('nilai_biaya');
+
+                $nilaiLainLain = $doc->detailPayments
+                    ->whereNotIn('expense_type', [
+                        'Biaya Non Personil',
+                        'biaya_non_personil',
+                        'Biaya Personil',
+                        'biaya_personil'
+                    ])
+                    ->sum('nilai_biaya');
+
+                $keterangan = '-';
+                if ($doc->status == 103) {
+                    $keterangan = 'Rejected';
+                } else {
+                    $keterangan = 'Outstanding';
+                }
+
+                dd($nilaiLainLain, $nilaiPokok, $nilaiPersonil);
+
                 return [
                     'No' => $index + 1,
-                    'No. Tagihan' => $doc->invoice_number ?? '',
-                    'No. Perjanjian / Kontrak' => optional($doc->contract)->contract_number ?? '',
-                    'Tgl Perjanjian' => optional(optional($doc->contract)->contract_date)?->format('d M Y') ?? '',
-                    'Pemberi Kerja' => optional($doc->contract)->employee_name ?? '',
-                    'Kode' => optional($doc->contract)->contract_initial ?? '',
-                    'PIC KPU' => optional($doc->creator)->name ?? '',
-                    'PIC PEMBERI KERJA' => optional($doc->contract)->employee_name ?? '',
+                    'No. Tagihan' => $doc->invoice_number ?? '-',
+                    'No. Perjanjian / Kontrak' => optional($doc->contract)->contract_number ?? '-',
+                    'Tgl Perjanjian' => $doc->contract && $doc->contract->start_date
+                        ? Carbon::parse($doc->contract->start_date)->format('d M Y')
+                        : '-',
+                    'Pemberi Kerja' => optional($doc->contract)->employee_name ?? '-',
+                    'Kode' => optional($doc->contract)->contract_initial ?? '-',
+                    'PIC KPU' => optional($doc->creator)->name ?? '-',
+                    'PIC PEMBERI KERJA' => '-',
                     'Jenis Tagihan' => $doc->category ?? '',
-                    'Tgl. Tagihan' => $tglTagihan?->format('d M Y') ?? '',
-                    'Umur Piutang' => $umurPiutang . ' hari',
-                    'Tanggal Bayar ke TAD' => '',
-                    'Tgl. Jatuh Tempo' => $tglJatuhTempo?->format('d M Y') ?? '',
+                    'Tgl. Tagihan' => $tglTagihan?->format('d M Y') ?? '-',
+                    'Umur Piutang' => $umurPiutang . 'd',
+                    'Tanggal Bayar ke TAD' => '-',
+                    'Tgl. Jatuh Tempo' => $tglJatuhTempo?->format('d M Y') ?? '-',
                     'Jatuh Tempo' => ($selisihJatuhTempo >= 0)
                         ? $selisihJatuhTempo . ' hari lagi'
                         : 'Lewat ' . abs($selisihJatuhTempo) . ' hari',
-                    'Tgl. Dokumen Diterima & Penerima' => '',
-                    'No. Faktur Pajak' => '',
-                    'Transaksi' => $doc->letter_subject ?? '',
-                    'Nilai Pokok' => '',
-                    'Non Personil' => '',
-                    'Lain-lain' => '',
-                    'Manfee' => '',
-                    'DPP' => $dpp,
-                    'PPN' => $nilaiPpn,
-                    'Total Tagihan' => $totalTagihan,
-                    'Outstanding' => '',
-                    'Tgl Terima' => '',
-                    'Nilai Diterima' => '',
-                    'PPh (ps. 23, 4(2), 22) & WAPU' => '',
-                    'Keterangan' => '',
-                    'Update status tagihan' => '',
-                    'No. PERMENT PGNMAS / Notes' => ''
+                    'Tgl. Dokumen Diterima & Penerima' => '-',
+                    'No. Faktur Pajak' => '-',
+                    'Transaksi' => $doc->letter_subject ?? '-',
+                    'Nilai Pokok' => $nilaiPokok ?? '-',
+                    'Non Personil' =>  $nilaiPersonil ?? '-',
+                    'Lain-lain' => $nilaiLainLain ?? '-',
+                    'Manfee' => '-',
+                    'DPP' => $dpp ?? '-',
+                    'PPN' => $nilaiPpn ?? '-',
+                    'Total Tagihan' => optional($doc->contract)->value ?? '-',
+                    'Outstanding' => '-',
+                    'Tgl Terima' => '-',
+                    'Nilai Diterima' => '-',
+                    'PPh (ps. 23, 4(2), 22) & WAPU' => '-',
+                    'Keterangan' => $keterangan ?? '-',
+                    'Update status tagihan' => '-',
+                    'No. PERMENT PGNMAS / Notes' => '-'
                 ];
             });
     }

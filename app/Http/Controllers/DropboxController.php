@@ -360,8 +360,18 @@ class DropboxController extends Controller
             $client = new Client($accessToken);
 
             // 🔍 **Pastikan file ada di Dropbox sebelum mengambil link**
+            // $list = $client->listFolder($folderName);
+            // $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
+
             $list = $client->listFolder($folderName);
-            $fileExists = collect($list['entries'])->firstWhere('path_lower', $filePathLower);
+            $entries = $list['entries'];
+
+            while ($list['has_more']) {
+                $list = $client->listFolderContinue($list['cursor']);
+                $entries = array_merge($entries, $list['entries']);
+            }
+
+            $fileExists = collect($entries)->firstWhere('path_lower', $filePathLower);
 
             if (!$fileExists) {
                 Log::error("❌ [DROPBOX] File tidak ditemukan: " . $filePath);
