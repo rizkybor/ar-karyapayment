@@ -25,10 +25,11 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
 
     public function collection()
     {
-        return NonManfeeDocument::with(['contract', 'creator', 'accumulatedCosts'])
+        return NonManfeeDocument::with(['contract', 'creator', 'accumulatedCosts', 'taxFiles'])
             ->whereIn('id', $this->ids)
             ->get()
             ->map(function ($doc, $index) {
+                $fakturPajak = $doc->taxFiles[0]->file_name ?? '-';
                 $tglTagihan = $doc->created_at;
                 $tglJatuhTempo = Carbon::parse($doc->expired_at);
                 $hariIni = Carbon::now();
@@ -65,7 +66,12 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                     $keterangan = 'Outstanding';
                 }
 
-                dd($nilaiLainLain, $nilaiPokok, $nilaiPersonil);
+                $transaksi = '-';
+                if ($doc->letter_subject && $doc->period) {
+                    $transaksi = $doc->letter_subject . ' - ' . $doc->period;
+                } elseif ($doc->letter_subject) {
+                    $transaksi = $doc->letter_subject;
+                }
 
                 return [
                     'No' => $index + 1,
@@ -87,8 +93,8 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                         ? $selisihJatuhTempo . ' hari lagi'
                         : 'Lewat ' . abs($selisihJatuhTempo) . ' hari',
                     'Tgl. Dokumen Diterima & Penerima' => '-',
-                    'No. Faktur Pajak' => '-',
-                    'Transaksi' => $doc->letter_subject ?? '-',
+                    'No. Faktur Pajak' => $fakturPajak ?? '-',
+                    'Transaksi' => $transaksi,
                     'Nilai Pokok' => $nilaiPokok ?? '-',
                     'Non Personil' =>  $nilaiPersonil ?? '-',
                     'Lain-lain' => $nilaiLainLain ?? '-',
