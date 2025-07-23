@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Exception;
 
@@ -354,7 +355,8 @@ class AccurateTransactionService
          * Example body request.
          */
         $postData = [
-            "uniqueDataNumber" => now()->timestamp,
+            // "uniqueDataNumber" => now()->timestamp,
+            "uniqueDataNumber" => Carbon::parse($payload['data']->created_at)->timestamp,
             "needDetailResult" => false,
             "attachmentCount" => 0,
             "commentCount" => 0,
