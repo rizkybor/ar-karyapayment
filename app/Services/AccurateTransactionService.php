@@ -90,6 +90,7 @@ class AccurateTransactionService
     {
         $tableData = $payload['detailPayments'];
         $tableTax = $payload['taxFiles'];
+        $createdAt = $payload['data']->created_at;
 
         // Assign Detail Account by Table Data
         $detailAccounts = [];
@@ -355,8 +356,7 @@ class AccurateTransactionService
          * Example body request.
          */
         $postData = [
-            // "uniqueDataNumber" => now()->timestamp,
-            "uniqueDataNumber" => Carbon::parse($payload['data']->created_at)->timestamp,
+            "uniqueDataNumber" => now()->timestamp,
             "needDetailResult" => false,
             "attachmentCount" => 0,
             "commentCount" => 0,
@@ -396,9 +396,12 @@ class AccurateTransactionService
             "shipment" => "",
             "shipmentId" => "",
             "toAddress" => $payload['contract']->address ?? '',
-            "transDate" => now()->format('d/m/Y'),
-            "shipDate" => now()->format('d/m/Y'),
-            "dueDate" => now()->format('d/m/Y'),
+            "transDate" => Carbon::parse($createdAt)->format('d/m/Y'),
+            "shipDate"  => Carbon::parse($createdAt)->format('d/m/Y'),
+            "dueDate"   => Carbon::parse($createdAt)->format('d/m/Y'),
+            // "transDate" => now()->format('d/m/Y'),
+            // "shipDate" => now()->format('d/m/Y'),
+            // "dueDate" => now()->format('d/m/Y'),
             "description" => $payload['data']->letter_subject ?? '',
             "tax1Id" => 50,
             "tax2Id" => "",
