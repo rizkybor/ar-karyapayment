@@ -110,16 +110,46 @@ class DropboxController extends Controller
             $client = new Client($accessToken);
             $localFiles = [];
 
+            // SCRIPT LAMA, TIDAK BISA DOWNLOAD JIKA FILE LEBIH DARI 500 DATA
+            // foreach ($paths as $dropboxPath) {
+            //     $filename = basename($dropboxPath);
+            //     $localTempPath = storage_path('app/temp_dl_' . uniqid() . '_' . $filename);
+
+            //     // Ensure the path exists in Dropbox folder
+            //     $list = $client->listFolder($folder);
+            //     $fileExists = collect($list['entries'])->firstWhere('path_lower', strtolower($dropboxPath));
+            //     if (!$fileExists) continue;
+
+            //     $content = $client->download($dropboxPath);
+            //     file_put_contents($localTempPath, $content);
+            //     $localFiles[] = [
+            //         'path' => $localTempPath,
+            //         'name' => $filename
+            //     ];
+            // }
+
+            // return $localFiles;
+            // Ambil semua file dari folder (termasuk yang paginasi)
+
+            $list = $client->listFolder($folder);
+            $entries = $list['entries'];
+
+            while ($list['has_more']) {
+                $list = $client->listFolderContinue($list['cursor']);
+                $entries = array_merge($entries, $list['entries']);
+            }
+
+            // Lakukan pengecekan dan download jika ditemukan
             foreach ($paths as $dropboxPath) {
                 $filename = basename($dropboxPath);
-                $localTempPath = storage_path('app/temp_dl_' . uniqid() . '_' . $filename);
+                $filePathLower = strtolower($dropboxPath);
+                $fileExists = collect($entries)->firstWhere('path_lower', $filePathLower);
 
-                // Ensure the path exists in Dropbox folder
-                $list = $client->listFolder($folder);
-                $fileExists = collect($list['entries'])->firstWhere('path_lower', strtolower($dropboxPath));
                 if (!$fileExists) continue;
 
+                $localTempPath = storage_path('app/temp_dl_' . uniqid() . '_' . $filename);
                 $content = $client->download($dropboxPath);
+
                 file_put_contents($localTempPath, $content);
                 $localFiles[] = [
                     'path' => $localTempPath,
