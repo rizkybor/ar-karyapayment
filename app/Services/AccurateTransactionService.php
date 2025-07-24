@@ -481,7 +481,7 @@ class AccurateTransactionService
             "projectPaymentPortionId" => "",
             "projectPaymentAmount" => 0,
             "taxDate" => Carbon::parse($createdAt)->format('d/m/Y') ?? '',
-            "taxNumber" => $payload['data']->invoice_number ?? '',
+            "taxNumber" => $payload['taxFiles'][0]['file_name'] ?? '',
             "documentCode" => "CTAS_INVOICE",
             "taxType" => 'BKN_PEMUNGUT_PPN',
             "documentTransaction" => "",
