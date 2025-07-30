@@ -162,10 +162,18 @@ class NonManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman(date('n'));
         $year = date('Y');
 
-        // Ambil 6 digit pertama dari nomor surat, lalu konversi ke integer
-        $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        // Generate nomor dokumen (sama seperti di create sebelumnya)
+        // $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        //     ->value('letter_number');
+        // $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        //     ->value('letter_number');
+
+        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$year")
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
-        $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+
+        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$year")
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
         $lastNumericMF = 100;
@@ -264,7 +272,7 @@ class NonManfeeDocumentController extends Controller
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
-        
+
         if ($nonManfeeDocument->status_payment !== $payment_status) {
             $nonManfeeDocument->status_payment = $payment_status;
             $nonManfeeDocument->save();
