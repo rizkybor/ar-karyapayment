@@ -63,7 +63,11 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                 if ($doc->status == 103) {
                     $keterangan = 'Rejected';
                 } else {
-                    $keterangan = 'Outstanding';
+                    if ($doc->status_payment == 'LUNAS') {
+                        $keterangan = $doc->status_payment;
+                    } else {
+                        $keterangan = 'Outstanding';
+                    }
                 }
 
                 $transaksi = '-';

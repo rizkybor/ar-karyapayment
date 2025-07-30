@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('category', 255);
             $table->string('status', 255);
             $table->boolean('status_print')->default(false);
+            $table->string('status_payment')->nullable();
             $table->string('reference_document', 255)->nullable();
             $table->string('reason_rejected', 255)->nullable();
             $table->string('path_rejected', 255)->nullable();
