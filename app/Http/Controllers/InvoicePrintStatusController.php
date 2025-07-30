@@ -161,7 +161,13 @@ class InvoicePrintStatusController extends Controller
             'created_at'
         ]);
 
-        $query = DB::table($manfeeQuery->unionAll($nonManfeeQuery));
+        // $query = DB::table($manfeeQuery->unionAll($nonManfeeQuery));
+
+        $unionQuery = $manfeeQuery->unionAll($nonManfeeQuery);
+        $query = DB::query()
+            ->fromSub($unionQuery, 'documents')
+            ->orderBy('status_print', 'asc')
+            ->orderBy('created_at', 'desc');
 
         return DataTables::of($query)
             ->addIndexColumn()
