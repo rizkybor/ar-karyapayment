@@ -40,7 +40,7 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                 // Pastikan accumulatedCosts tidak null
                 $dpp = optional($doc->accumulatedCosts)->dpp ?? '';
                 $nilaiPpn = optional($doc->accumulatedCosts)->nilai_ppn ?? '';
-                $totalTagihan = optional($doc->accumulatedCosts)->total ?? '';
+                $totalTagihan = optional($doc->accumulatedCosts)->total ?? 0;
 
                 $nilaiPokok = $doc->detailPayments
                     ->whereIn('expense_type', ['Biaya Personil', 'biaya_personil'])

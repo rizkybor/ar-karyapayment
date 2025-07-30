@@ -41,7 +41,7 @@ class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, 
                 $nilaiManfee = $firstAccumulated->nilai_manfee ?? '';
                 $dpp = $firstAccumulated->dpp ?? '';
                 $nilaiPpn = $firstAccumulated->nilai_ppn ?? '';
-                $totalTagihan = $firstAccumulated->total ?? '';
+                $totalTagihan = $firstAccumulated->total ?? 0;
 
                 $nilaiPokok = $doc->detailPayments
                     ->whereIn('expense_type', ['Biaya Personil', 'biaya_personil'])
