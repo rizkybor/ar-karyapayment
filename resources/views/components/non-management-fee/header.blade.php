@@ -203,7 +203,7 @@
                         <!-- Need Info Button -->
                         <x-button-action color="orange" icon="info"
                             data-action="{{ route('non-management-fee.processRevision', $document['id']) }}"
-                            data-title="Need Info" data-button-text="Send"
+                            data-title="Reject Invoice" data-button-text="Send"
                             data-button-color="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-500 dark:hover:bg-yellow-600 dark:focus:ring-yellow-700"
                             onclick="openModal(this)">
                             Reject Invoice

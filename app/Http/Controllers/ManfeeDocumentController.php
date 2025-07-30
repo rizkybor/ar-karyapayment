@@ -785,7 +785,7 @@ class ManfeeDocumentController extends Controller
 
             // 🔹 1️⃣ Validasi: Pastikan user memiliki hak revisi
             if ($userRole !== $currentRole) {
-                return back()->with('error', "Anda tidak memiliki izin untuk merevisi dokumen ini.");
+                return back()->with('error', "Anda tidak memiliki izin untuk menolak dokumen ini.");
             }
 
             // 🔹 2️⃣ Ambil Approver Terakhir yang Merevisi Sebagai Target Approver
@@ -829,7 +829,7 @@ class ManfeeDocumentController extends Controller
                 'previous_status' => $document->status,
                 'new_status'      => '102',
                 'action'          => 'Revised',
-                'notes'           =>  $message ? "{$message}." : "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
+                'notes'           =>  $message ? "{$message}." : "Dokumen ditolak oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
             ]);
 
             // 🔹 6️⃣ Kirim Notifikasi ke Approver yang Merevisi Sebelumnya
@@ -840,7 +840,7 @@ class ManfeeDocumentController extends Controller
                     'notifiable_id'   => $document->id,
                     'messages'        =>  $message
                         ? "{$message}. Lihat detail: " . route('management-fee.show', $document->id)
-                        : "Dokumen diproses oleh {$user->name}.",
+                        : "Dokumen ditolak oleh {$user->name}.",
                     'sender_id'       => $user->id,
                     'sender_role'     => $userRole,
                     'read_at'         => null,
@@ -863,8 +863,8 @@ class ManfeeDocumentController extends Controller
             return back()->with('success', "Dokumen telah dikembalikan ke {$targetApprover->name} untuk pengecekan ulang.");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
-            return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
+            Log::error("Error saat menolak dokumen [ID: {$id}]: " . $e->getMessage());
+            return back()->with('error', "Terjadi kesalahan saat menolak dokumen.");
         }
     }
 
@@ -994,7 +994,7 @@ class ManfeeDocumentController extends Controller
                 'type' => InvoiceApprovalNotification::class,
                 'notifiable_type' => ManfeeDocument::class,
                 'notifiable_id' => $document->id,
-                'messages' => $message ? "{$message}.  Lihat detail: " . route('management-fee.show', $document->id) : "Dokumen dengan subjek '{$document->letter_subject}' telah ditolak oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
+                'messages' => $message ? "{$message}.  Lihat detail: " . route('management-fee.show', $document->id) : "Dokumen dengan subjek '{$document->letter_subject}' telah dibatalkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('management-fee.show', $document->id),
                 'sender_id' => $user->id,
                 'sender_role' => $userRole,
                 'read_at' => null,
