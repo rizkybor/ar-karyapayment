@@ -38,17 +38,17 @@ class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, 
                 $selisihJatuhTempo = $hariIni->diffInDays($tglJatuhTempo, false);
 
                 $firstAccumulated = $doc->accumulatedCosts->first();
-                $nilaiManfee = $firstAccumulated?->nilai_manfee ?? '';
-                $dpp = $firstAccumulated?->dpp ?? '';
-                $nilaiPpn = $firstAccumulated?->nilai_ppn ?? '';
-                $totalTagihan = $firstAccumulated?->total ?? '';
+                $nilaiManfee = $firstAccumulated->nilai_manfee ?? '';
+                $dpp = $firstAccumulated->dpp ?? '';
+                $nilaiPpn = $firstAccumulated->nilai_ppn ?? '';
+                $totalTagihan = $firstAccumulated->total ?? '';
 
                 $nilaiPokok = $doc->detailPayments
-                    ->whereNotIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
+                    ->whereIn('expense_type', ['Biaya Personil', 'biaya_personil'])
                     ->sum('nilai_biaya');
 
-                $nilaiPersonil = $doc->detailPayments
-                    ->whereNotIn('expense_type', ['Biaya Personil', 'biaya_personil'])
+                $nilaiNonPersonil = $doc->detailPayments
+                    ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
                     ->sum('nilai_biaya');
 
                 $nilaiLainLain = $doc->detailPayments
@@ -64,7 +64,11 @@ class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, 
                 if ($doc->status == 103) {
                     $keterangan = 'Rejected';
                 } else {
-                    $keterangan = 'Outstanding';
+                    if ($doc->status_payment == 'LUNAS') {
+                        $keterangan = $doc->status_payment;
+                    } else {
+                        $keterangan = 'Outstanding';
+                    }
                 }
 
                 $transaksi = '-';
@@ -97,13 +101,13 @@ class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, 
                     'No. Faktur Pajak' => $fakturPajak ?? '-',
                     'Transaksi' => $transaksi,
                     'Nilai Pokok' => $nilaiPokok ?? '-',
-                    'Non Personil' =>  $nilaiPersonil ?? '-',
+                    'Non Personil' =>  $nilaiNonPersonil ?? '-',
                     'Lain-lain' => $nilaiLainLain ?? '-',
                     'Manfee' => $nilaiManfee ?? '-',
                     'DPP' => $dpp ?? '-',
                     'PPN' => $nilaiPpn ?? '-',
-                    'Total Tagihan' => optional($doc->contract)->value ?? '-',
-                    'Outstanding' => '-',
+                    'Total Tagihan' => round($totalTagihan) ?? '-', // Nilai Total Invoice
+                    'Outstanding' => round($totalTagihan) ?? '-', // Nilai Total Tagihan
                     'Tgl Terima' => '-',
                     'Nilai Diterima' => '-',
                     'PPh (ps. 23, 4(2), 22) & WAPU' => '-',

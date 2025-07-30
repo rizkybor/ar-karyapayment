@@ -264,6 +264,11 @@ class NonManfeeDocumentController extends Controller
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
+        
+        if ($nonManfeeDocument->status_payment !== $payment_status) {
+            $nonManfeeDocument->status_payment = $payment_status;
+            $nonManfeeDocument->save();
+        }
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -353,6 +358,11 @@ class NonManfeeDocumentController extends Controller
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
+
+        if ($nonManfeeDocument->status_payment !== $payment_status) {
+            $nonManfeeDocument->status_payment = $payment_status;
+            $nonManfeeDocument->save();
+        }
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
