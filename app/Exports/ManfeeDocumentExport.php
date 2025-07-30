@@ -64,7 +64,7 @@ class ManfeeDocumentExport implements FromCollection, WithHeadings, WithStyles, 
                 if ($doc->status == 103) {
                     $keterangan = 'Rejected';
                 } else {
-                    if ($doc->status_payment == 'LUNAS') {
+                    if ($doc->status_payment == 'Lunas') {
                         $keterangan = $doc->status_payment;
                     } else {
                         $keterangan = 'Outstanding';
