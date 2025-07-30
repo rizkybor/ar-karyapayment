@@ -645,87 +645,166 @@
         </p>
     `;
                 },
+                //         drawCallback: function(settings) {
+                //             let api = this.api();
+                //             let pageInfo = api.page.info();
+                //             let currentPage = pageInfo.page + 1;
+                //             let totalPages = pageInfo.pages;
+
+
+                //             // Generate pagination controls
+                //             let paginationHtml = `
+            // <div class="flex justify-center">
+            //     <nav class="flex" role="navigation" aria-label="Navigation">
+            //         <div class="mr-2">
+            //             ${currentPage > 1 ? `
+                //                                                                                                                                                                                                                                                                             <button data-page="${currentPage - 2}" 
+                //                                                                                                                                                                                                                                                                                 class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                //                                                                                                                                                                                                                                                                                 border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                //                                                                                                                                                                                                                                                                                 <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                //                                                                                                                                                                                                                                                                                     <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                //                                                                                                                                                                                                                                                                                 </svg>
+                //                                                                                                                                                                                                                                                                             </button>` : `
+                //                                                                                                                                                                                                                                                                             <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                //                                                                                                                                                                                                                                                                                 border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                //                                                                                                                                                                                                                                                                                 <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                //                                                                                                                                                                                                                                                                                     <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
+                //                                                                                                                                                                                                                                                                                 </svg>
+                //                                                                                                                                                                                                                                                                             </span>`}
+            //         </div>
+            //         <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
+
+                //             // Generate page numbers
+                //             for (let i = 1; i <= totalPages; i++) {
+                //                 if (i === currentPage) {
+                //                     paginationHtml += `
+            //         <li>
+            //             <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+            //                 border border-gray-200 dark:border-gray-700/60 text-violet-500">
+            //                 ${i}
+            //             </span>
+            //         </li>`;
+                //                 } else {
+                //                     paginationHtml += `
+            //         <li>
+            //             <button data-page="${i - 1}" 
+            //                 class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
+            //                 hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
+            //                 text-gray-600 dark:text-gray-300">
+            //                 ${i}
+            //             </button>
+            //         </li>`;
+                //                 }
+                //             }
+
+                //             paginationHtml += `
+            //         </ul>
+            //         <div class="ml-2">
+            //             ${currentPage < totalPages ? `
+                //                                                                                                                                                                                                                                                                     <button data-page="${currentPage}" 
+                //                                                                                                                                                                                                                                                                         class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                //                                                                                                                                                                                                                                                                         border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
+                //                                                                                                                                                                                                                                                                         <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                //                                                                                                                                                                                                                                                                             <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                //                                                                                                                                                                                                                                                                         </svg>
+                //                                                                                                                                                                                                                                                                     </button>` : `
+                //                                                                                                                                                                                                                                                                     <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
+                //                                                                                                                                                                                                                                                                         border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
+                //                                                                                                                                                                                                                                                                         <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
+                //                                                                                                                                                                                                                                                                             <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
+                //                                                                                                                                                                                                                                                                         </svg>
+                //                                                                                                                                                                                                                                                                     </span>`}
+            //         </div>
+            //     </nav>
+            //     </div>`;
+
+                //             // Update pagination container
+                //             $('#tablePagination').html(paginationHtml);
+
+                //             $('#tablePagination').off('click', 'button[data-page]').on('click',
+                //                 'button[data-page]',
+                //                 function() {
+                //                     let page = $(this).data('page');
+                //                     table.page(page).draw('page');
+                //                 });
+                //         }
                 drawCallback: function(settings) {
                     let api = this.api();
                     let pageInfo = api.page.info();
                     let currentPage = pageInfo.page + 1;
                     let totalPages = pageInfo.pages;
 
+                    let maxVisiblePages = 6;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-                    // Generate pagination controls
+                    if (endPage - startPage < maxVisiblePages - 1) {
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                    }
+
                     let paginationHtml = `
-        <div class="flex justify-center">
-            <nav class="flex" role="navigation" aria-label="Navigation">
-                <div class="mr-2">
-                    ${currentPage > 1 ? `
-                                                                                                                                                                                                                                                                                <button data-page="${currentPage - 2}" 
-                                                                                                                                                                                                                                                                                    class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                                                                                                                                                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                                                                                                </button>` : `
-                                                                                                                                                                                                                                                                                <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                                                                                                    border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                                                                                                                                                                                                                    <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                                                                                        <path d="M9.4 13.4l1.4-1.4-4-4 4-4-1.4-1.4L4 8z" />
-                                                                                                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                                                                                                </span>`}
-                </div>
-                <ul class="inline-flex text-sm font-medium -space-x-px rounded-lg shadow-sm">`;
+    <div class="flex justify-center">
+        <nav class="flex items-center" role="navigation" aria-label="Pagination">`;
 
-                    // Generate page numbers
-                    for (let i = 1; i <= totalPages; i++) {
-                        if (i === currentPage) {
-                            paginationHtml += `
-                <li>
-                    <span class="inline-flex items-center justify-center rounded-lg leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
-                        border border-gray-200 dark:border-gray-700/60 text-violet-500">
-                        ${i}
-                    </span>
-                </li>`;
-                        } else {
-                            paginationHtml += `
-                <li>
-                    <button data-page="${i - 1}" 
-                        class="inline-flex items-center justify-center leading-5 px-3.5 py-2 bg-white dark:bg-gray-800 
-                        hover:bg-gray-50 dark:hover:bg-gray-900 border border-gray-200 dark:border-gray-700/60 
-                        text-gray-600 dark:text-gray-300">
-                        ${i}
-                    </button>
-                </li>`;
+                    // Tombol Prev
+                    paginationHtml += currentPage > 1 ?
+                        `<button data-page="${currentPage - 2}"
+            class="px-2.5 py-2 mr-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900">
+            &laquo;
+        </button>` :
+                        `<span class="px-2.5 py-2 mr-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border border-gray-300 dark:border-gray-700">
+            &laquo;
+        </span>`;
+
+                    // Tombol page awal jika jauh
+                    if (startPage > 1) {
+                        paginationHtml +=
+                            `<button data-page="0"
+            class="px-3 py-2 mx-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900">1</button>`;
+                        if (startPage > 2) {
+                            paginationHtml += `<span class="mx-1 text-gray-400">...</span>`;
                         }
                     }
 
-                    paginationHtml += `
-                </ul>
-                <div class="ml-2">
-                    ${currentPage < totalPages ? `
-                                                                                                                                                                                                                                                                        <button data-page="${currentPage}" 
-                                                                                                                                                                                                                                                                            class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 shadow-sm">
-                                                                                                                                                                                                                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                                                                                                                                                                                                            </svg>
-                                                                                                                                                                                                                                                                        </button>` : `
-                                                                                                                                                                                                                                                                        <span class="inline-flex items-center justify-center rounded-lg leading-5 px-2.5 py-2 bg-white dark:bg-gray-800 
-                                                                                                                                                                                                                                                                            border border-gray-200 dark:border-gray-700/60 text-gray-300 dark:text-gray-600 shadow-sm">
-                                                                                                                                                                                                                                                                            <svg class="fill-current" width="16" height="16" viewBox="0 0 16 16">
-                                                                                                                                                                                                                                                                                <path d="M6.6 13.4L5.2 12l4-4-4-4 1.4-1.4L12 8z" />
-                                                                                                                                                                                                                                                                            </svg>
-                                                                                                                                                                                                                                                                        </span>`}
-                </div>
-            </nav>
-            </div>`;
+                    // Tombol halaman aktif
+                    for (let i = startPage; i <= endPage; i++) {
+                        paginationHtml += i === currentPage ?
+                            `<span class="px-3 py-2 mx-1 rounded-lg bg-blue-600 text-white border border-gray-300 dark:border-gray-700">${i}</span>` :
+                            `<button data-page="${i - 1}"
+                class="px-3 py-2 mx-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900">${i}</button>`;
+                    }
 
-                    // Update pagination container
+                    // Tombol page akhir jika jauh
+                    if (endPage < totalPages) {
+                        if (endPage < totalPages - 1) {
+                            paginationHtml += `<span class="mx-1 text-gray-400">...</span>`;
+                        }
+                        paginationHtml +=
+                            `<button data-page="${totalPages - 1}"
+            class="px-3 py-2 mx-1 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900">${totalPages}</button>`;
+                    }
+
+                    // Tombol Next
+                    paginationHtml += currentPage < totalPages ?
+                        `<button data-page="${currentPage}"
+            class="px-2.5 py-2 ml-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900">
+            &raquo;
+        </button>` :
+                        `<span class="px-2.5 py-2 ml-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border border-gray-300 dark:border-gray-700">
+            &raquo;
+        </span>`;
+
+                    paginationHtml += `</nav></div>`;
+
+                    // Render pagination
                     $('#tablePagination').html(paginationHtml);
 
+                    // Handle klik tombol pagination
                     $('#tablePagination').off('click', 'button[data-page]').on('click',
                         'button[data-page]',
                         function() {
                             let page = $(this).data('page');
-                            table.page(page).draw('page');
+                            api.page(page).draw('page');
                         });
                 }
             });
