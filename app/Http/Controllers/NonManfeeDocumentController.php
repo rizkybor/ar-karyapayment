@@ -264,6 +264,11 @@ class NonManfeeDocumentController extends Controller
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
+        
+        if ($nonManfeeDocument->status_payment !== $payment_status) {
+            $nonManfeeDocument->status_payment = $payment_status;
+            $nonManfeeDocument->save();
+        }
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -353,6 +358,11 @@ class NonManfeeDocumentController extends Controller
         $payment_status_json = json_decode($apiResponsePayment, true)['d'];
 
         $payment_status = $payment_status_json[0]['statusName'] ?? null;
+
+        if ($nonManfeeDocument->status_payment !== $payment_status) {
+            $nonManfeeDocument->status_payment = $payment_status;
+            $nonManfeeDocument->save();
+        }
 
         // 🚀 **Gunakan DropboxController untuk mendapatkan URL file**
         $dropboxController = new DropboxController();
@@ -790,7 +800,7 @@ class NonManfeeDocumentController extends Controller
 
             // 🔹 1️⃣ Validasi: Pastikan user memiliki hak revisi
             if ($userRole !== $currentRole) {
-                return back()->with('error', "Anda tidak memiliki izin untuk merevisi dokumen ini.");
+                return back()->with('error', "Anda tidak memiliki izin untuk menolak dokumen ini.");
             }
 
             // 🔹 2️⃣ Ambil Approver Terakhir yang Merevisi Sebagai Target Approver
@@ -834,7 +844,7 @@ class NonManfeeDocumentController extends Controller
                 'previous_status' => $document->status,
                 'new_status' => '102',
                 'action' => 'Revised',
-                'notes' => $message ? "{$message}." : "Dokumen direvisi oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
+                'notes' => $message ? "{$message}." : "Dokumen ditolak oleh {$user->name} dan dikembalikan ke {$targetApprover->name}.",
             ]);
 
             // 🔹 6️⃣ Kirim Notifikasi ke Approver yang Merevisi Sebelumnya
@@ -845,7 +855,7 @@ class NonManfeeDocumentController extends Controller
                     'notifiable_id' => $document->id,
                     'messages' => $message
                         ? "{$message}. Lihat detail: " . route('non-management-fee.show', $document->id)
-                        : "Dokumen diproses oleh {$user->name}.",
+                        : "Dokumen ditolak oleh {$user->name}.",
                     'sender_id' => $user->id,
                     'sender_role' => $userRole,
                     'read_at' => null,
@@ -868,8 +878,8 @@ class NonManfeeDocumentController extends Controller
             return back()->with('success', "Dokumen telah dikembalikan ke {$targetApprover->name} untuk pengecekan ulang.");
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("Error saat merevisi dokumen [ID: {$id}]: " . $e->getMessage());
-            return back()->with('error', "Terjadi kesalahan saat mengembalikan dokumen untuk revisi.");
+            Log::error("Error saat menolak dokumen [ID: {$id}]: " . $e->getMessage());
+            return back()->with('error', "Terjadi kesalahan saat menolak dokumen.");
         }
     }
 
@@ -1005,7 +1015,7 @@ class NonManfeeDocumentController extends Controller
                 'notifiable_type' => NonManfeeDocument::class,
                 'notifiable_id' => $document->id,
                 'messages' => $message ? "{$message}.  Lihat detail: " . route('non-management-fee.show', $document->id) :
-                    "Dokumen dengan subjek '{$document->letter_subject}' telah ditolak oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('non-management-fee.show', $document->id),
+                    "Dokumen dengan subjek '{$document->letter_subject}' telah dibatalkan oleh {$user->name} dengan alasan: {$request->reason}. Lihat detail: " . route('non-management-fee.show', $document->id),
                 'sender_id' => $user->id,
                 'sender_role' => $userRole,
                 'read_at' => null,

@@ -25,6 +25,7 @@ class ManfeeDocument extends Model
         'category',
         'status',
         'status_print',
+        'status_payment',
         'reference_document',
         'reason_rejected',
         'path_rejected',

@@ -40,14 +40,14 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                 // Pastikan accumulatedCosts tidak null
                 $dpp = optional($doc->accumulatedCosts)->dpp ?? '';
                 $nilaiPpn = optional($doc->accumulatedCosts)->nilai_ppn ?? '';
-                $totalTagihan = optional($doc->accumulatedCosts)->total ?? '';
+                $totalTagihan = optional($doc->accumulatedCosts)->total ?? 0;
 
                 $nilaiPokok = $doc->detailPayments
-                    ->whereNotIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
+                    ->whereIn('expense_type', ['Biaya Personil', 'biaya_personil'])
                     ->sum('nilai_biaya');
 
-                $nilaiPersonil = $doc->detailPayments
-                    ->whereNotIn('expense_type', ['Biaya Personil', 'biaya_personil'])
+                $nilaiNonPersonil = $doc->detailPayments
+                    ->whereIn('expense_type', ['Biaya Non Personil', 'biaya_non_personil'])
                     ->sum('nilai_biaya');
 
                 $nilaiLainLain = $doc->detailPayments
@@ -63,7 +63,11 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                 if ($doc->status == 103) {
                     $keterangan = 'Rejected';
                 } else {
-                    $keterangan = 'Outstanding';
+                    if ($doc->status_payment == 'LUNAS') {
+                        $keterangan = $doc->status_payment;
+                    } else {
+                        $keterangan = 'Outstanding';
+                    }
                 }
 
                 $transaksi = '-';
@@ -96,13 +100,13 @@ class NonManfeeDocumentExport implements FromCollection, WithHeadings, WithStyle
                     'No. Faktur Pajak' => $fakturPajak ?? '-',
                     'Transaksi' => $transaksi,
                     'Nilai Pokok' => $nilaiPokok ?? '-',
-                    'Non Personil' =>  $nilaiPersonil ?? '-',
+                    'Non Personil' =>  $nilaiNonPersonil ?? '-',
                     'Lain-lain' => $nilaiLainLain ?? '-',
                     'Manfee' => '-',
                     'DPP' => $dpp ?? '-',
                     'PPN' => $nilaiPpn ?? '-',
-                    'Total Tagihan' => optional($doc->contract)->value ?? '-',
-                    'Outstanding' => '-',
+                    'Total Tagihan' => round($totalTagihan) ?? '-', // Nilai Total Invoice
+                    'Outstanding' => round($totalTagihan) ?? '-', // Nilai Total Tagihan
                     'Tgl Terima' => '-',
                     'Nilai Diterima' => '-',
                     'PPh (ps. 23, 4(2), 22) & WAPU' => '-',
