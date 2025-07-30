@@ -93,9 +93,17 @@ class ManfeeDocumentController extends Controller
         $year = date('Y');
 
         // Generate nomor dokumen (sama seperti di create sebelumnya)
-        $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        // $lastNumberMF = ManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        //     ->value('letter_number');
+        // $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+        //     ->value('letter_number');
+
+        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$year")
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
-        $lastNumberNF = NonManfeeDocument::orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+
+        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$year")
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
         $lastNumericMF = 100;
