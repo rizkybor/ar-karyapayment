@@ -824,60 +824,86 @@
 
             // ✅ Event Listener untuk Export Selected
             $('#exportSelected').on('click', function() {
-                // Jika selectAll aktif, dapatkan semua ID yang sesuai filter
                 if (isSelectAll) {
-                    // Tampilkan loading
-                    showAutoCloseAlert('globalAlertModal', 3000, 'Menyiapkan semua data untuk export...',
+                    showAutoCloseAlert('globalAlertModal', 5000,
+                        'Mengumpulkan semua data yang terfilter...',
                         'info', 'Loading');
 
-                    // Dapatkan parameter filter saat ini
-                    const filters = {
-                        status: $('#filterStatus').val(),
-                        employer: $('#filterEmployer').val(),
-                        contract: $('#filterContract').val(),
-                        maker: $('#filterMaker').val(),
-                        date_start: $('#filterDateStart').val(),
-                        date_end: $('#filterDateEnd').val(),
-                        search: $('#searchTable').val(),
-                        length: -1 // Request semua data
-                    };
+                    // Simpan pagination saat ini
+                    const oldPageLen = table.page.len();
+                    const oldPage = table.page();
 
-                    // Buat AJAX request baru dengan parameter yang sama
-                    $.ajax({
-                        url: table.ajax.url(),
-                        type: 'GET',
-                        data: filters,
-                        success: function(response) {
-                            // Asumsikan response.data berisi semua data yang difilter
-                            const allIds = response.data.map(item => item.id);
+                    // Ganti pagination ke tampil semua data
+                    table.page.len(-1).draw();
 
-                            if (allIds.length > 0) {
-                                window.location.href =
-                                    "{{ route('management-fee.export') }}?ids=" +
-                                    encodeURIComponent(allIds.join(","));
-                            } else {
-                                showAutoCloseAlert('globalAlertModal', 3000,
-                                    'Tidak ada data yang sesuai filter!',
-                                    'warning', 'Ops!');
+                    table.one('draw', function() {
+                        // Kumpulkan semua ID yang terfilter
+                        const allFilteredIds = table
+                            .rows({
+                                search: 'applied'
+                            })
+                            .data()
+                            .pluck('id')
+                            .toArray();
+
+                        // Kembalikan pagination
+                        table.page.len(oldPageLen).draw();
+
+                        table.one('draw', function() {
+                            table.page(oldPage).draw(false); // Kembali ke halaman semula
+                        });
+
+                        if (allFilteredIds.length > 0) {
+                            const filterParams = new URLSearchParams();
+
+                            // Ambil filter dari elemen filter jika ada
+                            const filters = {
+                                status: '#filterStatus',
+                                employer: '#filterEmployer',
+                                contract: '#filterContract',
+                                maker: '#filterMaker',
+                                date_start: '#filterDateStart',
+                                date_end: '#filterDateEnd'
+                            };
+
+                            for (const key in filters) {
+                                const val = $(filters[key]).val();
+                                if (val) filterParams.append(key, val);
                             }
-                        },
-                        error: function(xhr) {
+
+                            // Tambahkan search global jika ada
+                            if (table.search()) {
+                                filterParams.append('search', table.search());
+                            }
+
+                            // Tambahkan selected IDs & flag select_all
+                            filterParams.append('ids', allFilteredIds.join(','));
+                            filterParams.append('select_all', 'true');
+
+                            // Redirect untuk export
+                            window.location.href = "{{ route('management-fee.export') }}?" +
+                                filterParams.toString();
+                        } else {
                             showAutoCloseAlert('globalAlertModal', 3000,
-                                'Gagal mendapatkan data untuk export',
-                                'error', 'Error!');
-                            console.error('Error getting all data:', xhr.responseText);
+                                'Tidak ada data yang sesuai filter!',
+                                'warning', 'Ops!');
                         }
                     });
-                }
-                // Jika tidak, ekspor hanya yang dipilih
-                else if (selectedIds.length > 0) {
-                    window.location.href = "{{ route('management-fee.export') }}?ids=" +
-                        encodeURIComponent(selectedIds.join(","));
+
+                } else if (selectedIds.length > 0) {
+                    // Jika user hanya pilih sebagian
+                    const params = new URLSearchParams();
+                    params.append('ids', selectedIds.join(','));
+                    params.append('select_all', 'false');
+
+                    window.location.href = "{{ route('management-fee.export') }}?" + params.toString();
                 } else {
-                    showAutoCloseAlert('globalAlertModal', 3000, 'Pilih minimal satu data untuk diexport!',
-                        'warning', 'Ops!');
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        'Pilih data yang akan diexport!',
+                        'warning', 'Perhatian!');
                 }
             });
+
 
             // ✅ Custom Search Bar
             $('#searchTable').on('keyup', function() {
@@ -894,9 +920,15 @@
                 isSelectAll = $(this).prop('checked');
 
                 if (isSelectAll) {
-                    // Kosongkan dulu selectedIds karena kita akan memilih semua
+                    // Kosongkan selectedIds karena kita akan memilih semua yang terfilter
                     selectedIds = [];
                     $('#selectAll').prop('checked', true);
+
+                    // Tampilkan jumlah data yang akan dipilih
+                    const info = table.page.info();
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        `Memilih semua ${info.recordsDisplay} data yang sesuai filter`,
+                        'info', 'Info');
                 } else {
                     // Kosongkan selectedIds saat uncheck
                     selectedIds = [];
@@ -1017,6 +1049,11 @@
 
             // ✅ Fungsi untuk menerapkan filter
             function applyFilters() {
+                // Reset select all dan selected IDs saat filter berubah
+                isSelectAll = false;
+                selectedIds = [];
+                $('#selectAll').prop('checked', false);
+
                 let status = $('#filterStatus').val();
                 let employer = $('#filterEmployer').val();
                 let contract = $('#filterContract').val();
