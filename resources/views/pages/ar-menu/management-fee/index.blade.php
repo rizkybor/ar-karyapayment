@@ -371,10 +371,21 @@
 
     <script>
         $(document).ready(function() {
+            // Variabel untuk menyimpan ID yang dipilih
+            let selectedIds = [];
+            // Variabel untuk menandai apakah select all aktif
+            let isSelectAll = false;
+
             let table = $('#ManfeeTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('management-fee.datatable') }}",
+                ajax: {
+                    url: "{{ route('management-fee.datatable') }}",
+                    data: function(d) {
+                        d.selected_ids = selectedIds.join(',');
+                        d.is_select_all = isSelectAll ? 1 : 0;
+                    }
+                },
                 pageLength: 10,
                 lengthChange: false,
                 searching: true,
@@ -387,8 +398,10 @@
                         orderable: false,
                         searchable: false,
                         className: 'p-2 whitespace-nowrap',
-                        render: function(data) {
-                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}">`;
+                        render: function(data, type, row) {
+                            // Cek apakah ID ini ada di array selectedIds
+                            const isChecked = selectedIds.includes(data);
+                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}" ${isChecked ? 'checked' : ''}>`;
                         }
                     },
                     {
@@ -811,21 +824,59 @@
 
             // ✅ Event Listener untuk Export Selected
             $('#exportSelected').on('click', function() {
-                let selected = [];
-                $('.rowCheckbox:checked').each(function() {
-                    selected.push($(this).val());
-                });
+                // Jika selectAll aktif, dapatkan semua ID yang sesuai filter
+                if (isSelectAll) {
+                    // Tampilkan loading
+                    showAutoCloseAlert('globalAlertModal', 3000, 'Menyiapkan semua data untuk export...',
+                        'info', 'Loading');
 
-                if (selected.length === 0) {
-                    // alert("Pilih minimal satu data untuk diexport!");
+                    // Dapatkan parameter filter saat ini
+                    const filters = {
+                        status: $('#filterStatus').val(),
+                        employer: $('#filterEmployer').val(),
+                        contract: $('#filterContract').val(),
+                        maker: $('#filterMaker').val(),
+                        date_start: $('#filterDateStart').val(),
+                        date_end: $('#filterDateEnd').val(),
+                        search: $('#searchTable').val(),
+                        length: -1 // Request semua data
+                    };
+
+                    // Buat AJAX request baru dengan parameter yang sama
+                    $.ajax({
+                        url: table.ajax.url(),
+                        type: 'GET',
+                        data: filters,
+                        success: function(response) {
+                            // Asumsikan response.data berisi semua data yang difilter
+                            const allIds = response.data.map(item => item.id);
+
+                            if (allIds.length > 0) {
+                                window.location.href =
+                                    "{{ route('management-fee.export') }}?ids=" +
+                                    encodeURIComponent(allIds.join(","));
+                            } else {
+                                showAutoCloseAlert('globalAlertModal', 3000,
+                                    'Tidak ada data yang sesuai filter!',
+                                    'warning', 'Ops!');
+                            }
+                        },
+                        error: function(xhr) {
+                            showAutoCloseAlert('globalAlertModal', 3000,
+                                'Gagal mendapatkan data untuk export',
+                                'error', 'Error!');
+                            console.error('Error getting all data:', xhr.responseText);
+                        }
+                    });
+                }
+                // Jika tidak, ekspor hanya yang dipilih
+                else if (selectedIds.length > 0) {
+                    window.location.href = "{{ route('management-fee.export') }}?ids=" +
+                        encodeURIComponent(selectedIds.join(","));
+                } else {
                     showAutoCloseAlert('globalAlertModal', 3000, 'Pilih minimal satu data untuk diexport!',
                         'warning', 'Ops!');
-                    return;
                 }
-
-                let url = "{{ route('management-fee.export') }}?ids=" + encodeURIComponent(selected
-                    .join(","));
-                window.open(url, '_blank');
             });
 
             // ✅ Custom Search Bar
@@ -840,10 +891,72 @@
 
             // ✅ Checkbox Select All
             $('#selectAll').on('click', function() {
-                let rows = table.rows({
-                    search: 'applied'
-                }).nodes();
-                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                isSelectAll = $(this).prop('checked');
+
+                if (isSelectAll) {
+                    // Kosongkan dulu selectedIds karena kita akan memilih semua
+                    selectedIds = [];
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    // Kosongkan selectedIds saat uncheck
+                    selectedIds = [];
+                    $('#selectAll').prop('checked', false);
+                }
+
+                // Refresh tampilan checkbox
+                table.draw(false);
+            });
+
+            // ✅ Event delegation untuk checkbox per baris
+            $('#ManfeeTable').on('change', '.rowCheckbox', function() {
+                const id = $(this).val();
+                const isChecked = $(this).prop('checked');
+
+                if (isChecked) {
+                    if (!selectedIds.includes(id)) {
+                        selectedIds.push(id);
+                    }
+                } else {
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
+                    // Jika ada checkbox yang diuncheck, matikan select all
+                    isSelectAll = false;
+                    $('#selectAll').prop('checked', false);
+                }
+            });
+
+            // ✅ Pertahankan state checkbox saat pindah halaman
+            table.on('draw', function() {
+                // Jika select all aktif, centang semua checkbox yang terlihat
+                if (isSelectAll) {
+                    $('.rowCheckbox').prop('checked', true);
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    // Perbarui checkbox berdasarkan selectedIds
+                    $('.rowCheckbox').each(function() {
+                        const id = $(this).val();
+                        $(this).prop('checked', selectedIds.includes(id));
+                    });
+
+                    // Periksa apakah semua checkbox di halaman saat ini tercentang
+                    const currentPageIds = [];
+                    table.rows({
+                        page: 'current',
+                        search: 'applied'
+                    }).every(function() {
+                        currentPageIds.push(this.data().id);
+                    });
+
+                    const allCheckedOnPage = currentPageIds.length > 0 &&
+                        currentPageIds.every(id => selectedIds.includes(id));
+                    $('#selectAll').prop('checked', allCheckedOnPage);
+                }
+            });
+
+            // ✅ Clear selectedIds saat melakukan filter baru
+            $('#applyFilters, #clearFilters').on('click', function() {
+                selectedIds = [];
+                isSelectAll = false;
+                $('#selectAll').prop('checked', false);
             });
 
             // ✅ Implementasi Filter
