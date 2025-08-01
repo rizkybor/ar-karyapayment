@@ -371,10 +371,21 @@
 
     <script>
         $(document).ready(function() {
+            // Variabel untuk menyimpan ID yang dipilih
+            let selectedIds = [];
+            // Variabel untuk menandai apakah select all aktif
+            let isSelectAll = false;
+
             let table = $('#ManfeeTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('management-fee.datatable') }}",
+                ajax: {
+                    url: "{{ route('management-fee.datatable') }}",
+                    data: function(d) {
+                        d.selected_ids = selectedIds.join(',');
+                        d.is_select_all = isSelectAll ? 1 : 0;
+                    }
+                },
                 pageLength: 10,
                 lengthChange: false,
                 searching: true,
@@ -387,8 +398,10 @@
                         orderable: false,
                         searchable: false,
                         className: 'p-2 whitespace-nowrap',
-                        render: function(data) {
-                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}">`;
+                        render: function(data, type, row) {
+                            // Cek apakah ID ini ada di array selectedIds
+                            const isChecked = selectedIds.includes(data);
+                            return `<input type="checkbox" class="rowCheckbox form-checkbox h-5 w-5 text-blue-600" value="${data}" ${isChecked ? 'checked' : ''}>`;
                         }
                     },
                     {
@@ -811,22 +824,86 @@
 
             // ✅ Event Listener untuk Export Selected
             $('#exportSelected').on('click', function() {
-                let selected = [];
-                $('.rowCheckbox:checked').each(function() {
-                    selected.push($(this).val());
-                });
+                if (isSelectAll) {
+                    showAutoCloseAlert('globalAlertModal', 5000,
+                        'Mengumpulkan semua data yang terfilter...',
+                        'info', 'Loading');
 
-                if (selected.length === 0) {
-                    // alert("Pilih minimal satu data untuk diexport!");
-                    showAutoCloseAlert('globalAlertModal', 3000, 'Pilih minimal satu data untuk diexport!',
-                        'warning', 'Ops!');
-                    return;
+                    // Simpan pagination saat ini
+                    const oldPageLen = table.page.len();
+                    const oldPage = table.page();
+
+                    // Ganti pagination ke tampil semua data
+                    table.page.len(-1).draw();
+
+                    table.one('draw', function() {
+                        // Kumpulkan semua ID yang terfilter
+                        const allFilteredIds = table
+                            .rows({
+                                search: 'applied'
+                            })
+                            .data()
+                            .pluck('id')
+                            .toArray();
+
+                        // Kembalikan pagination
+                        table.page.len(oldPageLen).draw();
+
+                        table.one('draw', function() {
+                            table.page(oldPage).draw(false); // Kembali ke halaman semula
+                        });
+
+                        if (allFilteredIds.length > 0) {
+                            const filterParams = new URLSearchParams();
+
+                            // Ambil filter dari elemen filter jika ada
+                            const filters = {
+                                status: '#filterStatus',
+                                employer: '#filterEmployer',
+                                contract: '#filterContract',
+                                maker: '#filterMaker',
+                                date_start: '#filterDateStart',
+                                date_end: '#filterDateEnd'
+                            };
+
+                            for (const key in filters) {
+                                const val = $(filters[key]).val();
+                                if (val) filterParams.append(key, val);
+                            }
+
+                            // Tambahkan search global jika ada
+                            if (table.search()) {
+                                filterParams.append('search', table.search());
+                            }
+
+                            // Tambahkan selected IDs & flag select_all
+                            filterParams.append('ids', allFilteredIds.join(','));
+                            filterParams.append('select_all', 'true');
+
+                            // Redirect untuk export
+                            window.location.href = "{{ route('management-fee.export') }}?" +
+                                filterParams.toString();
+                        } else {
+                            showAutoCloseAlert('globalAlertModal', 3000,
+                                'Tidak ada data yang sesuai filter!',
+                                'warning', 'Ops!');
+                        }
+                    });
+
+                } else if (selectedIds.length > 0) {
+                    // Jika user hanya pilih sebagian
+                    const params = new URLSearchParams();
+                    params.append('ids', selectedIds.join(','));
+                    params.append('select_all', 'false');
+
+                    window.location.href = "{{ route('management-fee.export') }}?" + params.toString();
+                } else {
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        'Pilih data yang akan diexport!',
+                        'warning', 'Perhatian!');
                 }
-
-                let url = "{{ route('management-fee.export') }}?ids=" + encodeURIComponent(selected
-                    .join(","));
-                window.open(url, '_blank');
             });
+
 
             // ✅ Custom Search Bar
             $('#searchTable').on('keyup', function() {
@@ -840,10 +917,78 @@
 
             // ✅ Checkbox Select All
             $('#selectAll').on('click', function() {
-                let rows = table.rows({
-                    search: 'applied'
-                }).nodes();
-                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+                isSelectAll = $(this).prop('checked');
+
+                if (isSelectAll) {
+                    // Kosongkan selectedIds karena kita akan memilih semua yang terfilter
+                    selectedIds = [];
+                    $('#selectAll').prop('checked', true);
+
+                    // Tampilkan jumlah data yang akan dipilih
+                    const info = table.page.info();
+                    showAutoCloseAlert('globalAlertModal', 3000,
+                        `Memilih semua ${info.recordsDisplay} data yang sesuai filter`,
+                        'info', 'Info');
+                } else {
+                    // Kosongkan selectedIds saat uncheck
+                    selectedIds = [];
+                    $('#selectAll').prop('checked', false);
+                }
+
+                // Refresh tampilan checkbox
+                table.draw(false);
+            });
+
+            // ✅ Event delegation untuk checkbox per baris
+            $('#ManfeeTable').on('change', '.rowCheckbox', function() {
+                const id = $(this).val();
+                const isChecked = $(this).prop('checked');
+
+                if (isChecked) {
+                    if (!selectedIds.includes(id)) {
+                        selectedIds.push(id);
+                    }
+                } else {
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
+                    // Jika ada checkbox yang diuncheck, matikan select all
+                    isSelectAll = false;
+                    $('#selectAll').prop('checked', false);
+                }
+            });
+
+            // ✅ Pertahankan state checkbox saat pindah halaman
+            table.on('draw', function() {
+                // Jika select all aktif, centang semua checkbox yang terlihat
+                if (isSelectAll) {
+                    $('.rowCheckbox').prop('checked', true);
+                    $('#selectAll').prop('checked', true);
+                } else {
+                    // Perbarui checkbox berdasarkan selectedIds
+                    $('.rowCheckbox').each(function() {
+                        const id = $(this).val();
+                        $(this).prop('checked', selectedIds.includes(id));
+                    });
+
+                    // Periksa apakah semua checkbox di halaman saat ini tercentang
+                    const currentPageIds = [];
+                    table.rows({
+                        page: 'current',
+                        search: 'applied'
+                    }).every(function() {
+                        currentPageIds.push(this.data().id);
+                    });
+
+                    const allCheckedOnPage = currentPageIds.length > 0 &&
+                        currentPageIds.every(id => selectedIds.includes(id));
+                    $('#selectAll').prop('checked', allCheckedOnPage);
+                }
+            });
+
+            // ✅ Clear selectedIds saat melakukan filter baru
+            $('#applyFilters, #clearFilters').on('click', function() {
+                selectedIds = [];
+                isSelectAll = false;
+                $('#selectAll').prop('checked', false);
             });
 
             // ✅ Implementasi Filter
@@ -904,6 +1049,11 @@
 
             // ✅ Fungsi untuk menerapkan filter
             function applyFilters() {
+                // Reset select all dan selected IDs saat filter berubah
+                isSelectAll = false;
+                selectedIds = [];
+                $('#selectAll').prop('checked', false);
+
                 let status = $('#filterStatus').val();
                 let employer = $('#filterEmployer').val();
                 let contract = $('#filterContract').val();
