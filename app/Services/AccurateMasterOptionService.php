@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class AccurateMasterOptionService
@@ -147,14 +148,31 @@ class AccurateMasterOptionService
             'filter.accountType.val[0]' => 'COGS',
         ];
 
+        // Menggunakan cache untuk menyimpan hasil response
+        $cacheKey = 'account_nonfee_list';
+
+        $cacheDuration = 60; // dalam menit
+
+        // Cek apakah data ada di cache
+        $cachedResponse = Cache::get($cacheKey);
+        if ($cachedResponse) {
+            return $cachedResponse; // Kembalikan data dari cache
+        }
+
         // Mengirim request GET ke API Accurate
         $response = $this->client->get($url, [
             'headers' => $headers,
             'query' => $queryParams
         ]);
 
-        // Mengembalikan isi response dari request
-        return $response->getBody()->getContents();
+        // Mengambil isi response dari request
+        $responseData = $response->getBody()->getContents();
+
+        // Simpan response ke cache
+        Cache::put($cacheKey, $responseData, $cacheDuration);
+
+        // Mengembalikan isi response
+        return $responseData;
     }
 
     // GET INVENTORY LIST
@@ -203,14 +221,31 @@ class AccurateMasterOptionService
             $queryParams["filter.accountType.val[$index]"] = $accountType;
         }
 
+        // Menggunakan cache untuk menyimpan hasil response
+        $cacheKey = 'inventory_list';
+
+        $cacheDuration = 60; // dalam menit
+
+        // Cek apakah data ada di cache
+        $cachedResponse = Cache::get($cacheKey);
+        if ($cachedResponse) {
+            return $cachedResponse; // Kembalikan data dari cache
+        }
+
         // Mengirim request GET ke API Accurate
         $response = $this->client->get($url, [
             'headers' => $headers,
             'query' => $queryParams
         ]);
 
-        // Mengembalikan isi response dari request
-        return $response->getBody()->getContents();
+        // Mengambil isi response dari request
+        $responseData = $response->getBody()->getContents();
+
+        // Simpan response ke cache
+        Cache::put($cacheKey, $responseData, $cacheDuration);
+
+        // Mengembalikan isi response
+        return $responseData;
     }
 
     public function testAccount()
@@ -334,12 +369,30 @@ class AccurateMasterOptionService
             $queryParams['filter.keywords.val[0]'] = $searchKeyword;
         }
 
+        // Menggunakan cache untuk menyimpan hasil response
+        $cacheKey = 'data_penjualan';
+
+        $cacheDuration = 60; // dalam menit
+
+        // Cek apakah data ada di cache
+        $cachedResponse = Cache::get($cacheKey);
+        if ($cachedResponse) {
+            return $cachedResponse; // Kembalikan data dari cache
+        }
+
         $response = $this->client->get($url, [
             'headers' => $headers,
             'query' => $queryParams
         ]);
 
-        return $response->getBody()->getContents();
+        // Mengambil isi response dari request
+        $responseData = $response->getBody()->getContents();
+
+        // Simpan response ke cache
+        Cache::put($cacheKey, $responseData, $cacheDuration);
+
+        // Mengembalikan isi response
+        return $responseData;
     }
 
     public function getDepartmentList()
