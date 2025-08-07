@@ -244,6 +244,8 @@ class ManfeeDocumentDataTableController extends Controller
       '4' => '4',
       '5' => '5',
       '6' => '6',
+      '102' => '102',
+      '103' => '103',
       'draft' => '0',
       'checked by kadiv' => '1',
       'checked by perbendaharaan' => '2',
