@@ -51,6 +51,8 @@
                                     <option value="4">Checked by Dir. Keuangan</option>
                                     <option value="5">Checked by Pajak</option>
                                     <option value="6">Done</option>
+                                    <option value="102">Revised</option>
+                                    <option value="103">Rejected</option>
                                 </select>
                             </div>
 
