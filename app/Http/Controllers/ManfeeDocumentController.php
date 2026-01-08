@@ -217,8 +217,6 @@ class ManfeeDocumentController extends Controller
         $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
 
-        dd($letterNumber, $invoiceNumber, $receiptNumber);
-
         $input = $request->only([
             'contract_id',
             'period',
