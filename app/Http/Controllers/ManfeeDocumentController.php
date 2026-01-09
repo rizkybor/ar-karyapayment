@@ -181,8 +181,8 @@ class ManfeeDocumentController extends Controller
         $currentMonth = date('n'); // 1 = Januari
         $currentDay   = date('j');
 
-        // ⭐ reset hanya jika sudah tanggal 9 Januari
-        $isResetDay = ($currentMonth == 1 && $currentDay >= 9);
+        // ⭐ reset hanya jika sudah tanggal 12 Januari
+        $isResetDay = ($currentMonth == 1 && $currentDay >= 12);
 
         // ⭐ DEFAULT: nomor awal (untuk reset)
         $lastNumeric = 100;
@@ -241,7 +241,7 @@ class ManfeeDocumentController extends Controller
         $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
 
-        dd($letterNumber, $invoiceNumber, $receiptNumber);
+        // dd($letterNumber, $invoiceNumber, $receiptNumber);
 
         $input = $request->only([
             'contract_id',

@@ -231,7 +231,7 @@ class NonManfeeDocumentController extends Controller
         $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
 
-        dd($letterNumber, $invoiceNumber, $receiptNumber, 'MAINTENANCE RESET NOMOR DOC NON MANFEE');
+        // dd($letterNumber, $invoiceNumber, $receiptNumber);
 
         $input = $request->only([
             'contract_id',
@@ -281,8 +281,8 @@ class NonManfeeDocumentController extends Controller
         $currentMonth = date('n'); // 1 = Januari
         $currentDay   = date('j');
 
-        // ⭐ reset hanya jika sudah tanggal 9 Januari
-        $allowYearReset = ($currentMonth == 1 && $currentDay >= 9);
+        // ⭐ reset hanya jika sudah tanggal 12 Januari
+        $allowYearReset = ($currentMonth == 1 && $currentDay >= 12);
 
         // ⭐ default nomor awal jika reset
         $lastNumeric = 100;
