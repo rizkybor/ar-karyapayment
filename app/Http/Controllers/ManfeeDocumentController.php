@@ -175,14 +175,26 @@ class ManfeeDocumentController extends Controller
         }
 
         $monthRoman = $this->convertToRoman(date('n'));
-        $year = date('Y'); 
+        $year = date('Y');
+
+        // ⭐ ambil tanggal sekarang
+        $currentMonth = date('n'); // 1 = Januari
+        $currentDay   = date('j');
+
+        // ⭐ reset hanya jika sudah tanggal 9 Januari
+        $allowYearReset = ($currentMonth == 1 && $currentDay >= 9);
+
+        // ⭐ tentukan scope pencarian nomor
+        $yearLike = $allowYearReset
+            ? "%/$year" // setelah 9 Januari → reset
+            : "%";      // 1–8 Januari → lanjut nomor tahun sebelumnya
 
         // Ambil nomor terakhir dari tahun berjalan
-        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$year")
+        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$yearLike")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
-        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$year")
+        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$yearLike")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
 
@@ -216,6 +228,8 @@ class ManfeeDocumentController extends Controller
         $letterNumber = sprintf("%s/MF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+
+        dd($letterNumber, $invoiceNumber, $receiptNumber, 'MAINTENANCE RESET NOMOR DOC MANFEE');
 
         $input = $request->only([
             'contract_id',
