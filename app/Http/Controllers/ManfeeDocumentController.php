@@ -182,14 +182,19 @@ class ManfeeDocumentController extends Controller
         $currentDay   = date('j');
 
         // ⭐ reset hanya jika sudah tanggal 9 Januari
-        $allowYearReset = ($currentMonth == 1 && $currentDay >= 9);
+        $isResetDay = ($currentMonth == 1 && $currentDay >= 9);
 
-        // ⭐ tentukan scope pencarian nomor
-        $yearLike = $allowYearReset
-            ? "%/$year" // setelah 9 Januari → reset
-            : "%";      // 1–8 Januari → lanjut nomor tahun sebelumnya
+        // ⭐ DEFAULT: nomor awal (untuk reset)
+        $lastNumeric = 100;
 
-        // Ambil nomor terakhir dari tahun berjalan
+        // =====================================================
+        // ⭐ JIKA BUKAN HARI RESET → LANJUT DARI NOMOR TERAKHIR
+        // =====================================================
+        if (!$isResetDay) {
+
+            // ===== SCRIPT LAMA (TIDAK DIHAPUS) =====
+            /*
+        $yearLike = "%";
         $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$yearLike")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
@@ -197,39 +202,46 @@ class ManfeeDocumentController extends Controller
         $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$yearLike")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
+        */
 
-        // Default awal
-        $lastNumericMF = 100;
-        $lastNumericNF = 100;
+            // ⭐ QUERY YANG DIPAKAI
+            $lastNumberMF = ManfeeDocument::orderByRaw(
+                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
+            )->value('letter_number');
 
-        // Ambil angka 6 digit dari nomor terakhir MF jika ada
-        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
-            $lastNumericMF = intval($matchMF[1]);
+            $lastNumberNF = NonManfeeDocument::orderByRaw(
+                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
+            )->value('letter_number');
+
+            $lastNumericMF = 100;
+            $lastNumericNF = 100;
+
+            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
+                $lastNumericMF = (int) $matchMF[1];
+            }
+
+            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
+                $lastNumericNF = (int) $matchNF[1];
+            }
+
+            $lastNumeric = max($lastNumericMF, $lastNumericNF);
         }
 
-        // Ambil angka 6 digit dari nomor terakhir NF jika ada
-        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
-            $lastNumericNF = intval($matchNF[1]);
-        }
-
-        // Ambil angka terbesar dari MF dan NF
-        $lastNumeric = max($lastNumericMF, $lastNumericNF);
-
-        // Bulatkan ke kelipatan 10
+        // ⭐ Bulatkan ke kelipatan 10
         if ($lastNumeric % 10 !== 0) {
             $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
 
-        // Nomor berikutnya
+        // ⭐ Nomor berikutnya
         $nextNumber = $lastNumeric + 10;
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         // Generate nomor dokumen
-        $letterNumber = sprintf("%s/MF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+        $letterNumber  = sprintf("%s/MF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+        $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
 
-        dd($letterNumber, $invoiceNumber, $receiptNumber, 'MAINTENANCE RESET NOMOR DOC MANFEE');
+        dd($letterNumber, $invoiceNumber, $receiptNumber);
 
         $input = $request->only([
             'contract_id',
@@ -239,13 +251,13 @@ class ManfeeDocumentController extends Controller
             'reference_document'
         ]);
 
-        $input['letter_number'] = $letterNumber;
+        $input['letter_number']  = $letterNumber;
         $input['invoice_number'] = $invoiceNumber;
         $input['receipt_number'] = $receiptNumber;
 
-        $input['category'] = 'management_fee';
-        $input['status'] = $request->status ?? 0;
-        $input['is_active'] = true;
+        $input['category']   = 'management_fee';
+        $input['status']     = $request->status ?? 0;
+        $input['is_active']  = true;
         $input['created_by'] = auth()->id();
         $input['expired_at'] = Carbon::now()->addDays(30)->setTime(0, 1, 0);
 
@@ -257,6 +269,7 @@ class ManfeeDocumentController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     /**
      * Display the specified resource.
