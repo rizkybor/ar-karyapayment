@@ -231,7 +231,7 @@ class NonManfeeDocumentController extends Controller
         $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
 
-        dd($letterNumber, $invoiceNumber, $receiptNumber,'MAINTENANCE RESET NOMOR DOC NON MANFEE');
+        dd($letterNumber, $invoiceNumber, $receiptNumber, 'MAINTENANCE RESET NOMOR DOC NON MANFEE');
 
         $input = $request->only([
             'contract_id',
@@ -284,13 +284,15 @@ class NonManfeeDocumentController extends Controller
         // ⭐ reset hanya jika sudah tanggal 9 Januari
         $allowYearReset = ($currentMonth == 1 && $currentDay >= 9);
 
-        // ⭐ tentukan scope pencarian nomor
-        $yearLike = $allowYearReset
-            ? "%/$currentYear" // setelah 9 Januari → reset
-            : "%";             // 1–8 Januari → lanjut tahun sebelumnya
+        // ⭐ default nomor awal jika reset
+        $lastNumeric = 100;
 
-
-        // Ambil nomor terakhir MF dan NF dari tahun berjalan
+        // =====================================================
+        // ⭐ jika BUKAN reset → ambil nomor terakhir seperti biasa
+        // =====================================================
+        if (!$allowYearReset) {
+            // Ambil nomor terakhir MF dan NF dari tahun berjalan
+            /*
         $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$currentYear")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
@@ -298,23 +300,30 @@ class NonManfeeDocumentController extends Controller
         $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$currentYear")
             ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
             ->value('letter_number');
+        */
 
-        // Default numeric awal
-        $lastNumericMF = 100;
-        $lastNumericNF = 100;
+            // ⭐ Query baru (dipakai)
+            $lastNumberMF = ManfeeDocument::orderByRaw(
+                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
+            )->value('letter_number');
 
-        // Ambil angka 6 digit dari nomor terakhir MF jika ada
-        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
-            $lastNumericMF = intval($matchMF[1]);
+            $lastNumberNF = NonManfeeDocument::orderByRaw(
+                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
+            )->value('letter_number');
+
+            $lastNumericMF = 100;
+            $lastNumericNF = 100;
+
+            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
+                $lastNumericMF = (int) $matchMF[1];
+            }
+
+            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
+                $lastNumericNF = (int) $matchNF[1];
+            }
+
+            $lastNumeric = max($lastNumericMF, $lastNumericNF);
         }
-
-        // Ambil angka 6 digit dari nomor terakhir NF jika ada
-        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
-            $lastNumericNF = intval($matchNF[1]);
-        }
-
-        // Ambil nomor terbesar
-        $lastNumeric = max($lastNumericMF, $lastNumericNF);
 
         // Bulatkan ke kelipatan 10
         if ($lastNumeric % 10 !== 0) {
@@ -331,6 +340,7 @@ class NonManfeeDocumentController extends Controller
             'year' => $currentYear,
         ];
     }
+
 
     /**
      * Store a newly created resource in storage.
