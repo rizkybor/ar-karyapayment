@@ -281,45 +281,63 @@ class NonManfeeDocumentController extends Controller
         $year       = $now->year;
         $monthRoman = $this->convertToRoman($now->month);
 
-        // ================================
-        // CEK RESET DAY (12 JANUARI, TANPA PEDULI TAHUN)
-        // ================================
-        $isResetDay = ($now->day === 12 && $now->month === 1);
+        // =========================================
+        // WAKTU RESET: 12 JANUARI JAM 07:00 (TAHUN BERJALAN)
+        // =========================================
+        $resetAt = Carbon::create($year, 1, 12, 7, 0, 0);
 
-        // ================================
+        // =========================================
         // Default nomor awal
-        // ================================
+        // =========================================
         $lastNumeric = 100;
 
-        if (!$isResetDay) {
-            // Ambil nomor terakhir dari semua dokumen (lintas tahun) DAN LOCK supaya aman dari duplikat
+        // =========================================
+        // Tentukan scope data berdasarkan reset time
+        // =========================================
+        if ($now->greaterThanOrEqualTo($resetAt)) {
+
+            // ===== SESUDAH RESET =====
             $lastNumberMF = ManfeeDocument::lockForUpdate()
+                ->where('created_at', '>=', $resetAt)
                 ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
                 ->value('letter_number');
 
             $lastNumberNF = NonManfeeDocument::lockForUpdate()
+                ->where('created_at', '>=', $resetAt)
+                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+                ->value('letter_number');
+        } else {
+
+            // ===== SEBELUM RESET =====
+            $lastNumberMF = ManfeeDocument::lockForUpdate()
+                ->where('created_at', '<', $resetAt)
                 ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
                 ->value('letter_number');
 
-            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
-                $lastNumeric = max($lastNumeric, (int) $mf[1]);
-            }
-
-            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
-                $lastNumeric = max($lastNumeric, (int) $nf[1]);
-            }
+            $lastNumberNF = NonManfeeDocument::lockForUpdate()
+                ->where('created_at', '<', $resetAt)
+                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+                ->value('letter_number');
         }
 
-        // ================================
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
+            $lastNumeric = max($lastNumeric, (int) $mf[1]);
+        }
+
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
+            $lastNumeric = max($lastNumeric, (int) $nf[1]);
+        }
+
+        // =========================================
         // Pastikan kelipatan 10
-        // ================================
+        // =========================================
         if ($lastNumeric % 10 !== 0) {
             $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
 
-        // ================================
-        // Nomor berikutnya
-        // ================================
+        // =========================================
+        // Nomor berikutnya (+10)
+        // =========================================
         $nextNumber = $lastNumeric + 10;
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
@@ -329,6 +347,7 @@ class NonManfeeDocumentController extends Controller
             'year'        => $year,
         ];
     }
+
 
 
 
