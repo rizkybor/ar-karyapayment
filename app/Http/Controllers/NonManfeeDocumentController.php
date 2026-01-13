@@ -206,32 +206,25 @@ class NonManfeeDocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'contract_id' => 'required|exists:contracts,id',
-            'letter_subject' => 'required',
+            'contract_id'     => 'required|exists:contracts,id',
+            'letter_subject'  => 'required',
         ]);
 
-        // Ambil data kontrak
-        $contract = Contracts::find($request->contract_id);
-        $employeeName = $contract->employee_name;
+        $contract = Contracts::findOrFail($request->contract_id);
         $contractInitial = $contract->contract_initial ?? 'SOL';
 
-        // Validasi contract initial
         if (empty($contractInitial)) {
-            return back()->with('error', 'Initial kontrak belum diisi di data kontrak. Silakan lengkapi terlebih dahulu.');
+            return back()->with('error', 'Initial kontrak belum diisi di data kontrak.');
         }
 
-        // Ambil base number, bulan, dan tahun untuk nomor dokumen
         $docData = $this->getNextDocumentNumberBase();
         $baseNumber = $docData['base_number'];
         $monthRoman = $docData['month_roman'];
-        $year = $docData['year'];
+        $year       = $docData['year'];
 
-        // Generate nomor dokumen dengan format Non Management Fee
-        $letterNumber = sprintf("%s/NF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+        $letterNumber  = sprintf("%s/NF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
         $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-
-        // dd($letterNumber, $invoiceNumber, $receiptNumber);
+        $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
 
         $input = $request->only([
             'contract_id',
@@ -247,99 +240,81 @@ class NonManfeeDocumentController extends Controller
             'last_reviewers',
         ]);
 
-        // Tambahkan nomor dokumen yang baru digenerate
-        $input['letter_number'] = $letterNumber;
+        $input['letter_number']  = $letterNumber;
         $input['invoice_number'] = $invoiceNumber;
         $input['receipt_number'] = $receiptNumber;
 
-        $input['category'] = 'management_non_fee';
-        $input['status'] = $request->status ?? 0;
-        $input['status_print'] = false;
-        $input['is_active'] = true;
-        $input['created_by'] = auth()->id();
-        $input['expired_at'] = Carbon::now()
+        $input['category']      = 'management_non_fee';
+        $input['status']        = $request->status ?? 0;
+        $input['status_print']  = false;
+        $input['is_active']     = true;
+        $input['created_by']    = auth()->id();
+        $input['expired_at']    = Carbon::now()
             ->addMonthNoOverflow()
             ->day(15)
             ->setTime(0, 1, 0);
 
         try {
-            // Simpan dokumen baru
-            $nonManfeeDoc = NonManfeeDocument::create($input);
-            return redirect()->route('non-management-fee.edit', $nonManfeeDoc)
+            $doc = NonManfeeDocument::create($input);
+
+            return redirect()
+                ->route('non-management-fee.edit', $doc)
                 ->with('success', 'Data berhasil disimpan!');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
+
     private function getNextDocumentNumberBase(): array
     {
+        $year       = date('Y');
         $monthRoman = $this->convertToRoman(date('n'));
-        $currentYear = date('Y');
 
-        // ⭐ ambil bulan & hari sekarang
-        $currentMonth = date('n'); // 1 = Januari
-        $currentDay   = date('j');
+        // ================================
+        // Ambil nomor terakhir TAHUN INI
+        // ================================
+        $lastNumberMF = ManfeeDocument::whereYear('created_at', $year)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-        // ⭐ reset hanya jika sudah tanggal 12 Januari
-        $allowYearReset = ($currentMonth == 1 && $currentDay >= 12);
+        $lastNumberNF = NonManfeeDocument::whereYear('created_at', $year)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-        // ⭐ default nomor awal jika reset
+        // ================================
+        // Default nomor awal
+        // ================================
         $lastNumeric = 100;
 
-        // =====================================================
-        // ⭐ jika BUKAN reset → ambil nomor terakhir seperti biasa
-        // =====================================================
-        if (!$allowYearReset) {
-            // Ambil nomor terakhir MF dan NF dari tahun berjalan
-            /*
-        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$currentYear")
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-
-        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$currentYear")
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-        */
-
-            // ⭐ Query baru (dipakai)
-            $lastNumberMF = ManfeeDocument::orderByRaw(
-                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
-            )->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::orderByRaw(
-                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
-            )->value('letter_number');
-
-            $lastNumericMF = 100;
-            $lastNumericNF = 100;
-
-            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
-                $lastNumericMF = (int) $matchMF[1];
-            }
-
-            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
-                $lastNumericNF = (int) $matchNF[1];
-            }
-
-            $lastNumeric = max($lastNumericMF, $lastNumericNF);
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
+            $lastNumeric = max($lastNumeric, (int) $mf[1]);
         }
 
-        // Bulatkan ke kelipatan 10
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
+            $lastNumeric = max($lastNumeric, (int) $nf[1]);
+        }
+
+        // ================================
+        // Pastikan kelipatan 10
+        // ================================
         if ($lastNumeric % 10 !== 0) {
             $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
 
+        // ================================
         // Nomor berikutnya
+        // ================================
         $nextNumber = $lastNumeric + 10;
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         return [
             'base_number' => $baseNumber,
             'month_roman' => $monthRoman,
-            'year' => $currentYear,
+            'year'        => $year,
         ];
     }
+
 
 
     /**
