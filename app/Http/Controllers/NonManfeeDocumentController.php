@@ -217,45 +217,53 @@ class NonManfeeDocumentController extends Controller
             return back()->with('error', 'Initial kontrak belum diisi di data kontrak.');
         }
 
-        $docData = $this->getNextDocumentNumberBase();
-        $baseNumber = $docData['base_number'];
-        $monthRoman = $docData['month_roman'];
-        $year       = $docData['year'];
-
-        $letterNumber  = sprintf("%s/NF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
-
-        $input = $request->only([
-            'contract_id',
-            'period',
-            'letter_subject',
-            'manfee_bill',
-            'bank_account_id',
-            'reference_document',
-            'reason_rejected',
-            'path_rejected',
-            'reason_amandemen',
-            'path_amandemen',
-            'last_reviewers',
-        ]);
-
-        $input['letter_number']  = $letterNumber;
-        $input['invoice_number'] = $invoiceNumber;
-        $input['receipt_number'] = $receiptNumber;
-
-        $input['category']      = 'management_non_fee';
-        $input['status']        = $request->status ?? 0;
-        $input['status_print']  = false;
-        $input['is_active']     = true;
-        $input['created_by']    = auth()->id();
-        $input['expired_at']    = Carbon::now()
-            ->addMonthNoOverflow()
-            ->day(15)
-            ->setTime(0, 1, 0);
-
         try {
-            $doc = NonManfeeDocument::create($input);
+            // ==========================
+            // Transaction untuk mencegah duplikat nomor
+            // ==========================
+            $doc = DB::transaction(function () use ($contractInitial, $request) {
+
+                $docData = $this->getNextDocumentNumberBase();
+                $baseNumber = $docData['base_number'];
+                $monthRoman = $docData['month_roman'];
+                $year       = $docData['year'];
+
+                $letterNumber  = sprintf("%s/NF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+                $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
+                $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
+
+                dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< cek nomor NON MNGT FEE');
+                
+                $input = $request->only([
+                    'contract_id',
+                    'period',
+                    'letter_subject',
+                    'manfee_bill',
+                    'bank_account_id',
+                    'reference_document',
+                    'reason_rejected',
+                    'path_rejected',
+                    'reason_amandemen',
+                    'path_amandemen',
+                    'last_reviewers',
+                ]);
+
+                $input['letter_number']  = $letterNumber;
+                $input['invoice_number'] = $invoiceNumber;
+                $input['receipt_number'] = $receiptNumber;
+
+                $input['category']      = 'management_non_fee';
+                $input['status']        = $request->status ?? 0;
+                $input['status_print']  = false;
+                $input['is_active']     = true;
+                $input['created_by']    = auth()->id();
+                $input['expired_at']    = Carbon::now()
+                    ->addMonthNoOverflow()
+                    ->day(15)
+                    ->setTime(0, 1, 0);
+
+                return NonManfeeDocument::create($input);
+            });
 
             return redirect()
                 ->route('non-management-fee.edit', $doc)
@@ -266,33 +274,40 @@ class NonManfeeDocumentController extends Controller
     }
 
 
+
     private function getNextDocumentNumberBase(): array
     {
-        $year       = date('Y');
-        $monthRoman = $this->convertToRoman(date('n'));
+        $now        = Carbon::now();
+        $year       = $now->year;
+        $monthRoman = $this->convertToRoman($now->month);
 
         // ================================
-        // Ambil nomor terakhir TAHUN INI
+        // CEK RESET DAY (12 JANUARI, TANPA PEDULI TAHUN)
         // ================================
-        $lastNumberMF = ManfeeDocument::whereYear('created_at', $year)
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-
-        $lastNumberNF = NonManfeeDocument::whereYear('created_at', $year)
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
+        $isResetDay = ($now->day === 13 && $now->month === 1);
 
         // ================================
         // Default nomor awal
         // ================================
         $lastNumeric = 100;
 
-        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
-            $lastNumeric = max($lastNumeric, (int) $mf[1]);
-        }
+        if (!$isResetDay) {
+            // Ambil nomor terakhir dari semua dokumen (lintas tahun) DAN LOCK supaya aman dari duplikat
+            $lastNumberMF = ManfeeDocument::lockForUpdate()
+                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+                ->value('letter_number');
 
-        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
-            $lastNumeric = max($lastNumeric, (int) $nf[1]);
+            $lastNumberNF = NonManfeeDocument::lockForUpdate()
+                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+                ->value('letter_number');
+
+            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
+                $lastNumeric = max($lastNumeric, (int) $mf[1]);
+            }
+
+            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
+                $lastNumeric = max($lastNumeric, (int) $nf[1]);
+            }
         }
 
         // ================================
@@ -314,6 +329,8 @@ class NonManfeeDocumentController extends Controller
             'year'        => $year,
         ];
     }
+
+
 
 
 
