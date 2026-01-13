@@ -282,43 +282,28 @@ class NonManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman($now->month);
 
         // =========================================
-        // WAKTU RESET: 12 JANUARI JAM 07:00 (TAHUN BERJALAN)
+        // WAKTU RESET: 12 JANUARI JAM 07:00
         // =========================================
         $resetAt = Carbon::create($year, 1, 12, 7, 0, 0);
 
         // =========================================
         // Default nomor awal
         // =========================================
-        $lastNumeric = 100;
+        $lastNumeric = 200;
 
         // =========================================
-        // Tentukan scope data berdasarkan reset time
+        // Ambil nomor terakhir SETELAH reset
+        // (kalau belum ada, hasilnya null → reset)
         // =========================================
-        if ($now->greaterThanOrEqualTo($resetAt)) {
+        $lastNumberMF = ManfeeDocument::lockForUpdate()
+            ->where('created_at', '>=', $resetAt)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-            // ===== SESUDAH RESET =====
-            $lastNumberMF = ManfeeDocument::lockForUpdate()
-                ->where('created_at', '>=', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::lockForUpdate()
-                ->where('created_at', '>=', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-        } else {
-
-            // ===== SEBELUM RESET =====
-            $lastNumberMF = ManfeeDocument::lockForUpdate()
-                ->where('created_at', '<', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::lockForUpdate()
-                ->where('created_at', '<', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-        }
+        $lastNumberNF = NonManfeeDocument::lockForUpdate()
+            ->where('created_at', '>=', $resetAt)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
         if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
             $lastNumeric = max($lastNumeric, (int) $mf[1]);
@@ -347,6 +332,7 @@ class NonManfeeDocumentController extends Controller
             'year'        => $year,
         ];
     }
+
 
 
 
