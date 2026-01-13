@@ -189,7 +189,7 @@ class ManfeeDocumentController extends Controller
                 $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
 
                 dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< cek nomor MNGT FEE');
-                
+
                 $input = $request->only([
                     'contract_id',
                     'period',
@@ -226,9 +226,9 @@ class ManfeeDocumentController extends Controller
         $monthRoman = $this->convertToRoman($now->month);
 
         // ================================
-        // CEK RESET DAY (13 JANUARI)
+        // CEK RESET DAY (12 JANUARI)
         // ================================
-        $isResetDay = ($now->day === 13 && $now->month === 1);
+        $isResetDay = ($now->day === 12 && $now->month === 1);
 
         // ================================
         // Default nomor awal
