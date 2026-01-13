@@ -224,78 +224,57 @@ class ManfeeDocumentController extends Controller
         $now        = Carbon::now();
         $year       = $now->year;
         $monthRoman = $this->convertToRoman($now->month);
-
-        // =========================================
-        // WAKTU RESET: 12 JANUARI JAM 07:00
-        // =========================================
-        $resetAt = Carbon::create($year, 1, 12, 7, 0, 0);
-
-        // =========================================
+    
+        // =================================
+        // WAKTU RESET (13 JAN 19:00)
+        // =================================
+        $resetAt = Carbon::create($now->year, 1, 13, 19, 0, 0);
+    
+        // =================================
         // Default nomor awal
-        // =========================================
-        $lastNumeric = 100;
-
-        // =========================================
-        // Jika SUDAH LEWAT waktu reset
-        // → ambil nomor SETELAH reset
-        // Jika BELUM
-        // → ambil nomor SEBELUM reset
-        // =========================================
-        if ($now->greaterThanOrEqualTo($resetAt)) {
-
-            // ===== SESUDAH RESET =====
-            $lastNumberMF = ManfeeDocument::lockForUpdate()
-                ->where('created_at', '>=', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::lockForUpdate()
-                ->where('created_at', '>=', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-        } else {
-
-            // ===== SEBELUM RESET =====
-            $lastNumberMF = ManfeeDocument::lockForUpdate()
-                ->where('created_at', '<', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::lockForUpdate()
-                ->where('created_at', '<', $resetAt)
-                ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-                ->value('letter_number');
-        }
-
+        // =================================
+        $lastNumeric = 200;
+    
+        // =================================
+        // Ambil nomor terakhir SETELAH reset
+        // =================================
+        $lastNumberMF = ManfeeDocument::lockForUpdate()
+            ->where('created_at', '>=', $resetAt)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+    
+        $lastNumberNF = NonManfeeDocument::lockForUpdate()
+            ->where('created_at', '>=', $resetAt)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
+    
         if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
-            $lastNumeric = max($lastNumeric, (int) $mf[1]);
+            $lastNumeric = max($lastNumeric, (int)$mf[1]);
         }
-
+    
         if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
-            $lastNumeric = max($lastNumeric, (int) $nf[1]);
+            $lastNumeric = max($lastNumeric, (int)$nf[1]);
         }
-
-        // =========================================
+    
+        // =================================
         // Pastikan kelipatan 10
-        // =========================================
+        // =================================
         if ($lastNumeric % 10 !== 0) {
             $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
-
-        // =========================================
-        // Nomor berikutnya (+10)
-        // =========================================
+    
+        // =================================
+        // Nomor berikutnya
+        // =================================
         $nextNumber = $lastNumeric + 10;
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-
+    
         return [
             'base_number' => $baseNumber,
             'month_roman' => $monthRoman,
             'year'        => $year,
         ];
     }
-
-
 
 
     /**
