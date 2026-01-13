@@ -233,7 +233,7 @@ class NonManfeeDocumentController extends Controller
                 $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
 
                 dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< cek nomor NON MNGT FEE');
-                
+
                 $input = $request->only([
                     'contract_id',
                     'period',
@@ -284,7 +284,7 @@ class NonManfeeDocumentController extends Controller
         // ================================
         // CEK RESET DAY (12 JANUARI, TANPA PEDULI TAHUN)
         // ================================
-        $isResetDay = ($now->day === 13 && $now->month === 1);
+        $isResetDay = ($now->day === 12 && $now->month === 1);
 
         // ================================
         // Default nomor awal
