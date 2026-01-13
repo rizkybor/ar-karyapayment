@@ -161,88 +161,94 @@ class ManfeeDocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'contract_id' => 'required|exists:contracts,id',
-            'letter_subject' => 'required',
-            'manfee_bill' => 'required',
+            'contract_id'     => 'required|exists:contracts,id',
+            'letter_subject'  => 'required',
+            'manfee_bill'     => 'required',
         ]);
 
+        // ==========================
         // Ambil data kontrak
-        $contract = Contracts::find($request->contract_id);
+        // ==========================
+        $contract = Contracts::findOrFail($request->contract_id);
         $contractInitial = $contract->contract_initial ?? 'SOL';
 
         if (empty($contractInitial)) {
-            return back()->with('error', 'Initial kontrak belum diisi di data kontrak. Silakan lengkapi terlebih dahulu.');
+            return back()->with('error', 'Initial kontrak belum diisi di data kontrak.');
         }
 
+        // ==========================
+        // Data waktu
+        // ==========================
+        $year       = date('Y');
         $monthRoman = $this->convertToRoman(date('n'));
-        $year = date('Y');
 
-        // ⭐ ambil tanggal sekarang
-        $currentMonth = date('n'); // 1 = Januari
-        $currentDay   = date('j');
+        // ==========================
+        // Ambil nomor terakhir (tahun berjalan)
+        // ==========================
+        $lastNumberMF = ManfeeDocument::whereYear('created_at', $year)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-        // ⭐ reset hanya jika sudah tanggal 12 Januari
-        $isResetDay = ($currentMonth == 1 && $currentDay >= 12);
+        $lastNumberNF = NonManfeeDocument::whereYear('created_at', $year)
+            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
+            ->value('letter_number');
 
-        // ⭐ DEFAULT: nomor awal (untuk reset)
+        // ==========================
+        // Default nomor awal
+        // ==========================
         $lastNumeric = 100;
 
-        // =====================================================
-        // ⭐ JIKA BUKAN HARI RESET → LANJUT DARI NOMOR TERAKHIR
-        // =====================================================
-        if (!$isResetDay) {
-
-            // ===== SCRIPT LAMA (TIDAK DIHAPUS) =====
-            /*
-        $yearLike = "%";
-        $lastNumberMF = ManfeeDocument::where('letter_number', 'like', "%/$yearLike")
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-
-        $lastNumberNF = NonManfeeDocument::where('letter_number', 'like', "%/$yearLike")
-            ->orderByRaw('CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC')
-            ->value('letter_number');
-        */
-
-            // ⭐ QUERY YANG DIPAKAI
-            $lastNumberMF = ManfeeDocument::orderByRaw(
-                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
-            )->value('letter_number');
-
-            $lastNumberNF = NonManfeeDocument::orderByRaw(
-                'CAST(SUBSTRING(letter_number, 1, 6) AS UNSIGNED) DESC'
-            )->value('letter_number');
-
-            $lastNumericMF = 100;
-            $lastNumericNF = 100;
-
-            if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $matchMF)) {
-                $lastNumericMF = (int) $matchMF[1];
-            }
-
-            if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $matchNF)) {
-                $lastNumericNF = (int) $matchNF[1];
-            }
-
-            $lastNumeric = max($lastNumericMF, $lastNumericNF);
+        if ($lastNumberMF && preg_match('/^(\d{6})/', $lastNumberMF, $mf)) {
+            $lastNumeric = max($lastNumeric, (int) $mf[1]);
         }
 
-        // ⭐ Bulatkan ke kelipatan 10
+        if ($lastNumberNF && preg_match('/^(\d{6})/', $lastNumberNF, $nf)) {
+            $lastNumeric = max($lastNumeric, (int) $nf[1]);
+        }
+
+        // ==========================
+        // Pastikan kelipatan 10
+        // ==========================
         if ($lastNumeric % 10 !== 0) {
             $lastNumeric = ceil($lastNumeric / 10) * 10;
         }
 
-        // ⭐ Nomor berikutnya
+        // ==========================
+        // Nomor berikutnya
+        // ==========================
         $nextNumber = $lastNumeric + 10;
         $baseNumber = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
+        // ==========================
         // Generate nomor dokumen
-        $letterNumber  = sprintf("%s/MF/KEU/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
-        $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
+        // ==========================
+        $letterNumber  = sprintf(
+            "%s/MF/KEU/KPU/%s/%s/%s",
+            $baseNumber,
+            $contractInitial,
+            $monthRoman,
+            $year
+        );
 
-        // dd($letterNumber, $invoiceNumber, $receiptNumber);
+        $invoiceNumber = sprintf(
+            "%s/MF/INV/KPU/%s/%s/%s",
+            $baseNumber,
+            $contractInitial,
+            $monthRoman,
+            $year
+        );
 
+        $receiptNumber = sprintf(
+            "%s/MF/KW/KPU/%s/%s/%s",
+            $baseNumber,
+            $contractInitial,
+            $monthRoman,
+            $year
+        );
+
+        // ==========================
+        // Simpan data
+        // ==========================
         $input = $request->only([
             'contract_id',
             'period',
@@ -263,12 +269,15 @@ class ManfeeDocumentController extends Controller
 
         try {
             $manfeeDoc = ManfeeDocument::create($input);
-            return redirect()->route('management-fee.edit', $manfeeDoc)
+
+            return redirect()
+                ->route('management-fee.edit', $manfeeDoc)
                 ->with('success', 'Data berhasil disimpan!');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
 
     /**
