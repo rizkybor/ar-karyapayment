@@ -682,9 +682,9 @@ class NonManfeeDocumentController extends Controller
                     // // get base 64 from pdf template
                     $pdfController = app()->make(PDFController::class);
 
-                    $base64letter = $pdfController->nonManfeeLetterBase64($document->id);
-                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document->id);
-                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document->id);
+                    $base64letter = $pdfController->nonManfeeLetterBase64($document);
+                    $base64inv = $pdfController->nonManfeeInvoiceBase64($document);
+                    $base64kw = $pdfController->nonManfeeKwitansiBase64($document);
 
                     // CREATE REFERENCE NUMBER DOCUMENT
                     $tanggal = Carbon::now();

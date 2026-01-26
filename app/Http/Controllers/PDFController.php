@@ -169,9 +169,13 @@ class PDFController extends Controller
 |--------------------------------------------------------------------------
 */
 
-    public function nonManfeeLetterBase64($document_id, $disableWatermark = true): string
+    public function nonManfeeLetterBase64($documentId, $disableWatermark = true): string
     {
-        $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        if ($documentId instanceof NonManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = NonManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($documentId);
+        }
 
         $data = [
             'document' => $document,
@@ -187,9 +191,13 @@ class PDFController extends Controller
         return $base64;
     }
 
-    public function nonManfeeInvoiceBase64($document_id, $disableWatermark = true): string
+    public function nonManfeeInvoiceBase64($documentId, $disableWatermark = true): string
     {
-        $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        if ($documentId instanceof NonManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = NonManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($documentId);
+        }
 
         $data = [
             'document' => $document,
@@ -206,14 +214,18 @@ class PDFController extends Controller
         return $base64;
     }
 
-    public function nonManfeeKwitansiBase64($document_id, $disableWatermark = true): string
+    public function nonManfeeKwitansiBase64($documentId, $disableWatermark = true): string
     {
-        $document = NonManfeeDocument::with([
-            'contract',
-            'detailPayments',
-            'accumulatedCosts',
-            'bankAccount'
-        ])->findOrFail($document_id);
+        if ($documentId instanceof NonManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = NonManfeeDocument::with([
+                'contract',
+                'detailPayments',
+                'accumulatedCosts',
+                'bankAccount'
+            ])->findOrFail($documentId);
+        }
 
         // Pastikan ada accumulated cost
         $firstCost = $document->accumulatedCosts->first();
@@ -436,9 +448,13 @@ class PDFController extends Controller
 |--------------------------------------------------------------------------
 */
 
-    public function manfeeLetterBase64($document_id, $disableWatermark = true): string
+    public function manfeeLetterBase64($documentId, $disableWatermark = true): string
     {
-        $document = ManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        if ($documentId instanceof ManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = ManfeeDocument::with(['contract', 'accumulatedCosts', 'bankAccount'])->findOrFail($documentId);
+        }
 
         $data = [
             'document' => $document,
@@ -454,9 +470,13 @@ class PDFController extends Controller
         return $base64;
     }
 
-    public function manfeeInvoiceBase64($document_id, $disableWatermark = true): string
+    public function manfeeInvoiceBase64($documentId, $disableWatermark = true): string
     {
-        $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($document_id);
+        if ($documentId instanceof ManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = ManfeeDocument::with(['contract', 'detailPayments', 'accumulatedCosts', 'bankAccount'])->findOrFail($documentId);
+        }
 
         $data = [
             'document' => $document,
@@ -473,14 +493,18 @@ class PDFController extends Controller
         return $base64;
     }
 
-    public function manfeeKwitansiBase64($document_id, $disableWatermark = true): string
+    public function manfeeKwitansiBase64($documentId, $disableWatermark = true): string
     {
-        $document = ManfeeDocument::with([
-            'contract',
-            'detailPayments',
-            'accumulatedCosts',
-            'bankAccount'
-        ])->findOrFail($document_id);
+        if ($documentId instanceof ManfeeDocument) {
+            $document = $documentId;
+        } else {
+            $document = ManfeeDocument::with([
+                'contract',
+                'detailPayments',
+                'accumulatedCosts',
+                'bankAccount'
+            ])->findOrFail($documentId);
+        }
 
         // Pastikan ada accumulated cost
         $firstCost = $document->accumulatedCosts->first();

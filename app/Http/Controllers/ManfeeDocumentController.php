@@ -672,9 +672,9 @@ class ManfeeDocumentController extends Controller
                     // // get base 64 from pdf template
                     $pdfController = app()->make(PDFController::class);
 
-                    $base64letter = $pdfController->manfeeLetterBase64($document->id);
-                    $base64inv = $pdfController->manfeeInvoiceBase64($document->id);
-                    $base64kw = $pdfController->manfeeKwitansiBase64($document->id);
+                    $base64letter = $pdfController->manfeeLetterBase64($document);
+                    $base64inv = $pdfController->manfeeInvoiceBase64($document);
+                    $base64kw = $pdfController->manfeeKwitansiBase64($document);
 
                     // CREATE REFERENCE NUMBER DOCUMENT
                     $tanggal = Carbon::now();
