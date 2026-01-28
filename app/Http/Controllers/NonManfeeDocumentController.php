@@ -232,7 +232,7 @@ class NonManfeeDocumentController extends Controller
                 $invoiceNumber = sprintf("%s/NF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
                 $receiptNumber = sprintf("%s/NF/KW/KPU/%s/%s/%s",  $baseNumber, $contractInitial, $monthRoman, $year);
 
-                dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< cek nomor NON MNGT FEE');
+                // dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< non management fee');
 
                 $input = $request->only([
                     'contract_id',
