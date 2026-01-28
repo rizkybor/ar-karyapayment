@@ -188,7 +188,7 @@ class ManfeeDocumentController extends Controller
                 $invoiceNumber = sprintf("%s/MF/INV/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
                 $receiptNumber = sprintf("%s/MF/KW/KPU/%s/%s/%s", $baseNumber, $contractInitial, $monthRoman, $year);
 
-                dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< cek nomor MNGT FEE');
+                // dd($letterNumber, $invoiceNumber, $receiptNumber, '<<< management fee');
 
                 $input = $request->only([
                     'contract_id',
