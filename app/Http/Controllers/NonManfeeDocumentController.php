@@ -205,6 +205,7 @@ class NonManfeeDocumentController extends Controller
 
     public function store(Request $request)
     {
+        abort(500);
         $request->validate([
             'contract_id'     => 'required|exists:contracts,id',
             'letter_subject'  => 'required',
